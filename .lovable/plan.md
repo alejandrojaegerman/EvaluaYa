@@ -1,62 +1,38 @@
-# Build-out: Shareable Stat Cards + OG Images & Field Robustness
+## Goal
 
-Two tracks, both aimed at ground users / influencer reach.
+Right now each checklist item only lets people take a *new* photo with the live camera (the file input forces `capture="environment"`). Many people can't or won't re-enter a damaged building, but already have photos of the damage in their camera roll. We'll let them pick existing photos from their phone (or computer) in addition to taking a new one.
 
----
+## What changes
 
-## Track A — Shareable stat cards + OG images
+In the checklist photo capture (`src/routes/assess/checklist.tsx`), each item gets **two ways** to add a photo:
 
-Today every share is a plain text + homepage link. We'll make shares visual and on-brand so they spread on WhatsApp.
+- **Take photo** — opens the camera (current behavior).
+- **Choose from gallery** — opens the phone's photo library / file picker, so previously-taken damage photos can be used.
 
-### A1. Dynamic stat cards (the thing people actually post)
-A new `src/lib/share-card.ts` renders a branded PNG **client-side via canvas** (no server/edge raster constraints), then shares it as an image file through `navigator.share({ files })`, with download + copy-link fallbacks.
+Both paths run through the same existing compression + 3-photos-per-item logic, so nothing downstream (AI analysis, offline draft, upload) needs to change.
 
-Two card types:
-- **Result card** (`/a/$publicId`): risk color block (Green/Yellow/Red), the recommended action ("Permanecer / Uso limitado / Evacuar"), EvalúaYa logo, and `evaluaya.app`. Personalized, shareable straight from the phone.
-- **Stats card** (`/mapa`): national totals (total reports, % red/yellow/green), top affected estado, and a call to action. Lets the influencer post live momentum ("X reportes, Y en rojo").
+```text
+┌──────────────────────────────────────┐
+│  📷 Take photo   │   🖼 From gallery   │
+└──────────────────────────────────────┘
+```
 
-Wire these into the existing share buttons in `src/routes/a/$publicId.tsx`, `src/routes/mapa.tsx`, and `src/components/ShareApp.tsx` (image-first when supported, link otherwise). Uses brand colors from `styles.css` and `RISK_HEX`.
+When photos already exist, the "add more" tile offers the same two choices until the 3-photo limit is reached.
 
-### A2. OG link previews (when the link itself is pasted)
-Per-route `head()` `og:image` / `twitter:image`. Because the workspace blocks public buckets and the Worker can't raster images at the edge, we use a **small set of pre-generated, on-brand Spanish OG images** stored as Lovable CDN assets:
-- `og-result-green.jpg`, `og-result-yellow.jpg`, `og-result-red.jpg`
-- `og-mapa.jpg`
-The result route already has `riskLevel` in loader data, so `head()` selects the matching image; `/mapa` uses its own. Each leaf also gets self-referencing `og:url` + `canonical` (per head rules). Result pages stay `noindex` (private slugs).
+## Bilingual copy
 
-> Note to user: WhatsApp/Facebook cache previews, so already-shared links may keep old previews until each platform re-scrapes.
+Add new labels (Spanish primary, English secondary) in `src/lib/i18n.tsx`:
+- `checklist.takePhoto` → "Tomar foto" / "Take photo"
+- `checklist.fromGallery` → "Desde la galería" / "From gallery"
+- Update `checklist.photoHint` to mention old photos are fine, e.g. "Una foto clara mejora el análisis. Puedes usar fotos que ya tengas." / "A clear photo improves the analysis. You can use photos you already have."
 
----
+## Technical details
 
-## Track B — Field robustness (low-bandwidth / offline)
+- Use **two hidden `<input type="file">` elements** per card: one with `accept="image/*" capture="environment"` (camera) and one with only `accept="image/*"` (gallery — omitting `capture` is what makes browsers show the photo library). They share one `handleFile` handler.
+- Keep the single-button layout when no photo exists by showing the two choices side by side; reuse existing `Camera` icon and add an `Image`/`ImagePlus` icon from `lucide-react` for the gallery action.
+- No backend, schema, or AI changes — purely a frontend/presentation enhancement.
 
-### B1. Resume & auto-submit pending assessments
-Right now a completed-but-unsent assessment lives in IndexedDB but isn't surfaced once you leave `/assess/analyze`.
-- Add a **"Pending submission" card on the home page** (`src/routes/index.tsx`) when a complete draft exists and hasn't been sent — one tap to resume/submit. Auto-fires when back online.
-- Tag drafts with a `status` (`in_progress` | `ready_to_send`) in `src/lib/draft-store.ts` so we know when a draft is complete and just waiting on connectivity.
+## Out of scope
 
-### B2. Tougher submit flow (`/assess/analyze`)
-- Add **bounded retry with backoff** around `analyzeAssessment` (transient network failures), on top of the existing reconnect auto-retry.
-- Add an **overall timeout guard** so a stalled upload surfaces a clear retry instead of an infinite spinner.
-- Clearer queued/waiting copy ("Se enviará automáticamente al reconectar").
-
-### B3. Multiple photos per item (record-only)
-Allow up to 3 photos per checklist item in `src/routes/assess/checklist.tsx` for better documentation for engineers/authorities and the PDF.
-- **Important:** to honor the earlier "one key photo per item" cost decision and the credit-drain protection, only the **first (key) photo per item is sent to the AI**; the rest are stored with the record and shown on the result page / PDF.
-- Touches: `assessment-types.ts` (answers carry `photoDataUrls: string[]`), `checklist.tsx` UI (thumbnail strip + add/remove), `assessment.functions.ts` (upload all, send only key photo to vision), result page gallery, and `pdf.ts`.
-
-All new strings added to `src/lib/i18n.tsx` in ES + EN.
-
----
-
-## Technical notes
-- Stat/result cards: HTML canvas → `toBlob()` PNG; share via `navigator.share` with `files` (feature-detected), fallback to download + existing link/WhatsApp paths. No new deps.
-- OG images generated with the image tool, stored via `lovable-assets` as `.asset.json` pointers, imported into route `head()`.
-- B3 keeps AI input at one photo per item — no change to per-analysis credit cost.
-- No schema migration required: photos already live in `answers`/storage as JSONB-backed data; we extend the per-item shape.
-
-## Out of scope (deferred)
-Institutional dashboard, engineer-review/verified badges, public API — not part of this build-out.
-
----
-
-If you'd rather I trim Track B to just offline/resume (B1+B2) and skip multi-photo for now, say so and I'll drop B3.
+- No multi-select gallery import (still one photo per tap, up to the existing 3-per-item cap).
+- No changes to property info, map, or analysis flows.
