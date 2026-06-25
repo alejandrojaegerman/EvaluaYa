@@ -8,6 +8,8 @@ import {
   History,
   ChevronRight,
   Map as MapIcon,
+  CloudUpload,
+  WifiOff,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -15,9 +17,12 @@ import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
+import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { getHistory, type HistoryEntry } from "@/lib/history";
+import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
