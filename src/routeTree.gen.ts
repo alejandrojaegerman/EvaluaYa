@@ -10,33 +10,89 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssessPropertyRouteImport } from './routes/assess/property'
+import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
+import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
+import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssessPropertyRoute = AssessPropertyRouteImport.update({
+  id: '/assess/property',
+  path: '/assess/property',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssessChecklistRoute = AssessChecklistRouteImport.update({
+  id: '/assess/checklist',
+  path: '/assess/checklist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssessAnalyzeRoute = AssessAnalyzeRouteImport.update({
+  id: '/assess/analyze',
+  path: '/assess/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const APublicIdRoute = APublicIdRouteImport.update({
+  id: '/a/$publicId',
+  path: '/a/$publicId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/a/$publicId': typeof APublicIdRoute
+  '/assess/analyze': typeof AssessAnalyzeRoute
+  '/assess/checklist': typeof AssessChecklistRoute
+  '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/a/$publicId': typeof APublicIdRoute
+  '/assess/analyze': typeof AssessAnalyzeRoute
+  '/assess/checklist': typeof AssessChecklistRoute
+  '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/a/$publicId': typeof APublicIdRoute
+  '/assess/analyze': typeof AssessAnalyzeRoute
+  '/assess/checklist': typeof AssessChecklistRoute
+  '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/a/$publicId'
+    | '/assess/analyze'
+    | '/assess/checklist'
+    | '/assess/property'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/a/$publicId'
+    | '/assess/analyze'
+    | '/assess/checklist'
+    | '/assess/property'
+  id:
+    | '__root__'
+    | '/'
+    | '/a/$publicId'
+    | '/assess/analyze'
+    | '/assess/checklist'
+    | '/assess/property'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  APublicIdRoute: typeof APublicIdRoute
+  AssessAnalyzeRoute: typeof AssessAnalyzeRoute
+  AssessChecklistRoute: typeof AssessChecklistRoute
+  AssessPropertyRoute: typeof AssessPropertyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +104,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assess/property': {
+      id: '/assess/property'
+      path: '/assess/property'
+      fullPath: '/assess/property'
+      preLoaderRoute: typeof AssessPropertyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assess/checklist': {
+      id: '/assess/checklist'
+      path: '/assess/checklist'
+      fullPath: '/assess/checklist'
+      preLoaderRoute: typeof AssessChecklistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assess/analyze': {
+      id: '/assess/analyze'
+      path: '/assess/analyze'
+      fullPath: '/assess/analyze'
+      preLoaderRoute: typeof AssessAnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/a/$publicId': {
+      id: '/a/$publicId'
+      path: '/a/$publicId'
+      fullPath: '/a/$publicId'
+      preLoaderRoute: typeof APublicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  APublicIdRoute: APublicIdRoute,
+  AssessAnalyzeRoute: AssessAnalyzeRoute,
+  AssessChecklistRoute: AssessChecklistRoute,
+  AssessPropertyRoute: AssessPropertyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,0 +1,315 @@
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+
+export type Lang = "es" | "en";
+
+const STORAGE_KEY = "evaluaya.lang";
+
+type Dict = Record<string, string>;
+
+const es: Dict = {
+  "app.name": "EvalúaYa",
+  "app.tagline": "Autoevaluación de daños estructurales tras un sismo",
+  "app.lang": "Idioma",
+  "common.next": "Continuar",
+  "common.back": "Atrás",
+  "common.start": "Iniciar evaluación",
+  "common.cancel": "Cancelar",
+  "common.retry": "Reintentar",
+  "common.optional": "opcional",
+  "common.step": "Paso",
+  "common.of": "de",
+  "common.required": "Este campo es obligatorio",
+  "common.offline": "Sin conexión",
+  "common.online": "En línea",
+
+  "home.heroTitle": "Evalúa la seguridad de tu vivienda",
+  "home.heroSubtitle":
+    "Una guía paso a paso para revisar daños estructurales después de un terremoto. Sin registro. Funciona con poca señal.",
+  "home.startCta": "Iniciar evaluación",
+  "home.howTitle": "Cómo funciona",
+  "home.how1Title": "Datos de la propiedad",
+  "home.how1Desc": "Registra el tipo de edificación, pisos y antigüedad.",
+  "home.how2Title": "Inspección guiada",
+  "home.how2Desc": "Responde 7 preguntas y sube una foto de cada área.",
+  "home.how3Title": "Análisis con IA",
+  "home.how3Desc": "Recibe un nivel de riesgo y pasos recomendados.",
+  "home.recentTitle": "Evaluaciones recientes",
+  "home.recentEmpty": "Aún no has guardado evaluaciones en este dispositivo.",
+  "home.viewResult": "Ver resultado",
+
+  "disclaimer.title": "Aviso importante",
+  "disclaimer.body":
+    "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inminente, evacúa y llama a emergencias.",
+
+  "property.title": "Datos de la propiedad",
+  "property.subtitle": "Esta información ayuda a interpretar los hallazgos.",
+  "property.address": "Dirección / sector",
+  "property.addressPlaceholder": "Ej.: Av. Bolívar, sector La Candelaria",
+  "property.buildingType": "Tipo de edificación",
+  "property.type.house": "Casa",
+  "property.type.apartment": "Apartamento",
+  "property.type.commercial": "Comercial",
+  "property.floors": "Número de pisos",
+  "property.age": "Antigüedad aproximada",
+  "property.age.pre1970": "Antes de 1970",
+  "property.age.1970to2000": "1970 – 2000",
+  "property.age.post2000": "Después de 2000",
+
+  "checklist.title": "Inspección guiada",
+  "checklist.subtitle": "Revisa cada área con cuidado.",
+  "checklist.answer.yes": "Sí",
+  "checklist.answer.no": "No",
+  "checklist.answer.unsure": "No sé",
+  "checklist.addPhoto": "Agregar foto",
+  "checklist.changePhoto": "Cambiar foto",
+  "checklist.removePhoto": "Quitar foto",
+  "checklist.photoHint": "Una foto clara mejora el análisis.",
+  "checklist.answerAll": "Responde todas las preguntas para continuar.",
+  "checklist.analyze": "Analizar daños",
+
+  "item.foundation.area": "Cimientos",
+  "item.foundation.q": "¿Hay grietas visibles o hundimientos en los cimientos?",
+  "item.exterior_walls.area": "Muros exteriores",
+  "item.exterior_walls.q":
+    "¿Hay grietas diagonales o separación respecto a edificios vecinos?",
+  "item.interior_walls.area": "Muros interiores",
+  "item.interior_walls.q": "¿Hay grietas más anchas de 1 cm?",
+  "item.columns_beams.area": "Columnas / vigas",
+  "item.columns_beams.q":
+    "¿Hay concreto desprendido (descascarado) o acero (cabilla) expuesto?",
+  "item.doors_windows.area": "Puertas / ventanas",
+  "item.doors_windows.q": "¿Hay puertas o ventanas que ya no abren o cierran?",
+  "item.roof.area": "Techo",
+  "item.roof.q": "¿Hay deformación visible o colapso del techo?",
+  "item.stairs.area": "Escaleras",
+  "item.stairs.q": "¿Hay escaleras agrietadas o separadas de los muros?",
+
+  "analyze.title": "Analizando",
+  "analyze.uploading": "Procesando fotos…",
+  "analyze.thinking": "Evaluando el riesgo estructural…",
+  "analyze.waitingTitle": "Esperando conexión",
+  "analyze.waitingBody":
+    "Tus respuestas están guardadas. El análisis se ejecutará automáticamente cuando vuelva la señal.",
+  "analyze.errorTitle": "No se pudo completar el análisis",
+  "analyze.rateLimited":
+    "Hay demasiadas solicitudes en este momento. Espera un momento e inténtalo de nuevo.",
+  "analyze.creditsError":
+    "El servicio de IA no está disponible temporalmente. Inténtalo más tarde.",
+  "analyze.genericError":
+    "Ocurrió un problema al analizar. Revisa tu conexión e inténtalo de nuevo.",
+
+  "result.title": "Resultado de la evaluación",
+  "result.green.tag": "Riesgo bajo",
+  "result.green.action": "Puedes permanecer",
+  "result.yellow.tag": "Riesgo moderado",
+  "result.yellow.action": "Limita el uso",
+  "result.red.tag": "Riesgo alto",
+  "result.red.action": "Evacúa de inmediato",
+  "result.summary": "Resumen",
+  "result.findings": "Hallazgos clave",
+  "result.nextSteps": "Pasos recomendados",
+  "result.photos": "Fotos enviadas",
+  "result.share": "Compartir",
+  "result.copyLink": "Copiar enlace",
+  "result.copied": "¡Enlace copiado!",
+  "result.downloadPdf": "Descargar PDF",
+  "result.newAssessment": "Nueva evaluación",
+  "result.disclaimerShort":
+    "Orientación preliminar. Confirma con un ingeniero estructural o Protección Civil.",
+  "result.notFound": "No se encontró esta evaluación.",
+  "result.goHome": "Ir al inicio",
+  "result.assessedOn": "Evaluado el",
+
+  "pdf.title": "Resumen de evaluación estructural",
+  "pdf.property": "Propiedad",
+  "pdf.riskLevel": "Nivel de riesgo",
+  "pdf.summary": "Resumen",
+  "pdf.findings": "Hallazgos clave",
+  "pdf.nextSteps": "Pasos recomendados",
+  "pdf.inspection": "Respuestas de inspección",
+  "pdf.generated": "Generado por EvalúaYa",
+};
+
+const en: Dict = {
+  "app.name": "EvalúaYa",
+  "app.tagline": "Post-earthquake structural damage self-assessment",
+  "app.lang": "Language",
+  "common.next": "Continue",
+  "common.back": "Back",
+  "common.start": "Start assessment",
+  "common.cancel": "Cancel",
+  "common.retry": "Retry",
+  "common.optional": "optional",
+  "common.step": "Step",
+  "common.of": "of",
+  "common.required": "This field is required",
+  "common.offline": "Offline",
+  "common.online": "Online",
+
+  "home.heroTitle": "Check whether your home is safe",
+  "home.heroSubtitle":
+    "A step-by-step guide to review structural damage after an earthquake. No sign-up. Works on low bandwidth.",
+  "home.startCta": "Start assessment",
+  "home.howTitle": "How it works",
+  "home.how1Title": "Property details",
+  "home.how1Desc": "Record building type, floors and age.",
+  "home.how2Title": "Guided inspection",
+  "home.how2Desc": "Answer 7 questions and add a photo for each area.",
+  "home.how3Title": "AI analysis",
+  "home.how3Desc": "Get a risk level and recommended next steps.",
+  "home.recentTitle": "Recent assessments",
+  "home.recentEmpty": "You have not saved any assessments on this device yet.",
+  "home.viewResult": "View result",
+
+  "disclaimer.title": "Important notice",
+  "disclaimer.body":
+    "This tool gives preliminary guidance and is not a substitute for inspection by a licensed structural engineer or Civil Protection. If there is imminent danger, evacuate and call emergency services.",
+
+  "property.title": "Property details",
+  "property.subtitle": "This information helps interpret the findings.",
+  "property.address": "Address / neighborhood",
+  "property.addressPlaceholder": "e.g. Av. Bolívar, La Candelaria district",
+  "property.buildingType": "Building type",
+  "property.type.house": "House",
+  "property.type.apartment": "Apartment",
+  "property.type.commercial": "Commercial",
+  "property.floors": "Number of floors",
+  "property.age": "Approximate age",
+  "property.age.pre1970": "Before 1970",
+  "property.age.1970to2000": "1970 – 2000",
+  "property.age.post2000": "After 2000",
+
+  "checklist.title": "Guided inspection",
+  "checklist.subtitle": "Inspect each area carefully.",
+  "checklist.answer.yes": "Yes",
+  "checklist.answer.no": "No",
+  "checklist.answer.unsure": "Unsure",
+  "checklist.addPhoto": "Add photo",
+  "checklist.changePhoto": "Change photo",
+  "checklist.removePhoto": "Remove photo",
+  "checklist.photoHint": "A clear photo improves the analysis.",
+  "checklist.answerAll": "Answer all questions to continue.",
+  "checklist.analyze": "Analyze damage",
+
+  "item.foundation.area": "Foundation",
+  "item.foundation.q": "Are there visible cracks or shifts in the foundation?",
+  "item.exterior_walls.area": "Exterior walls",
+  "item.exterior_walls.q":
+    "Are there diagonal cracks or separation from neighboring buildings?",
+  "item.interior_walls.area": "Interior walls",
+  "item.interior_walls.q": "Are there cracks wider than 1 cm?",
+  "item.columns_beams.area": "Columns / beams",
+  "item.columns_beams.q": "Is there spalling concrete or exposed rebar?",
+  "item.doors_windows.area": "Doors / windows",
+  "item.doors_windows.q": "Are there doors or windows that no longer open or close?",
+  "item.roof.area": "Roof",
+  "item.roof.q": "Is there visible deformation or roof collapse?",
+  "item.stairs.area": "Stairs",
+  "item.stairs.q": "Are the stairs cracked or separated from the walls?",
+
+  "analyze.title": "Analyzing",
+  "analyze.uploading": "Processing photos…",
+  "analyze.thinking": "Assessing structural risk…",
+  "analyze.waitingTitle": "Waiting for connection",
+  "analyze.waitingBody":
+    "Your answers are saved. The analysis will run automatically when the connection returns.",
+  "analyze.errorTitle": "The analysis could not be completed",
+  "analyze.rateLimited":
+    "Too many requests right now. Please wait a moment and try again.",
+  "analyze.creditsError":
+    "The AI service is temporarily unavailable. Please try again later.",
+  "analyze.genericError":
+    "Something went wrong during analysis. Check your connection and try again.",
+
+  "result.title": "Assessment result",
+  "result.green.tag": "Low risk",
+  "result.green.action": "You may stay",
+  "result.yellow.tag": "Moderate risk",
+  "result.yellow.action": "Limit use",
+  "result.red.tag": "High risk",
+  "result.red.action": "Evacuate immediately",
+  "result.summary": "Summary",
+  "result.findings": "Key findings",
+  "result.nextSteps": "Recommended next steps",
+  "result.photos": "Submitted photos",
+  "result.share": "Share",
+  "result.copyLink": "Copy link",
+  "result.copied": "Link copied!",
+  "result.downloadPdf": "Download PDF",
+  "result.newAssessment": "New assessment",
+  "result.disclaimerShort":
+    "Preliminary guidance. Confirm with a structural engineer or Civil Protection.",
+  "result.notFound": "This assessment could not be found.",
+  "result.goHome": "Go home",
+  "result.assessedOn": "Assessed on",
+
+  "pdf.title": "Structural assessment summary",
+  "pdf.property": "Property",
+  "pdf.riskLevel": "Risk level",
+  "pdf.summary": "Summary",
+  "pdf.findings": "Key findings",
+  "pdf.nextSteps": "Recommended next steps",
+  "pdf.inspection": "Inspection answers",
+  "pdf.generated": "Generated by EvalúaYa",
+};
+
+const dictionaries: Record<Lang, Dict> = { es, en };
+
+export function translate(lang: Lang, key: string): string {
+  return dictionaries[lang][key] ?? dictionaries.es[key] ?? key;
+}
+
+type LanguageContextValue = {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: (key: string) => string;
+};
+
+const LanguageContext = createContext<LanguageContextValue | null>(null);
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("es");
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
+      if (stored === "es" || stored === "en") setLangState(stored);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const setLang = (next: Lang) => {
+    setLangState(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      /* ignore */
+    }
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = next;
+    }
+  };
+
+  const value: LanguageContextValue = {
+    lang,
+    setLang,
+    t: (key: string) => translate(lang, key),
+  };
+
+  return (
+    <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
+  );
+}
+
+export function useLang(): LanguageContextValue {
+  const ctx = useContext(LanguageContext);
+  if (!ctx) throw new Error("useLang must be used within LanguageProvider");
+  return ctx;
+}
