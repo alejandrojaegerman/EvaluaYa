@@ -380,8 +380,20 @@ function MapPage() {
             </ul>
           </section>
 
-          {/* Open data download */}
+          {/* Share stats image — flywheel */}
           <section className="mt-6">
+            <Button
+              className="w-full"
+              onClick={shareStats}
+              disabled={cardBusy}
+            >
+              <ImageDown className="size-4" />
+              {cardBusy ? t("share.generating") : t("share.shareStats")}
+            </Button>
+          </section>
+
+          {/* Open data download */}
+          <section className="mt-4">
             <Button variant="outline" className="w-full" onClick={downloadCsv}>
               <Download className="size-4" />
               {t("map.download")}
@@ -390,6 +402,7 @@ function MapPage() {
               {t("map.dataNote")}
             </p>
           </section>
+
         </>
       )}
 
