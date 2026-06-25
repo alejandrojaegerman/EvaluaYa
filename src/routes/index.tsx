@@ -41,17 +41,23 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useLang();
   const navigate = useNavigate();
+  const online = useOnline();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [totals, setTotals] = useState<DamageTotals | null>(null);
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     setHistory(getHistory());
+    loadDraft()
+      .then((d) => setPending(isReadyToSend(d)))
+      .catch(() => setPending(false));
     getDamageTotals()
       .then(setTotals)
       .catch(() => setTotals(null));
   }, []);
 
   const hasTotals = !!totals && totals.total > 0;
+
 
   const steps = [
     { icon: Building2, title: t("home.how1Title"), desc: t("home.how1Desc") },
