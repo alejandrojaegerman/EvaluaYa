@@ -117,10 +117,64 @@ function MapPage() {
       .sort((a, b) => b.r - a.r);
   }, [areas]);
 
-  const topAreas = useMemo(
-    () => [...areas].sort((a, b) => b.total - a.total).slice(0, 12),
-    [areas],
-  );
+  const topAreas = useMemo<DisplayArea[]>(() => {
+    const specific: DisplayArea[] = [];
+    const unspecified = {
+      total: 0,
+      green: 0,
+      yellow: 0,
+      red: 0,
+      lastReport: null as string | null,
+    };
+
+    for (const a of areas) {
+      const stateKnown = !isUnspecified(a.state);
+      const muniKnown = !isUnspecified(a.municipality);
+
+      if (!stateKnown && !muniKnown) {
+        unspecified.total += a.total;
+        unspecified.green += a.green;
+        unspecified.yellow += a.yellow;
+        unspecified.red += a.red;
+        continue;
+      }
+
+      specific.push({
+        key: `${a.state}-${a.municipality}`,
+        title: muniKnown ? a.municipality : a.state,
+        subtitle: muniKnown ? a.state : t("map.unspecifiedMunicipality"),
+        muniKnown,
+        total: a.total,
+        green: a.green,
+        yellow: a.yellow,
+        red: a.red,
+      });
+    }
+
+    specific.sort((x, y) => {
+      if (y.total !== x.total) return y.total - x.total;
+      // tie-break: rows with a specific municipality rank first
+      return Number(y.muniKnown) - Number(x.muniKnown);
+    });
+
+    const result = specific.slice(0, 12);
+
+    if (unspecified.total > 0) {
+      result.push({
+        key: "__unspecified__",
+        title: t("map.unspecifiedLocation"),
+        subtitle: null,
+        muniKnown: false,
+        total: unspecified.total,
+        green: unspecified.green,
+        yellow: unspecified.yellow,
+        red: unspecified.red,
+      });
+    }
+
+    return result.slice(0, 12);
+  }, [areas, t]);
+
 
   const hasData = !!totals && totals.total > 0;
 
