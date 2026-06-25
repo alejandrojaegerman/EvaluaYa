@@ -32,7 +32,9 @@ export const Route = createFileRoute("/a/$publicId")({
 });
 
 function ResultPage() {
-  const { record } = Route.useLoaderData();
+  const { record } = Route.useLoaderData() as {
+    record: AssessmentRecord | null;
+  };
   const { t } = useLang();
   const navigate = useNavigate();
 
