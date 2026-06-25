@@ -12,6 +12,7 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { analyzeAssessment } from "@/lib/assessment.functions";
+import { getDeviceId } from "@/lib/device-id";
 import { clearDraft, loadDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { addHistory } from "@/lib/history";
 import { useLang } from "@/lib/i18n";
