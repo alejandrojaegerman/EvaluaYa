@@ -224,6 +224,8 @@ const en: Dict = {
   "analyze.errorTitle": "The analysis could not be completed",
   "analyze.rateLimited":
     "Too many requests right now. Please wait a moment and try again.",
+  "analyze.throttled":
+    "You've reached the analysis limit for now. Please wait a bit before assessing another property.",
   "analyze.creditsError":
     "The AI service is temporarily unavailable. Please try again later.",
   "analyze.genericError":
