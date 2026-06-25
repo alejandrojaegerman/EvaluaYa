@@ -10,6 +10,9 @@ import {
   Map as MapIcon,
   CloudUpload,
   WifiOff,
+  BadgeCheck,
+  UserX,
+  EyeOff,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
