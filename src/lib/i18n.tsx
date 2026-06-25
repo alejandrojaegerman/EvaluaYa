@@ -184,6 +184,8 @@ const es: Dict = {
   "map.download": "Descargar datos (CSV)",
   "map.dataNote":
     "Datos abiertos y anónimos para autoridades, ONG y prensa.",
+  "map.cardHeadline": "Daños estructurales reportados",
+  "map.cardCta": "Evalúa tu vivienda gratis en EvalúaYa",
 
   "result.shareWhatsapp": "Compartir por WhatsApp",
   "result.whatsappMessage":
