@@ -26,11 +26,13 @@ const answerSchema = z.object({
     "stairs",
   ]),
   value: z.enum(["yes", "no", "unsure"]),
-  photoDataUrl: z.string().nullable().optional(),
+  // ~2.5MB decoded ≈ 3.4M base64 chars; cap generously to reject abusive payloads.
+  photoDataUrl: z.string().max(3_600_000).nullable().optional(),
 });
 
 const analyzeSchema = z.object({
   language: z.enum(["es", "en"]),
+  deviceId: z.string().min(1).max(64).optional().default(""),
   property: z.object({
     address: z.string().max(300).optional().default(""),
     buildingType: z.enum(["house", "apartment", "commercial"]),
