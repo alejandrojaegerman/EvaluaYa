@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Private per-report pages are unguessable; no need to crawl them
+Disallow: /a/
+
+Sitemap: https://evaluaya.app/sitemap.xml
