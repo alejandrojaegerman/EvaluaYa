@@ -18,7 +18,7 @@ import {
 } from "@/lib/stats.functions";
 import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
 
-const MAP_OG = "https://evaluaya.app/og-map.jpg";
+const MAP_OG = absoluteUrl("/og-map.jpg");
 
 export const Route = createFileRoute("/mapa")({
   head: () => {
