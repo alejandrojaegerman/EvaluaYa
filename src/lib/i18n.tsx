@@ -70,6 +70,7 @@ const es: Dict = {
   "checklist.changePhoto": "Cambiar foto",
   "checklist.removePhoto": "Quitar foto",
   "checklist.photoHint": "Una foto clara mejora el análisis.",
+  "checklist.morePhotos": "Otra foto",
   "checklist.answerAll": "Responde todas las preguntas para continuar.",
   "checklist.analyze": "Analizar daños",
 
