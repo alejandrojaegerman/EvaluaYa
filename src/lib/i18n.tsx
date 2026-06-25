@@ -347,6 +347,10 @@ const en: Dict = {
   "property.municipalityPlaceholder": "e.g. Baruta",
   "property.locationHint":
     "We only use the area (state/municipality) for the community map. Your exact address is never shown.",
+  "property.detecting": "Detecting your location…",
+  "property.detected": "Location detected. You can change it if it's not correct.",
+  "property.detectFailed": "We couldn't detect your location. Please select your state.",
+  "property.stateRequired": "Select your state to continue.",
 
   "map.title": "Damage map",
   "map.subtitle":
