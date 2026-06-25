@@ -13,7 +13,7 @@ import {
   type AreaAggregate,
   type DamageTotals,
 } from "@/lib/stats.functions";
-import { ESTADOS, getEstado, projectToSvg } from "@/lib/venezuela";
+import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/mapa")({
   head: () => ({
@@ -93,7 +93,7 @@ function MapPage() {
         if (!est) return null;
         const { x, y } = projectToSvg(est.lat, est.lng, MAP_W, MAP_H);
         const r = 6 + (v.total / maxTotal) * 22;
-        return { state, x, y, r, level: dominantRisk(v), ...v };
+        return { state, abbr: est.abbr, x, y, r, level: dominantRisk(v), ...v };
       })
       .filter((b): b is NonNullable<typeof b> => b !== null)
       .sort((a, b) => b.r - a.r);
@@ -229,46 +229,73 @@ function MapPage() {
           </section>
 
           {/* Bubble map */}
-          {stateBubbles.length > 0 && (
-            <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <p className="text-sm font-semibold">{t("map.geoTitle")}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{t("map.geoHint")}</p>
-              <svg
-                viewBox={`0 0 ${MAP_W} ${MAP_H}`}
-                className="mt-3 w-full"
-                role="img"
-                aria-label={t("map.geoTitle")}
-              >
-                {/* faint reference dots for all estados */}
-                {ESTADOS.map((e) => {
-                  const { x, y } = projectToSvg(e.lat, e.lng, MAP_W, MAP_H);
-                  return (
-                    <circle
-                      key={e.abbr}
-                      cx={x}
-                      cy={y}
-                      r={1.5}
-                      className="fill-border"
-                    />
-                  );
-                })}
-                {stateBubbles.map((b) => (
-                  <g key={b.state}>
-                    <circle
-                      cx={b.x}
-                      cy={b.y}
-                      r={b.r}
-                      fill={rgb(b.level)}
-                      fillOpacity={0.55}
-                      stroke={rgb(b.level)}
-                      strokeWidth={1.5}
-                    />
-                    <title>{`${b.state}: ${b.total}`}</title>
-                  </g>
-                ))}
-              </svg>
-            </section>
-          )}
+          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <p className="text-sm font-semibold">{t("map.geoTitle")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("map.geoHint")}</p>
+            <svg
+              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
+              className="mt-3 w-full"
+              role="img"
+              aria-label={t("map.geoTitle")}
+            >
+              {/* faint country outline backdrop */}
+              <path
+                d={outlinePath(MAP_W, MAP_H)}
+                className="fill-muted/40 stroke-border"
+                strokeWidth={1}
+              />
+              {/* faint reference dots for all estados */}
+              {ESTADOS.map((e) => {
+                const { x, y } = projectToSvg(e.lat, e.lng, MAP_W, MAP_H);
+                return (
+                  <circle
+                    key={e.abbr}
+                    cx={x}
+                    cy={y}
+                    r={1.5}
+                    className="fill-muted-foreground/40"
+                  />
+                );
+              })}
+              {stateBubbles.map((b) => (
+                <g key={b.state}>
+                  <circle
+                    cx={b.x}
+                    cy={b.y}
+                    r={b.r}
+                    fill={rgb(b.level)}
+                    fillOpacity={0.55}
+                    stroke={rgb(b.level)}
+                    strokeWidth={1.5}
+                  />
+                  <text
+                    x={b.x}
+                    y={b.y + b.r + 7}
+                    textAnchor="middle"
+                    className="fill-muted-foreground text-[8px] font-semibold"
+                  >
+                    {b.abbr}
+                  </text>
+                  <title>{`${b.state}: ${b.total}`}</title>
+                </g>
+              ))}
+            </svg>
+            {/* legend */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-muted-foreground/60" aria-hidden />
+                <span className="size-3 rounded-full bg-muted-foreground/60" aria-hidden />
+                {t("map.legendSize")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("red") }} aria-hidden />
+                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("yellow") }} aria-hidden />
+                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("green") }} aria-hidden />
+                {t("map.legendRisk")}
+              </span>
+            </div>
+          </section>
+
 
           {/* Top areas list */}
           <section className="mt-4">

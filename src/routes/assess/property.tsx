@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Building2, Home, Store, Minus, Plus, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Building2, Home, Store, Minus, Plus, ArrowRight, LocateFixed } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import type { BuildingAge, BuildingType } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { ESTADO_NAMES } from "@/lib/venezuela";
+import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
   component: PropertyStep,
@@ -34,11 +34,19 @@ function PropertyStep() {
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
+  const [geoStatus, setGeoStatus] = useState<
+    "idle" | "detecting" | "detected" | "failed"
+  >("idle");
+
+  const draftLoaded = useRef(false);
+  const geoTried = useRef(false);
 
   useEffect(() => {
     let active = true;
     loadDraft().then((draft) => {
-      if (!active || !draft) return;
+      if (!active) return;
+      draftLoaded.current = true;
+      if (!draft) return;
       const p = draft.property;
       if (p.address) setAddress(p.address);
       if (p.state) setState(p.state);
@@ -52,7 +60,35 @@ function PropertyStep() {
     };
   }, []);
 
-  const valid = buildingType !== null && age !== null && floors >= 1;
+  // Auto-detect estado once, only if the user hasn't already chosen one.
+  useEffect(() => {
+    if (geoTried.current) return;
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    // Wait until the draft has loaded so we don't clobber a saved state.
+    const timer = setTimeout(() => {
+      if (geoTried.current || state.trim() !== "") return;
+      geoTried.current = true;
+      setGeoStatus("detecting");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const est = nearestEstado(pos.coords.latitude, pos.coords.longitude);
+          if (est) {
+            setState((cur) => (cur.trim() === "" ? est.name : cur));
+            setGeoStatus("detected");
+          } else {
+            setGeoStatus("failed");
+          }
+        },
+        () => setGeoStatus("failed"),
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
+      );
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [state]);
+
+  const valid =
+    buildingType !== null && age !== null && floors >= 1 && state.trim() !== "";
+
 
   async function handleContinue() {
     if (!valid) return;
@@ -101,9 +137,7 @@ function PropertyStep() {
           <div>
             <Label htmlFor="estado" className="text-sm font-semibold">
               {t("property.state")}{" "}
-              <span className="font-normal text-muted-foreground">
-                ({t("common.optional")})
-              </span>
+              <span className="font-normal text-destructive">*</span>
             </Label>
             <select
               id="estado"
@@ -137,9 +171,26 @@ function PropertyStep() {
           </div>
         </div>
 
+        {geoStatus !== "idle" && (
+          <p
+            className={cn(
+              "-mt-3 flex items-center gap-1.5 text-xs",
+              geoStatus === "detected"
+                ? "text-primary"
+                : "text-muted-foreground",
+            )}
+          >
+            <LocateFixed className="size-3.5 shrink-0" aria-hidden />
+            {geoStatus === "detecting" && t("property.detecting")}
+            {geoStatus === "detected" && t("property.detected")}
+            {geoStatus === "failed" && t("property.detectFailed")}
+          </p>
+        )}
+
         <p className="-mt-3 text-xs text-muted-foreground">
           {t("property.locationHint")}
         </p>
+
 
         {/* Building type */}
         <div>

@@ -153,6 +153,10 @@ const es: Dict = {
   "property.municipalityPlaceholder": "Ej.: Baruta",
   "property.locationHint":
     "Solo usamos la zona (estado/municipio) para el mapa comunitario. Nunca mostramos tu dirección exacta.",
+  "property.detecting": "Detectando tu ubicación…",
+  "property.detected": "Ubicación detectada. Puedes cambiarla si no es correcta.",
+  "property.detectFailed": "No pudimos detectar tu ubicación. Selecciona tu estado.",
+  "property.stateRequired": "Selecciona tu estado para continuar.",
 
   "map.title": "Mapa de daños",
   "map.subtitle":
@@ -165,6 +169,8 @@ const es: Dict = {
   "map.distribution": "Distribución de riesgo",
   "map.geoTitle": "Vista geográfica",
   "map.geoHint": "El tamaño indica cantidad de reportes; el color, el riesgo predominante.",
+  "map.legendSize": "Tamaño = cantidad de reportes",
+  "map.legendRisk": "Color = riesgo predominante",
   "map.topAreas": "Zonas con más reportes",
   "map.reports": "reportes",
   "map.lastUpdated": "Actualizado",
@@ -341,6 +347,10 @@ const en: Dict = {
   "property.municipalityPlaceholder": "e.g. Baruta",
   "property.locationHint":
     "We only use the area (state/municipality) for the community map. Your exact address is never shown.",
+  "property.detecting": "Detecting your location…",
+  "property.detected": "Location detected. You can change it if it's not correct.",
+  "property.detectFailed": "We couldn't detect your location. Please select your state.",
+  "property.stateRequired": "Select your state to continue.",
 
   "map.title": "Damage map",
   "map.subtitle":
@@ -353,6 +363,8 @@ const en: Dict = {
   "map.distribution": "Risk distribution",
   "map.geoTitle": "Geographic view",
   "map.geoHint": "Size shows number of reports; color shows the dominant risk.",
+  "map.legendSize": "Size = number of reports",
+  "map.legendRisk": "Color = dominant risk",
   "map.topAreas": "Areas with most reports",
   "map.reports": "reports",
   "map.lastUpdated": "Updated",
