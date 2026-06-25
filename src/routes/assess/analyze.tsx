@@ -53,6 +53,7 @@ function AnalyzeStep() {
       const result = await analyzeAssessment({
         data: {
           language: draft.language,
+          deviceId: getDeviceId(),
           property: {
             address: draft.property.address ?? "",
             buildingType: draft.property.buildingType,
