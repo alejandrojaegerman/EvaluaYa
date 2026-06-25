@@ -139,7 +139,7 @@ function parseAiJson(text: string): AiResult | null {
 
 type AnalyzeResult =
   | { ok: true; publicId: string; aiResult: AiResult; riskLevel: RiskLevel }
-  | { ok: false; errorCode: "rate_limited" | "credits" | "generic" };
+  | { ok: false; errorCode: "rate_limited" | "credits" | "generic" | "throttled" };
 
 export const analyzeAssessment = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => analyzeSchema.parse(data))
@@ -150,6 +150,15 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       return { ok: false, errorCode: "generic" };
     }
 
+    // Per-device/IP rate limit BEFORE any upload or AI spend.
+    const ip =
+      getRequestIP({ xForwardedFor: true })?.split(",")[0]?.trim() || "unknown";
+    const { checkAnalysisRateLimit } = await import("./rate-limit.server");
+    const allowed = await checkAnalysisRateLimit(ip, data.deviceId || "anon");
+    if (!allowed) {
+      return { ok: false, errorCode: "throttled" };
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const publicId = makePublicId();
@@ -157,6 +166,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     // Upload photos to private storage (best-effort) and record paths.
     const storedAnswers: AssessmentRecord["answers"] = [];
     const imageDataUrls: string[] = [];
+
 
     for (const answer of data.answers) {
       let photoPath: string | null = null;
