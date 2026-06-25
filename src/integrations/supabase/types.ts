@@ -43,6 +43,7 @@ export type Database = {
           ai_result: Json | null
           answers: Json
           created_at: string
+          geo_inferred: boolean
           id: string
           language: string
           municipality: string | null
@@ -56,6 +57,7 @@ export type Database = {
           ai_result?: Json | null
           answers?: Json
           created_at?: string
+          geo_inferred?: boolean
           id?: string
           language?: string
           municipality?: string | null
@@ -69,6 +71,7 @@ export type Database = {
           ai_result?: Json | null
           answers?: Json
           created_at?: string
+          geo_inferred?: boolean
           id?: string
           language?: string
           municipality?: string | null
