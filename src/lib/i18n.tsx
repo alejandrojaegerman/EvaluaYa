@@ -388,6 +388,11 @@ const es: Dict = {
   "methodology.limit.privacy":
     "No se requiere registro. Solo usamos la zona (estado/municipio) para el mapa comunitario; nunca mostramos tu dirección exacta ni tus fotos.",
 
+  "methodology.engineersTitle": "Para ingenieros",
+  "methodology.engineersBody":
+    "¿Quieres validar el algoritmo a nivel de código? Descarga la especificación técnica: incluye las reglas deterministas, la interpolación de intensidad sísmica (USGS ShakeMap), el prompt exacto del modelo de IA y la lógica de combinación.",
+  "methodology.specDownload": "Descargar especificación técnica (PDF)",
+
   "methodology.ctaTitle": "¿Listo para evaluar?",
   "methodology.cta": "Iniciar evaluación",
   "methodology.disclaimer":
@@ -763,6 +768,11 @@ const en: Dict = {
     "Result quality depends on your answers and the sharpness of the photos.",
   "methodology.limit.privacy":
     "No sign-up required. We only use the area (state/municipality) for the community map; we never show your exact address or your photos.",
+
+  "methodology.engineersTitle": "For engineers",
+  "methodology.engineersBody":
+    "Want to validate the algorithm at the code level? Download the technical specification: it includes the deterministic rules, the seismic intensity interpolation (USGS ShakeMap), the exact AI model prompt, and the merge logic.",
+  "methodology.specDownload": "Download technical spec (PDF)",
 
   "methodology.ctaTitle": "Ready to assess?",
   "methodology.cta": "Start assessment",
