@@ -5,11 +5,75 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    plugins: [
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: null,
+        filename: "sw.js",
+        devOptions: { enabled: false },
+        includeAssets: [
+          "icon-192.png",
+          "icon-512.png",
+          "icon-maskable-512.png",
+          "apple-touch-icon.png",
+        ],
+        manifest: {
+          name: "EvalúaYa — Evaluación estructural",
+          short_name: "EvalúaYa",
+          description:
+            "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal.",
+          lang: "es",
+          start_url: "/",
+          scope: "/",
+          display: "standalone",
+          background_color: "#0f3443",
+          theme_color: "#0f3443",
+          icons: [
+            { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+            { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+            {
+              src: "/icon-maskable-512.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "maskable",
+            },
+          ],
+        },
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,svg,png,ico,woff,woff2}"],
+          navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
+          runtimeCaching: [
+            {
+              urlPattern: ({ request }: { request: Request }) =>
+                request.mode === "navigate",
+              handler: "NetworkFirst",
+              options: {
+                cacheName: "evaluaya-pages",
+                networkTimeoutSeconds: 5,
+                expiration: { maxEntries: 50 },
+              },
+            },
+            {
+              urlPattern: ({ url }: { url: URL }) =>
+                url.pathname.startsWith("/assets/"),
+              handler: "CacheFirst",
+              options: {
+                cacheName: "evaluaya-assets",
+                expiration: { maxEntries: 120 },
+              },
+            },
+          ],
+        },
+      }),
+    ],
   },
 });
