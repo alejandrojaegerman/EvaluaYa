@@ -120,8 +120,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal.",
       },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/1446726a-7122-498f-b172-31f31809a219" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/1446726a-7122-498f-b172-31f31809a219" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cJy4f9Hr3ub8meqhg39MueCFNYX2/social-images/social-1782403490801-Screenshot_2026-06-25_at_12.04.39_PM.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cJy4f9Hr3ub8meqhg39MueCFNYX2/social-images/social-1782403490801-Screenshot_2026-06-25_at_12.04.39_PM.webp" },
+      { name: "description", content: "EvalúaYa (AssessNow) is a PWA for post-earthquake structural damage self-assessment in" },
+      { property: "og:description", content: "EvalúaYa (AssessNow) is a PWA for post-earthquake structural damage self-assessment in" },
+      { name: "twitter:description", content: "EvalúaYa (AssessNow) is a PWA for post-earthquake structural damage self-assessment in" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
