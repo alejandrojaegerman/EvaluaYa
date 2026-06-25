@@ -195,7 +195,8 @@ function ChecklistCard({
   onRemovePhoto: (i: number) => void;
 }) {
   const { t } = useLang();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
   const canAddMore = photos.length < MAX_PHOTOS_PER_ITEM;
 
