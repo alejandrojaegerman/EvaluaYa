@@ -282,6 +282,7 @@ const en: Dict = {
   "checklist.changePhoto": "Change photo",
   "checklist.removePhoto": "Remove photo",
   "checklist.photoHint": "A clear photo improves the analysis.",
+  "checklist.morePhotos": "Another photo",
   "checklist.answerAll": "Answer all questions to continue.",
   "checklist.analyze": "Analyze damage",
 
