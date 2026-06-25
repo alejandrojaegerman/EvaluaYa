@@ -137,9 +137,7 @@ function PropertyStep() {
           <div>
             <Label htmlFor="estado" className="text-sm font-semibold">
               {t("property.state")}{" "}
-              <span className="font-normal text-muted-foreground">
-                ({t("common.optional")})
-              </span>
+              <span className="font-normal text-destructive">*</span>
             </Label>
             <select
               id="estado"
@@ -173,9 +171,26 @@ function PropertyStep() {
           </div>
         </div>
 
+        {geoStatus !== "idle" && (
+          <p
+            className={cn(
+              "-mt-3 flex items-center gap-1.5 text-xs",
+              geoStatus === "detected"
+                ? "text-primary"
+                : "text-muted-foreground",
+            )}
+          >
+            <LocateFixed className="size-3.5 shrink-0" aria-hidden />
+            {geoStatus === "detecting" && t("property.detecting")}
+            {geoStatus === "detected" && t("property.detected")}
+            {geoStatus === "failed" && t("property.detectFailed")}
+          </p>
+        )}
+
         <p className="-mt-3 text-xs text-muted-foreground">
           {t("property.locationHint")}
         </p>
+
 
         {/* Building type */}
         <div>
