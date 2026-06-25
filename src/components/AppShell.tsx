@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Map, ShieldCheck, Wifi, WifiOff } from "lucide-react";
+import { BookOpen, Map, ShieldCheck, Wifi, WifiOff } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { LanguageToggle } from "./LanguageToggle";
@@ -37,6 +37,14 @@ export function AppShell({
             >
               <Map className="size-3.5" aria-hidden />
               <span className="hidden sm:inline">{t("nav.map")}</span>
+            </Link>
+            <Link
+              to="/metodologia"
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold text-muted-foreground transition-colors hover:text-primary"
+              title={t("nav.methodology")}
+            >
+              <BookOpen className="size-3.5" aria-hidden />
+              <span className="hidden sm:inline">{t("nav.methodology")}</span>
             </Link>
             <span
               className={cn(
