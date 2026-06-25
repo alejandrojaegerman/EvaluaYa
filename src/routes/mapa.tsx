@@ -60,6 +60,24 @@ function rgb(level: RiskKey): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+/** Treat "Desconocido"/empty/null values as an unspecified location. */
+function isUnspecified(value: string | null | undefined): boolean {
+  if (!value) return true;
+  return value.trim().toLowerCase() === "desconocido";
+}
+
+type DisplayArea = {
+  key: string;
+  title: string;
+  subtitle: string | null;
+  muniKnown: boolean;
+  total: number;
+  green: number;
+  yellow: number;
+  red: number;
+};
+
+
 const MAP_W = 320;
 const MAP_H = 300;
 
