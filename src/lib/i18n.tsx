@@ -153,6 +153,10 @@ const es: Dict = {
   "property.municipalityPlaceholder": "Ej.: Baruta",
   "property.locationHint":
     "Solo usamos la zona (estado/municipio) para el mapa comunitario. Nunca mostramos tu dirección exacta.",
+  "property.detecting": "Detectando tu ubicación…",
+  "property.detected": "Ubicación detectada. Puedes cambiarla si no es correcta.",
+  "property.detectFailed": "No pudimos detectar tu ubicación. Selecciona tu estado.",
+  "property.stateRequired": "Selecciona tu estado para continuar.",
 
   "map.title": "Mapa de daños",
   "map.subtitle":
