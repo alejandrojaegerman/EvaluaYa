@@ -1,38 +1,30 @@
-## Goal
+# Pin every shared link to evaluaya.app
 
-Right now each checklist item only lets people take a *new* photo with the live camera (the file input forces `capture="environment"`). Many people can't or won't re-enter a damaged building, but already have photos of the damage in their camera roll. We'll let them pick existing photos from their phone (or computer) in addition to taking a new one.
+## Problem
+Several share/copy actions build their link from `window.location.origin`. When the app is opened from the Lovable preview or the `tremor-check.lovable.app` published URL (instead of the custom domain), every shared message, WhatsApp link, copied link, and share-card footer carries that non-branded host. That's the "lovable one" you saw.
 
-## What changes
+We already have the right source of truth: `SITE_URL` (`https://evaluaya.app`) and the `absoluteUrl()` helper in `src/lib/site.ts`. The fix is to route all outbound share links through it.
 
-In the checklist photo capture (`src/routes/assess/checklist.tsx`), each item gets **two ways** to add a photo:
+## Changes
 
-- **Take photo** — opens the camera (current behavior).
-- **Choose from gallery** — opens the phone's photo library / file picker, so previously-taken damage photos can be used.
+### 1. `src/components/ShareApp.tsx`
+- Import `SITE_URL` from `@/lib/site`.
+- `shareUrl()` returns `SITE_URL` instead of `window.location.origin` (used by the WhatsApp button, native share, and copy-link).
 
-Both paths run through the same existing compression + 3-photos-per-item logic, so nothing downstream (AI analysis, offline draft, upload) needs to change.
+### 2. `src/routes/a/$publicId.tsx` (result share)
+- Import `SITE_URL` and `absoluteUrl`.
+- `shareWhatsApp()` and `shareCard()` build the link from the canonical domain. For a specific report, link directly to the report itself: `absoluteUrl(\`/a/${record.publicId}\`)` so the recipient lands on the actual assessment with the correct risk-specific OG preview, on the branded domain.
+- The card footer URL (`url:` passed to `generateResultCard`) uses `SITE_URL` (the card already strips the protocol for display).
 
-```text
-┌──────────────────────────────────────┐
-│  📷 Take photo   │   🖼 From gallery   │
-└──────────────────────────────────────┘
-```
+### 3. `src/routes/mapa.tsx` (map stats share)
+- Import `SITE_URL`.
+- The CSV download stays as-is (local filename only).
+- `shareStatsCard` text + card `url` use `absoluteUrl("/mapa")` / `SITE_URL` instead of `window.location.origin`.
 
-When photos already exist, the "add more" tile offers the same two choices until the 3-photo limit is reached.
+## Notes / non-changes
+- `src/lib/site.ts` already defaults to `https://evaluaya.app` and honors an optional `VITE_SITE_URL` override — no change needed.
+- `head()` OG/canonical tags in `__root.tsx`, `a/$publicId.tsx`, and `mapa.tsx` already use absolute `evaluaya.app` URLs — left untouched.
+- PDF/CSV local filenames keep their `evaluaya-` prefix — they're not links.
 
-## Bilingual copy
-
-Add new labels (Spanish primary, English secondary) in `src/lib/i18n.tsx`:
-- `checklist.takePhoto` → "Tomar foto" / "Take photo"
-- `checklist.fromGallery` → "Desde la galería" / "From gallery"
-- Update `checklist.photoHint` to mention old photos are fine, e.g. "Una foto clara mejora el análisis. Puedes usar fotos que ya tengas." / "A clear photo improves the analysis. You can use photos you already have."
-
-## Technical details
-
-- Use **two hidden `<input type="file">` elements** per card: one with `accept="image/*" capture="environment"` (camera) and one with only `accept="image/*"` (gallery — omitting `capture` is what makes browsers show the photo library). They share one `handleFile` handler.
-- Keep the single-button layout when no photo exists by showing the two choices side by side; reuse existing `Camera` icon and add an `Image`/`ImagePlus` icon from `lucide-react` for the gallery action.
-- No backend, schema, or AI changes — purely a frontend/presentation enhancement.
-
-## Out of scope
-
-- No multi-select gallery import (still one photo per tap, up to the existing 3-per-item cap).
-- No changes to property info, map, or analysis flows.
+## Technical detail
+`SITE_URL` is a build-time constant, safe in SSR (no `window` access), so it also fixes the minor SSR concern of reading `window` during render. After the change, `rg "window.location.origin" src` should return no results in share paths.

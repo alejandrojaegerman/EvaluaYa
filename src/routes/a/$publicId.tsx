@@ -97,7 +97,7 @@ function ResultPage() {
   const [cardBusy, setCardBusy] = useState(false);
 
   async function handleShare() {
-    const url = window.location.href;
+    const url = absoluteUrl(`/a/${record!.publicId}`);
     const shareData = {
       title: "EvalúaYa",
       text: t(`result.${record!.riskLevel}.tag`),
@@ -116,7 +116,7 @@ function ResultPage() {
 
   async function copyLink() {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(absoluteUrl(`/a/${record!.publicId}`));
       toast.success(t("result.copied"));
     } catch {
       toast.error(t("result.genericError"));
@@ -124,7 +124,7 @@ function ResultPage() {
   }
 
   function shareWhatsApp() {
-    const url = window.location.origin;
+    const url = absoluteUrl(`/a/${record!.publicId}`);
     const text = `${t("result.whatsappMessage")} ${url}`;
     window.open(
       `https://wa.me/?text=${encodeURIComponent(text)}`,
@@ -137,17 +137,18 @@ function ResultPage() {
     if (cardBusy) return;
     setCardBusy(true);
     try {
+      const reportUrl = absoluteUrl(`/a/${record!.publicId}`);
       const blob = await generateResultCard({
         riskLevel: record!.riskLevel,
         tag: t(`result.${record!.riskLevel}.tag`),
         action: t(`result.${record!.riskLevel}.action`),
-        url: window.location.origin,
+        url: reportUrl,
         footer: t("result.cardFooter"),
       });
       const outcome = await shareImageBlob(blob, {
         filename: `evaluaya-${record!.publicId}.png`,
         title: "EvalúaYa",
-        text: `${t("result.whatsappMessage")} ${window.location.origin}`,
+        text: `${t("result.whatsappMessage")} ${reportUrl}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {

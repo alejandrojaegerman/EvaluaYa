@@ -171,12 +171,12 @@ function MapPage() {
             ? `${top.municipality ? top.municipality + ", " : ""}${top.state ?? ""}`.trim()
             : undefined,
         cta: t("map.cardCta"),
-        url: window.location.origin,
+        url: absoluteUrl("/mapa"),
       });
       const outcome = await shareImageBlob(blob, {
         filename: "evaluaya-mapa.png",
         title: "EvalúaYa",
-        text: `${t("share.message")} ${window.location.origin}`,
+        text: `${t("share.message")} ${absoluteUrl("/mapa")}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {
