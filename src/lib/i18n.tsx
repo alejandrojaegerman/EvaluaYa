@@ -400,6 +400,8 @@ const en: Dict = {
   "map.startCta": "Assess your building",
   "map.download": "Download data (CSV)",
   "map.dataNote": "Open, anonymized data for authorities, NGOs and press.",
+  "map.cardHeadline": "Structural damage reported",
+  "map.cardCta": "Assess your home free at EvalúaYa",
 
   "result.shareWhatsapp": "Share on WhatsApp",
   "result.whatsappMessage":
