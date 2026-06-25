@@ -267,6 +267,9 @@ const es: Dict = {
   "map.legendRisk": "Color = riesgo predominante",
   "map.topAreas": "Zonas con más reportes",
   "map.reports": "reportes",
+  "map.unspecifiedMunicipality": "Municipio sin especificar",
+  "map.unspecifiedLocation": "Ubicación sin especificar",
+
   "map.lastUpdated": "Actualizado",
   "map.empty": "Aún no hay evaluaciones suficientes para mostrar el mapa.",
   "map.startCta": "Evalúa tu edificio",
@@ -641,6 +644,9 @@ const en: Dict = {
   "map.legendRisk": "Color = dominant risk",
   "map.topAreas": "Areas with most reports",
   "map.reports": "reports",
+  "map.unspecifiedMunicipality": "Municipality not specified",
+  "map.unspecifiedLocation": "Location not specified",
+
   "map.lastUpdated": "Updated",
   "map.empty": "Not enough assessments yet to show the map.",
   "map.startCta": "Assess your building",

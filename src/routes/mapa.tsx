@@ -60,6 +60,24 @@ function rgb(level: RiskKey): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+/** Treat "Desconocido"/empty/null values as an unspecified location. */
+function isUnspecified(value: string | null | undefined): boolean {
+  if (!value) return true;
+  return value.trim().toLowerCase() === "desconocido";
+}
+
+type DisplayArea = {
+  key: string;
+  title: string;
+  subtitle: string | null;
+  muniKnown: boolean;
+  total: number;
+  green: number;
+  yellow: number;
+  red: number;
+};
+
+
 const MAP_W = 320;
 const MAP_H = 300;
 
@@ -117,10 +135,64 @@ function MapPage() {
       .sort((a, b) => b.r - a.r);
   }, [areas]);
 
-  const topAreas = useMemo(
-    () => [...areas].sort((a, b) => b.total - a.total).slice(0, 12),
-    [areas],
-  );
+  const topAreas = useMemo<DisplayArea[]>(() => {
+    const specific: DisplayArea[] = [];
+    const unspecified = {
+      total: 0,
+      green: 0,
+      yellow: 0,
+      red: 0,
+      lastReport: null as string | null,
+    };
+
+    for (const a of areas) {
+      const stateKnown = !isUnspecified(a.state);
+      const muniKnown = !isUnspecified(a.municipality);
+
+      if (!stateKnown && !muniKnown) {
+        unspecified.total += a.total;
+        unspecified.green += a.green;
+        unspecified.yellow += a.yellow;
+        unspecified.red += a.red;
+        continue;
+      }
+
+      specific.push({
+        key: `${a.state}-${a.municipality}`,
+        title: muniKnown ? a.municipality : a.state,
+        subtitle: muniKnown ? a.state : t("map.unspecifiedMunicipality"),
+        muniKnown,
+        total: a.total,
+        green: a.green,
+        yellow: a.yellow,
+        red: a.red,
+      });
+    }
+
+    specific.sort((x, y) => {
+      if (y.total !== x.total) return y.total - x.total;
+      // tie-break: rows with a specific municipality rank first
+      return Number(y.muniKnown) - Number(x.muniKnown);
+    });
+
+    const result = specific.slice(0, 12);
+
+    if (unspecified.total > 0) {
+      result.push({
+        key: "__unspecified__",
+        title: t("map.unspecifiedLocation"),
+        subtitle: null,
+        muniKnown: false,
+        total: unspecified.total,
+        green: unspecified.green,
+        yellow: unspecified.yellow,
+        red: unspecified.red,
+      });
+    }
+
+    return result.slice(0, 12);
+  }, [areas, t]);
+
 
   const hasData = !!totals && totals.total > 0;
 
@@ -170,10 +242,10 @@ function MapPage() {
         yellow: totals.yellow,
         green: totals.green,
         headline: t("map.cardHeadline"),
-        topAreaLabel:
-          top?.municipality || top?.state
-            ? `${top.municipality ? top.municipality + ", " : ""}${top.state ?? ""}`.trim()
-            : undefined,
+        topAreaLabel: top
+          ? [top.title, top.subtitle].filter(Boolean).join(", ")
+          : undefined,
+
         cta: t("map.cardCta"),
         url: absoluteUrl("/mapa"),
       });
@@ -357,7 +429,7 @@ function MapPage() {
                 const level = dominantRisk(a);
                 return (
                   <li
-                    key={`${a.state}-${a.municipality}`}
+                    key={a.key}
                     className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm"
                   >
                     <span
@@ -368,12 +440,14 @@ function MapPage() {
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-1 truncate text-sm font-medium">
                         <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-                        {a.municipality || a.state}
+                        {a.title}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {a.state} · {a.total} {t("map.reports")}
+                        {a.subtitle ? `${a.subtitle} · ` : ""}
+                        {a.total} {t("map.reports")}
                       </p>
                     </div>
+
                     <div className="flex shrink-0 items-center gap-1.5 text-[11px] font-semibold">
                       <span style={{ color: rgb("red") }}>{a.red}</span>
                       <span style={{ color: rgb("yellow") }}>{a.yellow}</span>
