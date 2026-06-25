@@ -304,6 +304,55 @@ function PropertyStep() {
           </div>
         </div>
 
+        {/* Structural system */}
+        <div>
+          <p className="text-sm font-semibold">{t("property.structuralType")}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {t("property.structuralType.help")}
+          </p>
+          <div className="mt-2 space-y-2">
+            {STRUCTURAL_TYPES.map((id) => {
+              const selected = structuralType === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setStructuralType(id)}
+                  aria-pressed={selected}
+                  className={cn(
+                    "flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors",
+                    selected
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/40",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "mt-1 size-4 shrink-0 rounded-full border-2",
+                      selected
+                        ? "border-primary bg-primary"
+                        : "border-muted-foreground/40",
+                    )}
+                  />
+                  <span>
+                    <span
+                      className={cn(
+                        "block text-sm font-medium",
+                        selected ? "text-primary" : "text-foreground",
+                      )}
+                    >
+                      {t(`property.struct.${id}`)}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {t(`property.struct.${id}.desc`)}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Floors */}
         <div>
           <p className="text-sm font-semibold">{t("property.floors")}</p>
@@ -329,6 +378,12 @@ function PropertyStep() {
               <Plus className="size-5" />
             </button>
           </div>
+          {floors > 7 && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
+              {t("property.floorsHigh")}
+            </p>
+          )}
         </div>
 
         {/* Age */}
