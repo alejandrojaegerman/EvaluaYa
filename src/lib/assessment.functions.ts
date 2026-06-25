@@ -26,8 +26,12 @@ const answerSchema = z.object({
     "stairs",
   ]),
   value: z.enum(["yes", "no", "unsure"]),
-  // ~2.5MB decoded ≈ 3.4M base64 chars; cap generously to reject abusive payloads.
-  photoDataUrl: z.string().max(3_600_000).nullable().optional(),
+  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 3 photos per item.
+  photoDataUrls: z
+    .array(z.string().max(3_600_000))
+    .max(3)
+    .optional()
+    .default([]),
 });
 
 const analyzeSchema = z.object({
@@ -65,7 +69,10 @@ function buildPrompt(input: AnalyzeInput) {
     const area = t(`item.${a.id}.area`);
     const question = t(`item.${a.id}.q`);
     const answer = t(`checklist.answer.${a.value}`);
-    const hasPhoto = a.photoDataUrl ? " (photo attached)" : " (no photo)";
+    const hasPhoto =
+      a.photoDataUrls && a.photoDataUrls.length > 0
+        ? " (photo attached)"
+        : " (no photo)";
     return `- [${area}] ${question} => ${answer}${hasPhoto}`;
   });
 
@@ -166,30 +173,46 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     const publicId = makePublicId();
 
     // Upload photos to private storage (best-effort) and record paths.
+    // To protect storage/bandwidth, keep the first (key) photo of every item,
+    // then add extra photos only until a cumulative budget is reached.
     const storedAnswers: AssessmentRecord["answers"] = [];
+    // Only the KEY (first) photo of each item is sent to the AI — keeps
+    // per-analysis credit cost identical to the one-photo design.
     const imageDataUrls: string[] = [];
 
+    const EXTRA_PHOTO_BUDGET = 11_000_000; // ~3 extra photos of base64
+    let extraBudget = EXTRA_PHOTO_BUDGET;
 
     for (const answer of data.answers) {
-      let photoPath: string | null = null;
-      if (answer.photoDataUrl) {
-        const decoded = dataUrlToBuffer(answer.photoDataUrl);
-        if (decoded) {
-          const path = `${publicId}/${answer.id}.jpg`;
-          const { error: uploadError } = await supabaseAdmin.storage
-            .from(BUCKET)
-            .upload(path, decoded.buffer, {
-              contentType: decoded.contentType,
-              upsert: true,
-            });
-          if (!uploadError) {
-            photoPath = path;
-            imageDataUrls.push(answer.photoDataUrl);
-          }
+      const photos = (answer.photoDataUrls ?? []).filter(Boolean);
+      const photoPaths: string[] = [];
+
+      for (let i = 0; i < photos.length; i++) {
+        const dataUrl = photos[i];
+        const isKey = i === 0;
+        // Always keep the key photo; ration the extras.
+        if (!isKey) {
+          if (extraBudget - dataUrl.length < 0) continue;
+          extraBudget -= dataUrl.length;
+        }
+        const decoded = dataUrlToBuffer(dataUrl);
+        if (!decoded) continue;
+        const path = `${publicId}/${answer.id}-${i}.jpg`;
+        const { error: uploadError } = await supabaseAdmin.storage
+          .from(BUCKET)
+          .upload(path, decoded.buffer, {
+            contentType: decoded.contentType,
+            upsert: true,
+          });
+        if (!uploadError) {
+          photoPaths.push(path);
+          if (isKey) imageDataUrls.push(dataUrl);
         }
       }
-      storedAnswers.push({ id: answer.id, value: answer.value, photoPath });
+
+      storedAnswers.push({ id: answer.id, value: answer.value, photoPaths });
     }
+
 
     // Call Lovable AI for structural triage.
     let aiResult: AiResult | null = null;
@@ -272,16 +295,25 @@ export const getAssessment = createServerFn({ method: "GET" })
     }
 
     const answers = (row.answers as AssessmentRecord["answers"]) ?? [];
-    const photoUrls: Record<string, string> = {};
+    const photoUrls: Record<string, string[]> = {};
 
     for (const answer of answers) {
-      if (answer.photoPath) {
+      // Support both the new multi-photo shape and legacy single photoPath.
+      const paths = [
+        ...(answer.photoPaths ?? []),
+        ...(answer.photoPath ? [answer.photoPath] : []),
+      ].filter(Boolean) as string[];
+      if (paths.length === 0) continue;
+      const urls: string[] = [];
+      for (const path of paths) {
         const { data: signed } = await supabaseAdmin.storage
           .from(BUCKET)
-          .createSignedUrl(answer.photoPath, SIGNED_URL_TTL);
-        if (signed?.signedUrl) photoUrls[answer.id] = signed.signedUrl;
+          .createSignedUrl(path, SIGNED_URL_TTL);
+        if (signed?.signedUrl) urls.push(signed.signedUrl);
       }
+      if (urls.length > 0) photoUrls[answer.id] = urls;
     }
+
 
     // Order answers to match the canonical checklist order.
     const ordered = CHECKLIST_ITEMS.map((item) =>

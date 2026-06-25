@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Camera, Loader2, X, ImageOff } from "lucide-react";
+import { Camera, Loader2, X, ImageOff, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { StepHeader, StepFooter } from "./property";
 import {
   CHECKLIST_ITEMS,
+  MAX_PHOTOS_PER_ITEM,
   type AnswerValue,
   type ChecklistItemId,
   type DraftAnswer,
@@ -20,7 +21,8 @@ export const Route = createFileRoute("/assess/checklist")({
   component: ChecklistStep,
 });
 
-type AnswerMap = Record<string, { value: AnswerValue; photoDataUrl: string | null }>;
+type AnswerEntry = { value: AnswerValue; photoDataUrls: string[] };
+type AnswerMap = Record<string, AnswerEntry>;
 
 const ANSWER_OPTIONS: { value: AnswerValue; tone: string; active: string }[] = [
   {
@@ -39,6 +41,12 @@ const ANSWER_OPTIONS: { value: AnswerValue; tone: string; active: string }[] = [
     active: "border-muted-foreground bg-muted text-foreground",
   },
 ];
+
+function normalizePhotos(a: DraftAnswer): string[] {
+  if (a.photoDataUrls && a.photoDataUrls.length) return a.photoDataUrls;
+  if (a.photoDataUrl) return [a.photoDataUrl];
+  return [];
+}
 
 function ChecklistStep() {
   const { t, lang } = useLang();
@@ -61,7 +69,7 @@ function ChecklistStep() {
       for (const a of d.answers) {
         initial[a.id] = {
           value: a.value,
-          photoDataUrl: a.photoDataUrl ?? null,
+          photoDataUrls: normalizePhotos(a),
         };
       }
       setAnswers(initial);
@@ -75,30 +83,45 @@ function ChecklistStep() {
   function setAnswer(id: ChecklistItemId, value: AnswerValue) {
     setAnswers((prev) => ({
       ...prev,
-      [id]: { value, photoDataUrl: prev[id]?.photoDataUrl ?? null },
+      [id]: { value, photoDataUrls: prev[id]?.photoDataUrls ?? [] },
     }));
   }
 
-  function setPhoto(id: ChecklistItemId, photoDataUrl: string | null) {
-    setAnswers((prev) => ({
-      ...prev,
-      [id]: { value: prev[id]?.value ?? "unsure", photoDataUrl },
-    }));
+  function addPhoto(id: ChecklistItemId, photoDataUrl: string) {
+    setAnswers((prev) => {
+      const cur = prev[id] ?? { value: "unsure" as AnswerValue, photoDataUrls: [] };
+      const next = [...cur.photoDataUrls, photoDataUrl].slice(0, MAX_PHOTOS_PER_ITEM);
+      return { ...prev, [id]: { ...cur, photoDataUrls: next } };
+    });
+  }
+
+  function removePhoto(id: ChecklistItemId, index: number) {
+    setAnswers((prev) => {
+      const cur = prev[id];
+      if (!cur) return prev;
+      const next = cur.photoDataUrls.filter((_, i) => i !== index);
+      return { ...prev, [id]: { ...cur, photoDataUrls: next } };
+    });
   }
 
   const answeredCount = CHECKLIST_ITEMS.filter((i) => answers[i.id]?.value).length;
   const allAnswered = answeredCount === CHECKLIST_ITEMS.length;
 
-  async function persist(map: AnswerMap) {
+  async function persist(map: AnswerMap, ready: boolean) {
     if (!draft) return;
     const draftAnswers: DraftAnswer[] = CHECKLIST_ITEMS.filter(
       (i) => map[i.id]?.value,
     ).map((i) => ({
       id: i.id,
       value: map[i.id].value,
-      photoDataUrl: map[i.id].photoDataUrl,
+      photoDataUrls: map[i.id].photoDataUrls,
     }));
-    await saveDraft({ ...draft, answers: draftAnswers, language: lang });
+    await saveDraft({
+      ...draft,
+      answers: draftAnswers,
+      language: lang,
+      status: ready ? "ready_to_send" : "in_progress",
+    });
   }
 
   async function handleContinue() {
@@ -106,7 +129,7 @@ function ChecklistStep() {
       toast.warning(t("checklist.answerAll"));
       return;
     }
-    await persist(answers);
+    await persist(answers, true);
     navigate({ to: "/assess/analyze" });
   }
 
@@ -135,9 +158,10 @@ function ChecklistStep() {
             index={idx + 1}
             id={item.id}
             value={answers[item.id]?.value ?? null}
-            photo={answers[item.id]?.photoDataUrl ?? null}
+            photos={answers[item.id]?.photoDataUrls ?? []}
             onAnswer={(v) => setAnswer(item.id, v)}
-            onPhoto={(p) => setPhoto(item.id, p)}
+            onAddPhoto={(p) => addPhoto(item.id, p)}
+            onRemovePhoto={(i) => removePhoto(item.id, i)}
           />
         ))}
       </div>
@@ -157,20 +181,23 @@ function ChecklistCard({
   index,
   id,
   value,
-  photo,
+  photos,
   onAnswer,
-  onPhoto,
+  onAddPhoto,
+  onRemovePhoto,
 }: {
   index: number;
   id: ChecklistItemId;
   value: AnswerValue | null;
-  photo: string | null;
+  photos: string[];
   onAnswer: (v: AnswerValue) => void;
-  onPhoto: (p: string | null) => void;
+  onAddPhoto: (p: string) => void;
+  onRemovePhoto: (i: number) => void;
 }) {
   const { t } = useLang();
   const inputRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
+  const canAddMore = photos.length < MAX_PHOTOS_PER_ITEM;
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -179,7 +206,7 @@ function ChecklistCard({
     setProcessing(true);
     try {
       const dataUrl = await compressImageToDataUrl(file);
-      onPhoto(dataUrl);
+      onAddPhoto(dataUrl);
     } catch {
       toast.error(t("analyze.genericError"));
     } finally {
@@ -225,7 +252,7 @@ function ChecklistCard({
         })}
       </div>
 
-      {/* Photo */}
+      {/* Photos */}
       <div className="mt-3">
         <input
           ref={inputRef}
@@ -235,30 +262,44 @@ function ChecklistCard({
           className="hidden"
           onChange={handleFile}
         />
-        {photo ? (
-          <div className="relative overflow-hidden rounded-xl border border-border">
-            <img
-              src={photo}
-              alt={t(`item.${id}.area`)}
-              className="h-36 w-full object-cover"
-            />
-            <div className="absolute bottom-2 right-2 flex gap-2">
+
+        {photos.length > 0 ? (
+          <div className="grid grid-cols-3 gap-2">
+            {photos.map((src, i) => (
+              <div
+                key={i}
+                className="relative overflow-hidden rounded-xl border border-border"
+              >
+                <img
+                  src={src}
+                  alt={`${t(`item.${id}.area`)} ${i + 1}`}
+                  className="h-24 w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => onRemovePhoto(i)}
+                  aria-label={t("checklist.removePhoto")}
+                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            ))}
+            {canAddMore && (
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="rounded-lg bg-background/90 px-2.5 py-1 text-xs font-semibold shadow-sm backdrop-blur"
+                disabled={processing}
+                className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
               >
-                {t("checklist.changePhoto")}
+                {processing ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Plus className="size-4" />
+                )}
+                {t("checklist.morePhotos")}
               </button>
-              <button
-                type="button"
-                onClick={() => onPhoto(null)}
-                aria-label={t("checklist.removePhoto")}
-                className="flex size-7 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
+            )}
           </div>
         ) : (
           <button
@@ -275,7 +316,8 @@ function ChecklistCard({
             {t("checklist.addPhoto")}
           </button>
         )}
-        {!photo && !processing && (
+
+        {photos.length === 0 && !processing && (
           <p className="mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground">
             <ImageOff className="size-3" /> {t("checklist.photoHint")}
           </p>

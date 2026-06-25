@@ -8,10 +8,12 @@ import {
   CircleAlert,
   Home as HomeIcon,
   Info,
+  ImageDown,
   MessageCircle,
   Map as MapIcon,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -22,7 +24,17 @@ import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { downloadAssessmentPdf } from "@/lib/pdf";
 import { RISK_THEME } from "@/lib/risk";
+import { generateResultCard, shareImageBlob } from "@/lib/share-card";
 import { cn } from "@/lib/utils";
+
+const RESULT_OG = {
+  green:
+    "https://evaluaya.app/og-result-green.jpg",
+  yellow:
+    "https://evaluaya.app/og-result-yellow.jpg",
+  red: "https://evaluaya.app/og-result-red.jpg",
+} as const;
+
 
 export const Route = createFileRoute("/a/$publicId")({
   loader: async ({ params }) => {
@@ -31,8 +43,31 @@ export const Route = createFileRoute("/a/$publicId")({
     })) as AssessmentRecord | null;
     return { record };
   },
+  head: ({ params, loaderData }) => {
+    const level = loaderData?.record?.riskLevel ?? "yellow";
+    const ogImage = RESULT_OG[level];
+    const url = `https://evaluaya.app/a/${params.publicId}`;
+    const title = "Mi evaluación estructural — EvalúaYa";
+    const description =
+      "Resultado de una autoevaluación de daños estructurales con EvalúaYa. Evalúa tu vivienda gratis y sin registro.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        // Private result — keep out of search indexes.
+        { name: "robots", content: "noindex, nofollow" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:image", content: ogImage },
+      ],
+    };
+  },
   component: ResultPage,
 });
+
 
 function ResultPage() {
   const { record } = Route.useLoaderData() as {
@@ -59,6 +94,7 @@ function ResultPage() {
   }
 
   const theme = RISK_THEME[record.riskLevel];
+  const [cardBusy, setCardBusy] = useState(false);
 
   async function handleShare() {
     const url = window.location.href;
@@ -96,6 +132,31 @@ function ResultPage() {
       "noopener,noreferrer",
     );
   }
+
+  async function shareCard() {
+    if (cardBusy) return;
+    setCardBusy(true);
+    try {
+      const blob = await generateResultCard({
+        riskLevel: record!.riskLevel,
+        tag: t(`result.${record!.riskLevel}.tag`),
+        action: t(`result.${record!.riskLevel}.action`),
+        url: window.location.origin,
+        footer: t("result.cardFooter"),
+      });
+      const outcome = await shareImageBlob(blob, {
+        filename: `evaluaya-${record!.publicId}.png`,
+        title: "EvalúaYa",
+        text: `${t("result.whatsappMessage")} ${window.location.origin}`,
+      });
+      if (outcome === "downloaded") toast.success(t("share.imageSaved"));
+    } catch {
+      toast.error(t("result.genericError"));
+    } finally {
+      setCardBusy(false);
+    }
+  }
+
 
   return (
     <AppShell>
@@ -159,26 +220,29 @@ function ResultPage() {
         <Section title={t("result.photos")}>
           <div className="grid grid-cols-2 gap-2">
             {record.answers
-              .filter((a) => record.photoUrls[a.id])
-              .map((a) => (
-                <figure
-                  key={a.id}
-                  className="overflow-hidden rounded-xl border border-border"
-                >
-                  <img
-                    src={record.photoUrls[a.id]}
-                    alt={t(`item.${a.id}.area`)}
-                    loading="lazy"
-                    className="h-28 w-full object-cover"
-                  />
-                  <figcaption className="bg-card px-2 py-1 text-[11px] font-medium text-muted-foreground">
-                    {t(`item.${a.id}.area`)}
-                  </figcaption>
-                </figure>
-              ))}
+              .filter((a) => record.photoUrls[a.id]?.length)
+              .flatMap((a) =>
+                record.photoUrls[a.id].map((url, i) => (
+                  <figure
+                    key={`${a.id}-${i}`}
+                    className="overflow-hidden rounded-xl border border-border"
+                  >
+                    <img
+                      src={url}
+                      alt={t(`item.${a.id}.area`)}
+                      loading="lazy"
+                      className="h-28 w-full object-cover"
+                    />
+                    <figcaption className="bg-card px-2 py-1 text-[11px] font-medium text-muted-foreground">
+                      {t(`item.${a.id}.area`)}
+                    </figcaption>
+                  </figure>
+                )),
+              )}
           </div>
         </Section>
       )}
+
 
       {/* Inspection summary */}
       <Section title={t("pdf.inspection")}>
@@ -208,7 +272,16 @@ function ResultPage() {
 
       {/* Actions */}
       <div className="mt-6 grid grid-cols-2 gap-2">
-        <Button size="lg" onClick={handleShare}>
+        <Button
+          size="lg"
+          onClick={shareCard}
+          disabled={cardBusy}
+          className="col-span-2"
+        >
+          <ImageDown className="size-4" />
+          {cardBusy ? t("share.generating") : t("result.shareCard")}
+        </Button>
+        <Button size="lg" variant="outline" onClick={handleShare}>
           <Share2 className="size-4" />
           {t("result.share")}
         </Button>
@@ -216,6 +289,7 @@ function ResultPage() {
           <Copy className="size-4" />
           {t("result.copyLink")}
         </Button>
+
         <Button
           size="lg"
           onClick={shareWhatsApp}

@@ -41,15 +41,22 @@ export type PropertyInfo = {
   age: BuildingAge;
 };
 
+/** Max photos a resident can attach per checklist item. */
+export const MAX_PHOTOS_PER_ITEM = 3;
+
 export type ChecklistAnswer = {
   id: ChecklistItemId;
   value: AnswerValue;
-  /** stored storage path once uploaded (server side) */
+  /** stored storage paths once uploaded (server side) */
+  photoPaths?: string[] | null;
+  /** legacy single-photo field (older records) — read-only compat */
   photoPath?: string | null;
 };
 
-/** Answer enriched with the in-browser photo data url (draft only) */
+/** Answer enriched with the in-browser photo data urls (draft only) */
 export type DraftAnswer = ChecklistAnswer & {
+  photoDataUrls?: string[];
+  /** legacy single-photo draft field — read-only compat */
   photoDataUrl?: string | null;
 };
 
@@ -68,5 +75,6 @@ export type AssessmentRecord = {
   aiResult: AiResult;
   riskLevel: RiskLevel;
   createdAt: string;
-  photoUrls: Record<string, string>;
+  /** signed urls per item id; may contain multiple photos per item */
+  photoUrls: Record<string, string[]>;
 };
