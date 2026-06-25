@@ -1,56 +1,35 @@
-# Logic Validation Document for the Expert (English PDF)
+# Plan: Documento en español + mapa con forma real de Venezuela
 
-## Goal
-Give your expert a short, plain-English PDF that answers one question: **"Exactly when does the app say Green, Yellow, or Red?"** — with every statement traced to the actual code, but written so someone with limited coding ability can read and validate it. No code excerpts, no GitHub, no verbose prompt dumps. This replaces the broad spec PDF with a tight, decision-focused document.
+Two independent deliverables.
 
-## What the document will say (this IS the logic, pulled from the code)
+## 1. Validation document in Spanish
 
-The app decides risk in two layers, then takes the **more severe** of the two — rules can only push the level *up*, never down (`finalRisk = maxRisk(ai, rules)`).
+The current artifact (`evaluaya-logic-validation.pdf`) is English-only. I'll produce a Spanish edition that mirrors it 1:1, keeping the strict mapping to the code logic so the expert can validate when each result is **VERDE / AMARILLO / ROJO**.
 
-**Layer 1 — Hard safety rules (deterministic, in `safety-rules.ts`)**
+- Generate `/mnt/documents/evaluaya-validacion-logica.pdf` (new file, original kept).
+- Same 3-section structure, translated to plain Spanish:
+  - **Flujo de dos capas:** `finalRisk = maxRisk(ai, reglas)` — las reglas deterministas solo pueden subir el nivel sugerido por la IA, nunca bajarlo.
+  - **Reglas deterministas (`safety-rules.ts`):** condiciones que fuerzan **ROJO** (mampostería no reforzada, licuefacción, golpeteo entre edificios, daño grave de plomería/gas) y condiciones que fuerzan **≥ AMARILLO** (intensidad MMI ≥ 7, edificios de >7 pisos, sistemas estructurales CMF/CIW/PCF/RML).
+  - **Triaje IA (`assessment.functions.ts`):** resumen de la lógica del `SYSTEM_PROMPT` (modelo `gemini-2.5-flash`), señales visuales y sesgo conservador "la seguridad primero".
+  - **Entradas y trazabilidad:** las 13 preguntas del checklist y los metadatos (edad, altura, sistema) mapeados a cada regla, con la etiqueta del archivo fuente al pie de cada sección.
+- Keep the branded risk colors (verde/amarillo/rojo) and the *source: archivo.ts* trace tags.
+- QA: render every page to images and inspect for clipping/overflow before delivering.
 
-Force **RED** (unsafe to enter) if ANY of these are true:
-- Structural system is **unreinforced masonry (URM)**
-- Resident answered **YES** to ground **liquefaction** signs
-- Resident answered **YES** to **pounding** with a neighboring building
-- Resident answered **YES** to severe **plumbing / gas** damage
+## 2. Map that looks like the actual country
 
-Force **at least YELLOW** (extra caution) if ANY of these are true:
-- ShakeMap shaking **intensity (MMI) ≥ 7** at the building's location
-- Building has **more than 7 floors**
-- Structural system is **CMF, CIW, PCF, or RML**
+Today `src/lib/venezuela.ts` holds `VE_OUTLINE` — a ~30-point hand-traced border that reads as a blob, not Venezuela. I'll replace it with a higher-resolution, simplified national border so the silhouette is recognizable, with no new dependencies.
 
-If no rule fires, Layer 1 contributes **Green** (no floor raised).
-
-**Layer 2 — AI visual triage (the model, guided by `SYSTEM_PROMPT`)**
-- **Green** — no significant structural damage; appears safe to occupy
-- **Yellow** — possible/moderate damage; limited use only
-- **Red** — serious damage or collapse signs; evacuate
-- Plain-language summary of the AI's decision cues (foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation/collapse, stairs separating from walls → Yellow/Red; damaged flooring, electrical, hanging fixtures → at least Yellow), and the explicit instruction to "be conservative — never choose Green when life-safety is uncertain."
-
-**Final decision — `maxRisk()`**
-- A small worked table: e.g. AI says Green but URM is selected → final **RED**; AI says Yellow but liquefaction = YES → final **RED**; AI says Green, 9 floors → final **YELLOW**; AI says Yellow, no rules fire → final **YELLOW**. Shows rules override upward only.
-
-**Inputs that feed the decision**
-- The 13 checklist questions (exact wording), which are structural vs. optional utilities, and the property inputs (building type, structural system, floors, age, auto-detected MMI). Only the items that actually drive a rule are flagged so the expert sees which answers matter.
-
-**Limits / disclaimers**
-- Self-report + surface photos only, preliminary, not a certification, licensed-engineer confirmation required.
-
-## Format & structure
-- One clean **English PDF**, ~3–5 pages, generated with Python + ReportLab.
-- Layout for a non-coder: short sections, a **decision table** for the hard rules (Condition → Forced level → Why), the AI's three-level definitions, the merge table, and a checklist-questions appendix.
-- Each rule line carries a quiet source tag (e.g. *source: safety-rules.ts*) so it's auditable without being code.
-- Branded lightly to match the app (EvalúaYa name, risk colors Green/Yellow/Red used as accents).
-
-## Delivery
-- Saved to `/mnt/documents/evaluaya-logic-validation.pdf` and surfaced as a downloadable artifact in chat so you can forward it directly to the expert.
-- After generating, every page is rendered to images and visually QA'd (no clipped text, correct colors, tables aligned) before delivery.
+- Replace `VE_OUTLINE` with a denser `[lat, lng]` polygon (≈120–200 points) derived from a simplified Venezuela GeoJSON border, including the main north coastline indentations and the southern/eastern borders. Still hard-coded so it stays offline and tiny.
+- Re-check `VE_BOUNDS` so the denser outline fits the SVG viewBox without clipping; adjust min/max lat-lng if needed.
+- `outlinePath()` and `projectToSvg()` stay as-is (the path builder already consumes the array), so `src/routes/mapa.tsx` needs no logic change — the bubbles and state dots keep projecting onto the new shape.
+- Verify in the live preview that the outline renders as Venezuela and the state bubbles still land in the right places.
 
 ## Technical notes
-- Content is transcribed faithfully from `safety-rules.ts` (rule conditions + thresholds), `assessment.functions.ts` (`SYSTEM_PROMPT` levels and `maxRisk` merge), `assessment-types.ts` (checklist + property schema), and `shakemap.ts` (MMI source). If the code changes later, the doc must be regenerated.
-- This is a standalone document only — no changes to the app, the methodology page, or the assessment logic itself.
 
-## Out of scope
-- No edits to app code or the existing `/metodologia` page (can add a download link later if you want).
-- No changes to the assessment algorithm.
+- The PDF is generated with a Python + `reportlab` script under `/tmp`, same approach as the English version; output goes to `/mnt/documents`.
+- The map change is data-only inside `src/lib/venezuela.ts`; no component or server changes.
+- I'll also quietly confirm the existing `/mapa` hydration warning is only from browser extensions (Dashlane/Kaspersky injecting attributes), not our code.
+
+## Open question
+
+The doc: Spanish-only is my default here. If you'd rather have a single **bilingual** file (Spanish + English) instead of a separate Spanish PDF, tell me and I'll merge them.
