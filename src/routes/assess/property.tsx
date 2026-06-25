@@ -56,9 +56,9 @@ function PropertyStep() {
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
-  const [structuralType, setStructuralType] = useState<StructuralType | null>(
-    null,
-  );
+  const [structuralType, setStructuralType] =
+    useState<StructuralType>("unknown");
+  const [structOpen, setStructOpen] = useState(false);
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
   const [geoStatus, setGeoStatus] = useState<
@@ -83,7 +83,10 @@ function PropertyStep() {
       if (p.state) setState(p.state);
       if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
-      if (p.structuralType) setStructuralType(p.structuralType);
+      if (p.structuralType) {
+        setStructuralType(p.structuralType);
+        if (p.structuralType !== "unknown") setStructOpen(true);
+      }
       if (p.floors) setFloors(p.floors);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
@@ -135,7 +138,6 @@ function PropertyStep() {
 
   const valid =
     buildingType !== null &&
-    structuralType !== null &&
     age !== null &&
     floors >= 1 &&
     state.trim() !== "";
@@ -304,53 +306,78 @@ function PropertyStep() {
           </div>
         </div>
 
-        {/* Structural system */}
+        {/* Structural system — collapsed by default, defaults to "Not sure" so
+            it never blocks the resident from continuing. */}
         <div>
           <p className="text-sm font-semibold">{t("property.structuralType")}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {t("property.structuralType.help")}
           </p>
-          <div className="mt-2 space-y-2">
-            {STRUCTURAL_TYPES.map((id) => {
-              const selected = structuralType === id;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setStructuralType(id)}
-                  aria-pressed={selected}
-                  className={cn(
-                    "flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors",
-                    selected
-                      ? "border-primary bg-primary/10"
-                      : "border-border bg-card hover:border-primary/40",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "mt-1 size-4 shrink-0 rounded-full border-2",
-                      selected
-                        ? "border-primary bg-primary"
-                        : "border-muted-foreground/40",
-                    )}
-                  />
-                  <span>
-                    <span
+          {!structOpen ? (
+            <button
+              type="button"
+              onClick={() => setStructOpen(true)}
+              className="mt-2 flex w-full items-center justify-between gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left transition-colors hover:border-primary/40"
+            >
+              <span className="min-w-0 truncate text-sm font-medium">
+                {t(`property.struct.${structuralType}`)}
+              </span>
+              <span className="shrink-0 text-xs font-semibold text-primary">
+                {t("property.structToggle")}
+              </span>
+            </button>
+          ) : (
+            <>
+              <div className="mt-2 space-y-2">
+                {STRUCTURAL_TYPES.map((id) => {
+                  const selected = structuralType === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setStructuralType(id)}
+                      aria-pressed={selected}
                       className={cn(
-                        "block text-sm font-medium",
-                        selected ? "text-primary" : "text-foreground",
+                        "flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors",
+                        selected
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-card hover:border-primary/40",
                       )}
                     >
-                      {t(`property.struct.${id}`)}
-                    </span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">
-                      {t(`property.struct.${id}.desc`)}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                      <span
+                        className={cn(
+                          "mt-1 size-4 shrink-0 rounded-full border-2",
+                          selected
+                            ? "border-primary bg-primary"
+                            : "border-muted-foreground/40",
+                        )}
+                      />
+                      <span>
+                        <span
+                          className={cn(
+                            "block text-sm font-medium",
+                            selected ? "text-primary" : "text-foreground",
+                          )}
+                        >
+                          {t(`property.struct.${id}`)}
+                        </span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {t(`property.struct.${id}.desc`)}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => setStructOpen(false)}
+                className="mt-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
+              >
+                {t("property.structHide")}
+              </button>
+            </>
+          )}
         </div>
 
         {/* Floors */}

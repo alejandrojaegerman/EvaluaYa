@@ -21,6 +21,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider } from "../lib/i18n";
 import { registerServiceWorker } from "../lib/pwa";
 import { Toaster } from "../components/ui/sonner";
+import { SITE_URL } from "../lib/site";
 
 function NotFoundComponent() {
   return (
@@ -113,6 +114,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "EvalúaYa" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:locale", content: "es_VE" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "EvalúaYa — Evaluación estructural" },
       {
@@ -127,6 +130,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "canonical", href: SITE_URL },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "EvalúaYa",
+          url: SITE_URL,
+          applicationCategory: "UtilitiesApplication",
+          operatingSystem: "Web",
+          inLanguage: "es-VE",
+          description:
+            "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal.",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,

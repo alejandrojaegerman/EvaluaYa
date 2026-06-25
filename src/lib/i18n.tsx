@@ -57,7 +57,9 @@ const es: Dict = {
   "property.type.commercial": "Comercial",
   "property.structuralType": "Sistema estructural",
   "property.structuralType.help":
-    "Si no estás seguro, elige “No estoy seguro”.",
+    "Si no estás seguro, déjalo en “No estoy seguro”.",
+  "property.structToggle": "Especificar sistema estructural (opcional)",
+  "property.structHide": "Ocultar opciones",
   "property.struct.URM": "Mampostería sin refuerzo (paredes de bloque/ladrillo)",
   "property.struct.URM.desc":
     "Paredes de bloque o ladrillo sin columnas ni vigas de concreto que las sostengan.",
@@ -94,8 +96,16 @@ const es: Dict = {
   "checklist.removePhoto": "Quitar foto",
   "checklist.photoHint": "Una foto clara mejora el análisis. Puedes usar fotos que ya tengas.",
   "checklist.morePhotos": "Otra foto",
-  "checklist.answerAll": "Responde todas las preguntas para continuar.",
+  "checklist.answerAll": "Responde las preguntas esenciales para continuar.",
   "checklist.analyze": "Analizar daños",
+  "checklist.sectionStructure": "Revisión estructural",
+  "checklist.sectionUtilities": "Servicios e interiores",
+  "checklist.optionalTag": "opcional",
+  "checklist.optionalNote":
+    "Mientras más respondas, más preciso será el análisis. Las preguntas opcionales puedes omitirlas.",
+  "checklist.showOptional": "Agregar revisión de servicios (opcional)",
+  "checklist.hideOptional": "Ocultar revisión de servicios",
+  "checklist.coreProgress": "esenciales",
 
   "item.foundation.area": "Cimientos",
   "item.foundation.q": "¿Hay grietas visibles o hundimientos en los cimientos?",
@@ -165,6 +175,8 @@ const es: Dict = {
   "analyze.title": "Analizando",
   "analyze.uploading": "Procesando fotos…",
   "analyze.thinking": "Evaluando el riesgo estructural…",
+  "analyze.savedHint":
+    "Tus respuestas están guardadas. Puedes esperar aunque la señal sea lenta.",
   "analyze.waitingTitle": "Esperando conexión",
   "analyze.waitingBody":
     "Tus respuestas están guardadas. El análisis se ejecutará automáticamente cuando vuelva la señal.",
@@ -213,6 +225,12 @@ const es: Dict = {
   "nav.map": "Mapa",
 
   "home.timePromise": "Gratis · 2 minutos · sin registro",
+  "home.trustFree": "Gratis",
+  "home.trustNoSignup": "Sin registro",
+  "home.trustOffline": "Funciona sin conexión",
+  "home.trustAnon": "Anónimo",
+  "home.seoTagline":
+    "Sabe en 2 minutos si tu vivienda es segura para entrar tras el sismo.",
   "home.statBuildings": "edificios evaluados",
   "home.statAreas": "zonas con reportes",
   "home.pendingTitle": "Tienes una evaluación sin enviar",
@@ -345,7 +363,9 @@ const en: Dict = {
   "property.type.apartment": "Apartment",
   "property.type.commercial": "Commercial",
   "property.structuralType": "Structural system",
-  "property.structuralType.help": "If unsure, choose “Not sure”.",
+  "property.structuralType.help": "If unsure, leave it on “Not sure”.",
+  "property.structToggle": "Specify structural system (optional)",
+  "property.structHide": "Hide options",
   "property.struct.URM": "Unreinforced masonry (block/brick walls)",
   "property.struct.URM.desc":
     "Block or brick walls with no concrete columns or beams supporting them.",
@@ -382,8 +402,16 @@ const en: Dict = {
   "checklist.removePhoto": "Remove photo",
   "checklist.photoHint": "A clear photo improves the analysis. You can use photos you already have.",
   "checklist.morePhotos": "Another photo",
-  "checklist.answerAll": "Answer all questions to continue.",
+  "checklist.answerAll": "Answer the essential questions to continue.",
   "checklist.analyze": "Analyze damage",
+  "checklist.sectionStructure": "Structural checks",
+  "checklist.sectionUtilities": "Utilities & interior",
+  "checklist.optionalTag": "optional",
+  "checklist.optionalNote":
+    "The more you answer, the more accurate the analysis. Optional questions can be skipped.",
+  "checklist.showOptional": "Add utility checks (optional)",
+  "checklist.hideOptional": "Hide utility checks",
+  "checklist.coreProgress": "essential",
 
   "item.foundation.area": "Foundation",
   "item.foundation.q": "Are there visible cracks or shifts in the foundation?",
@@ -449,6 +477,8 @@ const en: Dict = {
   "analyze.title": "Analyzing",
   "analyze.uploading": "Processing photos…",
   "analyze.thinking": "Assessing structural risk…",
+  "analyze.savedHint":
+    "Your answers are saved. You can wait even if the signal is slow.",
   "analyze.waitingTitle": "Waiting for connection",
   "analyze.waitingBody":
     "Your answers are saved. The analysis will run automatically when the connection returns.",
@@ -497,6 +527,12 @@ const en: Dict = {
   "nav.map": "Map",
 
   "home.timePromise": "Free · 2 minutes · no sign-up",
+  "home.trustFree": "Free",
+  "home.trustNoSignup": "No sign-up",
+  "home.trustOffline": "Works offline",
+  "home.trustAnon": "Anonymous",
+  "home.seoTagline":
+    "Know in 2 minutes whether your home is safe to enter after the quake.",
   "home.statBuildings": "buildings assessed",
   "home.statAreas": "areas with reports",
   "home.pendingTitle": "You have an unsent assessment",

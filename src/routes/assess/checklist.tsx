@@ -1,5 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Camera, Loader2, X, ImageOff, ImagePlus } from "lucide-react";
+import {
+  Camera,
+  Loader2,
+  X,
+  ImageOff,
+  ImagePlus,
+  ChevronDown,
+  Plus,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +24,9 @@ import { loadDraft, saveDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { compressImageToDataUrl } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+
+const STRUCTURE_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "structure");
+const UTILITY_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "utilities");
 
 export const Route = createFileRoute("/assess/checklist")({
   component: ChecklistStep,
@@ -55,6 +66,7 @@ function ChecklistStep() {
   const [draft, setDraft] = useState<AssessmentDraft | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [loading, setLoading] = useState(true);
+  const [showOptional, setShowOptional] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -104,8 +116,12 @@ function ChecklistStep() {
     });
   }
 
-  const answeredCount = CHECKLIST_ITEMS.filter((i) => answers[i.id]?.value).length;
-  const allAnswered = answeredCount === CHECKLIST_ITEMS.length;
+  const requiredAnswered = STRUCTURE_ITEMS.filter(
+    (i) => answers[i.id]?.value,
+  ).length;
+  const allRequired = requiredAnswered === STRUCTURE_ITEMS.length;
+  const hasUtilityAnswers = UTILITY_ITEMS.some((i) => answers[i.id]?.value);
+  const optionalVisible = showOptional || hasUtilityAnswers;
 
   async function persist(map: AnswerMap, ready: boolean) {
     if (!draft) return;
@@ -125,7 +141,7 @@ function ChecklistStep() {
   }
 
   async function handleContinue() {
-    if (!allAnswered) {
+    if (!allRequired) {
       toast.warning(t("checklist.answerAll"));
       return;
     }
@@ -143,33 +159,98 @@ function ChecklistStep() {
     );
   }
 
+  const renderCard = (id: ChecklistItemId, index: number) => (
+    <ChecklistCard
+      key={id}
+      index={index}
+      id={id}
+      value={answers[id]?.value ?? null}
+      photos={answers[id]?.photoDataUrls ?? []}
+      onAnswer={(v) => setAnswer(id, v)}
+      onAddPhoto={(p) => addPhoto(id, p)}
+      onRemovePhoto={(i) => removePhoto(id, i)}
+    />
+  );
+
   return (
     <AppShell>
       <StepHeader step={2} title={t("checklist.title")} subtitle={t("checklist.subtitle")} />
 
-      <p className="mt-4 text-xs font-semibold text-muted-foreground">
-        {answeredCount} / {CHECKLIST_ITEMS.length}
-      </p>
-
-      <div className="mt-3 space-y-4">
-        {CHECKLIST_ITEMS.map((item, idx) => (
-          <ChecklistCard
-            key={item.id}
-            index={idx + 1}
-            id={item.id}
-            value={answers[item.id]?.value ?? null}
-            photos={answers[item.id]?.photoDataUrls ?? []}
-            onAnswer={(v) => setAnswer(item.id, v)}
-            onAddPhoto={(p) => addPhoto(item.id, p)}
-            onRemovePhoto={(i) => removePhoto(item.id, i)}
+      {/* Required-progress bar (only the essential structural checks gate
+          submission; utility checks are optional). */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <span className="text-muted-foreground">
+            {requiredAnswered} / {STRUCTURE_ITEMS.length}{" "}
+            {t("checklist.coreProgress")}
+          </span>
+          {allRequired && (
+            <span className="text-risk-green">✓</span>
+          )}
+        </div>
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{
+              width: `${(requiredAnswered / STRUCTURE_ITEMS.length) * 100}%`,
+            }}
           />
-        ))}
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+          {t("checklist.optionalNote")}
+        </p>
       </div>
+
+      {/* Structural checks (required) */}
+      <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+        {t("checklist.sectionStructure")}
+      </h2>
+      <div className="mt-3 space-y-4">
+        {STRUCTURE_ITEMS.map((item, idx) => renderCard(item.id, idx + 1))}
+      </div>
+
+      {/* Utility checks (optional, collapsed by default) */}
+      {!optionalVisible ? (
+        <button
+          type="button"
+          onClick={() => setShowOptional(true)}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-card py-3.5 text-sm font-semibold text-primary transition-colors hover:border-primary/40"
+        >
+          <Plus className="size-4" />
+          {t("checklist.showOptional")}
+        </button>
+      ) : (
+        <>
+          <div className="mt-5 flex items-center justify-between">
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+              {t("checklist.sectionUtilities")}{" "}
+              <span className="ml-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-secondary-foreground">
+                {t("checklist.optionalTag")}
+              </span>
+            </h2>
+            {!hasUtilityAnswers && (
+              <button
+                type="button"
+                onClick={() => setShowOptional(false)}
+                aria-label={t("checklist.hideOptional")}
+                className="text-muted-foreground transition-transform hover:text-foreground"
+              >
+                <ChevronDown className="size-4 rotate-180" />
+              </button>
+            )}
+          </div>
+          <div className="mt-3 space-y-4">
+            {UTILITY_ITEMS.map((item, idx) =>
+              renderCard(item.id, STRUCTURE_ITEMS.length + idx + 1),
+            )}
+          </div>
+        </>
+      )}
 
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
-        nextDisabled={!allAnswered}
+        nextDisabled={!allRequired}
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
