@@ -109,13 +109,22 @@ function PropertyStep() {
       setGeoStatus("detecting");
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const est = nearestEstado(pos.coords.latitude, pos.coords.longitude);
+          const { latitude, longitude } = pos.coords;
+          const est = nearestEstado(latitude, longitude);
           if (est) {
             setState((cur) => (cur.trim() === "" ? est.name : cur));
             setGeoStatus("detected");
           } else {
             setGeoStatus("failed");
           }
+          // Look up ShakeMap intensity at the precise coordinate (best-effort).
+          getSeismicIntensity({ data: { lat: latitude, lng: longitude } })
+            .then((res) => {
+              if (res) setIntensity(res);
+            })
+            .catch(() => {
+              /* offline / no active event — ignore */
+            });
         },
         () => setGeoStatus("failed"),
         { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
@@ -125,7 +134,11 @@ function PropertyStep() {
   }, [state]);
 
   const valid =
-    buildingType !== null && age !== null && floors >= 1 && state.trim() !== "";
+    buildingType !== null &&
+    structuralType !== null &&
+    age !== null &&
+    floors >= 1 &&
+    state.trim() !== "";
 
 
   async function handleContinue() {
@@ -138,8 +151,15 @@ function PropertyStep() {
         state: state.trim(),
         municipality: municipality.trim(),
         buildingType,
+        structuralType,
         floors,
         age,
+        ...(intensity
+          ? {
+              seismicIntensity: intensity.mmi,
+              seismicIntensityRoman: intensity.roman,
+            }
+          : {}),
       },
       answers: existing?.answers ?? [],
       updatedAt: Date.now(),
