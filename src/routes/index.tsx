@@ -88,6 +88,25 @@ function Index() {
         </p>
       </section>
 
+      {/* Trust strip — addresses the top hesitations (cost, sign-up,
+          connectivity, privacy) that drive the Home → Property drop-off. */}
+      <section className="mt-4 flex flex-wrap gap-2">
+        {[
+          { icon: BadgeCheck, label: t("home.trustFree") },
+          { icon: UserX, label: t("home.trustNoSignup") },
+          { icon: WifiOff, label: t("home.trustOffline") },
+          { icon: EyeOff, label: t("home.trustAnon") },
+        ].map(({ icon: PillIcon, label }) => (
+          <span
+            key={label}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm"
+          >
+            <PillIcon className="size-3.5 text-primary" aria-hidden />
+            {label}
+          </span>
+        ))}
+      </section>
+
       {/* Pending submission — offline-first resume card */}
       {pending && (
         <section className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-4 shadow-sm">
