@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
+import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const AssessPropertyRoute = AssessPropertyRouteImport.update({
   path: '/assess/property',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssessChecklistRoute = AssessChecklistRouteImport.update({
+  id: '/assess/checklist',
+  path: '/assess/checklist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assess/property'
+  fullPaths: '/' | '/assess/checklist' | '/assess/property'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assess/property'
-  id: '__root__' | '/' | '/assess/property'
+  to: '/' | '/assess/checklist' | '/assess/property'
+  id: '__root__' | '/' | '/assess/checklist' | '/assess/property'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessPropertyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assess/checklist': {
+      id: '/assess/checklist'
+      path: '/assess/checklist'
+      fullPath: '/assess/checklist'
+      preLoaderRoute: typeof AssessChecklistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
 }
 export const routeTree = rootRouteImport
