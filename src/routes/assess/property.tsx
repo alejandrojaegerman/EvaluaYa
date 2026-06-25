@@ -10,7 +10,7 @@ import type { BuildingAge, BuildingType } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { ESTADO_NAMES } from "@/lib/venezuela";
+import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
   component: PropertyStep,
