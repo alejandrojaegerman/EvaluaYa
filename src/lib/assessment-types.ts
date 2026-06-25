@@ -34,27 +34,42 @@ export type ChecklistItemId =
   | "roof"
   | "stairs";
 
+/** Inspection groups: core structural checks vs. optional utility checks. */
+export type ChecklistSection = "structure" | "utilities";
+
 export type ChecklistItemDef = {
   id: ChecklistItemId;
   /** lucide-react icon name reference handled in the component */
   icon: string;
+  /** which group the item belongs to */
+  section: ChecklistSection;
+  /**
+   * Optional items can be skipped without blocking submission. They still feed
+   * the AI / safety rules when answered, but don't gate "Analyze".
+   */
+  optional?: boolean;
 };
 
 export const CHECKLIST_ITEMS: ChecklistItemDef[] = [
-  { id: "foundation", icon: "Layers" },
-  { id: "liquefaction", icon: "Droplets" },
-  { id: "exterior_walls", icon: "Building2" },
-  { id: "pounding", icon: "Building" },
-  { id: "interior_walls", icon: "Square" },
-  { id: "flooring", icon: "Grid3x3" },
-  { id: "plumbing", icon: "Wrench" },
-  { id: "electrical", icon: "Zap" },
-  { id: "fixtures", icon: "Lightbulb" },
-  { id: "columns_beams", icon: "Columns3" },
-  { id: "doors_windows", icon: "DoorOpen" },
-  { id: "roof", icon: "Home" },
-  { id: "stairs", icon: "Footprints" },
+  { id: "foundation", icon: "Layers", section: "structure" },
+  { id: "liquefaction", icon: "Droplets", section: "structure" },
+  { id: "exterior_walls", icon: "Building2", section: "structure" },
+  { id: "pounding", icon: "Building", section: "structure" },
+  { id: "interior_walls", icon: "Square", section: "structure" },
+  { id: "columns_beams", icon: "Columns3", section: "structure" },
+  { id: "doors_windows", icon: "DoorOpen", section: "structure" },
+  { id: "roof", icon: "Home", section: "structure" },
+  { id: "stairs", icon: "Footprints", section: "structure" },
+  { id: "flooring", icon: "Grid3x3", section: "utilities", optional: true },
+  { id: "plumbing", icon: "Wrench", section: "utilities", optional: true },
+  { id: "electrical", icon: "Zap", section: "utilities", optional: true },
+  { id: "fixtures", icon: "Lightbulb", section: "utilities", optional: true },
 ];
+
+/** Core items that must be answered before analysis can run. */
+export const REQUIRED_ITEM_IDS: ChecklistItemId[] = CHECKLIST_ITEMS.filter(
+  (i) => !i.optional,
+).map((i) => i.id);
 
 export type PropertyInfo = {
   address: string;
