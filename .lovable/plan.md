@@ -1,46 +1,62 @@
-# Spanish share preview + viral sharing
+# Build-out: Shareable Stat Cards + OG Images & Field Robustness
 
-Two goals: (1) the link-preview text shown when EvalúaYa is shared must be in Spanish, and (2) make it effortless for anyone — not just people who finished an assessment — to promote the app to their network, especially via WhatsApp.
+Two tracks, both aimed at ground users / influencer reach.
 
-## 1. Fix the English social preview text
+---
 
-In `src/routes/__root.tsx` there are three leftover meta tags (English and cut off mid-sentence: "...self-assessment in") that the social-image tool added. Because social crawlers use the *last* matching tag, these override the correct Spanish ones.
+## Track A — Shareable stat cards + OG images
 
-- Remove the duplicate English `description`, `og:description`, and `twitter:description` entries.
-- Keep the existing Spanish copy that's already in the file:
-  - Title: "EvalúaYa — Evaluación estructural"
-  - Description: "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal."
-- Result: WhatsApp/Facebook/X/Telegram previews show fully Spanish text alongside the (already good) preview image.
+Today every share is a plain text + homepage link. We'll make shares visual and on-brand so they spread on WhatsApp.
 
-Note: platforms cache the last preview they scraped, so the old English text may linger in already-shared links until each platform re-fetches. New shares will be correct immediately.
+### A1. Dynamic stat cards (the thing people actually post)
+A new `src/lib/share-card.ts` renders a branded PNG **client-side via canvas** (no server/edge raster constraints), then shares it as an image file through `navigator.share({ files })`, with download + copy-link fallbacks.
 
-## 2. Make sharing/promotion easy everywhere (the flywheel)
+Two card types:
+- **Result card** (`/a/$publicId`): risk color block (Green/Yellow/Red), the recommended action ("Permanecer / Uso limitado / Evacuar"), EvalúaYa logo, and `evaluaya.app`. Personalized, shareable straight from the phone.
+- **Stats card** (`/mapa`): national totals (total reports, % red/yellow/green), top affected estado, and a call to action. Lets the influencer post live momentum ("X reportes, Y en rojo").
 
-Today the only WhatsApp button lives on the result page. We add a single reusable share affordance and place it where reach is highest.
+Wire these into the existing share buttons in `src/routes/a/$publicId.tsx`, `src/routes/mapa.tsx`, and `src/components/ShareApp.tsx` (image-first when supported, link otherwise). Uses brand colors from `styles.css` and `RISK_HEX`.
 
-### Reusable `ShareButton` / share section
-- Create `src/components/ShareApp.tsx`: a small component with a primary "Compartir por WhatsApp" button (green WhatsApp styling) plus a secondary "Copiar enlace" / native share fallback.
-- It shares the app homepage URL with a compelling Spanish invite message (reusing/extending the existing `result.whatsappMessage` style), e.g. "Evalúa los daños de tu vivienda tras el sismo con EvalúaYa — gratis, sin registro: {url}".
-- Uses `navigator.share` when available, falls back to a `wa.me` link and clipboard copy.
+### A2. OG link previews (when the link itself is pasted)
+Per-route `head()` `og:image` / `twitter:image`. Because the workspace blocks public buckets and the Worker can't raster images at the edge, we use a **small set of pre-generated, on-brand Spanish OG images** stored as Lovable CDN assets:
+- `og-result-green.jpg`, `og-result-yellow.jpg`, `og-result-red.jpg`
+- `og-mapa.jpg`
+The result route already has `riskLevel` in loader data, so `head()` selects the matching image; `/mapa` uses its own. Each leaf also gets self-referencing `og:url` + `canonical` (per head rules). Result pages stay `noindex` (private slugs).
 
-### Placement
-- **Home (`src/routes/index.tsx`)**: add a prominent "Ayuda a difundir" / share card near the top (under the hero), so every visitor can spread it in one tap. This is the biggest flywheel lever.
-- **Map (`src/routes/mapa.tsx`)**: add the share section so people viewing community damage are nudged to invite their area.
-- **Result page (`src/routes/a/$publicId.tsx`)**: keep existing WhatsApp + invite section (already good); optionally swap its inline logic to the shared component for consistency.
+> Note to user: WhatsApp/Facebook cache previews, so already-shared links may keep old previews until each platform re-scrapes.
 
-### Copy / i18n
-Add bilingual keys (ES primary) in `src/lib/i18n.tsx` for the new share section:
-- `share.title` — "Ayuda a tu comunidad" / "Help your community"
-- `share.body` — short line on why sharing matters (more reports = better area data)
-- `share.whatsapp` — "Compartir por WhatsApp" / "Share on WhatsApp"
-- `share.copy` — "Copiar enlace" / "Copy link"
-- `share.message` — the invite text used in the WhatsApp/native share payload
+---
+
+## Track B — Field robustness (low-bandwidth / offline)
+
+### B1. Resume & auto-submit pending assessments
+Right now a completed-but-unsent assessment lives in IndexedDB but isn't surfaced once you leave `/assess/analyze`.
+- Add a **"Pending submission" card on the home page** (`src/routes/index.tsx`) when a complete draft exists and hasn't been sent — one tap to resume/submit. Auto-fires when back online.
+- Tag drafts with a `status` (`in_progress` | `ready_to_send`) in `src/lib/draft-store.ts` so we know when a draft is complete and just waiting on connectivity.
+
+### B2. Tougher submit flow (`/assess/analyze`)
+- Add **bounded retry with backoff** around `analyzeAssessment` (transient network failures), on top of the existing reconnect auto-retry.
+- Add an **overall timeout guard** so a stalled upload surfaces a clear retry instead of an infinite spinner.
+- Clearer queued/waiting copy ("Se enviará automáticamente al reconectar").
+
+### B3. Multiple photos per item (record-only)
+Allow up to 3 photos per checklist item in `src/routes/assess/checklist.tsx` for better documentation for engineers/authorities and the PDF.
+- **Important:** to honor the earlier "one key photo per item" cost decision and the credit-drain protection, only the **first (key) photo per item is sent to the AI**; the rest are stored with the record and shown on the result page / PDF.
+- Touches: `assessment-types.ts` (answers carry `photoDataUrls: string[]`), `checklist.tsx` UI (thumbnail strip + add/remove), `assessment.functions.ts` (upload all, send only key photo to vision), result page gallery, and `pdf.ts`.
+
+All new strings added to `src/lib/i18n.tsx` in ES + EN.
+
+---
 
 ## Technical notes
-- Share URL uses `window.location.origin` (production resolves to https://evaluaya.app) so the shared link always points to the public site, not a draft.
-- No backend, schema, or server-function changes — this is metadata + frontend/presentation only.
-- Verify the build passes and spot-check the rendered meta tags and the home/map share buttons.
+- Stat/result cards: HTML canvas → `toBlob()` PNG; share via `navigator.share` with `files` (feature-detected), fallback to download + existing link/WhatsApp paths. No new deps.
+- OG images generated with the image tool, stored via `lovable-assets` as `.asset.json` pointers, imported into route `head()`.
+- B3 keeps AI input at one photo per item — no change to per-analysis credit cost.
+- No schema migration required: photos already live in `answers`/storage as JSONB-backed data; we extend the per-item shape.
 
-## Out of scope
-- No changes to assessment logic, AI, or the database.
-- No new analytics/referral tracking (can be a follow-up if you want to measure share-driven growth).
+## Out of scope (deferred)
+Institutional dashboard, engineer-review/verified badges, public API — not part of this build-out.
+
+---
+
+If you'd rather I trim Track B to just offline/resume (B1+B2) and skip multi-photo for now, say so and I'll drop B3.

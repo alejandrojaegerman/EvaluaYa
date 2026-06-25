@@ -70,6 +70,7 @@ const es: Dict = {
   "checklist.changePhoto": "Cambiar foto",
   "checklist.removePhoto": "Quitar foto",
   "checklist.photoHint": "Una foto clara mejora el análisis.",
+  "checklist.morePhotos": "Otra foto",
   "checklist.answerAll": "Responde todas las preguntas para continuar.",
   "checklist.analyze": "Analizar daños",
 
@@ -143,6 +144,10 @@ const es: Dict = {
   "home.timePromise": "Gratis · 2 minutos · sin registro",
   "home.statBuildings": "edificios evaluados",
   "home.statAreas": "zonas con reportes",
+  "home.pendingTitle": "Tienes una evaluación sin enviar",
+  "home.pendingBody": "Completaste el cuestionario sin conexión. Envíalo ahora para recibir tu resultado.",
+  "home.pendingOffline": "Sin conexión. Se enviará automáticamente cuando vuelva la señal.",
+  "home.pendingCta": "Enviar evaluación",
   "home.mapTitle": "Mapa comunitario de daños",
   "home.mapDesc": "Mira cómo está tu zona según los reportes de otras personas.",
   "home.viewMap": "Ver mapa de daños",
@@ -179,6 +184,8 @@ const es: Dict = {
   "map.download": "Descargar datos (CSV)",
   "map.dataNote":
     "Datos abiertos y anónimos para autoridades, ONG y prensa.",
+  "map.cardHeadline": "Daños estructurales reportados",
+  "map.cardCta": "Evalúa tu vivienda gratis en EvalúaYa",
 
   "result.shareWhatsapp": "Compartir por WhatsApp",
   "result.whatsappMessage":
@@ -189,6 +196,8 @@ const es: Dict = {
   "result.inviteCta": "Invitar a un vecino",
   "result.proofText": "evaluaciones realizadas hasta ahora",
   "result.viewMap": "Ver mapa de daños de tu zona",
+  "result.shareCard": "Compartir imagen de resultado",
+  "result.cardFooter": "Autoevaluación estructural tras el sismo · No sustituye una inspección profesional",
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
@@ -198,6 +207,9 @@ const es: Dict = {
   "share.copied": "¡Enlace copiado!",
   "share.message":
     "Evalúa los daños de tu vivienda tras el sismo con EvalúaYa — gratis, sin registro y funciona con poca señal:",
+  "share.generating": "Generando imagen…",
+  "share.imageSaved": "Imagen guardada. Compártela donde quieras.",
+  "share.shareStats": "Compartir estadísticas",
 
 
 
@@ -276,6 +288,7 @@ const en: Dict = {
   "checklist.changePhoto": "Change photo",
   "checklist.removePhoto": "Remove photo",
   "checklist.photoHint": "A clear photo improves the analysis.",
+  "checklist.morePhotos": "Another photo",
   "checklist.answerAll": "Answer all questions to continue.",
   "checklist.analyze": "Analyze damage",
 
@@ -348,6 +361,10 @@ const en: Dict = {
   "home.timePromise": "Free · 2 minutes · no sign-up",
   "home.statBuildings": "buildings assessed",
   "home.statAreas": "areas with reports",
+  "home.pendingTitle": "You have an unsent assessment",
+  "home.pendingBody": "You finished the checklist offline. Submit it now to get your result.",
+  "home.pendingOffline": "Offline. It will be sent automatically when the signal returns.",
+  "home.pendingCta": "Submit assessment",
   "home.mapTitle": "Community damage map",
   "home.mapDesc": "See how your area is doing based on reports from others.",
   "home.viewMap": "View damage map",
@@ -383,6 +400,8 @@ const en: Dict = {
   "map.startCta": "Assess your building",
   "map.download": "Download data (CSV)",
   "map.dataNote": "Open, anonymized data for authorities, NGOs and press.",
+  "map.cardHeadline": "Structural damage reported",
+  "map.cardCta": "Assess your home free at EvalúaYa",
 
   "result.shareWhatsapp": "Share on WhatsApp",
   "result.whatsappMessage":
@@ -393,6 +412,8 @@ const en: Dict = {
   "result.inviteCta": "Invite a neighbor",
   "result.proofText": "assessments completed so far",
   "result.viewMap": "View your area's damage map",
+  "result.shareCard": "Share result image",
+  "result.cardFooter": "Post-earthquake structural self-assessment · Not a substitute for a professional inspection",
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
@@ -402,6 +423,9 @@ const en: Dict = {
   "share.copied": "Link copied!",
   "share.message":
     "Assess your home's earthquake damage with EvalúaYa — free, no sign-up, works on low signal:",
+  "share.generating": "Generating image…",
+  "share.imageSaved": "Image saved. Share it anywhere.",
+  "share.shareStats": "Share stats",
 
 
 

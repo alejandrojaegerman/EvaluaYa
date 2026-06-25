@@ -8,6 +8,8 @@ import {
   History,
   ChevronRight,
   Map as MapIcon,
+  CloudUpload,
+  WifiOff,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -15,9 +17,12 @@ import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
+import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { getHistory, type HistoryEntry } from "@/lib/history";
+import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,17 +41,23 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useLang();
   const navigate = useNavigate();
+  const online = useOnline();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [totals, setTotals] = useState<DamageTotals | null>(null);
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     setHistory(getHistory());
+    loadDraft()
+      .then((d) => setPending(isReadyToSend(d)))
+      .catch(() => setPending(false));
     getDamageTotals()
       .then(setTotals)
       .catch(() => setTotals(null));
   }, []);
 
   const hasTotals = !!totals && totals.total > 0;
+
 
   const steps = [
     { icon: Building2, title: t("home.how1Title"), desc: t("home.how1Desc") },
@@ -76,6 +87,39 @@ function Index() {
           {t("home.timePromise")}
         </p>
       </section>
+
+      {/* Pending submission — offline-first resume card */}
+      {pending && (
+        <section className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              {online ? (
+                <CloudUpload className="size-5" aria-hidden />
+              ) : (
+                <WifiOff className="size-5" aria-hidden />
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold leading-tight">
+                {t("home.pendingTitle")}
+              </p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                {online ? t("home.pendingBody") : t("home.pendingOffline")}
+              </p>
+            </div>
+          </div>
+          <Button
+            size="lg"
+            disabled={!online}
+            onClick={() => navigate({ to: "/assess/analyze" })}
+            className="mt-3 w-full"
+          >
+            <CloudUpload className="size-4" />
+            {t("home.pendingCta")}
+          </Button>
+        </section>
+      )}
+
 
       {/* Live trust counters */}
       {hasTotals && (

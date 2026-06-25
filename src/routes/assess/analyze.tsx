@@ -49,8 +49,13 @@ function AnalyzeStep() {
     setPhase("uploading");
     const thinkingTimer = setTimeout(() => setPhase("thinking"), 1200);
 
-    try {
-      const result = await analyzeAssessment({
+    // Submit with a few retries (exponential backoff) plus a hard timeout so a
+    // flaky low-bandwidth connection doesn't leave the user stuck forever.
+    const MAX_ATTEMPTS = 3;
+    const OVERALL_TIMEOUT = 90_000;
+
+    const submit = () =>
+      analyzeAssessment({
         data: {
           language: draft.language,
           deviceId: getDeviceId(),
@@ -65,12 +70,51 @@ function AnalyzeStep() {
           answers: draft.answers.map((a) => ({
             id: a.id,
             value: a.value,
-            photoDataUrl: a.photoDataUrl ?? null,
+            photoDataUrls:
+              a.photoDataUrls && a.photoDataUrls.length
+                ? a.photoDataUrls
+                : a.photoDataUrl
+                  ? [a.photoDataUrl]
+                  : [],
           })),
         },
       });
 
+    const deadline = Date.now() + OVERALL_TIMEOUT;
+
+    try {
+      let result: Awaited<ReturnType<typeof submit>> | null = null;
+      let lastError: unknown = null;
+
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        if (!navigator.onLine) {
+          clearTimeout(thinkingTimer);
+          runningRef.current = false;
+          setPhase("waiting");
+          return;
+        }
+        try {
+          result = await submit();
+          // Don't retry definitive server-side rejections.
+          if (result.ok || result.errorCode !== "generic") break;
+          lastError = result;
+        } catch (err) {
+          lastError = err;
+        }
+        if (attempt < MAX_ATTEMPTS - 1 && Date.now() < deadline) {
+          await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+        }
+      }
+
       clearTimeout(thinkingTimer);
+
+      if (!result) {
+        runningRef.current = false;
+        setErrorMsg(t("analyze.genericError"));
+        setPhase("error");
+        void lastError;
+        return;
+      }
 
       if (!result.ok) {
         runningRef.current = false;
@@ -103,6 +147,7 @@ function AnalyzeStep() {
       setPhase("error");
     }
   }, [navigate, t]);
+
 
   // Load draft once.
   useEffect(() => {

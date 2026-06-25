@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Download, MapPin } from "lucide-react";
+import { ArrowRight, Download, ImageDown, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
@@ -8,6 +9,8 @@ import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
+import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
+import { absoluteUrl } from "@/lib/site";
 import {
   getDamageAggregates,
   getDamageTotals,
@@ -16,19 +19,29 @@ import {
 } from "@/lib/stats.functions";
 import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
 
+const MAP_OG = absoluteUrl("/og-map.jpg");
+
 export const Route = createFileRoute("/mapa")({
-  head: () => ({
-    meta: [
-      { title: "Mapa de daños — EvalúaYa" },
-      {
-        name: "description",
-        content:
-          "Mapa comunitario de daños estructurales por zona en Venezuela. Datos anónimos y abiertos.",
-      },
-    ],
-  }),
+  head: () => {
+    const title = "Mapa de daños — EvalúaYa";
+    const description =
+      "Mapa comunitario de daños estructurales por zona en Venezuela. Datos anónimos y abiertos.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: absoluteUrl("/mapa") },
+        { property: "og:image", content: MAP_OG },
+        { name: "twitter:image", content: MAP_OG },
+      ],
+    };
+  },
   component: MapPage,
 });
+
 
 type RiskKey = "red" | "yellow" | "green";
 
@@ -140,8 +153,42 @@ function MapPage() {
     URL.revokeObjectURL(url);
   }
 
+  const [cardBusy, setCardBusy] = useState(false);
+
+  async function shareStats() {
+    if (!totals || cardBusy) return;
+    setCardBusy(true);
+    try {
+      const top = topAreas[0];
+      const blob = await generateStatsCard({
+        total: totals.total,
+        red: totals.red,
+        yellow: totals.yellow,
+        green: totals.green,
+        headline: t("map.cardHeadline"),
+        topAreaLabel:
+          top?.municipality || top?.state
+            ? `${top.municipality ? top.municipality + ", " : ""}${top.state ?? ""}`.trim()
+            : undefined,
+        cta: t("map.cardCta"),
+        url: window.location.origin,
+      });
+      const outcome = await shareImageBlob(blob, {
+        filename: "evaluaya-mapa.png",
+        title: "EvalúaYa",
+        text: `${t("share.message")} ${window.location.origin}`,
+      });
+      if (outcome === "downloaded") toast.success(t("share.imageSaved"));
+    } catch {
+      toast.error(t("result.genericError"));
+    } finally {
+      setCardBusy(false);
+    }
+  }
+
   const pct = (n: number) =>
     totals && totals.total > 0 ? Math.round((n / totals.total) * 100) : 0;
+
 
   return (
     <AppShell>
@@ -334,8 +381,20 @@ function MapPage() {
             </ul>
           </section>
 
-          {/* Open data download */}
+          {/* Share stats image — flywheel */}
           <section className="mt-6">
+            <Button
+              className="w-full"
+              onClick={shareStats}
+              disabled={cardBusy}
+            >
+              <ImageDown className="size-4" />
+              {cardBusy ? t("share.generating") : t("share.shareStats")}
+            </Button>
+          </section>
+
+          {/* Open data download */}
+          <section className="mt-4">
             <Button variant="outline" className="w-full" onClick={downloadCsv}>
               <Download className="size-4" />
               {t("map.download")}
@@ -344,6 +403,7 @@ function MapPage() {
               {t("map.dataNote")}
             </p>
           </section>
+
         </>
       )}
 
