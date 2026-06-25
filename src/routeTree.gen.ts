@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
@@ -16,6 +17,11 @@ import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 
+const MetodologiaRoute = MetodologiaRouteImport.update({
+  id: '/metodologia',
+  path: '/metodologia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MapaRoute = MapaRouteImport.update({
   id: '/mapa',
   path: '/mapa',
@@ -50,6 +56,7 @@ const APublicIdRoute = APublicIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
+  '/metodologia': typeof MetodologiaRoute
   '/a/$publicId': typeof APublicIdRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
+  '/metodologia': typeof MetodologiaRoute
   '/a/$publicId': typeof APublicIdRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
+  '/metodologia': typeof MetodologiaRoute
   '/a/$publicId': typeof APublicIdRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/mapa'
+    | '/metodologia'
     | '/a/$publicId'
     | '/assess/analyze'
     | '/assess/checklist'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/mapa'
+    | '/metodologia'
     | '/a/$publicId'
     | '/assess/analyze'
     | '/assess/checklist'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/mapa'
+    | '/metodologia'
     | '/a/$publicId'
     | '/assess/analyze'
     | '/assess/checklist'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MapaRoute: typeof MapaRoute
+  MetodologiaRoute: typeof MetodologiaRoute
   APublicIdRoute: typeof APublicIdRoute
   AssessAnalyzeRoute: typeof AssessAnalyzeRoute
   AssessChecklistRoute: typeof AssessChecklistRoute
@@ -110,6 +123,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/metodologia': {
+      id: '/metodologia'
+      path: '/metodologia'
+      fullPath: '/metodologia'
+      preLoaderRoute: typeof MetodologiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mapa': {
       id: '/mapa'
       path: '/mapa'
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MapaRoute: MapaRoute,
+  MetodologiaRoute: MetodologiaRoute,
   APublicIdRoute: APublicIdRoute,
   AssessAnalyzeRoute: AssessAnalyzeRoute,
   AssessChecklistRoute: AssessChecklistRoute,
