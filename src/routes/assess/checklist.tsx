@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Camera, Loader2, X, ImageOff, Plus } from "lucide-react";
+import { Camera, Loader2, X, ImageOff, Plus, ImagePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
