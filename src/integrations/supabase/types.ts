@@ -45,9 +45,11 @@ export type Database = {
           created_at: string
           id: string
           language: string
+          municipality: string | null
           property: Json
           public_id: string
           risk_level: string | null
+          state: string | null
           status: string
         }
         Insert: {
@@ -56,9 +58,11 @@ export type Database = {
           created_at?: string
           id?: string
           language?: string
+          municipality?: string | null
           property?: Json
           public_id: string
           risk_level?: string | null
+          state?: string | null
           status?: string
         }
         Update: {
@@ -67,10 +71,39 @@ export type Database = {
           created_at?: string
           id?: string
           language?: string
+          municipality?: string | null
           property?: Json
           public_id?: string
           risk_level?: string | null
+          state?: string | null
           status?: string
+        }
+        Relationships: []
+      }
+      institution_leads: {
+        Row: {
+          contact_name: string | null
+          created_at: string
+          email: string
+          id: string
+          note: string | null
+          organization: string
+        }
+        Insert: {
+          contact_name?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          note?: string | null
+          organization: string
+        }
+        Update: {
+          contact_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          note?: string | null
+          organization?: string
         }
         Relationships: []
       }
@@ -79,7 +112,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_damage_aggregates: {
+        Args: never
+        Returns: {
+          green: number
+          last_report: string
+          municipality: string
+          red: number
+          state: string
+          total: number
+          yellow: number
+        }[]
+      }
+      get_damage_totals: {
+        Args: never
+        Returns: {
+          areas: number
+          green: number
+          red: number
+          total: number
+          yellow: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

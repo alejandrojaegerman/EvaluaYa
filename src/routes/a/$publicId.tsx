@@ -8,6 +8,9 @@ import {
   CircleAlert,
   Home as HomeIcon,
   Info,
+  MessageCircle,
+  Map as MapIcon,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -82,6 +85,16 @@ function ResultPage() {
     } catch {
       toast.error(t("result.genericError"));
     }
+  }
+
+  function shareWhatsApp() {
+    const url = window.location.origin;
+    const text = `${t("result.whatsappMessage")} ${url}`;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(text)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   }
 
   return (
@@ -205,6 +218,14 @@ function ResultPage() {
         </Button>
         <Button
           size="lg"
+          onClick={shareWhatsApp}
+          className="col-span-2 bg-[#25D366] text-white hover:bg-[#1ebe5a]"
+        >
+          <MessageCircle className="size-4" />
+          {t("result.shareWhatsapp")}
+        </Button>
+        <Button
+          size="lg"
           variant="outline"
           onClick={() => downloadAssessmentPdf(record)}
           className="col-span-2"
@@ -222,6 +243,31 @@ function ResultPage() {
           {t("result.newAssessment")}
         </Button>
       </div>
+
+      {/* Community flywheel — invite + map */}
+      <section className="mt-6 rounded-2xl border border-primary/20 bg-secondary/40 p-5">
+        <div className="flex items-center gap-2">
+          <Users className="size-5 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold">
+            {t("result.inviteTitle")}
+          </h2>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {t("result.inviteBody")}
+        </p>
+        <div className="mt-4 grid gap-2">
+          <Button onClick={shareWhatsApp}>
+            <MessageCircle className="size-4" />
+            {t("result.inviteCta")}
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/mapa">
+              <MapIcon className="size-4" />
+              {t("result.viewMap")}
+            </Link>
+          </Button>
+        </div>
+      </section>
 
       {/* Disclaimer */}
       <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-border bg-muted/50 p-4">

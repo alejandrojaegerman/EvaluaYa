@@ -10,6 +10,7 @@ import type { BuildingAge, BuildingType } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { ESTADO_NAMES } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
   component: PropertyStep,
@@ -28,6 +29,8 @@ function PropertyStep() {
   const navigate = useNavigate();
 
   const [address, setAddress] = useState("");
+  const [state, setState] = useState("");
+  const [municipality, setMunicipality] = useState("");
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
@@ -38,6 +41,8 @@ function PropertyStep() {
       if (!active || !draft) return;
       const p = draft.property;
       if (p.address) setAddress(p.address);
+      if (p.state) setState(p.state);
+      if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.floors) setFloors(p.floors);
       if (p.age) setAge(p.age);
@@ -54,7 +59,14 @@ function PropertyStep() {
     const existing = await loadDraft();
     await saveDraft({
       language: lang,
-      property: { address: address.trim(), buildingType, floors, age },
+      property: {
+        address: address.trim(),
+        state: state.trim(),
+        municipality: municipality.trim(),
+        buildingType,
+        floors,
+        age,
+      },
       answers: existing?.answers ?? [],
       updatedAt: Date.now(),
     });
@@ -83,6 +95,51 @@ function PropertyStep() {
             autoComplete="street-address"
           />
         </div>
+
+        {/* Estado + Municipio (coarse location for the public map) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="estado" className="text-sm font-semibold">
+              {t("property.state")}{" "}
+              <span className="font-normal text-muted-foreground">
+                ({t("common.optional")})
+              </span>
+            </Label>
+            <select
+              id="estado"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{t("property.statePlaceholder")}</option>
+              {ESTADO_NAMES.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label htmlFor="municipio" className="text-sm font-semibold">
+              {t("property.municipality")}{" "}
+              <span className="font-normal text-muted-foreground">
+                ({t("common.optional")})
+              </span>
+            </Label>
+            <Input
+              id="municipio"
+              value={municipality}
+              onChange={(e) => setMunicipality(e.target.value)}
+              placeholder={t("property.municipalityPlaceholder")}
+              className="mt-2 h-12 rounded-xl bg-card"
+              maxLength={120}
+            />
+          </div>
+        </div>
+
+        <p className="-mt-3 text-xs text-muted-foreground">
+          {t("property.locationHint")}
+        </p>
 
         {/* Building type */}
         <div>

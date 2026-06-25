@@ -33,6 +33,9 @@ export const CHECKLIST_ITEMS: ChecklistItemDef[] = [
 
 export type PropertyInfo = {
   address: string;
+  /** Coarse location only — estado / municipio. Drives the public map. */
+  state?: string;
+  municipality?: string;
   buildingType: BuildingType;
   floors: number;
   age: BuildingAge;
