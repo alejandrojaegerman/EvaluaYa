@@ -363,6 +363,8 @@ const en: Dict = {
   "map.distribution": "Risk distribution",
   "map.geoTitle": "Geographic view",
   "map.geoHint": "Size shows number of reports; color shows the dominant risk.",
+  "map.legendSize": "Size = number of reports",
+  "map.legendRisk": "Color = dominant risk",
   "map.topAreas": "Areas with most reports",
   "map.reports": "reports",
   "map.lastUpdated": "Updated",
