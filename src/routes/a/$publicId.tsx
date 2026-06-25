@@ -97,7 +97,7 @@ function ResultPage() {
   const [cardBusy, setCardBusy] = useState(false);
 
   async function handleShare() {
-    const url = window.location.href;
+    const url = absoluteUrl(`/a/${record!.publicId}`);
     const shareData = {
       title: "EvalúaYa",
       text: t(`result.${record!.riskLevel}.tag`),
@@ -116,7 +116,7 @@ function ResultPage() {
 
   async function copyLink() {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(absoluteUrl(`/a/${record!.publicId}`));
       toast.success(t("result.copied"));
     } catch {
       toast.error(t("result.genericError"));
