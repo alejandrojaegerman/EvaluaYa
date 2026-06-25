@@ -1,42 +1,56 @@
-# Technical Algorithm Spec for Expert Review
+# Logic Validation Document for the Expert (English PDF)
 
 ## Goal
-Give your expert a single, code-level document that shows exactly how EvalúaYa decides Green / Yellow / Red — not the plain-language Methodology page. It will read like backend documentation: real source excerpts, the exact AI prompt, thresholds, and the override logic, with file references so he can see it maps to actual code.
+Give your expert a short, plain-English PDF that answers one question: **"Exactly when does the app say Green, Yellow, or Red?"** — with every statement traced to the actual code, but written so someone with limited coding ability can read and validate it. No code excerpts, no GitHub, no verbose prompt dumps. This replaces the broad spec PDF with a tight, decision-focused document.
 
-## Deliverable
-A downloadable **PDF spec** (`evaluaya-algorithm-spec.pdf`), hosted publicly so anyone with the link can open it, and linked from the Methodology page with a "Download technical spec" button.
+## What the document will say (this IS the logic, pulled from the code)
 
-## What goes in the spec
-Pulled verbatim from the live code so it's accurate, not a paraphrase:
+The app decides risk in two layers, then takes the **more severe** of the two — rules can only push the level *up*, never down (`finalRisk = maxRisk(ai, rules)`).
 
-1. **Overview & pipeline** — the order of operations:
-   ```text
-   inputs (property + checklist answers + photos + GPS)
-     -> ShakeMap MMI lookup (shakemap.ts)
-     -> AI vision triage (Gemini 2.5 Flash, assessment.functions.ts)
-     -> deterministic safety rules (safety-rules.ts)
-     -> finalRisk = maxRisk(ai, rules)   // rules can only escalate, never downgrade
-   ```
-2. **Layer 1 — Deterministic safety rules** (`src/lib/safety-rules.ts`): the exact rule set and severity floors:
-   - Force RED: URM structural type, liquefaction = yes, pounding = yes, severe plumbing/gas = yes.
-   - Force ≥ YELLOW: MMI ≥ 7, floors > 7, vulnerable systems (CMF/CIW/PCF/RML).
-   - The `maxRisk` merge function showing rules override the AI upward only.
-3. **Layer 2 — AI triage** (`src/lib/assessment.functions.ts`): the **exact verbatim system prompt** (ATC-20-style), the model used (`google/gemini-2.5-flash`), the structured JSON output contract, and how photos (key photo per item) are passed.
-4. **Seismic intensity** (`src/lib/shakemap.ts`): the bilinear MMI interpolation, conservative edge handling (max of neighbours), and MMI→Roman mapping.
-5. **Inputs / schema** (`src/lib/assessment-types.ts`): the 13 checklist items (structural vs utilities), structural-system classifications, building age/type enums.
-6. **Limits & disclaimers**: self-report, surface-level, not a certification, engineer confirmation required (mirrors the Methodology page).
-7. **Source map**: a table listing each file and what it owns, so the expert can request specific files if he wants more.
+**Layer 1 — Hard safety rules (deterministic, in `safety-rules.ts`)**
 
-## Hosting & linking
-- Save the generated PDF to `public/evaluaya-algorithm-spec.pdf` so it's served at a stable public URL (`/evaluaya-algorithm-spec.pdf`).
-- Add a "Download technical spec (PDF)" button in a new "For engineers / Para ingenieros" section on `src/routes/metodologia.tsx`, with bilingual i18n keys in `src/lib/i18n.tsx`.
-- Also deliver the PDF as a downloadable artifact in chat so you can forward it to the expert immediately, before/independent of a publish.
+Force **RED** (unsafe to enter) if ANY of these are true:
+- Structural system is **unreinforced masonry (URM)**
+- Resident answered **YES** to ground **liquefaction** signs
+- Resident answered **YES** to **pounding** with a neighboring building
+- Resident answered **YES** to severe **plumbing / gas** damage
+
+Force **at least YELLOW** (extra caution) if ANY of these are true:
+- ShakeMap shaking **intensity (MMI) ≥ 7** at the building's location
+- Building has **more than 7 floors**
+- Structural system is **CMF, CIW, PCF, or RML**
+
+If no rule fires, Layer 1 contributes **Green** (no floor raised).
+
+**Layer 2 — AI visual triage (the model, guided by `SYSTEM_PROMPT`)**
+- **Green** — no significant structural damage; appears safe to occupy
+- **Yellow** — possible/moderate damage; limited use only
+- **Red** — serious damage or collapse signs; evacuate
+- Plain-language summary of the AI's decision cues (foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation/collapse, stairs separating from walls → Yellow/Red; damaged flooring, electrical, hanging fixtures → at least Yellow), and the explicit instruction to "be conservative — never choose Green when life-safety is uncertain."
+
+**Final decision — `maxRisk()`**
+- A small worked table: e.g. AI says Green but URM is selected → final **RED**; AI says Yellow but liquefaction = YES → final **RED**; AI says Green, 9 floors → final **YELLOW**; AI says Yellow, no rules fire → final **YELLOW**. Shows rules override upward only.
+
+**Inputs that feed the decision**
+- The 13 checklist questions (exact wording), which are structural vs. optional utilities, and the property inputs (building type, structural system, floors, age, auto-detected MMI). Only the items that actually drive a rule are flagged so the expert sees which answers matter.
+
+**Limits / disclaimers**
+- Self-report + surface photos only, preliminary, not a certification, licensed-engineer confirmation required.
+
+## Format & structure
+- One clean **English PDF**, ~3–5 pages, generated with Python + ReportLab.
+- Layout for a non-coder: short sections, a **decision table** for the hard rules (Condition → Forced level → Why), the AI's three-level definitions, the merge table, and a checklist-questions appendix.
+- Each rule line carries a quiet source tag (e.g. *source: safety-rules.ts*) so it's auditable without being code.
+- Branded lightly to match the app (EvalúaYa name, risk colors Green/Yellow/Red used as accents).
+
+## Delivery
+- Saved to `/mnt/documents/evaluaya-logic-validation.pdf` and surfaced as a downloadable artifact in chat so you can forward it directly to the expert.
+- After generating, every page is rendered to images and visually QA'd (no clipped text, correct colors, tables aligned) before delivery.
 
 ## Technical notes
-- The PDF is generated from the actual current source excerpts (monospace code blocks, syntax-faithful) so it can't drift into being a vague summary.
-- No backend or schema changes; this is documentation + one static asset + a methodology-page link.
-- The hydration console errors you may see on `/mapa` come from a browser password-manager extension (Dashlane) and are not an app bug — no fix needed.
+- Content is transcribed faithfully from `safety-rules.ts` (rule conditions + thresholds), `assessment.functions.ts` (`SYSTEM_PROMPT` levels and `maxRisk` merge), `assessment-types.ts` (checklist + property schema), and `shakemap.ts` (MMI source). If the code changes later, the doc must be regenerated.
+- This is a standalone document only — no changes to the app, the methodology page, or the assessment logic itself.
 
 ## Out of scope
-- Exposing a live "view source" route in-app (we chose the downloadable spec instead).
-- Any change to the assessment logic itself — this only documents it.
+- No edits to app code or the existing `/metodologia` page (can add a download link later if you want).
+- No changes to the assessment algorithm.
