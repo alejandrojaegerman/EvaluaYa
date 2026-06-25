@@ -114,6 +114,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "EvalúaYa" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:locale", content: "es_VE" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "EvalúaYa — Evaluación estructural" },
       {
