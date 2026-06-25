@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Camera, Loader2, X, ImageOff, Plus } from "lucide-react";
+import { Camera, Loader2, X, ImageOff, ImagePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -195,7 +195,8 @@ function ChecklistCard({
   onRemovePhoto: (i: number) => void;
 }) {
   const { t } = useLang();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
   const canAddMore = photos.length < MAX_PHOTOS_PER_ITEM;
 
@@ -255,10 +256,17 @@ function ChecklistCard({
       {/* Photos */}
       <div className="mt-3">
         <input
-          ref={inputRef}
+          ref={cameraRef}
           type="file"
           accept="image/*"
           capture="environment"
+          className="hidden"
+          onChange={handleFile}
+        />
+        <input
+          ref={galleryRef}
+          type="file"
+          accept="image/*"
           className="hidden"
           onChange={handleFile}
         />
@@ -286,35 +294,67 @@ function ChecklistCard({
               </div>
             ))}
             {canAddMore && (
-              <button
-                type="button"
-                onClick={() => inputRef.current?.click()}
-                disabled={processing}
-                className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-              >
-                {processing ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Plus className="size-4" />
-                )}
-                {t("checklist.morePhotos")}
-              </button>
+              <div className="grid grid-cols-2 gap-1">
+                <button
+                  type="button"
+                  onClick={() => cameraRef.current?.click()}
+                  disabled={processing}
+                  aria-label={t("checklist.takePhoto")}
+                  className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+                >
+                  {processing ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Camera className="size-4" />
+                  )}
+                  {t("checklist.takePhoto")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => galleryRef.current?.click()}
+                  disabled={processing}
+                  aria-label={t("checklist.fromGallery")}
+                  className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+                >
+                  {processing ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <ImagePlus className="size-4" />
+                  )}
+                  {t("checklist.fromGallery")}
+                </button>
+              </div>
             )}
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={processing}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-          >
-            {processing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Camera className="size-4" />
-            )}
-            {t("checklist.addPhoto")}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              disabled={processing}
+              className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+            >
+              {processing ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Camera className="size-4" />
+              )}
+              {t("checklist.takePhoto")}
+            </button>
+            <button
+              type="button"
+              onClick={() => galleryRef.current?.click()}
+              disabled={processing}
+              className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+            >
+              {processing ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ImagePlus className="size-4" />
+              )}
+              {t("checklist.fromGallery")}
+            </button>
+          </div>
         )}
 
         {photos.length === 0 && !processing && (
