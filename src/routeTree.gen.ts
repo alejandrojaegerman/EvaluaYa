@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
+import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,15 +35,22 @@ const AssessAnalyzeRoute = AssessAnalyzeRouteImport.update({
   path: '/assess/analyze',
   getParentRoute: () => rootRouteImport,
 } as any)
+const APublicIdRoute = APublicIdRouteImport.update({
+  id: '/a/$publicId',
+  path: '/a/$publicId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/a/$publicId': typeof APublicIdRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/a/$publicId': typeof APublicIdRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
@@ -50,18 +58,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/a/$publicId': typeof APublicIdRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assess/analyze' | '/assess/checklist' | '/assess/property'
+  fullPaths:
+    | '/'
+    | '/a/$publicId'
+    | '/assess/analyze'
+    | '/assess/checklist'
+    | '/assess/property'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assess/analyze' | '/assess/checklist' | '/assess/property'
+  to:
+    | '/'
+    | '/a/$publicId'
+    | '/assess/analyze'
+    | '/assess/checklist'
+    | '/assess/property'
   id:
     | '__root__'
     | '/'
+    | '/a/$publicId'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
@@ -69,6 +89,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  APublicIdRoute: typeof APublicIdRoute
   AssessAnalyzeRoute: typeof AssessAnalyzeRoute
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
@@ -104,11 +125,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessAnalyzeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/a/$publicId': {
+      id: '/a/$publicId'
+      path: '/a/$publicId'
+      fullPath: '/a/$publicId'
+      preLoaderRoute: typeof APublicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  APublicIdRoute: APublicIdRoute,
   AssessAnalyzeRoute: AssessAnalyzeRoute,
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,

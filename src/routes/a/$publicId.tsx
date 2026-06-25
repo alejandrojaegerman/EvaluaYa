@@ -23,7 +23,9 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/a/$publicId")({
   loader: async ({ params }) => {
-    const record = await getAssessment({ data: { publicId: params.publicId } });
+    const record = (await getAssessment({
+      data: { publicId: params.publicId },
+    })) as AssessmentRecord | null;
     return { record };
   },
   component: ResultPage,
