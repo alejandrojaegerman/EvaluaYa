@@ -429,7 +429,7 @@ function MapPage() {
                 const level = dominantRisk(a);
                 return (
                   <li
-                    key={`${a.state}-${a.municipality}`}
+                    key={a.key}
                     className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm"
                   >
                     <span
@@ -440,12 +440,14 @@ function MapPage() {
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-1 truncate text-sm font-medium">
                         <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-                        {a.municipality || a.state}
+                        {a.title}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {a.state} · {a.total} {t("map.reports")}
+                        {a.subtitle ? `${a.subtitle} · ` : ""}
+                        {a.total} {t("map.reports")}
                       </p>
                     </div>
+
                     <div className="flex shrink-0 items-center gap-1.5 text-[11px] font-semibold">
                       <span style={{ color: rgb("red") }}>{a.red}</span>
                       <span style={{ color: rgb("yellow") }}>{a.yellow}</span>
