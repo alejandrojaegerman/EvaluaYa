@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
+import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { getHistory, type HistoryEntry } from "@/lib/history";
@@ -143,6 +144,11 @@ function Index() {
           ))}
         </ol>
       </section>
+
+      {/* Spread the word — flywheel */}
+      <ShareApp className="mt-8" />
+
+
 
       {/* Recent assessments */}
       {history.length > 0 && (

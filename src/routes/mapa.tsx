@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
@@ -350,6 +351,9 @@ function MapPage() {
       <section className="mt-8">
         <InstitutionLeadForm />
       </section>
+
+      {/* Spread the word — flywheel */}
+      <ShareApp className="mt-6" />
 
       {/* CTA to start an assessment */}
       <section className="mt-6">
