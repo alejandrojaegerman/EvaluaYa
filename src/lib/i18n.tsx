@@ -190,6 +190,8 @@ const es: Dict = {
   "result.inviteCta": "Invitar a un vecino",
   "result.proofText": "evaluaciones realizadas hasta ahora",
   "result.viewMap": "Ver mapa de daños de tu zona",
+  "result.shareCard": "Compartir imagen de resultado",
+  "result.cardFooter": "Autoevaluación estructural tras el sismo · No sustituye una inspección profesional",
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
@@ -199,6 +201,9 @@ const es: Dict = {
   "share.copied": "¡Enlace copiado!",
   "share.message":
     "Evalúa los daños de tu vivienda tras el sismo con EvalúaYa — gratis, sin registro y funciona con poca señal:",
+  "share.generating": "Generando imagen…",
+  "share.imageSaved": "Imagen guardada. Compártela donde quieras.",
+  "share.shareStats": "Compartir estadísticas",
 
 
 
