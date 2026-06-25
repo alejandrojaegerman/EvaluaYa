@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
+import { SITE_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 /**
@@ -14,9 +15,9 @@ export function ShareApp({ className }: { className?: string }) {
   const { t } = useLang();
 
   function shareUrl() {
-    // Always points to the public site (resolves to https://evaluaya.app
-    // in production), never a draft/preview path.
-    return typeof window !== "undefined" ? window.location.origin : "";
+    // Always the canonical branded domain, never a Lovable preview /
+    // published host or a draft path.
+    return SITE_URL;
   }
 
   function shareText() {
