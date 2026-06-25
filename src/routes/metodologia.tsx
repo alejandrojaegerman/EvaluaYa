@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
+  FileDown,
   Info,
   Layers,
   MapPin,
