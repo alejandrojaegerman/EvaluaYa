@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Map, ShieldCheck, Wifi, WifiOff } from "lucide-react";
+import { BookOpen, Map, ShieldCheck, Wifi, WifiOff } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { LanguageToggle } from "./LanguageToggle";
