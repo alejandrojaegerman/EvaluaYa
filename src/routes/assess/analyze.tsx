@@ -64,8 +64,15 @@ function AnalyzeStep() {
             state: draft.property.state ?? "",
             municipality: draft.property.municipality ?? "",
             buildingType: draft.property.buildingType,
+            structuralType: draft.property.structuralType ?? "unknown",
             floors: draft.property.floors ?? 1,
             age: draft.property.age,
+            ...(typeof draft.property.seismicIntensity === "number"
+              ? {
+                  seismicIntensity: draft.property.seismicIntensity,
+                  seismicIntensityRoman: draft.property.seismicIntensityRoman,
+                }
+              : {}),
           },
           answers: draft.answers.map((a) => ({
             id: a.id,

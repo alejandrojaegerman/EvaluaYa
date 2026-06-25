@@ -6,10 +6,29 @@ export type BuildingType = "house" | "apartment" | "commercial";
 
 export type BuildingAge = "pre1970" | "1970to2000" | "post2000";
 
+/**
+ * Structural (lateral-force-resisting) system classification.
+ * URM is inherently unsafe after strong shaking; CMF/CIW/PCF/RML warrant
+ * extra caution. "unknown" applies no deterministic rule.
+ */
+export type StructuralType =
+  | "URM"
+  | "CMF"
+  | "CIW"
+  | "PCF"
+  | "RML"
+  | "unknown";
+
 export type ChecklistItemId =
   | "foundation"
+  | "liquefaction"
   | "exterior_walls"
+  | "pounding"
   | "interior_walls"
+  | "flooring"
+  | "plumbing"
+  | "electrical"
+  | "fixtures"
   | "columns_beams"
   | "doors_windows"
   | "roof"
@@ -23,8 +42,14 @@ export type ChecklistItemDef = {
 
 export const CHECKLIST_ITEMS: ChecklistItemDef[] = [
   { id: "foundation", icon: "Layers" },
+  { id: "liquefaction", icon: "Droplets" },
   { id: "exterior_walls", icon: "Building2" },
+  { id: "pounding", icon: "Building" },
   { id: "interior_walls", icon: "Square" },
+  { id: "flooring", icon: "Grid3x3" },
+  { id: "plumbing", icon: "Wrench" },
+  { id: "electrical", icon: "Zap" },
+  { id: "fixtures", icon: "Lightbulb" },
   { id: "columns_beams", icon: "Columns3" },
   { id: "doors_windows", icon: "DoorOpen" },
   { id: "roof", icon: "Home" },
@@ -37,8 +62,14 @@ export type PropertyInfo = {
   state?: string;
   municipality?: string;
   buildingType: BuildingType;
+  /** structural lateral system (drives deterministic safety rules) */
+  structuralType?: StructuralType;
   floors: number;
   age: BuildingAge;
+  /** auto-detected ShakeMap MMI value at the building's location */
+  seismicIntensity?: number;
+  /** Roman-numeral label for the MMI (e.g. "VII") */
+  seismicIntensityRoman?: string;
 };
 
 /** Max photos a resident can attach per checklist item. */

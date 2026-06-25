@@ -1,14 +1,29 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Building2, Home, Store, Minus, Plus, ArrowRight, LocateFixed } from "lucide-react";
+import {
+  Building2,
+  Home,
+  Store,
+  Minus,
+  Plus,
+  ArrowRight,
+  LocateFixed,
+  Activity,
+  AlertTriangle,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { BuildingAge, BuildingType } from "@/lib/assessment-types";
+import type {
+  BuildingAge,
+  BuildingType,
+  StructuralType,
+} from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
+import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
@@ -24,6 +39,15 @@ const BUILDING_TYPES: { id: BuildingType; icon: typeof Home }[] = [
 
 const AGES: BuildingAge[] = ["pre1970", "1970to2000", "post2000"];
 
+const STRUCTURAL_TYPES: StructuralType[] = [
+  "URM",
+  "CMF",
+  "CIW",
+  "PCF",
+  "RML",
+  "unknown",
+];
+
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
@@ -32,11 +56,18 @@ function PropertyStep() {
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
+  const [structuralType, setStructuralType] = useState<StructuralType | null>(
+    null,
+  );
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
+  const [intensity, setIntensity] = useState<{
+    mmi: number;
+    roman: string;
+  } | null>(null);
 
   const draftLoaded = useRef(false);
   const geoTried = useRef(false);
@@ -52,8 +83,15 @@ function PropertyStep() {
       if (p.state) setState(p.state);
       if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
+      if (p.structuralType) setStructuralType(p.structuralType);
       if (p.floors) setFloors(p.floors);
       if (p.age) setAge(p.age);
+      if (typeof p.seismicIntensity === "number") {
+        setIntensity({
+          mmi: p.seismicIntensity,
+          roman: p.seismicIntensityRoman ?? "",
+        });
+      }
     });
     return () => {
       active = false;
@@ -71,13 +109,22 @@ function PropertyStep() {
       setGeoStatus("detecting");
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const est = nearestEstado(pos.coords.latitude, pos.coords.longitude);
+          const { latitude, longitude } = pos.coords;
+          const est = nearestEstado(latitude, longitude);
           if (est) {
             setState((cur) => (cur.trim() === "" ? est.name : cur));
             setGeoStatus("detected");
           } else {
             setGeoStatus("failed");
           }
+          // Look up ShakeMap intensity at the precise coordinate (best-effort).
+          getSeismicIntensity({ data: { lat: latitude, lng: longitude } })
+            .then((res) => {
+              if (res) setIntensity(res);
+            })
+            .catch(() => {
+              /* offline / no active event — ignore */
+            });
         },
         () => setGeoStatus("failed"),
         { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
@@ -87,7 +134,11 @@ function PropertyStep() {
   }, [state]);
 
   const valid =
-    buildingType !== null && age !== null && floors >= 1 && state.trim() !== "";
+    buildingType !== null &&
+    structuralType !== null &&
+    age !== null &&
+    floors >= 1 &&
+    state.trim() !== "";
 
 
   async function handleContinue() {
@@ -100,8 +151,15 @@ function PropertyStep() {
         state: state.trim(),
         municipality: municipality.trim(),
         buildingType,
+        structuralType,
         floors,
         age,
+        ...(intensity
+          ? {
+              seismicIntensity: intensity.mmi,
+              seismicIntensityRoman: intensity.roman,
+            }
+          : {}),
       },
       answers: existing?.answers ?? [],
       updatedAt: Date.now(),
@@ -191,6 +249,33 @@ function PropertyStep() {
           {t("property.locationHint")}
         </p>
 
+        {/* ShakeMap intensity (auto-detected) */}
+        {intensity && (
+          <div
+            className={cn(
+              "-mt-2 flex items-start gap-2 rounded-xl border p-3 text-sm",
+              intensity.mmi >= 7
+                ? "border-risk-yellow/40 bg-risk-yellow-soft"
+                : "border-border bg-card",
+            )}
+          >
+            <Activity className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+            <div>
+              <p className="font-medium">
+                {t("property.intensityDetected")}:{" "}
+                <span className="font-bold tabular-nums">
+                  {intensity.roman} ({intensity.mmi})
+                </span>
+              </p>
+              {intensity.mmi >= 7 && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {t("property.intensityHigh")}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
 
         {/* Building type */}
         <div>
@@ -213,6 +298,55 @@ function PropertyStep() {
                 >
                   <Icon className="size-6" aria-hidden />
                   {t(`property.type.${id}`)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Structural system */}
+        <div>
+          <p className="text-sm font-semibold">{t("property.structuralType")}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {t("property.structuralType.help")}
+          </p>
+          <div className="mt-2 space-y-2">
+            {STRUCTURAL_TYPES.map((id) => {
+              const selected = structuralType === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setStructuralType(id)}
+                  aria-pressed={selected}
+                  className={cn(
+                    "flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors",
+                    selected
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/40",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "mt-1 size-4 shrink-0 rounded-full border-2",
+                      selected
+                        ? "border-primary bg-primary"
+                        : "border-muted-foreground/40",
+                    )}
+                  />
+                  <span>
+                    <span
+                      className={cn(
+                        "block text-sm font-medium",
+                        selected ? "text-primary" : "text-foreground",
+                      )}
+                    >
+                      {t(`property.struct.${id}`)}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {t(`property.struct.${id}.desc`)}
+                    </span>
+                  </span>
                 </button>
               );
             })}
@@ -244,6 +378,12 @@ function PropertyStep() {
               <Plus className="size-5" />
             </button>
           </div>
+          {floors > 7 && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
+              {t("property.floorsHigh")}
+            </p>
+          )}
         </div>
 
         {/* Age */}

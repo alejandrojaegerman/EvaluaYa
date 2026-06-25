@@ -110,6 +110,39 @@ export type Database = {
         }
         Relationships: []
       }
+      seismic_events: {
+        Row: {
+          bbox: Json
+          created_at: string
+          event_id: string
+          grid: Json
+          id: string
+          is_active: boolean
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          bbox: Json
+          created_at?: string
+          event_id: string
+          grid: Json
+          id?: string
+          is_active?: boolean
+          label?: string
+          updated_at?: string
+        }
+        Update: {
+          bbox?: Json
+          created_at?: string
+          event_id?: string
+          grid?: Json
+          id?: string
+          is_active?: boolean
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
