@@ -400,6 +400,8 @@ const en: Dict = {
   "result.inviteCta": "Invite a neighbor",
   "result.proofText": "assessments completed so far",
   "result.viewMap": "View your area's damage map",
+  "result.shareCard": "Share result image",
+  "result.cardFooter": "Post-earthquake structural self-assessment · Not a substitute for a professional inspection",
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
@@ -409,6 +411,9 @@ const en: Dict = {
   "share.copied": "Link copied!",
   "share.message":
     "Assess your home's earthquake damage with EvalúaYa — free, no sign-up, works on low signal:",
+  "share.generating": "Generating image…",
+  "share.imageSaved": "Image saved. Share it anywhere.",
+  "share.shareStats": "Share stats",
 
 
 
