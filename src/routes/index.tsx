@@ -145,6 +145,11 @@ function Index() {
         </ol>
       </section>
 
+      {/* Spread the word — flywheel */}
+      <ShareApp className="mt-8" />
+
+
+
       {/* Recent assessments */}
       {history.length > 0 && (
         <section className="mt-8">
