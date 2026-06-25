@@ -46,6 +46,26 @@ export function getEstado(name: string | null | undefined): Estado | undefined {
   return ESTADO_BY_NAME.get(name.trim());
 }
 
+/**
+ * Snap a coordinate to the closest estado centroid. Pure math against the
+ * static list — no external geocoding service, works fully offline.
+ */
+export function nearestEstado(lat: number, lng: number): Estado | undefined {
+  let best: Estado | undefined;
+  let bestDist = Infinity;
+  for (const e of ESTADOS) {
+    const dLat = e.lat - lat;
+    const dLng = e.lng - lng;
+    const dist = dLat * dLat + dLng * dLng;
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = e;
+    }
+  }
+  // Guard against coordinates far outside Venezuela (e.g. VPN / wrong fix).
+  return bestDist <= 9 ? best : undefined;
+}
+
 // Bounding box for projecting lat/lng into an SVG viewBox.
 export const VE_BOUNDS = {
   minLat: 0.5,
