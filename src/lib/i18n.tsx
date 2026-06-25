@@ -644,6 +644,9 @@ const en: Dict = {
   "map.legendRisk": "Color = dominant risk",
   "map.topAreas": "Areas with most reports",
   "map.reports": "reports",
+  "map.unspecifiedMunicipality": "Municipality not specified",
+  "map.unspecifiedLocation": "Location not specified",
+
   "map.lastUpdated": "Updated",
   "map.empty": "Not enough assessments yet to show the map.",
   "map.startCta": "Assess your building",
