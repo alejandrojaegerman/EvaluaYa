@@ -1,35 +1,62 @@
-# Plan: Documento en español + mapa con forma real de Venezuela
+# Plan: Data-driven seismic logic from the ShakeMap HDF
 
-Two independent deliverables.
+Today the only geographic signal is one rule (`MMI ≥ 7 → caution`) plus an MMI line in the AI prompt. The uploaded `shake_result.hdf` (real M7.5 Yumare / Venezuela event `us6000t7zp`) contains much richer per-location data. We'll extract it, store it as the active event, and use it to drive **both** the deterministic safety rules and the AI context.
 
-## 1. Validation document in Spanish
+## New seismic signals we'll use
 
-The current artifact (`evaluaya-logic-validation.pdf`) is English-only. I'll produce a Spanish edition that mirrors it 1:1, keeping the strict mapping to the code logic so the expert can validate when each result is **VERDE / AMARILLO / ROJO**.
+- **PGA** (peak ground acceleration, in %g) — graduated shaking-demand bands
+- **PGV** (peak ground velocity, cm/s) — secondary demand indicator
+- **Period-matched spectral demand** — estimate the building's natural period `T ≈ 0.1 × floors`, then read the matching spectral acceleration band (0.3s for low-rise, 1.0s/3.0s for taller). This is the most building-specific engineering signal: it asks "how hard was *this kind of building* shaken?"
+- **Soft-soil amplification (vs30)** — flag NEHRP soil class D/E (vs30 < 360 / < 180 m/s) where shaking amplifies and liquefaction risk rises
 
-- Generate `/mnt/documents/evaluaya-validacion-logica.pdf` (new file, original kept).
-- Same 3-section structure, translated to plain Spanish:
-  - **Flujo de dos capas:** `finalRisk = maxRisk(ai, reglas)` — las reglas deterministas solo pueden subir el nivel sugerido por la IA, nunca bajarlo.
-  - **Reglas deterministas (`safety-rules.ts`):** condiciones que fuerzan **ROJO** (mampostería no reforzada, licuefacción, golpeteo entre edificios, daño grave de plomería/gas) y condiciones que fuerzan **≥ AMARILLO** (intensidad MMI ≥ 7, edificios de >7 pisos, sistemas estructurales CMF/CIW/PCF/RML).
-  - **Triaje IA (`assessment.functions.ts`):** resumen de la lógica del `SYSTEM_PROMPT` (modelo `gemini-2.5-flash`), señales visuales y sesgo conservador "la seguridad primero".
-  - **Entradas y trazabilidad:** las 13 preguntas del checklist y los metadatos (edad, altura, sistema) mapeados a cada regla, con la etiqueta del archivo fuente al pie de cada sección.
-- Keep the branded risk colors (verde/amarillo/rojo) and the *source: archivo.ts* trace tags.
-- QA: render every page to images and inspect for clipping/overflow before delivering.
+## What changes for the resident / SME
 
-## 2. Map that looks like the actual country
+- The result card gains a short "Seismic context" block (PGA, soil class, demand at building's height).
+- Red/Yellow can now be raised by graduated, defensible seismic thresholds — not just MMI ≥ 7.
+- The methodology page and validation docs get updated so the SME can still trace every rule to code.
 
-Today `src/lib/venezuela.ts` holds `VE_OUTLINE` — a ~30-point hand-traced border that reads as a blob, not Venezuela. I'll replace it with a higher-resolution, simplified national border so the silhouette is recognizable, with no new dependencies.
+## Decision logic (graduated, conservative)
 
-- Replace `VE_OUTLINE` with a denser `[lat, lng]` polygon (≈120–200 points) derived from a simplified Venezuela GeoJSON border, including the main north coastline indentations and the southern/eastern borders. Still hard-coded so it stays offline and tiny.
-- Re-check `VE_BOUNDS` so the denser outline fits the SVG viewBox without clipping; adjust min/max lat-lng if needed.
-- `outlinePath()` and `projectToSvg()` stay as-is (the path builder already consumes the array), so `src/routes/mapa.tsx` needs no logic change — the bubbles and state dots keep projecting onto the new shape.
-- Verify in the live preview that the outline renders as Venezuela and the state bubbles still land in the right places.
+Seismic metrics mainly **amplify** observed damage and add caution; they only force Red in extreme combinations, to avoid false "evacuate" calls on visibly-undamaged buildings.
+
+```text
+MMI:        VI–VII  -> caution      VIII+ -> strong caution (red if any structural "yes")
+PGA:        >=0.25g -> caution      >=0.50g -> strong caution
+Spectral:   high demand at building period -> caution; +vulnerable structure -> red
+Soft soil:  vs30<360 -> caution + amplification note; vs30<180 -> reinforce liquefaction
+Combos:     (MMI VIII+ or PGA>=0.5g) AND (URM / any structural "yes") -> red
+```
+
+## Build steps
+
+### 1. Extract the HDF into a compact multi-layer grid (one-off)
+Python script reads `arrays/imts/GREATER_OF_TWO_HORIZONTAL/{MMI,PGA,PGV,SA(0.3),SA(0.6),SA(1.0),SA(3.0)}/mean` and `arrays/vs30`, converts the ln-unit IMTs to physical units (PGA/SA → g via `exp`, PGV → cm/s), downsamples ~3× (≈0.05°/~5 km) to keep the JSON ~1–2 MB, and writes a `SeismicGrid` JSON. Output seeded into the `seismic_events` row for event `us6000t7zp` as the single active event (replacing the MMI-only grid).
+
+### 2. Extend the seismic types & lookup (`src/lib/shakemap.ts`)
+- Generalize `MmiGrid` to `SeismicGrid` (shared axes + `layers: Record<LayerKey, (number|null)[]>`).
+- Add `seismicAt(grid, lat, lng)` → `{ mmi, roman, pga_g, pgv_cms, sa: {0.3,0.6,1.0,3.0}, vs30 }` reusing the existing bilinear interpolation, plus helpers `buildingPeriod(floors)`, `spectralDemandAt(grid, lat, lng, floors)`, and `soilClass(vs30)`.
+- Keep `intensityAt` as a thin wrapper for backward compatibility.
+
+### 3. Lookup server function (`src/lib/shakemap.functions.ts`)
+`getSeismicIntensity` returns the full enriched object (MMI + PGA + PGV + period-matched SA + soil class) instead of MMI only. The full grid still never leaves the server.
+
+### 4. Property capture (`src/lib/assessment-types.ts`, `src/routes/assess/property.tsx`)
+Add optional fields to `PropertyInfo`: `pga`, `pgv`, `vs30`, `soilClass`, `spectralDemand`, `buildingPeriod`. GPS auto-detection already runs here; populate these from the enriched lookup alongside the existing MMI fields. No new user input required.
+
+### 5. Deterministic rules (`src/lib/safety-rules.ts`)
+Replace the single `intensity` rule with the graduated rule set above (new i18n keys `rule.pga.*`, `rule.spectral.*`, `rule.softsoil.*`, graduated `rule.intensity.*`). Pass the new property fields + `floors` into `evaluateSafetyRules`. Findings surface in plain Spanish/English.
+
+### 6. AI context (`src/lib/assessment.functions.ts`)
+Extend the property zod schema and `buildPrompt` to include PGA (%g), PGV, the building's estimated period and the spectral demand at that period, and soil class — with short decision-guidance lines. `SYSTEM_PROMPT` gets a sentence on interpreting demand vs. building height.
+
+### 7. Result display (`src/routes/a/$publicId.tsx`)
+Compact "Contexto sísmico / Seismic context" block: shaking (PGA %g + MMI), soil class, and demand at the building's height.
+
+### 8. Docs (methodology + validation)
+Update `src/routes/metodologia.tsx` and regenerate the Spanish/English validation PDFs so every new threshold maps 1:1 to the code for the SME.
 
 ## Technical notes
-
-- The PDF is generated with a Python + `reportlab` script under `/tmp`, same approach as the English version; output goes to `/mnt/documents`.
-- The map change is data-only inside `src/lib/venezuela.ts`; no component or server changes.
-- I'll also quietly confirm the existing `/mapa` hydration warning is only from browser extensions (Dashlane/Kaspersky injecting attributes), not our code.
-
-## Open question
-
-The doc: Spanish-only is my default here. If you'd rather have a single **bilingual** file (Spanish + English) instead of a separate Spanish PDF, tell me and I'll merge them.
+- HDF IMTs are natural-log; convert during extraction so stored/displayed values are physical units.
+- Grid stays server-side; only the per-point result is returned.
+- `seismic_events.grid` already holds JSON — schema unchanged, just a richer payload (well within jsonb limits after downsampling).
+- USGS multi-metric live refresh for *future* quakes is intentionally out of scope (per your choice); `setActiveShakemapEvent` keeps working for MMI and can be extended later.
