@@ -33,7 +33,7 @@ export const Route = createFileRoute("/mapa")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "https://evaluaya.app/mapa" },
+        { property: "og:url", content: absoluteUrl("/mapa") },
         { property: "og:image", content: MAP_OG },
         { name: "twitter:image", content: MAP_OG },
       ],
