@@ -217,6 +217,9 @@ function AnalyzeStep() {
           <Loader2 className="size-4 animate-spin" />
           {label}
         </p>
+        <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
+          {t("analyze.savedHint")}
+        </p>
       </>
     );
   }
