@@ -25,15 +25,15 @@ import { useLang } from "@/lib/i18n";
 import { downloadAssessmentPdf } from "@/lib/pdf";
 import { RISK_THEME } from "@/lib/risk";
 import { generateResultCard, shareImageBlob } from "@/lib/share-card";
+import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const RESULT_OG = {
-  green:
-    "https://evaluaya.app/og-result-green.jpg",
-  yellow:
-    "https://evaluaya.app/og-result-yellow.jpg",
-  red: "https://evaluaya.app/og-result-red.jpg",
+  green: absoluteUrl("/og-result-green.jpg"),
+  yellow: absoluteUrl("/og-result-yellow.jpg"),
+  red: absoluteUrl("/og-result-red.jpg"),
 } as const;
+
 
 
 export const Route = createFileRoute("/a/$publicId")({
