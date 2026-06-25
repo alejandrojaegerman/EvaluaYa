@@ -255,7 +255,7 @@ function PropertyStep() {
             className={cn(
               "-mt-2 flex items-start gap-2 rounded-xl border p-3 text-sm",
               intensity.mmi >= 7
-                ? "border-[hsl(var(--risk-yellow))]/40 bg-[hsl(var(--risk-yellow))]/10"
+                ? "border-risk-yellow/40 bg-risk-yellow-soft"
                 : "border-border bg-card",
             )}
           >
