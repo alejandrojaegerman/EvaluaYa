@@ -249,6 +249,33 @@ function PropertyStep() {
           {t("property.locationHint")}
         </p>
 
+        {/* ShakeMap intensity (auto-detected) */}
+        {intensity && (
+          <div
+            className={cn(
+              "-mt-2 flex items-start gap-2 rounded-xl border p-3 text-sm",
+              intensity.mmi >= 7
+                ? "border-[hsl(var(--risk-yellow))]/40 bg-[hsl(var(--risk-yellow))]/10"
+                : "border-border bg-card",
+            )}
+          >
+            <Activity className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+            <div>
+              <p className="font-medium">
+                {t("property.intensityDetected")}:{" "}
+                <span className="font-bold tabular-nums">
+                  {intensity.roman} ({intensity.mmi})
+                </span>
+              </p>
+              {intensity.mmi >= 7 && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {t("property.intensityHigh")}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
 
         {/* Building type */}
         <div>
