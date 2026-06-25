@@ -317,6 +317,78 @@ const es: Dict = {
   "inst.success": "¡Gracias! Te contactaremos pronto.",
   "inst.error": "No se pudo enviar. Intenta de nuevo.",
   "inst.invalid": "Revisa la organización y el correo.",
+
+  "nav.methodology": "Metodología",
+  "home.methodologyLink": "Cómo se calcula el resultado",
+
+  "methodology.title": "Cómo funciona EvalúaYa",
+  "methodology.subtitle":
+    "Cómo calculamos el resultado y de dónde viene nuestra credibilidad.",
+  "methodology.maintainedBy":
+    "Esta página la mantiene el equipo de EvalúaYa para explicar cómo funciona la herramienta. Puede actualizarse a medida que mejoramos el método.",
+  "methodology.intro":
+    "EvalúaYa combina reglas de seguridad comprobadas con un análisis de inteligencia artificial sobre tus respuestas y fotos para dar una orientación rápida: verde, amarillo o rojo. Aquí explicamos cada paso para que puedas validarlo antes de usarlo o compartirlo.",
+
+  "methodology.layersTitle": "Dos capas de análisis",
+  "methodology.layersIntro":
+    "Cada evaluación pasa por dos capas. El resultado final siempre toma el nivel más severo de las dos.",
+
+  "methodology.layerA.title": "Capa 1 · Reglas de seguridad",
+  "methodology.layerA.body":
+    "Reglas deterministas basadas en criterios profesionales de inspección rápida. Se aplican siempre y pueden anular a la IA cuando hay señales claras de peligro para la vida.",
+  "methodology.red.title": "Obligan a ROJO (no entrar)",
+  "methodology.red.urm":
+    "Mampostería no reforzada: paredes de bloque o ladrillo sin estructura de concreto.",
+  "methodology.red.liquefaction":
+    "Señales de licuación del suelo: hundimientos, grietas con barro o agua.",
+  "methodology.red.pounding":
+    "Golpeteo entre edificios vecinos durante el sismo.",
+  "methodology.red.plumbing": "Daño grave en tuberías o gas.",
+  "methodology.yellow.title": "Elevan a AMARILLO (precaución)",
+  "methodology.yellow.intensity":
+    "Intensidad estimada del sismo MMI VII o mayor en tu ubicación.",
+  "methodology.yellow.floors": "Edificios de más de 7 pisos.",
+  "methodology.yellow.structure":
+    "Sistemas estructurales más vulnerables: pórticos de concreto, paredes de relleno, prefabricado o mampostería reforzada baja.",
+
+  "methodology.layerB.title": "Capa 2 · Análisis con IA",
+  "methodology.layerB.body":
+    "Tus respuestas del cuestionario y una foto clave por área se envían a un modelo de visión por IA, que actúa como un triaje rápido tipo ATC-20 y devuelve un nivel de riesgo con hallazgos y pasos en lenguaje sencillo. La IA es conservadora: ante la duda sobre la seguridad, no elige verde.",
+
+  "methodology.checklistTitle": "Qué inspeccionas",
+  "methodology.checklistBody":
+    "El cuestionario cubre 9 puntos estructurales obligatorios (fundaciones, paredes, columnas y vigas, techo, escaleras, licuación, golpeteo) y 4 puntos opcionales de servicios (pisos, plomería, electricidad, lámparas y objetos colgantes).",
+
+  "methodology.seismicTitle": "Contexto sísmico",
+  "methodology.seismicBody":
+    "Si compartes tu ubicación, estimamos la intensidad de sacudida (escala de Mercalli Modificada, MMI) interpolando la malla oficial de ShakeMap del USGS para el sismo activo. Una mayor intensidad eleva el nivel de precaución.",
+
+  "methodology.sourcesTitle": "Fuentes y credibilidad",
+  "methodology.sourcesIntro":
+    "Nuestra lógica se modela sobre marcos públicos reconocidos:",
+  "methodology.source.atc20":
+    "ATC-20 — Evaluación rápida de seguridad de edificios tras un sismo (el concepto de etiqueta verde/amarillo/rojo).",
+  "methodology.source.usgs":
+    "USGS ShakeMap y la escala de Intensidad de Mercalli Modificada (MMI) para la intensidad de sacudida.",
+  "methodology.source.urm":
+    "Consenso de ingeniería sísmica sobre la vulnerabilidad de la mampostería no reforzada y los pisos blandos.",
+  "methodology.source.ai":
+    "Modelo de visión por IA a través de Lovable AI Gateway, usado para el triaje preliminar (no es un certificador).",
+
+  "methodology.limitsTitle": "Límites y responsabilidad compartida",
+  "methodology.limit.notCert":
+    "Esto NO es una certificación ni reemplaza a un ingeniero colegiado o a Protección Civil. Es una orientación preliminar.",
+  "methodology.limit.surface":
+    "Solo evalúa lo visible que reportas. No inspecciona elementos ocultos, fundaciones enterradas ni el interior de los muros.",
+  "methodology.limit.depends":
+    "La calidad del resultado depende de tus respuestas y de la nitidez de las fotos.",
+  "methodology.limit.privacy":
+    "No se requiere registro. Solo usamos la zona (estado/municipio) para el mapa comunitario; nunca mostramos tu dirección exacta ni tus fotos.",
+
+  "methodology.ctaTitle": "¿Listo para evaluar?",
+  "methodology.cta": "Iniciar evaluación",
+  "methodology.disclaimer":
+    "En una emergencia, llama a Protección Civil o a los servicios de emergencia.",
 };
 
 const en: Dict = {
