@@ -130,6 +130,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "canonical", href: SITE_URL },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "EvalúaYa",
+          url: SITE_URL,
+          applicationCategory: "UtilitiesApplication",
+          operatingSystem: "Web",
+          inLanguage: "es-VE",
+          description:
+            "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal.",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
