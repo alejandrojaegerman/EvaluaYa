@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Download, MapPin } from "lucide-react";
+import { ArrowRight, Download, ImageDown, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
@@ -8,6 +9,7 @@ import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
+import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
 import {
   getDamageAggregates,
   getDamageTotals,
@@ -16,19 +18,29 @@ import {
 } from "@/lib/stats.functions";
 import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
 
+const MAP_OG = "https://evaluaya.app/og-map.jpg";
+
 export const Route = createFileRoute("/mapa")({
-  head: () => ({
-    meta: [
-      { title: "Mapa de daños — EvalúaYa" },
-      {
-        name: "description",
-        content:
-          "Mapa comunitario de daños estructurales por zona en Venezuela. Datos anónimos y abiertos.",
-      },
-    ],
-  }),
+  head: () => {
+    const title = "Mapa de daños — EvalúaYa";
+    const description =
+      "Mapa comunitario de daños estructurales por zona en Venezuela. Datos anónimos y abiertos.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: "https://evaluaya.app/mapa" },
+        { property: "og:image", content: MAP_OG },
+        { name: "twitter:image", content: MAP_OG },
+      ],
+    };
+  },
   component: MapPage,
 });
+
 
 type RiskKey = "red" | "yellow" | "green";
 
