@@ -190,6 +190,17 @@ const es: Dict = {
   "result.proofText": "evaluaciones realizadas hasta ahora",
   "result.viewMap": "Ver mapa de daños de tu zona",
 
+  "share.title": "Ayuda a difundir EvalúaYa",
+  "share.body":
+    "Compártelo con tu familia y vecinos. Mientras más personas evalúan sus viviendas, mejor entendemos los daños de cada zona.",
+  "share.whatsapp": "Compartir por WhatsApp",
+  "share.copy": "Copiar enlace",
+  "share.copied": "¡Enlace copiado!",
+  "share.message":
+    "Evalúa los daños de tu vivienda tras el sismo con EvalúaYa — gratis, sin registro y funciona con poca señal:",
+
+
+
   "inst.title": "¿Eres autoridad u organización?",
   "inst.body":
     "Si representas a una alcaldía, Protección Civil, una ONG o el sector privado y necesitas acceso a estos datos, déjanos tus datos.",
@@ -382,6 +393,17 @@ const en: Dict = {
   "result.inviteCta": "Invite a neighbor",
   "result.proofText": "assessments completed so far",
   "result.viewMap": "View your area's damage map",
+
+  "share.title": "Help spread EvalúaYa",
+  "share.body":
+    "Share it with your family and neighbors. The more people assess their homes, the better we understand each area's damage.",
+  "share.whatsapp": "Share on WhatsApp",
+  "share.copy": "Copy link",
+  "share.copied": "Link copied!",
+  "share.message":
+    "Assess your home's earthquake damage with EvalúaYa — free, no sign-up, works on low signal:",
+
+
 
   "inst.title": "Are you an authority or organization?",
   "inst.body":
