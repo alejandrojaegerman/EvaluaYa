@@ -13,7 +13,7 @@ import {
   type AreaAggregate,
   type DamageTotals,
 } from "@/lib/stats.functions";
-import { ESTADOS, getEstado, projectToSvg } from "@/lib/venezuela";
+import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/mapa")({
   head: () => ({
