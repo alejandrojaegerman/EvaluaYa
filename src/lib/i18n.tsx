@@ -690,6 +690,78 @@ const en: Dict = {
   "inst.success": "Thanks! We'll be in touch soon.",
   "inst.error": "Could not send. Please try again.",
   "inst.invalid": "Check the organization and email.",
+
+  "nav.methodology": "Methodology",
+  "home.methodologyLink": "How the result is calculated",
+
+  "methodology.title": "How EvalúaYa works",
+  "methodology.subtitle":
+    "How we calculate the result and where our credibility comes from.",
+  "methodology.maintainedBy":
+    "This page is maintained by the EvalúaYa team to explain how the tool works. It may be updated as we improve the method.",
+  "methodology.intro":
+    "EvalúaYa combines proven safety rules with an AI analysis of your answers and photos to give quick guidance: green, yellow or red. Here we explain each step so you can validate it before using or sharing it.",
+
+  "methodology.layersTitle": "Two layers of analysis",
+  "methodology.layersIntro":
+    "Every assessment runs through two layers. The final result always takes the more severe of the two.",
+
+  "methodology.layerA.title": "Layer 1 · Safety rules",
+  "methodology.layerA.body":
+    "Deterministic rules based on professional rapid-assessment practice. They always apply and can override the AI when there are clear life-safety hazards.",
+  "methodology.red.title": "Force RED (do not enter)",
+  "methodology.red.urm":
+    "Unreinforced masonry: block or brick walls without a concrete structure.",
+  "methodology.red.liquefaction":
+    "Signs of soil liquefaction: sinking, cracks with mud or water.",
+  "methodology.red.pounding":
+    "Pounding between neighboring buildings during the quake.",
+  "methodology.red.plumbing": "Severe plumbing or gas damage.",
+  "methodology.yellow.title": "Escalate to YELLOW (caution)",
+  "methodology.yellow.intensity":
+    "Estimated shaking intensity MMI VII or higher at your location.",
+  "methodology.yellow.floors": "Buildings taller than 7 floors.",
+  "methodology.yellow.structure":
+    "More vulnerable structural systems: concrete moment frames, infill walls, precast, or low-rise reinforced masonry.",
+
+  "methodology.layerB.title": "Layer 2 · AI analysis",
+  "methodology.layerB.body":
+    "Your checklist answers and one key photo per area are sent to an AI vision model that acts as an ATC-20-style rapid triage and returns a risk level with findings and steps in plain language. The AI is conservative: when safety is uncertain, it does not choose green.",
+
+  "methodology.checklistTitle": "What you inspect",
+  "methodology.checklistBody":
+    "The checklist covers 9 required structural points (foundations, walls, columns and beams, roof, stairs, liquefaction, pounding) and 4 optional utility points (floors, plumbing, electrical, hanging fixtures and objects).",
+
+  "methodology.seismicTitle": "Seismic context",
+  "methodology.seismicBody":
+    "If you share your location, we estimate the shaking intensity (Modified Mercalli Intensity, MMI) by interpolating the official USGS ShakeMap grid for the active earthquake. Higher intensity raises the caution level.",
+
+  "methodology.sourcesTitle": "Sources & credibility",
+  "methodology.sourcesIntro":
+    "Our logic is modeled on recognized public frameworks:",
+  "methodology.source.atc20":
+    "ATC-20 — Rapid post-earthquake building safety evaluation (the green/yellow/red placard concept).",
+  "methodology.source.usgs":
+    "USGS ShakeMap and the Modified Mercalli Intensity (MMI) scale for shaking intensity.",
+  "methodology.source.urm":
+    "Earthquake-engineering consensus on the vulnerability of unreinforced masonry and soft stories.",
+  "methodology.source.ai":
+    "AI vision model via the Lovable AI Gateway, used for preliminary triage (not a certifier).",
+
+  "methodology.limitsTitle": "Limits & shared responsibility",
+  "methodology.limit.notCert":
+    "This is NOT a certification and does not replace a licensed engineer or Civil Protection. It is preliminary guidance.",
+  "methodology.limit.surface":
+    "It only assesses the visible things you report. It does not inspect hidden elements, buried foundations, or the inside of walls.",
+  "methodology.limit.depends":
+    "Result quality depends on your answers and the sharpness of the photos.",
+  "methodology.limit.privacy":
+    "No sign-up required. We only use the area (state/municipality) for the community map; we never show your exact address or your photos.",
+
+  "methodology.ctaTitle": "Ready to assess?",
+  "methodology.cta": "Start assessment",
+  "methodology.disclaimer":
+    "In an emergency, call Civil Protection or emergency services.",
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };
