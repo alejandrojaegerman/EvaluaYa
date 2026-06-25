@@ -263,6 +263,13 @@ function Index() {
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             {t("disclaimer.body")}
           </p>
+          <Link
+            to="/metodologia"
+            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+          >
+            {t("home.methodologyLink")}
+            <ChevronRight className="size-3.5" aria-hidden />
+          </Link>
         </div>
       </section>
     </AppShell>
