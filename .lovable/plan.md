@@ -1,60 +1,72 @@
-## Goal
+# EvalúaYa — Growth Flywheel Plan
 
-Get EvalúaYa ready for a sudden wave of real first users (and the inevitable bots/curious testers) without burning AI credits, leaking storage, or sharing a messy link. The app is feature-complete — this is hardening + launch, not new features.
+The influencer traffic is real but leaking: of ~50 home visits, only ~10 start, ~6 reach the checklist, and ~3 finish the AI analysis. Almost all traffic is mobile, from Instagram, inside Venezuela. The flywheel is: **more people finish → more data on the public map → the map becomes the thing worth sharing → more people come and finish.** This plan builds all three loops plus the privacy-safe data foundation.
 
-## 1. Protect the AI endpoint (per-device/IP rate limit)
+```text
+  Influencer / shares ──▶ Land on home ──▶ Finish assessment ──▶ Result + WhatsApp share
+         ▲                                          │                        │
+         └──────── Public damage map ◀── anonymized aggregate ◀─────────────┘
+```
 
-`analyzeAssessment` is a public, login-free endpoint that uploads a photo, calls the AI (costs credits), and writes to the DB. Under a viral spike or light abuse, this is the main cost/abuse risk.
+## Phase 1 — Fix the conversion funnel
+Goal: more of the existing traffic actually completes an assessment.
 
-Important tradeoff: the backend has no built-in rate-limiting primitive and workers are stateless, so an in-memory counter won't work. We'll implement an **ad-hoc, database-backed limiter** (you approved per-device/IP limiting).
+- **Home page**: add a live trust counter ("X edificios evaluados · X zonas"), a clear "2 minutos, sin registro" promise, and a secondary CTA to the public map. Make the primary CTA unmistakable on mobile.
+- **Progress + reassurance**: show a step indicator (1 of 3, "7 preguntas rápidas") across property → checklist → analyze so the length feels finite. Reinforce "las fotos son opcionales."
+- **Property step**: keep it to one screen; make address optional and add a simple **Estado / Municipio** picker (drives the map later) so location is structured but coarse.
+- **Resilience on analyze**: keep the existing offline-retry; add a friendly fallback so a single AI/photo failure never dead-ends the user.
 
-- New migration: `public.analysis_rate_limits` table keyed by a hash of (client IP + device id) with a rolling time window and a counter. RLS enabled, **no anon/authenticated policies**, `GRANT` to `service_role` only (all access is server-side).
-- In `analyzeAssessment.handler`:
-  - Read the caller IP from request headers (`x-forwarded-for`) via `getRequestHeader`, combined with a client-generated device id sent in the payload.
-  - Enforce a sane cap (default **6 analyses per hour** per key) using an atomic upsert/window check before any upload or AI call.
-  - When exceeded, return a new typed result `{ ok: false, errorCode: "throttled" }` — no AI spend.
-- Client (`draft-store` / analyze flow): generate a persistent device id in localStorage and include it in the request.
-- `analyze.tsx` + i18n (`i18n.tsx`): add ES/EN copy for the throttled state ("Has alcanzado el límite de análisis por ahora, intenta más tarde") and surface it in the existing error UI.
+## Phase 2 — Community sharing loop
+Goal: every finisher recruits the next.
 
-## 2. Add a server-side payload guard
+- **Result page**: add a prominent **WhatsApp share** (dominant channel in VE) with a pre-filled Spanish message + link, plus an "Evalúa tu edificio también" invite back to home.
+- **Rich link previews**: generate a per-result, risk-colored Open Graph share image and wire dynamic `og:image`/`twitter:image` from the result loader so shared links look credible in WhatsApp/Instagram.
+- **Local proof**: on the result, show "X evaluaciones en tu zona" and a CTA to the public map, closing the loop from a private result to the shared public good.
 
-Client compresses photos, but a malicious caller can bypass that.
+## Phase 3 — Public damage map + stats dashboard
+Goal: the visible payoff that makes the project worth talking about and useful to authorities/press.
 
-- In `analyzeAssessment`, reject any `photoDataUrl` larger than a hard cap (~2.5MB decoded) before uploading/sending to the AI. Tighten the Zod schema with a max length on the data URL.
+- New public route `/mapa` (linked from home, result, and nav):
+  - **Map** with markers per Estado/Municipio, sized by report count and colored by dominant risk (green/yellow/red). Coarse area only — never an exact address or building-level pin.
+  - **Summary stats**: total assessments, % red/yellow/green, most-affected areas, last-updated.
+  - **Area breakdown list** for low-bandwidth/no-map fallback.
+- Fully public, no login, bilingual, mobile-first and lightweight (map library lazy-loaded only on this route).
 
-## 3. Close the storage exposure finding
+## Phase 4 — Data foundation for institutions
+Goal: keep the door open for government / NGOs / private sector (audience TBD) without exposing anyone.
 
-The scanner flags `assessment-photos` (private bucket) as having no storage policies. In this app every upload/download is brokered exclusively through `service_role` server functions (which bypass RLS), the bucket is private, and no client code ever touches the Storage API directly — so anon/authenticated are already default-denied.
+- A public **anonymized aggregate** layer (counts by area + risk, no addresses, no photos) is the only thing ever exposed publicly — this powers Phase 3 and any future partner use.
+- Add a **public JSON/CSV download** of the aggregated, non-PII data on `/mapa` so analysts can use it immediately.
+- Add a lightweight **"¿Eres autoridad u organización?"** capture (name, org, email) to collect interested institutions and learn who actually shows up before we build deeper access.
 
-- Re-verify the bucket is private and confirm no client path uses storage directly.
-- Mark the finding resolved as not-applicable with that justification and update the security memory to document the access model (private bucket, service-role-only brokered access) so future scans don't re-flag it.
+---
 
-(We won't add policies directly on the managed `storage` schema; default-deny + private bucket already covers it.)
+## Technical details
 
-## 4. Credit safety (alerts only)
+**Database (migration)**
+- Add to `assessments`: `state text`, `municipality text` (structured coarse location; free-text address stays optional and is never exposed publicly). Keep raw table service-role-only as today.
+- Create a SQL **view** `public_damage_aggregates` grouping by `state`/`municipality` with per-risk counts and a total — **no** address, photos, or `public_id`. `GRANT SELECT ... TO anon` on the view only.
+- Create `institution_leads` table (org, contact name, email, note) with `INSERT`-only for anon, no public SELECT; reads brokered server-side.
 
-Per your choice, configure notification-only credit alerts (no auto-block) so a surge warns you before it drains the balance. I'll check existing limits and set/adjust an AI-gateway/workspace usage alert threshold; if no matching limit exists to update, I'll tell you so you can add one in Settings.
+**Location handling**
+- Add a static lookup of Venezuela's 24 estados (and key municipios) with centroid lat/lng so the map needs no per-request geocoding — low bandwidth, no exact-location storage. Map markers render at estado/municipio centroids, not user coordinates.
 
-## 5. Clean up share metadata
+**Server functions**
+- `getDamageAggregates` — public read via the publishable (anon) client against `public_damage_aggregates`; cache-friendly; returns only counts. Used by `/mapa` loader (safe for SSR/prerender).
+- `getHomeStats` — small public counts for the home trust counter.
+- `submitInstitutionLead` — validated (Zod) insert into `institution_leads`.
+- Extend `analyzeAssessment` input to persist `state`/`municipality`.
 
-`src/routes/__root.tsx` currently has duplicate/conflicting `description`, `og:description`, and `twitter:description` tags (the disclaimer text got pasted in twice and is truncated). For a link an influencer is spreading, this needs to be clean.
+**Sharing / OG image**
+- Result route `head()` already loads from the loader; add `og:image`/`twitter:image` pointing to a generated risk card (static per-risk asset to start; dynamic per-result image is a possible follow-up). `twitter:card` = `summary_large_image`.
 
-- Remove the duplicate/truncated meta entries; keep one concise, compelling Spanish `description`, `og:description`, and `twitter:description`.
-- Keep the existing OG image, title, theme-color, and PWA tags.
-- Switch `twitter:card` to `summary_large_image` so the OG image renders large in shares.
+**Map rendering**
+- Use the Google Maps connector (already available) lazy-loaded only on `/mapa`, markers via `google.maps.Marker`, no `mapId`. Always-available list fallback so the page is useful even if the map script is blocked or slow.
 
-## 6. Publish
+**Robustness**
+- Add `errorComponent`/`notFoundComponent` to routes with loaders (result + map).
+- Keep existing rate limiting; aggregates are read-only and cacheable.
+- Re-run the security scan after the migration to confirm only the intended anon view/insert are exposed.
 
-- Confirm publish visibility is **public** (so anyone with the link can open it — not workspace-only).
-- Run a fresh security scan, then publish so the live site at evaluaya.app reflects all the above.
-
-## Technical notes
-
-- Rate-limit table is service-role-only; the limiter runs entirely inside the server function before any spend.
-- Device id is a non-PII random token in localStorage; IP is only stored hashed.
-- No changes to the assessment flow, UI design, or AI prompt logic beyond the throttle/guard error paths.
-
-## Out of scope
-
-- Login/accounts (app is intentionally anonymous).
-- New product features or design changes.
+## Out of scope (flagging for later)
+- Per-result dynamic OG image generation, full institutional API/auth, and verified partner dashboards — deferred until we see which institutions engage via the lead capture.

@@ -35,6 +35,8 @@ const analyzeSchema = z.object({
   deviceId: z.string().min(1).max(64).optional().default(""),
   property: z.object({
     address: z.string().max(300).optional().default(""),
+    state: z.string().max(120).optional().default(""),
+    municipality: z.string().max(120).optional().default(""),
     buildingType: z.enum(["house", "apartment", "commercial"]),
     floors: z.number().int().min(1).max(200),
     age: z.enum(["pre1970", "1970to2000", "post2000"]),
@@ -230,6 +232,8 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       public_id: publicId,
       language: data.language,
       property: data.property,
+      state: data.property.state?.trim() || null,
+      municipality: data.property.municipality?.trim() || null,
       answers: storedAnswers,
       ai_result: aiResult,
       risk_level: aiResult.risk_level,

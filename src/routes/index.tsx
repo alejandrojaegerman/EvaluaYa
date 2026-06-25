@@ -7,6 +7,7 @@ import {
   Info,
   History,
   ChevronRight,
+  Map as MapIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -15,6 +16,7 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { getHistory, type HistoryEntry } from "@/lib/history";
+import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,10 +36,16 @@ function Index() {
   const { t } = useLang();
   const navigate = useNavigate();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [totals, setTotals] = useState<DamageTotals | null>(null);
 
   useEffect(() => {
     setHistory(getHistory());
+    getDamageTotals()
+      .then(setTotals)
+      .catch(() => setTotals(null));
   }, []);
+
+  const hasTotals = !!totals && totals.total > 0;
 
   const steps = [
     { icon: Building2, title: t("home.how1Title"), desc: t("home.how1Desc") },
@@ -63,6 +71,53 @@ function Index() {
           {t("home.startCta")}
           <ArrowRight className="size-5" />
         </Button>
+        <p className="mt-3 text-center text-xs font-medium text-primary-foreground/80">
+          {t("home.timePromise")}
+        </p>
+      </section>
+
+      {/* Live trust counters */}
+      {hasTotals && (
+        <section className="mt-6 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
+            <p className="font-display text-2xl font-extrabold text-primary">
+              {totals!.total.toLocaleString()}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("home.statBuildings")}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
+            <p className="font-display text-2xl font-extrabold text-primary">
+              {totals!.areas.toLocaleString()}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("home.statAreas")}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Community map CTA */}
+      <section className="mt-4">
+        <Link
+          to="/mapa"
+          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+            <MapIcon className="size-5" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold leading-tight">{t("home.mapTitle")}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("home.mapDesc")}
+            </p>
+          </div>
+          <ChevronRight
+            className="size-4 shrink-0 text-muted-foreground"
+            aria-hidden
+          />
+        </Link>
       </section>
 
       {/* How it works */}

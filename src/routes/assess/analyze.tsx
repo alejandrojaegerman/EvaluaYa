@@ -56,6 +56,8 @@ function AnalyzeStep() {
           deviceId: getDeviceId(),
           property: {
             address: draft.property.address ?? "",
+            state: draft.property.state ?? "",
+            municipality: draft.property.municipality ?? "",
             buildingType: draft.property.buildingType,
             floors: draft.property.floors ?? 1,
             age: draft.property.age,
