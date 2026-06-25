@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Building2, Home, Store, Minus, Plus, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Building2, Home, Store, Minus, Plus, ArrowRight, LocateFixed } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
