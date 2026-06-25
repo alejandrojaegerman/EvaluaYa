@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
+  FileDown,
   Info,
   Layers,
   MapPin,
@@ -229,7 +230,32 @@ function MethodologyPage() {
         </p>
       </section>
 
+      {/* For engineers — downloadable technical spec */}
+      <section className="mt-8 rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="flex items-center gap-2">
+          <FileDown className="size-4 text-muted-foreground" aria-hidden />
+          <h2 className="font-display text-lg font-bold">
+            {t("methodology.engineersTitle")}
+          </h2>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {t("methodology.engineersBody")}
+        </p>
+        <Button asChild size="lg" variant="outline" className="mt-4 w-full">
+          <a
+            href="/evaluaya-algorithm-spec.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+          >
+            <FileDown className="size-4" aria-hidden />
+            {t("methodology.specDownload")}
+          </a>
+        </Button>
+      </section>
+
       {/* CTA */}
+
       <section className="mt-8 rounded-2xl border border-border bg-card p-5 text-center shadow-sm">
         <h2 className="font-display text-lg font-bold">
           {t("methodology.ctaTitle")}
