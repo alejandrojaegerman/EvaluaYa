@@ -35,8 +35,12 @@ export const Route = createFileRoute("/mapa")({
         { property: "og:type", content: "website" },
         { property: "og:url", content: absoluteUrl("/mapa") },
         { property: "og:image", content: MAP_OG },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
         { name: "twitter:image", content: MAP_OG },
       ],
+      links: [{ rel: "canonical", href: absoluteUrl("/mapa") }],
     };
   },
   component: MapPage,
