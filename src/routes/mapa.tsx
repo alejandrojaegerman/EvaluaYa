@@ -351,6 +351,9 @@ function MapPage() {
         <InstitutionLeadForm />
       </section>
 
+      {/* Spread the word — flywheel */}
+      <ShareApp className="mt-6" />
+
       {/* CTA to start an assessment */}
       <section className="mt-6">
         <Button asChild size="lg" className="w-full">
