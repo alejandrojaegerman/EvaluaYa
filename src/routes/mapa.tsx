@@ -93,7 +93,7 @@ function MapPage() {
         if (!est) return null;
         const { x, y } = projectToSvg(est.lat, est.lng, MAP_W, MAP_H);
         const r = 6 + (v.total / maxTotal) * 22;
-        return { state, x, y, r, level: dominantRisk(v), ...v };
+        return { state, abbr: est.abbr, x, y, r, level: dominantRisk(v), ...v };
       })
       .filter((b): b is NonNullable<typeof b> => b !== null)
       .sort((a, b) => b.r - a.r);
