@@ -46,7 +46,7 @@ export const Route = createFileRoute("/a/$publicId")({
   head: ({ params, loaderData }) => {
     const level = loaderData?.record?.riskLevel ?? "yellow";
     const ogImage = RESULT_OG[level];
-    const url = `https://evaluaya.app/a/${params.publicId}`;
+    const url = absoluteUrl(`/a/${params.publicId}`);
     const title = "Mi evaluación estructural — EvalúaYa";
     const description =
       "Resultado de una autoevaluación de daños estructurales con EvalúaYa. Evalúa tu vivienda gratis y sin registro.";
