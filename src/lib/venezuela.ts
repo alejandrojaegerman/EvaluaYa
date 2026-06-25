@@ -86,3 +86,48 @@ export function projectToSvg(
   const y = ((maxLat - lat) / (maxLat - minLat)) * height;
   return { x, y };
 }
+
+// Coarse outline of Venezuela's national border as [lat, lng] pairs, traced
+// roughly clockwise. Intentionally low-resolution to keep the bundle tiny — it
+// is only a faint backdrop so the bubble map reads as a country, not a chart.
+export const VE_OUTLINE: [number, number][] = [
+  [11.6, -71.3],
+  [12.2, -70.0],
+  [11.6, -69.8],
+  [10.9, -68.3],
+  [10.6, -67.0],
+  [10.7, -66.3],
+  [10.6, -65.2],
+  [10.7, -63.9],
+  [10.7, -63.0],
+  [10.7, -61.9],
+  [9.8, -60.0],
+  [8.6, -60.1],
+  [8.5, -60.6],
+  [6.8, -61.4],
+  [5.2, -60.7],
+  [4.5, -61.1],
+  [3.9, -62.8],
+  [1.4, -64.8],
+  [0.9, -66.3],
+  [1.8, -67.1],
+  [2.8, -67.8],
+  [3.8, -67.5],
+  [4.0, -67.9],
+  [6.1, -67.5],
+  [6.3, -69.4],
+  [7.1, -70.8],
+  [9.0, -72.0],
+  [9.4, -73.0],
+  [11.0, -72.5],
+];
+
+/** Build an SVG path `d` string for the country outline in the given space. */
+export function outlinePath(width: number, height: number): string {
+  return (
+    VE_OUTLINE.map(([lat, lng], i) => {
+      const { x, y } = projectToSvg(lat, lng, width, height);
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+    }).join(" ") + " Z"
+  );
+}
