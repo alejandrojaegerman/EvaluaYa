@@ -75,9 +75,11 @@ function AnalyzeStep() {
         setErrorMsg(
           result.errorCode === "rate_limited"
             ? t("analyze.rateLimited")
-            : result.errorCode === "credits"
-              ? t("analyze.creditsError")
-              : t("analyze.genericError"),
+            : result.errorCode === "throttled"
+              ? t("analyze.throttled")
+              : result.errorCode === "credits"
+                ? t("analyze.creditsError")
+                : t("analyze.genericError"),
         );
         setPhase("error");
         return;
