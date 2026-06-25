@@ -247,5 +247,3 @@ function MethodologyPage() {
     </AppShell>
   );
 }
-
-import { Info } from "lucide-react";
