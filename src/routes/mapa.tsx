@@ -152,8 +152,42 @@ function MapPage() {
     URL.revokeObjectURL(url);
   }
 
+  const [cardBusy, setCardBusy] = useState(false);
+
+  async function shareStats() {
+    if (!totals || cardBusy) return;
+    setCardBusy(true);
+    try {
+      const top = topAreas[0];
+      const blob = await generateStatsCard({
+        total: totals.total,
+        red: totals.red,
+        yellow: totals.yellow,
+        green: totals.green,
+        headline: t("map.cardHeadline"),
+        topAreaLabel:
+          top?.municipality || top?.state
+            ? `${top.municipality ? top.municipality + ", " : ""}${top.state ?? ""}`.trim()
+            : undefined,
+        cta: t("map.cardCta"),
+        url: window.location.origin,
+      });
+      const outcome = await shareImageBlob(blob, {
+        filename: "evaluaya-mapa.png",
+        title: "EvalúaYa",
+        text: `${t("share.message")} ${window.location.origin}`,
+      });
+      if (outcome === "downloaded") toast.success(t("share.imageSaved"));
+    } catch {
+      toast.error(t("result.genericError"));
+    } finally {
+      setCardBusy(false);
+    }
+  }
+
   const pct = (n: number) =>
     totals && totals.total > 0 ? Math.round((n / totals.total) * 100) : 0;
+
 
   return (
     <AppShell>
