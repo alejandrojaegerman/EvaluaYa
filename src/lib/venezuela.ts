@@ -87,9 +87,9 @@ export function projectToSvg(
   return { x, y };
 }
 
-// Coarse outline of Venezuela's national border as [lat, lng] pairs, traced
-// roughly clockwise. Intentionally low-resolution to keep the bundle tiny — it
-// is only a faint backdrop so the bubble map reads as a country, not a chart.
+// National border of Venezuela as [lat, lng] pairs (simplified from public
+// GeoJSON, ~91 points). Hard-coded so the map stays fully offline and tiny
+// while the silhouette is clearly recognizable as the country.
 export const VE_OUTLINE: [number, number][] = [
   [11.78, -71.33], [11.54, -71.36], [11.42, -71.95], [10.97, -71.62],
   [10.45, -71.63], [9.87, -72.07], [9.07, -71.7], [9.14, -71.26],
