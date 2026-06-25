@@ -88,6 +88,39 @@ function Index() {
         </p>
       </section>
 
+      {/* Pending submission — offline-first resume card */}
+      {pending && (
+        <section className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              {online ? (
+                <CloudUpload className="size-5" aria-hidden />
+              ) : (
+                <WifiOff className="size-5" aria-hidden />
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold leading-tight">
+                {t("home.pendingTitle")}
+              </p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                {online ? t("home.pendingBody") : t("home.pendingOffline")}
+              </p>
+            </div>
+          </div>
+          <Button
+            size="lg"
+            disabled={!online}
+            onClick={() => navigate({ to: "/assess/analyze" })}
+            className="mt-3 w-full"
+          >
+            <CloudUpload className="size-4" />
+            {t("home.pendingCta")}
+          </Button>
+        </section>
+      )}
+
+
       {/* Live trust counters */}
       {hasTotals && (
         <section className="mt-6 grid grid-cols-2 gap-3">
