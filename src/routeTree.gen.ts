@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
+import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,33 +29,47 @@ const AssessChecklistRoute = AssessChecklistRouteImport.update({
   path: '/assess/checklist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssessAnalyzeRoute = AssessAnalyzeRouteImport.update({
+  id: '/assess/analyze',
+  path: '/assess/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assess/checklist' | '/assess/property'
+  fullPaths: '/' | '/assess/analyze' | '/assess/checklist' | '/assess/property'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assess/checklist' | '/assess/property'
-  id: '__root__' | '/' | '/assess/checklist' | '/assess/property'
+  to: '/' | '/assess/analyze' | '/assess/checklist' | '/assess/property'
+  id:
+    | '__root__'
+    | '/'
+    | '/assess/analyze'
+    | '/assess/checklist'
+    | '/assess/property'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssessAnalyzeRoute: typeof AssessAnalyzeRoute
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
 }
@@ -82,11 +97,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessChecklistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assess/analyze': {
+      id: '/assess/analyze'
+      path: '/assess/analyze'
+      fullPath: '/assess/analyze'
+      preLoaderRoute: typeof AssessAnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssessAnalyzeRoute: AssessAnalyzeRoute,
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
 }
