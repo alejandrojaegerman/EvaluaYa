@@ -99,6 +99,8 @@ const es: Dict = {
   "analyze.errorTitle": "No se pudo completar el análisis",
   "analyze.rateLimited":
     "Hay demasiadas solicitudes en este momento. Espera un momento e inténtalo de nuevo.",
+  "analyze.throttled":
+    "Has alcanzado el límite de análisis por ahora. Espera un poco antes de evaluar otra propiedad.",
   "analyze.creditsError":
     "El servicio de IA no está disponible temporalmente. Inténtalo más tarde.",
   "analyze.genericError":
@@ -222,6 +224,8 @@ const en: Dict = {
   "analyze.errorTitle": "The analysis could not be completed",
   "analyze.rateLimited":
     "Too many requests right now. Please wait a moment and try again.",
+  "analyze.throttled":
+    "You've reached the analysis limit for now. Please wait a bit before assessing another property.",
   "analyze.creditsError":
     "The AI service is temporarily unavailable. Please try again later.",
   "analyze.genericError":

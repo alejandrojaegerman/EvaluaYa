@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      analysis_rate_limits: {
+        Row: {
+          count: number
+          id: string
+          request_key: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          id?: string
+          request_key: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          id?: string
+          request_key?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           ai_result: Json | null

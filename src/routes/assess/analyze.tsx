@@ -12,6 +12,7 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { analyzeAssessment } from "@/lib/assessment.functions";
+import { getDeviceId } from "@/lib/device-id";
 import { clearDraft, loadDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { addHistory } from "@/lib/history";
 import { useLang } from "@/lib/i18n";
@@ -52,6 +53,7 @@ function AnalyzeStep() {
       const result = await analyzeAssessment({
         data: {
           language: draft.language,
+          deviceId: getDeviceId(),
           property: {
             address: draft.property.address ?? "",
             buildingType: draft.property.buildingType,
@@ -73,9 +75,11 @@ function AnalyzeStep() {
         setErrorMsg(
           result.errorCode === "rate_limited"
             ? t("analyze.rateLimited")
-            : result.errorCode === "credits"
-              ? t("analyze.creditsError")
-              : t("analyze.genericError"),
+            : result.errorCode === "throttled"
+              ? t("analyze.throttled")
+              : result.errorCode === "credits"
+                ? t("analyze.creditsError")
+                : t("analyze.genericError"),
         );
         setPhase("error");
         return;

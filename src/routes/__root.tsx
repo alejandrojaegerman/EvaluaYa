@@ -108,14 +108,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "EvalúaYa — Evaluación estructural" },
       {
         property: "og:description",
-        content: "Autoevaluación de daños estructurales tras un sismo.",
+        content:
+          "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:site_name", content: "EvalúaYa" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "EvalúaYa — Evaluación estructural" },
-      { name: "description", content: "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inmi" },
-      { property: "og:description", content: "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inmi" },
-      { name: "twitter:description", content: "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inmi" },
+      {
+        name: "twitter:description",
+        content:
+          "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal.",
+      },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/1446726a-7122-498f-b172-31f31809a219" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/1446726a-7122-498f-b172-31f31809a219" },
     ],
