@@ -36,7 +36,7 @@ const es: Dict = {
   "home.how1Title": "Datos de la propiedad",
   "home.how1Desc": "Registra el tipo de edificación, pisos y antigüedad.",
   "home.how2Title": "Inspección guiada",
-  "home.how2Desc": "Responde 7 preguntas y sube una foto de cada área.",
+  "home.how2Desc": "Responde el cuestionario y sube una foto de cada área.",
   "home.how3Title": "Análisis con IA",
   "home.how3Desc": "Recibe un nivel de riesgo y pasos recomendados.",
   "home.recentTitle": "Evaluaciones recientes",
@@ -55,7 +55,28 @@ const es: Dict = {
   "property.type.house": "Casa",
   "property.type.apartment": "Apartamento",
   "property.type.commercial": "Comercial",
+  "property.structuralType": "Sistema estructural",
+  "property.structuralType.help":
+    "Si no estás seguro, elige “No estoy seguro”.",
+  "property.struct.URM": "Mampostería sin refuerzo (paredes de bloque/ladrillo)",
+  "property.struct.URM.desc":
+    "Paredes de bloque o ladrillo sin columnas ni vigas de concreto que las sostengan.",
+  "property.struct.CMF": "Pórtico de concreto (columnas y vigas)",
+  "property.struct.CMF.desc": "Estructura de columnas y vigas de concreto armado.",
+  "property.struct.CIW": "Pórtico de concreto con paredes de relleno",
+  "property.struct.CIW.desc":
+    "Columnas y vigas de concreto con paredes de bloque entre ellas.",
+  "property.struct.PCF": "Concreto prefabricado",
+  "property.struct.PCF.desc": "Elementos de concreto fabricados y luego montados.",
+  "property.struct.RML": "Mampostería reforzada (baja altura)",
+  "property.struct.RML.desc":
+    "Paredes de bloque/ladrillo con refuerzo de acero, pocos pisos.",
+  "property.struct.unknown": "No estoy seguro",
+  "property.struct.unknown.desc": "No sé de qué está hecha la estructura.",
   "property.floors": "Número de pisos",
+  "property.floorsHigh": "Más de 7 pisos: se recomienda precaución adicional.",
+  "property.intensityDetected": "Intensidad sísmica estimada en esta ubicación",
+  "property.intensityHigh": "Intensidad alta (VII+): precaución adicional.",
   "property.age": "Antigüedad aproximada",
   "property.age.pre1970": "Antes de 1970",
   "property.age.1970to2000": "1970 – 2000",
@@ -78,11 +99,29 @@ const es: Dict = {
 
   "item.foundation.area": "Cimientos",
   "item.foundation.q": "¿Hay grietas visibles o hundimientos en los cimientos?",
+  "item.liquefaction.area": "Suelo / licuefacción",
+  "item.liquefaction.q":
+    "¿Hay señales de licuefacción del suelo? (agua y arena brotando, charcos donde no había agua, grietas grandes en suelo inclinado, tuberías o tanques que salieron a la superficie, o estructuras hundidas o inclinadas)",
   "item.exterior_walls.area": "Muros exteriores",
   "item.exterior_walls.q":
     "¿Hay grietas diagonales o separación respecto a edificios vecinos?",
+  "item.pounding.area": "Golpeteo entre edificios",
+  "item.pounding.q":
+    "¿El edificio chocó o golpeó contra una edificación vecina durante el sismo?",
   "item.interior_walls.area": "Muros interiores",
   "item.interior_walls.q": "¿Hay grietas más anchas de 1 cm?",
+  "item.flooring.area": "Pisos",
+  "item.flooring.q":
+    "¿Hay pisos pandeados, baldosas levantadas o nuevos espacios entre el piso y el rodapié?",
+  "item.plumbing.area": "Plomería / gas",
+  "item.plumbing.q":
+    "¿Hay tuberías con fugas, grietas o separadas? ¿Escuchas agua corriendo o hueles gas? (Si hueles gas, cierra la llave principal)",
+  "item.electrical.area": "Electricidad",
+  "item.electrical.q":
+    "¿Hay breakers disparados, tomacorrientes dañados o cables expuestos?",
+  "item.fixtures.area": "Lámparas / accesorios",
+  "item.fixtures.q":
+    "¿Hay lámparas colgando torcidas o cajas eléctricas separadas por el sismo?",
   "item.columns_beams.area": "Columnas / vigas",
   "item.columns_beams.q":
     "¿Hay concreto desprendido (descascarado) o acero (cabilla) expuesto?",
@@ -92,6 +131,36 @@ const es: Dict = {
   "item.roof.q": "¿Hay deformación visible o colapso del techo?",
   "item.stairs.area": "Escaleras",
   "item.stairs.q": "¿Hay escaleras agrietadas o separadas de los muros?",
+
+  "rule.urm.finding":
+    "Edificación de mampostería sin refuerzo: muy vulnerable tras un sismo fuerte.",
+  "rule.urm.step":
+    "No la consideres segura para entrar. Espera la evaluación de un ingeniero o Protección Civil.",
+  "rule.liquefaction.finding":
+    "Señales de licuefacción del suelo: el terreno perdió capacidad de soporte.",
+  "rule.liquefaction.step":
+    "No entres. La estructura puede asentarse o inclinarse. Evacúa y reporta a las autoridades.",
+  "rule.pounding.finding":
+    "Golpeteo con un edificio vecino: posible daño estructural severo.",
+  "rule.pounding.step": "No entres y evacúa la zona de contacto entre edificios.",
+  "rule.plumbing.finding":
+    "Daño severo de plomería o posible fuga de gas: riesgo inmediato.",
+  "rule.plumbing.step":
+    "Cierra la llave principal de gas y agua, no enciendas luces ni llamas, y evacúa.",
+  "rule.intensity.finding":
+    "Sacudida sísmica intensa (intensidad VII o mayor) en esta ubicación.",
+  "rule.intensity.step":
+    "Aumenta la precaución: revisa con más cuidado y prioriza una evaluación profesional.",
+  "rule.floors.finding":
+    "Edificación de más de 7 pisos: requiere precaución adicional.",
+  "rule.floors.step":
+    "Limita el uso hasta que un ingeniero confirme la seguridad de los pisos superiores.",
+  "rule.structure.finding":
+    "El sistema estructural de esta edificación requiere precaución adicional.",
+  "rule.structure.step":
+    "Limita el uso y prioriza una evaluación profesional.",
+
+
 
   "analyze.title": "Analizando",
   "analyze.uploading": "Procesando fotos…",
@@ -256,7 +325,7 @@ const en: Dict = {
   "home.how1Title": "Property details",
   "home.how1Desc": "Record building type, floors and age.",
   "home.how2Title": "Guided inspection",
-  "home.how2Desc": "Answer 7 questions and add a photo for each area.",
+  "home.how2Desc": "Answer the questionnaire and add a photo for each area.",
   "home.how3Title": "AI analysis",
   "home.how3Desc": "Get a risk level and recommended next steps.",
   "home.recentTitle": "Recent assessments",
@@ -275,7 +344,27 @@ const en: Dict = {
   "property.type.house": "House",
   "property.type.apartment": "Apartment",
   "property.type.commercial": "Commercial",
+  "property.structuralType": "Structural system",
+  "property.structuralType.help": "If unsure, choose “Not sure”.",
+  "property.struct.URM": "Unreinforced masonry (block/brick walls)",
+  "property.struct.URM.desc":
+    "Block or brick walls with no concrete columns or beams supporting them.",
+  "property.struct.CMF": "Concrete moment frame (columns & beams)",
+  "property.struct.CMF.desc": "A frame of reinforced concrete columns and beams.",
+  "property.struct.CIW": "Concrete frame with infill walls",
+  "property.struct.CIW.desc":
+    "Concrete columns and beams with block walls filling between them.",
+  "property.struct.PCF": "Precast concrete",
+  "property.struct.PCF.desc": "Concrete elements made elsewhere and assembled on site.",
+  "property.struct.RML": "Reinforced masonry (low-rise)",
+  "property.struct.RML.desc":
+    "Block/brick walls with steel reinforcement, few floors.",
+  "property.struct.unknown": "Not sure",
+  "property.struct.unknown.desc": "I don't know what the structure is made of.",
   "property.floors": "Number of floors",
+  "property.floorsHigh": "Over 7 floors: extra caution is recommended.",
+  "property.intensityDetected": "Estimated shaking intensity at this location",
+  "property.intensityHigh": "High intensity (VII+): extra caution.",
   "property.age": "Approximate age",
   "property.age.pre1970": "Before 1970",
   "property.age.1970to2000": "1970 – 2000",
@@ -298,11 +387,29 @@ const en: Dict = {
 
   "item.foundation.area": "Foundation",
   "item.foundation.q": "Are there visible cracks or shifts in the foundation?",
+  "item.liquefaction.area": "Ground / liquefaction",
+  "item.liquefaction.q":
+    "Are there signs of soil liquefaction? (water and sand bubbling up, pooling water where there was none, large fissures on sloping ground, pipes or tanks pushed to the surface, or sunken/tilted structures)",
   "item.exterior_walls.area": "Exterior walls",
   "item.exterior_walls.q":
     "Are there diagonal cracks or separation from neighboring buildings?",
+  "item.pounding.area": "Building pounding",
+  "item.pounding.q":
+    "Did the building collide or pound against an adjacent building during the quake?",
   "item.interior_walls.area": "Interior walls",
   "item.interior_walls.q": "Are there cracks wider than 1 cm?",
+  "item.flooring.area": "Flooring",
+  "item.flooring.q":
+    "Is there buckling, displaced tiles, or new gaps where the floor meets the baseboards?",
+  "item.plumbing.area": "Plumbing / gas",
+  "item.plumbing.q":
+    "Are there leaking, cracked, or separated pipes? Do you hear rushing water or smell gas? (If you smell gas, shut off the main valve)",
+  "item.electrical.area": "Electrical",
+  "item.electrical.q":
+    "Are there tripped breakers, damaged outlets, or exposed wiring?",
+  "item.fixtures.area": "Fixtures",
+  "item.fixtures.q":
+    "Are light fixtures hanging unevenly or junction boxes pulled apart by the shaking?",
   "item.columns_beams.area": "Columns / beams",
   "item.columns_beams.q": "Is there spalling concrete or exposed rebar?",
   "item.doors_windows.area": "Doors / windows",
@@ -311,6 +418,33 @@ const en: Dict = {
   "item.roof.q": "Is there visible deformation or roof collapse?",
   "item.stairs.area": "Stairs",
   "item.stairs.q": "Are the stairs cracked or separated from the walls?",
+
+  "rule.urm.finding":
+    "Unreinforced masonry building: highly vulnerable after strong shaking.",
+  "rule.urm.step":
+    "Do not consider it safe to enter. Wait for an engineer or Civil Protection to assess it.",
+  "rule.liquefaction.finding":
+    "Soil liquefaction signs: the ground lost its bearing capacity.",
+  "rule.liquefaction.step":
+    "Do not enter. The structure may settle or tilt. Evacuate and report to authorities.",
+  "rule.pounding.finding":
+    "Pounding with an adjacent building: possible severe structural damage.",
+  "rule.pounding.step": "Do not enter; evacuate the contact area between buildings.",
+  "rule.plumbing.finding":
+    "Severe plumbing damage or possible gas leak: immediate hazard.",
+  "rule.plumbing.step":
+    "Shut off the main gas and water valves, avoid lights or flames, and evacuate.",
+  "rule.intensity.finding":
+    "Intense shaking (intensity VII or greater) at this location.",
+  "rule.intensity.step":
+    "Increase caution: inspect more carefully and prioritize a professional assessment.",
+  "rule.floors.finding": "Building over 7 floors: extra caution required.",
+  "rule.floors.step":
+    "Limit use until an engineer confirms the upper floors are safe.",
+  "rule.structure.finding":
+    "This building's structural system requires extra caution.",
+  "rule.structure.step": "Limit use and prioritize a professional assessment.",
+
 
   "analyze.title": "Analyzing",
   "analyze.uploading": "Processing photos…",

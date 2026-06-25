@@ -1,14 +1,29 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Building2, Home, Store, Minus, Plus, ArrowRight, LocateFixed } from "lucide-react";
+import {
+  Building2,
+  Home,
+  Store,
+  Minus,
+  Plus,
+  ArrowRight,
+  LocateFixed,
+  Activity,
+  AlertTriangle,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { BuildingAge, BuildingType } from "@/lib/assessment-types";
+import type {
+  BuildingAge,
+  BuildingType,
+  StructuralType,
+} from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
+import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
@@ -24,6 +39,15 @@ const BUILDING_TYPES: { id: BuildingType; icon: typeof Home }[] = [
 
 const AGES: BuildingAge[] = ["pre1970", "1970to2000", "post2000"];
 
+const STRUCTURAL_TYPES: StructuralType[] = [
+  "URM",
+  "CMF",
+  "CIW",
+  "PCF",
+  "RML",
+  "unknown",
+];
+
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
@@ -32,11 +56,18 @@ function PropertyStep() {
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
+  const [structuralType, setStructuralType] = useState<StructuralType | null>(
+    null,
+  );
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
+  const [intensity, setIntensity] = useState<{
+    mmi: number;
+    roman: string;
+  } | null>(null);
 
   const draftLoaded = useRef(false);
   const geoTried = useRef(false);
@@ -52,8 +83,15 @@ function PropertyStep() {
       if (p.state) setState(p.state);
       if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
+      if (p.structuralType) setStructuralType(p.structuralType);
       if (p.floors) setFloors(p.floors);
       if (p.age) setAge(p.age);
+      if (typeof p.seismicIntensity === "number") {
+        setIntensity({
+          mmi: p.seismicIntensity,
+          roman: p.seismicIntensityRoman ?? "",
+        });
+      }
     });
     return () => {
       active = false;

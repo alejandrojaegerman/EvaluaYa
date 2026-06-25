@@ -11,6 +11,7 @@ import {
   type RiskLevel,
 } from "./assessment-types";
 import { translate, type Lang } from "./i18n";
+import { evaluateSafetyRules, maxRisk } from "./safety-rules";
 
 const BUCKET = "assessment-photos";
 const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
@@ -18,8 +19,14 @@ const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
 const answerSchema = z.object({
   id: z.enum([
     "foundation",
+    "liquefaction",
     "exterior_walls",
+    "pounding",
     "interior_walls",
+    "flooring",
+    "plumbing",
+    "electrical",
+    "fixtures",
     "columns_beams",
     "doors_windows",
     "roof",
@@ -42,10 +49,16 @@ const analyzeSchema = z.object({
     state: z.string().max(120).optional().default(""),
     municipality: z.string().max(120).optional().default(""),
     buildingType: z.enum(["house", "apartment", "commercial"]),
+    structuralType: z
+      .enum(["URM", "CMF", "CIW", "PCF", "RML", "unknown"])
+      .optional()
+      .default("unknown"),
     floors: z.number().int().min(1).max(200),
     age: z.enum(["pre1970", "1970to2000", "post2000"]),
+    seismicIntensity: z.number().min(0).max(12).optional(),
+    seismicIntensityRoman: z.string().max(8).optional(),
   }),
-  answers: z.array(answerSchema).min(1).max(7),
+  answers: z.array(answerSchema).min(1).max(13),
 });
 
 type AnalyzeInput = z.infer<typeof analyzeSchema>;
@@ -82,8 +95,25 @@ function buildPrompt(input: AnalyzeInput) {
     post2000: "after 2000",
   };
 
+  const structMap: Record<string, string> = {
+    URM: "unreinforced masonry (URM) — inherently vulnerable",
+    CMF: "concrete moment frame (CMF)",
+    CIW: "concrete frame with infill walls (CIW)",
+    PCF: "precast concrete frame (PCF)",
+    RML: "reinforced masonry, low-rise (RML)",
+    unknown: "unknown structural system",
+  };
+  const structuralType = input.property.structuralType ?? "unknown";
+
+  const intensityLine =
+    typeof input.property.seismicIntensity === "number"
+      ? `Estimated ShakeMap shaking intensity at this location: MMI ${input.property.seismicIntensityRoman ?? ""} (${input.property.seismicIntensity}).`
+      : "";
+
   const userText = [
     `Property: ${input.property.buildingType}, ${input.property.floors} floor(s), built ${ageMap[input.property.age]}.`,
+    `Structural system: ${structMap[structuralType]}.`,
+    intensityLine,
     input.property.address ? `Location: ${input.property.address}.` : "",
     "",
     "Inspection answers (resident self-report):",
@@ -109,6 +139,8 @@ Assess the OVERALL risk and choose exactly one level:
 
 Decision guidance:
 - "yes" to foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation/collapse, or stairs separating from walls strongly suggests yellow or red.
+- "yes" to ground liquefaction signs, building-to-building pounding, or severe plumbing/gas damage are critical life-safety hazards (treat as red).
+- Damaged flooring, electrical panels/wiring, or hanging fixtures suggest at least yellow.
 - Exposed rebar + spalling on columns/beams, or roof collapse, should push toward red.
 - Use the photos to confirm or downgrade severity. Be conservative: when life-safety is uncertain, do not choose green.
 
@@ -251,6 +283,24 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       return { ok: false, errorCode: "generic" };
     }
 
+    // Deterministic life-safety rules can OVERRIDE the AI (e.g. URM,
+    // liquefaction, pounding, severe plumbing => red; high MMI / >7 floors /
+    // vulnerable structural systems => at least yellow). Rule-derived findings
+    // are surfaced first so residents see the critical reasons up front.
+    const rules = evaluateSafetyRules(
+      data.language as Lang,
+      data.property,
+      data.answers,
+    );
+    const finalRisk: RiskLevel = maxRisk(aiResult.risk_level, rules.level);
+    const mergedResult: AiResult = {
+      risk_level: finalRisk,
+      summary: aiResult.summary,
+      findings: [...rules.findings, ...aiResult.findings],
+      next_steps: [...rules.nextSteps, ...aiResult.next_steps],
+    };
+    aiResult = mergedResult;
+
     const { error: insertError } = await supabaseAdmin.from("assessments").insert({
       public_id: publicId,
       language: data.language,
@@ -259,7 +309,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       municipality: data.property.municipality?.trim() || null,
       answers: storedAnswers,
       ai_result: aiResult,
-      risk_level: aiResult.risk_level,
+      risk_level: finalRisk,
       status: "analyzed",
     });
 
