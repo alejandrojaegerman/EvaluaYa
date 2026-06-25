@@ -242,10 +242,10 @@ function MapPage() {
         yellow: totals.yellow,
         green: totals.green,
         headline: t("map.cardHeadline"),
-        topAreaLabel:
-          top?.municipality || top?.state
-            ? `${top.municipality ? top.municipality + ", " : ""}${top.state ?? ""}`.trim()
-            : undefined,
+        topAreaLabel: top
+          ? [top.title, top.subtitle].filter(Boolean).join(", ")
+          : undefined,
+
         cta: t("map.cardCta"),
         url: absoluteUrl("/mapa"),
       });
