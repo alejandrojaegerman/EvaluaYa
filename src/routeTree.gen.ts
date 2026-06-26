@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
@@ -28,6 +29,11 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MisReportesRoute = MisReportesRouteImport.update({
   id: '/mis-reportes',
   path: '/mis-reportes',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
@@ -251,6 +263,7 @@ export interface RootRouteChildren {
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   MisReportesRoute: typeof MisReportesRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   APublicIdRoute: typeof APublicIdRoute
   AdminVoluntariosRoute: typeof AdminVoluntariosRoute
   AssessAnalyzeRoute: typeof AssessAnalyzeRoute
@@ -269,6 +282,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mis-reportes': {
       id: '/mis-reportes'
       path: '/mis-reportes'
@@ -403,6 +423,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   MisReportesRoute: MisReportesRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   APublicIdRoute: APublicIdRoute,
   AdminVoluntariosRoute: AdminVoluntariosRoute,
   AssessAnalyzeRoute: AssessAnalyzeRoute,
