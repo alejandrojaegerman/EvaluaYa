@@ -160,6 +160,68 @@ function MapPage() {
       .sort((a, b) => b.r - a.r);
   }, [areas]);
 
+  // Municipality-level bubbles for the interactive Google map. Each aggregate is
+  // resolved to a municipio centroid when we recognize it, otherwise rolled up
+  // to its state centroid. Unknown states are skipped from the map (still shown
+  // in the list below).
+  const mapBubbles = useMemo<MapBubble[]>(() => {
+    const grouped = new Map<
+      string,
+      {
+        lat: number;
+        lng: number;
+        level: "municipio" | "estado";
+        name: string;
+        stateName: string;
+        total: number;
+        green: number;
+        yellow: number;
+        red: number;
+      }
+    >();
+    for (const a of areas) {
+      const resolved = resolveMunicipio(a.state, a.municipality);
+      if (!resolved) continue;
+      const key = `${resolved.stateName}|${resolved.name}|${resolved.level}`;
+      const cur =
+        grouped.get(key) ??
+        {
+          lat: resolved.lat,
+          lng: resolved.lng,
+          level: resolved.level,
+          name: resolved.name,
+          stateName: resolved.stateName,
+          total: 0,
+          green: 0,
+          yellow: 0,
+          red: 0,
+        };
+      cur.total += a.total;
+      cur.green += a.green;
+      cur.yellow += a.yellow;
+      cur.red += a.red;
+      grouped.set(key, cur);
+    }
+    return [...grouped.entries()]
+      .map(([key, g]) => ({
+        id: key,
+        lat: g.lat,
+        lng: g.lng,
+        level: g.level,
+        name: g.name,
+        stateName: g.stateName,
+        stateSlug: estadoSlug(g.stateName),
+        total: g.total,
+        green: g.green,
+        yellow: g.yellow,
+        red: g.red,
+        dominant: dominantRisk(g),
+      }))
+      .sort((x, y) => y.total - x.total);
+  }, [areas]);
+
+
+
   const topAreas = useMemo<DisplayArea[]>(() => {
     const specific: DisplayArea[] = [];
     const unspecified = {
