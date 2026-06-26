@@ -252,6 +252,19 @@ function ChecklistStep() {
         </>
       )}
 
+      {!allRequired && (
+        <p className="mt-6 rounded-xl bg-muted px-4 py-3 text-center text-sm text-muted-foreground">
+          {t("checklist.remaining").replace(
+            "{n}",
+            `${STRUCTURE_ITEMS.length - requiredAnswered} ${
+              STRUCTURE_ITEMS.length - requiredAnswered === 1
+                ? t("checklist.remainingOne")
+                : t("checklist.remainingMany")
+            }`,
+          )}
+        </p>
+      )}
+
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
