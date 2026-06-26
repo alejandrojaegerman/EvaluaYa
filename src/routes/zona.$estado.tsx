@@ -1,20 +1,28 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import {
   ArrowRight,
+  ChevronDown,
   ChevronRight,
   CircleAlert,
   Map as MapIcon,
   MapPin,
 } from "lucide-react";
+import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
+import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
+import { RiskGauge } from "@/components/RiskGauge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/datetime";
 import { useLang } from "@/lib/i18n";
-import { RISK_HEX } from "@/lib/risk";
 import { absoluteUrl } from "@/lib/site";
-import { getStateStats, type StateStats } from "@/lib/stats.functions";
+import {
+  getRiskFactors,
+  getStateStats,
+  type RiskFactors,
+  type StateStats,
+} from "@/lib/stats.functions";
 import {
   ESTADOS,
   estadoSlug,
