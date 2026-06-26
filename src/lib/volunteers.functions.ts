@@ -401,11 +401,13 @@ function mapEng(e: {
   name: string;
   organization: string | null;
   states: string[] | null;
+  specialization?: string | null;
 }) {
   return {
     name: e.name,
     organization: e.organization,
     states: e.states ?? [],
+    specialization: e.specialization ?? null,
   };
 }
 
