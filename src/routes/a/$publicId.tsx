@@ -218,6 +218,13 @@ function ResultPage() {
         </Section>
       )}
 
+      {/* Connect with a volunteer engineer (Red / Yellow only) */}
+      {(record.riskLevel === "red" || record.riskLevel === "yellow") && (
+        <ConnectEngineers record={record} />
+      )}
+
+
+
       {/* Seismic context (data-driven, from USGS ShakeMap) */}
       {typeof record.property.seismicIntensity === "number" && (
         <Section title={t("result.seismicContext")}>
