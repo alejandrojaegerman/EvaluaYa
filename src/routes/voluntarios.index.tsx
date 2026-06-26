@@ -175,17 +175,90 @@ function VolunteersPage() {
 
         <div className="mt-4 space-y-4">
           <div>
-            <Label htmlFor="vol-name">{t("vol.name")}</Label>
-            <Input
-              id="vol-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("vol.namePlaceholder")}
-              required
-              maxLength={120}
-              className="mt-1.5"
-            />
+            <Label>{t("vol.typeLabel")}</Label>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {(
+                [
+                  { value: "individual", icon: User2, label: t("vol.typeIndividual") },
+                  { value: "organization", icon: Building2, label: t("vol.typeOrg") },
+                ] as const
+              ).map((opt) => {
+                const active = volunteerType === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setVolunteerType(opt.value)}
+                    aria-pressed={active}
+                    className={cn(
+                      "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors",
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50",
+                    )}
+                  >
+                    <opt.icon className="size-4" aria-hidden />
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {isOrg ? (
+            <>
+              <div>
+                <Label htmlFor="vol-org">{t("vol.orgName")}</Label>
+                <Input
+                  id="vol-org"
+                  value={org}
+                  onChange={(e) => setOrg(e.target.value)}
+                  placeholder={t("vol.orgNamePlaceholder")}
+                  required
+                  maxLength={160}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vol-name">{t("vol.contactName")}</Label>
+                <Input
+                  id="vol-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("vol.contactNamePlaceholder")}
+                  required
+                  maxLength={120}
+                  className="mt-1.5"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <Label htmlFor="vol-name">{t("vol.name")}</Label>
+                <Input
+                  id="vol-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("vol.namePlaceholder")}
+                  required
+                  maxLength={120}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vol-org">{t("vol.org")}</Label>
+                <Input
+                  id="vol-org"
+                  value={org}
+                  onChange={(e) => setOrg(e.target.value)}
+                  placeholder={t("vol.orgPlaceholder")}
+                  maxLength={160}
+                  className="mt-1.5"
+                />
+              </div>
+            </>
+          )}
 
           <div>
             <Label htmlFor="vol-wa">{t("vol.whatsapp")}</Label>
@@ -198,18 +271,6 @@ function VolunteersPage() {
               placeholder={t("connect.whatsappPlaceholder")}
               required
               maxLength={40}
-              className="mt-1.5"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="vol-org">{t("vol.org")}</Label>
-            <Input
-              id="vol-org"
-              value={org}
-              onChange={(e) => setOrg(e.target.value)}
-              placeholder={t("vol.orgPlaceholder")}
-              maxLength={160}
               className="mt-1.5"
             />
           </div>
