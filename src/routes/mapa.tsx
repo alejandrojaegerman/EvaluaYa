@@ -185,6 +185,8 @@ function MapPage() {
         subtitle: muniKnown ? a.state : t("map.unspecifiedMunicipality"),
         muniKnown,
         stateName: stateKnown ? a.state : null,
+        paramState: a.state,
+        paramMunicipality: muniKnown ? a.municipality : null,
         total: a.total,
         green: a.green,
         yellow: a.yellow,
