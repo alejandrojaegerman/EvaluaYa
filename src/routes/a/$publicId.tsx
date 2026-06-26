@@ -218,6 +218,71 @@ function ResultPage() {
         </Section>
       )}
 
+      {/* Seismic context (data-driven, from USGS ShakeMap) */}
+      {typeof record.property.seismicIntensity === "number" && (
+        <Section title={t("result.seismicContext")}>
+          <div className="flex items-start gap-2.5">
+            <Activity
+              className="mt-0.5 size-4 shrink-0 text-primary"
+              aria-hidden
+            />
+            <div className="flex-1">
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                <dt className="text-muted-foreground">{t("result.mmi")}</dt>
+                <dd className="text-right font-medium tabular-nums">
+                  {record.property.seismicIntensityRoman ?? ""} (
+                  {record.property.seismicIntensity})
+                </dd>
+                {typeof record.property.pga === "number" && (
+                  <>
+                    <dt className="text-muted-foreground">{t("result.pga")}</dt>
+                    <dd className="text-right font-medium tabular-nums">
+                      {(record.property.pga * 100).toFixed(0)}%g
+                    </dd>
+                  </>
+                )}
+                {typeof record.property.pgv === "number" && (
+                  <>
+                    <dt className="text-muted-foreground">{t("result.pgv")}</dt>
+                    <dd className="text-right font-medium tabular-nums">
+                      {record.property.pgv.toFixed(0)} cm/s
+                    </dd>
+                  </>
+                )}
+                {typeof record.property.spectralDemand === "number" && (
+                  <>
+                    <dt className="text-muted-foreground">
+                      {t("result.spectralDemand")}
+                    </dt>
+                    <dd className="text-right font-medium tabular-nums">
+                      {(record.property.spectralDemand * 100).toFixed(0)}%g
+                      {record.property.spectralBand
+                        ? ` · SA(${record.property.spectralBand})`
+                        : ""}
+                    </dd>
+                  </>
+                )}
+                {record.property.soilClass && (
+                  <>
+                    <dt className="text-muted-foreground">{t("result.soil")}</dt>
+                    <dd className="text-right font-medium">
+                      {t(`soil.${record.property.soilClass}`)}
+                      {typeof record.property.vs30 === "number"
+                        ? ` (${record.property.vs30} m/s)`
+                        : ""}
+                    </dd>
+                  </>
+                )}
+              </dl>
+              <p className="mt-2.5 text-xs text-muted-foreground">
+                {t("result.seismicContextHint")}
+              </p>
+            </div>
+          </div>
+        </Section>
+      )}
+
+
       {/* Photos */}
       {Object.keys(record.photoUrls).length > 0 && (
         <Section title={t("result.photos")}>
