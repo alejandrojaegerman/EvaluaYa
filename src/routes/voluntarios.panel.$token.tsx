@@ -92,6 +92,16 @@ function PanelPage() {
     );
   }
 
+  function ageLabel(createdAt: string): string {
+    const ms = Date.now() - new Date(createdAt).getTime();
+    if (!Number.isFinite(ms) || ms < 0) return "";
+    const hours = Math.floor(ms / 3_600_000);
+    if (hours < 1) return t("panel.ageNew");
+    if (hours < 24) return `${t("panel.ageWaiting")} ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `${t("panel.ageWaiting")} ${days}${t("panel.ageDays")}`;
+  }
+
   if (loading) {
     return (
       <AppShell>
