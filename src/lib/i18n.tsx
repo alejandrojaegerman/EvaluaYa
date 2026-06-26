@@ -283,6 +283,26 @@ const es: Dict = {
   "home.mapTitle": "Mapa comunitario de daños",
   "home.mapDesc": "Mira cómo está tu zona según los reportes de otras personas.",
   "home.viewMap": "Ver mapa de daños",
+  "home.exploreTitle": "Explora tu estado",
+  "home.exploreDesc":
+    "Consulta los reportes y evalúa tu vivienda según tu estado.",
+  "zona.breadcrumbHome": "Inicio",
+  "zona.eyebrow": "Reporte regional",
+  "zona.h1Prefix": "Daños estructurales en",
+  "zona.intro":
+    "Mira cómo está {estado} según los reportes anónimos de la comunidad y evalúa tu vivienda gratis, sin registro y en pocos minutos.",
+  "zona.ctaPrefix": "Evaluar mi vivienda en",
+  "zona.totalReports": "Reportes en el estado",
+  "zona.municipios": "Municipios con reportes",
+  "zona.lastReport": "Último reporte",
+  "zona.noData":
+    "Aún no hay reportes en {estado}. Sé la primera persona en evaluar tu vivienda y ayudar a tu comunidad.",
+  "zona.aboutTitle": "¿Cómo se calculan estos datos?",
+  "zona.aboutBody":
+    "Las cifras son conteos anónimos de autoevaluaciones realizadas en la app. Nunca mostramos direcciones, fotos ni datos personales.",
+  "zona.viewMap": "Ver el mapa completo",
+  "zona.otherStates": "Otros estados",
+  "zona.notFound": "No encontramos ese estado.",
 
   "property.state": "Estado",
   "property.statePlaceholder": "Selecciona",
