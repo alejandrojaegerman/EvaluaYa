@@ -65,10 +65,7 @@ function PropertyStep() {
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
-  const [intensity, setIntensity] = useState<{
-    mmi: number;
-    roman: string;
-  } | null>(null);
+  const [intensity, setIntensity] = useState<SeismicReading | null>(null);
 
   const draftLoaded = useRef(false);
   const geoTried = useRef(false);
