@@ -5,6 +5,7 @@ import {
   BookOpen,
   CheckCircle2,
   FileDown,
+  HardHat,
   Info,
   Layers,
   MapPin,
