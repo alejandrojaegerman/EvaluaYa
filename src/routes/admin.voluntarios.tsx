@@ -162,16 +162,26 @@ function AdminPage() {
           <Empty t={t} />
         ) : (
           approved.map((e) => (
-            <EngineerCard key={e.id} e={e}>
+            <EngineerCard key={e.id} e={e} t={t}>
               {e.accessToken && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => copyPanelLink(e.accessToken!)}
-                >
-                  <Copy className="size-4" />
-                  {t("admin.copyLink")}
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    className="bg-[#25D366] text-white hover:bg-[#1da851]"
+                    onClick={() => notifyWhatsapp(e)}
+                  >
+                    <MessageCircle className="size-4" />
+                    {t("admin.notifyWhatsapp")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => copyPanelLink(e.accessToken!)}
+                  >
+                    <Copy className="size-4" />
+                    {t("admin.copyLink")}
+                  </Button>
+                </>
               )}
               <Button
                 size="sm"
