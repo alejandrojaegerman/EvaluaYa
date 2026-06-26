@@ -287,6 +287,33 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     }
 
 
+    // Detect a building / house name from the free-text address so we can
+    // recognize multiple evaluations of the same building.
+    const building = extractBuilding(data.property.address);
+
+    // Look up prior analyzed reports from this same building (anonymized
+    // counts only) to give the AI neighbor-damage context.
+    let peerContext = "";
+    if (building) {
+      try {
+        const { data: peers } = await supabaseAdmin.rpc("get_building_peers", {
+          _state: data.property.state ?? "",
+          _municipality: data.property.municipality ?? "",
+          _building_key: building.key,
+        });
+        const row = Array.isArray(peers) ? peers[0] : peers;
+        if (row && (row.total ?? 0) > 0) {
+          peerContext =
+            `Context: ${row.total} previous evaluation(s) from this same building ` +
+            `("${building.name}") — ${row.red ?? 0} red / ${row.yellow ?? 0} yellow / ` +
+            `${row.green ?? 0} green. Structural damage often affects a whole building, ` +
+            `so weigh shared/neighbor findings accordingly.`;
+        }
+      } catch (e) {
+        console.error("[analyze] building peers lookup failed", e);
+      }
+    }
+
     // Call Lovable AI for structural triage.
     let aiResult: AiResult | null = null;
     try {
@@ -296,6 +323,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       const userContent: Array<
         { type: "text"; text: string } | { type: "image"; image: string }
       > = [{ type: "text", text: buildPrompt(data) }];
+      if (peerContext) {
+        userContent.push({ type: "text", text: peerContext });
+      }
       for (const url of imageDataUrls) {
         userContent.push({ type: "image", image: url });
       }
