@@ -502,6 +502,15 @@ const es: Dict = {
     "Revisaremos tu solicitud y te enviaremos un enlace privado para ver las solicitudes de tu zona.",
   "vol.error": "Revisa los campos e intenta de nuevo.",
   "vol.selectStates": "Selecciona al menos un estado.",
+  "vol.typeLabel": "Me sumo como",
+  "vol.typeIndividual": "Ingeniero individual",
+  "vol.typeOrg": "Organización / empresa",
+  "vol.orgName": "Nombre de la organización",
+  "vol.orgNamePlaceholder": "Ej.: Soluciones Estructurales C.A.",
+  "vol.contactName": "Persona de contacto",
+  "vol.contactNamePlaceholder": "Ej.: Ing. María Pérez",
+  "vol.orgSpecialization": "Áreas de especialización / servicios (opcional)",
+  "vol.orgRequired": "Indica el nombre de la organización.",
 
   // Engineer panel
   "panel.title": "Panel de ingeniero voluntario",
