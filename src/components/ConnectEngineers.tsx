@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
+import { toWhatsappNumber } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import {
   getApprovedEngineersForState,
