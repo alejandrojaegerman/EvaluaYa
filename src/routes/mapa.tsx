@@ -192,6 +192,7 @@ function MapPage() {
         title: t("map.unspecifiedLocation"),
         subtitle: null,
         muniKnown: false,
+        stateName: null,
         total: unspecified.total,
         green: unspecified.green,
         yellow: unspecified.yellow,
