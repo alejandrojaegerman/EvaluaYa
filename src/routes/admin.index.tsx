@@ -60,11 +60,13 @@ function AdminDashboard() {
   const { t, lang } = useLang();
   const getAnalytics = useServerFn(adminGetAnalytics);
   const getDrilldown = useServerFn(adminGetStateDrilldown);
+  const getClusters = useServerFn(adminGetBuildingClusters);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState<AdminAnalytics | null>(null);
+  const [clusters, setClusters] = useState<BuildingCluster[]>([]);
 
   // Per-state "why" drill-down.
   const [expandedState, setExpandedState] = useState<string | null>(null);
