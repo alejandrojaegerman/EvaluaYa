@@ -190,6 +190,13 @@ const es: Dict = {
   "rule.structure.step":
     "Limita el uso y prioriza una evaluación profesional.",
 
+  "soil.rock": "Suelo firme / roca",
+  "soil.stiff": "Suelo rígido",
+  "soil.soft": "Suelo blando",
+  "soil.very_soft": "Suelo muy blando",
+
+
+
 
 
   "analyze.title": "Analizando",
