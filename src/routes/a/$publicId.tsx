@@ -395,6 +395,9 @@ function ResultPage() {
         </Button>
       </div>
 
+      {/* Save reports — optional, passwordless account */}
+      <SaveReportsCard />
+
       {/* Community flywheel — invite + map */}
       <section className="mt-6 rounded-2xl border border-primary/20 bg-secondary/40 p-5">
         <div className="flex items-center gap-2">
