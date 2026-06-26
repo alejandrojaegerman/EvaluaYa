@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/lib/i18n";
+import { formatDayLabel } from "@/lib/datetime";
 import { RISK_HEX } from "@/lib/risk";
 import {
   adminGetAnalytics,
