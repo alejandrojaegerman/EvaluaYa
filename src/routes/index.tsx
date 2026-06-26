@@ -260,8 +260,9 @@ function Index() {
                       {entry.address || t("home.viewResult")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(entry.createdAt).toLocaleDateString(
-                        entry.language === "es" ? "es-VE" : "en-US",
+                      {formatDate(
+                        entry.createdAt,
+                        entry.language === "es" ? "es" : "en",
                       )}
                     </p>
                   </div>
