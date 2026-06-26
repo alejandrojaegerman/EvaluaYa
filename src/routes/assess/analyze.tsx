@@ -254,7 +254,9 @@ function AnalyzeStep() {
   return (
     <AppShell>
       <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-        {phase === "waiting" ? (
+        {phase === "provisional" && provisional ? (
+          <ProvisionalState result={provisional} online={online} />
+        ) : phase === "waiting" ? (
           <WaitingState />
         ) : phase === "error" ? (
           <ErrorState message={errorMsg} onRetry={retry} onBack={() => navigate({ to: "/assess/checklist" })} />
@@ -265,6 +267,86 @@ function AnalyzeStep() {
     </AppShell>
   );
 
+  function ProvisionalState({
+    result,
+    online,
+  }: {
+    result: ProvisionalResult;
+    online: boolean;
+  }) {
+    return (
+      <div className="w-full max-w-sm text-left">
+        <div className="flex flex-col items-center text-center">
+          <RiskBadge level={result.riskLevel} />
+          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            {online ? (
+              <Loader2 className="size-3.5 animate-spin" aria-hidden />
+            ) : (
+              <WifiOff className="size-3.5" aria-hidden />
+            )}
+            {online ? t("provisional.syncing") : t("provisional.badge")}
+          </p>
+        </div>
+
+        <h1 className="mt-6 text-center font-display text-xl font-extrabold tracking-tight">
+          {t("provisional.title")}
+        </h1>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          {t("provisional.subtitle")}
+        </p>
+
+        {result.findings.length > 0 && (
+          <section className="mt-6">
+            <h2 className="text-sm font-bold">{t("result.findingsTitle")}</h2>
+            <ul className="mt-2 space-y-1.5">
+              {result.findings.map((f, i) => (
+                <li
+                  key={i}
+                  className="flex gap-2 text-sm leading-snug text-foreground"
+                >
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-foreground/40" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {result.nextSteps.length > 0 && (
+          <section className="mt-5">
+            <h2 className="text-sm font-bold">{t("result.stepsTitle")}</h2>
+            <ul className="mt-2 space-y-1.5">
+              {result.nextSteps.map((s, i) => (
+                <li
+                  key={i}
+                  className="flex gap-2 text-sm leading-snug text-foreground"
+                >
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div className="mt-8 flex flex-col gap-2">
+          <Button asChild size="lg" variant="outline">
+            <Link to="/mis-reportes">
+              <FileText className="size-4" />
+              {t("provisional.viewReports")}
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="ghost">
+            <Link to="/">
+              <HomeIcon className="size-4" />
+              {t("provisional.home")}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   function WorkingState({ phase }: { phase: Phase }) {
     const label =
       phase === "thinking" ? t("analyze.thinking") : t("analyze.uploading");
@@ -273,6 +355,7 @@ function AnalyzeStep() {
         <div className="relative flex size-24 items-center justify-center">
           <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
           <span className="flex size-24 items-center justify-center rounded-full bg-primary/10">
+
             <ScanSearch className="size-10 text-primary" aria-hidden />
           </span>
         </div>
