@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { DamageMap, type MapBubble } from "@/components/DamageMap";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
@@ -34,6 +35,7 @@ import {
   getEstado,
   outlinePath,
   projectToSvg,
+  resolveMunicipio,
 } from "@/lib/venezuela";
 
 const MAP_OG = absoluteUrl("/og-map.jpg");
