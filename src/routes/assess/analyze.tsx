@@ -297,7 +297,7 @@ function AnalyzeStep() {
 
         {result.findings.length > 0 && (
           <section className="mt-6">
-            <h2 className="text-sm font-bold">{t("result.findingsTitle")}</h2>
+            <h2 className="text-sm font-bold">{t("result.findings")}</h2>
             <ul className="mt-2 space-y-1.5">
               {result.findings.map((f, i) => (
                 <li
@@ -314,7 +314,7 @@ function AnalyzeStep() {
 
         {result.nextSteps.length > 0 && (
           <section className="mt-5">
-            <h2 className="text-sm font-bold">{t("result.stepsTitle")}</h2>
+            <h2 className="text-sm font-bold">{t("result.nextSteps")}</h2>
             <ul className="mt-2 space-y-1.5">
               {result.nextSteps.map((s, i) => (
                 <li
