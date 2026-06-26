@@ -519,7 +519,9 @@ const es: Dict = {
   "vol.org": "Empresa u organización (opcional)",
   "vol.orgPlaceholder": "Ej.: Colegio de Ingenieros",
   "vol.whatsapp": "WhatsApp",
-  "vol.email": "Correo (opcional)",
+  "vol.email": "Correo electrónico",
+  "vol.emailHint":
+    "Lo necesitamos para enviarte tu enlace de acceso cuando te validemos.",
   "vol.states": "Estados que puedes cubrir",
   "vol.statesHint": "Selecciona uno o más.",
   "vol.specialization": "Especialidad (opcional)",
@@ -573,6 +575,8 @@ const es: Dict = {
   "admin.reject": "Rechazar",
   "admin.copyLink": "Copiar enlace del panel",
   "admin.linkCopied": "Enlace copiado",
+  "admin.notifyWhatsapp": "Avisar por WhatsApp",
+  "admin.noEmail": "Sin email",
   "admin.none": "Sin registros.",
 
   // Panel — matching enhancements
@@ -1138,7 +1142,9 @@ const en: Dict = {
   "vol.org": "Company or organization (optional)",
   "vol.orgPlaceholder": "e.g. Engineering Association",
   "vol.whatsapp": "WhatsApp",
-  "vol.email": "Email (optional)",
+  "vol.email": "Email",
+  "vol.emailHint":
+    "We need it to send you your access link once you're validated.",
   "vol.states": "States you can cover",
   "vol.statesHint": "Select one or more.",
   "vol.specialization": "Specialty (optional)",
@@ -1190,6 +1196,8 @@ const en: Dict = {
   "admin.reject": "Reject",
   "admin.copyLink": "Copy panel link",
   "admin.linkCopied": "Link copied",
+  "admin.notifyWhatsapp": "Notify via WhatsApp",
+  "admin.noEmail": "No email",
   "admin.none": "No records.",
 
   // Panel — matching enhancements

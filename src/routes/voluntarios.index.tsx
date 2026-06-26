@@ -93,7 +93,7 @@ function VolunteersPage() {
           name,
           organization: org,
           whatsapp,
-          email: email || undefined,
+          email,
           states,
           specialization,
           note,
@@ -282,9 +282,13 @@ function VolunteersPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               maxLength={255}
               className="mt-1.5"
             />
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("vol.emailHint")}
+            </p>
           </div>
 
           <div>

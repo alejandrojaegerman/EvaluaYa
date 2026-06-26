@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Lock, ShieldCheck } from "lucide-react";
+import { Copy, Lock, MessageCircle, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -81,6 +81,22 @@ function AdminPage() {
     }
   }
 
+  function notifyWhatsapp(e: AdminEngineer) {
+    if (!e.accessToken) return;
+    const phone = (e.whatsapp || "").replace(/\D/g, "");
+    const panelUrl = absoluteUrl(`/voluntarios/panel/${e.accessToken}`);
+    const states = e.states.join(", ");
+    const firstName = (e.name || "").trim().split(/\s+/)[0] || "";
+    const message =
+      `Hola ${firstName}, ¡buenas noticias! Tu inscripción como voluntario(a) en EvalúaYa fue validada. ` +
+      `Desde este enlace privado puedes ver y atender solicitudes de ayuda${
+        states ? ` en ${states}` : ""
+      }: ${panelUrl}\n\n` +
+      `Guárdalo: es personal y no requiere contraseña.`;
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
   if (!unlocked) {
     return (
       <AppShell>
@@ -146,16 +162,26 @@ function AdminPage() {
           <Empty t={t} />
         ) : (
           approved.map((e) => (
-            <EngineerCard key={e.id} e={e}>
+            <EngineerCard key={e.id} e={e} t={t}>
               {e.accessToken && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => copyPanelLink(e.accessToken!)}
-                >
-                  <Copy className="size-4" />
-                  {t("admin.copyLink")}
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    className="bg-[#25D366] text-white hover:bg-[#1da851]"
+                    onClick={() => notifyWhatsapp(e)}
+                  >
+                    <MessageCircle className="size-4" />
+                    {t("admin.notifyWhatsapp")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => copyPanelLink(e.accessToken!)}
+                  >
+                    <Copy className="size-4" />
+                    {t("admin.copyLink")}
+                  </Button>
+                </>
               )}
               <Button
                 size="sm"
@@ -231,16 +257,24 @@ function Empty({ t }: { t: (k: string) => string }) {
 
 function EngineerCard({
   e,
+  t,
   children,
 }: {
   e: AdminEngineer;
+  t?: (key: string) => string;
   children: React.ReactNode;
 }) {
+  const hasEmail = !!e.email?.trim();
   return (
     <div className="rounded-xl border border-border bg-background p-3">
       <div className="flex items-center gap-2">
         <ShieldCheck className="size-4 text-primary" aria-hidden />
         <p className="font-semibold">{e.name}</p>
+        {!hasEmail && t && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+            {t("admin.noEmail")}
+          </span>
+        )}
       </div>
       {e.organization && (
         <p className="text-xs text-muted-foreground">{e.organization}</p>

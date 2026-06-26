@@ -1,49 +1,50 @@
-# Grow reach & visibility: regional landing pages + smoother assessment
+# Close the volunteer notification gap
 
-You picked **Assessment experience** + **Reach & engagement**, optimizing for **Growth & visibility**. Today only 4 URLs are discoverable (home, property, map, methodology), and there's no organic on-ramp for someone Googling "daños sismo Miranda". This plan adds search-discoverable regional pages and tightens the path from "I found it" → "I finished an assessment" → "I shared it".
+Today, approving a volunteer silently generates a private panel link — nothing is ever sent to them, so they don't know they're validated or where to claim requests. On top of that, 3 of the 4 approved volunteers signed up without an email (2 individuals, 1 organization), so email alone can't reach them. This plan fixes both: require email going forward, auto-notify on approval when we have an email, and give you a one-tap WhatsApp message for everyone (the only channel that reaches the 3 with no email).
 
-## 1. Public regional landing pages (the main growth engine)
+## 1. Make email required for new volunteers
 
-A new public route `src/routes/zona.$estado.tsx` rendering one page per Venezuelan state (e.g. `/zona/miranda`, `/zona/distrito-capital`).
+- **Form** (`src/routes/voluntarios.index.tsx`): mark the email field as required (add the required indicator, `required` attribute, and a small "needed so we can send your access link" helper line). Keep WhatsApp required too.
+- **Validation** (`src/lib/volunteers.functions.ts`): change the signup schema so `email` is a required, valid address (drop the `.optional()/.or(literal(""))`). Server-side rejection returns a friendly bilingual error.
+- **i18n** (`src/lib/i18n.tsx`): add/adjust keys for the required-email label, helper text, and the validation error.
 
-Each page includes:
-- **Unique SEO head()** — title like *"Evaluación de daños estructurales en Miranda — EvalúaYa"*, matching meta description, canonical, Open Graph + Twitter card, and `JSON-LD` (`WebPage` + `BreadcrumbList`). Pulls the per-state OG image (reusing the existing branded result OG style).
-- **Live anonymized stats for that state** — total assessments, green/yellow/red split, municipios covered, last report date. Sourced from a new public server fn that filters the existing `get_damage_aggregates` data by state (no new table; anonymized counts only, never addresses/photos).
-- **Region-aware primary CTA** — "Evaluar mi vivienda en {estado}" that deep-links into the assessment with the state preselected.
-- **Local trust + methodology + map** internal links.
-- Bilingual via existing `useLang`.
+This only affects new signups; existing rows are untouched.
 
-Slugs map to `ESTADOS` in `src/lib/venezuela.ts` via a small slug↔name helper (added there). Unknown slugs → `notFoundComponent`; route also gets `errorComponent` per project rules.
+## 2. Auto-notify volunteers on approval (when we have an email)
 
-## 2. Region-aware assessment entry (assessment experience)
+- New email template `src/lib/email-templates/volunteer-approved.tsx` (Spanish-first, EvalúaYa teal branding, matching the existing template style): "You've been validated — here's your private panel link," with the panel button and a short note that the link is personal.
+- Register it in `src/lib/email-templates/registry.ts`.
+- In `adminReviewEngineer` (approve branch) in `src/lib/volunteers.functions.ts`: after generating the access token, best-effort send the approval email via `sendSystemEmail` **only if the volunteer has an email** (never blocks the approval). Fetch the volunteer's name/email/type alongside the existing token lookup.
 
-- The property step (`src/routes/assess/property.tsx`) reads an optional `?estado=` search param and preselects the Estado field, so users arriving from a regional page or shared link skip a step.
-- Small copy reassurance already exists; we keep it and ensure the preselected state shows clearly.
+## 3. One-tap WhatsApp notification in the admin panel (reaches everyone)
 
-## 3. Internal linking + crawl depth (home & map)
+This is the manual message you asked for — works for the 3 without email and as a fallback for anyone.
 
-- Home (`src/routes/index.tsx`): add a compact "Explora tu estado" section linking to the regional pages (also helps users self-route).
-- Map (`src/routes/mapa.tsx`): make each state bubble / list row link to its `/zona/{estado}` page, turning the existing map into a hub that distributes crawl equity.
+- In `src/routes/admin.voluntarios.tsx`, on each **approved** volunteer card add a green **"Avisar por WhatsApp"** button next to "Copy link". It opens `https://wa.me/<digits>?text=<prefilled message>` in a new tab using the volunteer's stored WhatsApp number and their panel link.
+- The prefilled message is a friendly Spanish validation notice, e.g.:
 
-## 4. Dynamic sitemap + robots
+```text
+Hola {nombre}, ¡buenas noticias! Tu inscripción como voluntario en EvalúaYa
+fue validada. Desde este enlace privado puedes ver y atender solicitudes de
+ayuda en {estados}: {panelUrl}
 
-- Replace the static `public/sitemap.xml` with a server route `src/routes/sitemap[.]xml.ts` that lists home, property, map, methodology, voluntarios, **and every `/zona/{estado}` page**, so new regional pages are always discoverable. (This migrates the current static file — included here as the explicit change for approval.)
-- `public/robots.txt`: keep `Allow: /`, add the `Sitemap:` directive pointing at `https://evaluaya.app/sitemap.xml`.
+Guárdalo, es personal y no requiere contraseña.
+```
 
-## 5. Lighter assessment-experience polish (reduce drop-off)
+- For volunteers **missing an email**, show a subtle "Sin email" badge on the card so you can see at a glance who can only be reached by WhatsApp.
+- Add the message template + button label to i18n (bilingual). The phone is already stored digits-only, so the `wa.me` link is built directly — no new backend, no secrets.
 
-- Per-checklist-item photo guidance: a one-line "qué fotografiar" hint under each item in `src/routes/assess/checklist.tsx` (text only, bilingual) so users know what a useful photo looks like — improves AI triage quality and reduces "unsure" answers.
-- Keep photos clearly optional (already messaged) to avoid adding friction.
+## What you'll do for the existing 3
+
+After this ships, open `/admin/voluntarios`, unlock, and in the Approved list tap **"Avisar por WhatsApp"** on each of the 3 (and the 4th if you like). It opens WhatsApp with the validated-message + their personal panel link prefilled; you just hit send.
 
 ## Technical notes
 
-- **New server fn** `getStateStats(estado)` in `src/lib/stats.functions.ts` — public GET, returns anonymized counts for one state by reusing the `get_damage_aggregates` RPC output (no DB migration, no new RLS surface).
-- Regional route is a **public SSR route** (no auth gate) so `head()` OG tags render for crawlers and social unfurls; loader calls only the public stats fn (safe during prerender).
-- Reuse existing `RiskBadge`, `ShareApp`, `absoluteUrl`, and OG image assets; no new design system tokens.
-- i18n: ~15–20 new bilingual keys (regional page copy, "explore your state", photo hints).
-- No changes to auth, admin, email, or volunteer logic.
+- No database migration needed — `email`, `whatsapp`, and `access_token` already exist on `volunteer_engineers`.
+- WhatsApp uses click-to-chat `wa.me` deep links (no Twilio, no API key).
+- Approval email is best-effort and wrapped so a send failure never blocks approval.
+- All new copy is bilingual via the existing `useLang` system.
 
-## Out of scope (can follow later)
-- Municipio-level pages (state-level first; revisit if traffic warrants).
-- Re-assessment-over-time history and aftershock prompts.
-- A dedicated SEO scan/keyword pass (can run after these pages exist).
+## Out of scope
+- Automated WhatsApp sending from the server (would require Twilio + business verification) — manual click-to-send keeps it simple and free.
+- Backfilling emails for existing volunteers (you can collect those via the WhatsApp reply if needed).
