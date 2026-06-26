@@ -83,6 +83,62 @@ export type Database = {
         }
         Relationships: []
       }
+      help_requests: {
+        Row: {
+          assessment_public_id: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          id: string
+          municipality: string | null
+          note: string | null
+          public_id: string
+          resident_whatsapp: string
+          risk_level: string | null
+          state: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          assessment_public_id?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          id?: string
+          municipality?: string | null
+          note?: string | null
+          public_id?: string
+          resident_whatsapp: string
+          risk_level?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          assessment_public_id?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          id?: string
+          municipality?: string | null
+          note?: string | null
+          public_id?: string
+          resident_whatsapp?: string
+          risk_level?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "help_requests_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "volunteer_engineers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       institution_leads: {
         Row: {
           contact_name: string | null
@@ -143,11 +199,68 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_engineers: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          note: string | null
+          organization: string | null
+          specialization: string | null
+          states: string[]
+          status: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          note?: string | null
+          organization?: string | null
+          specialization?: string | null
+          states?: string[]
+          status?: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          note?: string | null
+          organization?: string | null
+          specialization?: string | null
+          states?: string[]
+          status?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_approved_engineers: {
+        Args: { _state: string }
+        Returns: {
+          covers_state: boolean
+          id: string
+          name: string
+          organization: string
+          specialization: string
+          states: string[]
+          whatsapp: string
+        }[]
+      }
       get_damage_aggregates: {
         Args: never
         Returns: {
