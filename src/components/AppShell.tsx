@@ -57,6 +57,8 @@ export function AppShell({
         </div>
       </header>
 
+      <OfflineBanner />
+
       <main
         className={cn(
           "mx-auto w-full max-w-screen-sm flex-1 px-4 pb-28 pt-5",
