@@ -102,6 +102,30 @@ export function BottomNav() {
                   {t("nav.methodology")}
                 </Link>
               </SheetClose>
+
+              <SheetClose asChild>
+                <Link
+                  to="/ayuda"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <LifeBuoy className="size-4.5" aria-hidden />
+                  </span>
+                  {t("nav.help")}
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <Link
+                  to="/feedback"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <MessageSquareHeart className="size-4.5" aria-hidden />
+                  </span>
+                  {t("nav.feedback")}
+                </Link>
+              </SheetClose>
             </div>
 
             <div className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card p-3">
