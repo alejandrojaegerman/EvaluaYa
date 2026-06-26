@@ -1,61 +1,54 @@
-# Drill into the "why" behind risk results
+# Dynamic risk visuals + drill-down everywhere
 
-Today the map and admin pages only show Green/Yellow/Red counts per area. This adds an expandable panel that explains *what drove those results* — broken down by the four factors you picked, color-coded by risk level. On the public map it stays fully anonymized; in the gated admin view you can also drill all the way to individual reports.
+Bring the "why behind the risk" drill-down to the regional pages and give the map, regional and admin views a more engaging look using **radial gauges** for risk distribution and **animated segmented bars** for the factor breakdowns. No new dependencies — uses the existing `recharts` library plus CSS animation.
 
-## What you'll see
+## What changes for the user
 
-**On the map (`/mapa`)** — tap any area in the "Top areas" list to expand a "Why these results" panel showing:
-- **Flagged structural issues** — which checklist items (cracks, columns/beams, roof, foundation…) were most often answered "Yes" or "Unsure", with Red/Yellow/Green split per issue.
-- **Building age & type** — how risk breaks down across pre-1970 / 1970–2000 / post-2000 and house / apartment / commercial.
-- **Seismic intensity** — distribution across shaking bands (light / moderate / strong / severe) behind those reports.
-- **Safety rules triggered** — count of reports forced to Red/Yellow by deterministic rules (older masonry, liquefaction, pounding, gas/plumbing risk, strong shaking + damage).
+- **Regional pages (`/zona/$estado`)** gain a "Ver por qué / See why" toggle that reveals the same flagged-items, building age/type, seismic intensity and safety-rule breakdown already on the map — scoped to that state.
+- **Risk distribution** (high/moderate/low) is shown as a polished **radial gauge** with the total in the center, on the map, regional and admin pages — replacing the current flat horizontal bar.
+- **Factor breakdown bars** animate into place (segments grow on reveal) and read more clearly, making the drill-down feel alive.
 
-All aggregate-only — no addresses, photos, or individual reports on the public map.
+## New / changed pieces
 
-**On the admin dashboard (`/admin`)** — tap any state in "Top states" to expand the same four-factor panel, *plus* a "Recent reports" list (date, risk tag, building type/age, intensity, number of issues flagged) where each row links to the full report at `/a/{id}`.
+### 1. New component: `src/components/RiskGauge.tsx`
+A reusable radial gauge that renders the green/yellow/red split as concentric `recharts` `RadialBarChart` rings, with the total count and a small high/moderate/low legend below. Colors come from `RISK_HEX` (no hardcoded colors). Built-in recharts animation gives the sweep-in effect. Props: `{ green; yellow; red; label? }`.
+
+### 2. Upgrade `src/components/RiskFactorsPanel.tsx`
+Keep the grouped structure but turn each factor row into an **animated segmented bar**:
+- Risk-split segments (red/yellow/green) animate their width from 0 on mount using a CSS transition keyed to an "in view" state.
+- Cleaner counts with a subtle count-up via CSS, consistent label/legend.
+- Same `FactorGroup` API, so both map and admin drill-downs inherit the upgrade automatically.
+
+### 3. Regional page: `src/routes/zona.$estado.tsx`
+- Replace the flat distribution bar with `<RiskGauge>`.
+- Add a "Ver por qué" toggle (matching the map's pattern) that lazily calls the existing `getRiskFactors({ state })` server function and renders `<RiskFactorsPanel>` inline. Reuses the existing chevron + `factors.why` / `factors.hideWhy` i18n keys.
+
+### 4. Map page: `src/routes/mapa.tsx`
+- Swap the manual distribution stacked bar (the `RiskStat` row) for `<RiskGauge>`.
+- Drill-down list keeps working; it inherits the animated `RiskFactorsPanel`.
+
+### 5. Admin dashboard: `src/routes/admin.index.tsx`
+- Replace the `RiskBar` distribution block with `<RiskGauge>`.
+- Per-state drill-down inherits the animated `RiskFactorsPanel`.
+- Leave the existing trend `AreaChart` as-is (already styled).
+
+## Technical notes
+
+- No backend or schema changes; `getRiskFactors` already accepts an optional `state` and is the public, anonymized RPC powering the map drill-down.
+- All colors stay on `RISK_HEX` / semantic risk tokens — no `text-white`/hex literals in components.
+- Animations use existing Tailwind keyframes (`fade-in`, `scale-in`) and CSS width transitions plus recharts' built-in `isAnimationActive`; nothing new to install.
+- Gauge and bars are SSR-safe (no `Date.now()`/`Math.random()` at render) to avoid hydration mismatches.
 
 ```text
-Top areas
-┌─────────────────────────────────────────┐
-│ ● Chacao            Miranda · 42  R Y G ⌄│
-│   ▸ expands ▾                             │
-│   ┌─ Why these results ─────────────────┐│
-│   │ Flagged issues                      ││
-│   │  Columns/beams   ███ 18  R12 Y4 G2  ││
-│   │  Exterior walls  ██  11  R6  Y3 G2  ││
-│   │ Building age      pre-1970 ▆ mostly R││
-│   │ Seismic intensity strong ▆▆▆        ││
-│   │ Safety rules      URM ×7 · Pounding ×3│
-│   └─────────────────────────────────────┘│
-└─────────────────────────────────────────┘
+RiskGauge (radial rings + center total)
+ ┌───────────────┐
+ │     ◜◝         │   used on: /mapa, /zona/$estado, /admin
+ │   ◜  N  ◝      │
+ │     ◟◞         │
+ │ ● high ● mod ● low │
+ └───────────────┘
+
+RiskFactorsPanel (animated segmented bars)
+ Grietas exteriores   ██████▓▓░░  12
+ Muros interiores     ████▓░       7
 ```
-
-## Technical approach
-
-All "why" data already lives in the `assessments` table JSONB columns (`property`, `answers`, `ai_result`) plus `risk_level` — no schema changes, only new read-side aggregation.
-
-### Database (migration — new SECURITY DEFINER functions, execute restricted to `service_role` per existing hardening)
-
-1. `get_risk_factors(_state text default null, _municipality text default null)` — returns a normalized long-format table `(factor_group text, factor_key text, total int, green int, yellow int, red int)` covering all four factor groups, optionally filtered by state/municipality. Implementation:
-   - **checklist**: unnest `answers` JSONB, count rows where each item's `value in ('yes','unsure')`, grouped by item `id`, split by `risk_level`.
-   - **age** / **type**: group by `property->>'age'` and `property->>'buildingType'`.
-   - **intensity**: bucket `(property->>'seismicIntensity')::numeric` into bands (<5, 5–5.9, 6–7.9, ≥8).
-   - **safety_rule**: boolean detection of the main deterministic triggers directly from the JSONB (`structuralType = 'URM'`, `liquefaction/pounding/plumbing = 'yes'`, severe shaking via MMI≥8 or PGA≥0.5), mirroring `src/lib/safety-rules.ts`.
-   - Scoped to `status = 'analyzed' AND risk_level IS NOT NULL`.
-2. `get_admin_state_reports(_state text, _limit int default 25)` — recent individual reports for a state: `public_id, created_at, risk_level, building_type, age, structural_type, seismic_intensity, flagged_count`. No address / no PII.
-
-### Server functions
-- `src/lib/stats.functions.ts`: add `getRiskFactors({ state, municipality })` (public, anonymized) brokering `get_risk_factors` through the service-role client, same pattern as `getDamageAggregates`. Returns a typed `RiskFactors` shape grouped client-side.
-- `src/lib/admin-analytics.functions.ts`: add `adminGetStateDrilldown({ adminSecret, state })` — gated by `VOLUNTEER_ADMIN_SECRET` (constant-time compare, existing `adminOk`), returning both the factor aggregates (`get_risk_factors`) and individual reports (`get_admin_state_reports`).
-
-### UI
-- New shared component `src/components/RiskFactorsPanel.tsx` — renders the four-factor breakdown from a `RiskFactors` object (bars + Red/Yellow/Green chips), reused by both pages. Loading + empty states.
-- `src/routes/mapa.tsx`: add expand/collapse state to each `Top areas` row; on first expand, lazy-fetch `getRiskFactors` for that area and render `RiskFactorsPanel`. Keep existing state-link chevron behavior accessible (chevron still navigates to the regional page; a separate "Why" affordance toggles the panel).
-- `src/routes/admin.index.tsx`: make each `Top states` row expandable; on expand call `adminGetStateDrilldown` (reusing the unlocked secret already in state) and render `RiskFactorsPanel` + a "Recent reports" list linking each row to `/a/{publicId}`.
-- `src/lib/i18n.tsx`: add ES (primary) + EN keys for panel headings, factor-group labels, intensity-band labels, and safety-rule labels. Checklist item names and age/type labels already exist and will be reused.
-
-### Privacy
-- Public map: aggregate counts only, never individual rows or addresses.
-- Admin individual reports: exposed only behind the existing admin secret, and contain no address/photos — each links out to the existing `/a/{publicId}` report page for full detail.
-
-No new tables, no new dependencies, no changes to assessment capture or scoring logic.
