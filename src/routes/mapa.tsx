@@ -322,8 +322,7 @@ function MapPage() {
     }
   }
 
-  const pct = (n: number) =>
-    totals && totals.total > 0 ? Math.round((n / totals.total) * 100) : 0;
+
 
 
   return (
