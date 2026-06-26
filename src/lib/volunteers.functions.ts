@@ -602,32 +602,22 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
         const token = existing?.access_token ?? crypto.randomUUID();
         const { error } = await supabaseAdmin
           .from("volunteer_engineers")
-          .update({ status: "approved", access_token: token })
+          .update({
+            status: "approved",
+            access_token: token,
+            token_expires_at: tokenExpiryFromNow(),
+          })
           .eq("id", data.id);
         if (error) return { ok: false };
 
         // Notify the volunteer they were approved (best-effort, email only).
-        const email = existing?.email?.trim();
-        if (email) {
-          try {
-            const { sendSystemEmail } = await import("./notify-email.server");
-            const stateNames = (existing?.states ?? [])
-              .map((s: string) => ESTADO_NAMES.find((n) => n === s) ?? s)
-              .join(", ");
-            await sendSystemEmail({
-              templateName: "volunteer-approved",
-              recipientEmail: email,
-              idempotencyKey: `volunteer-approved-${data.id}`,
-              templateData: {
-                name: existing?.name ?? "",
-                states: stateNames,
-                panelUrl: `https://evaluaya.app/voluntarios/panel/${token}`,
-              },
-            });
-          } catch (e) {
-            console.error("[volunteers] approval email failed", e);
-          }
-        }
+        await sendAccessEmail({
+          email: existing?.email,
+          name: existing?.name,
+          states: existing?.states ?? [],
+          token,
+          idempotencyKey: `volunteer-approved-${data.id}`,
+        });
 
         return { ok: true, accessToken: token };
       } catch (e) {
@@ -636,6 +626,88 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
       }
     },
   );
+
+const idSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  id: z.string().trim().uuid(),
+});
+
+/** Resend the access-link email to an already-approved volunteer (admin). */
+export const adminResendAccessLink = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => idSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean; reason?: string }> => {
+    if (!adminOk(data.adminSecret)) return { ok: false };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: row } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("access_token, name, email, states, status")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (!row || row.status !== "approved" || !row.access_token) {
+        return { ok: false, reason: "not_approved" };
+      }
+      if (!row.email?.trim()) return { ok: false, reason: "no_email" };
+
+      const sent = await sendAccessEmail({
+        email: row.email,
+        name: row.name,
+        states: row.states ?? [],
+        token: row.access_token,
+        // unique key per resend so the queue never dedupes it
+        idempotencyKey: `volunteer-resend-${data.id}-${Date.now()}`,
+      });
+      return sent ? { ok: true } : { ok: false, reason: "send_failed" };
+    } catch (e) {
+      console.error("[volunteers] adminResendAccessLink failed", e);
+      return { ok: false };
+    }
+  });
+
+/** Rotate a volunteer's access link (new token + fresh expiry), re-email it. */
+export const adminRotateAccessLink = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => idSchema.parse(data))
+  .handler(
+    async ({
+      data,
+    }): Promise<{ ok: boolean; accessToken?: string | null; reason?: string }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: row } = await supabaseAdmin
+          .from("volunteer_engineers")
+          .select("name, email, states, status")
+          .eq("id", data.id)
+          .maybeSingle();
+        if (!row || row.status !== "approved") {
+          return { ok: false, reason: "not_approved" };
+        }
+        const token = crypto.randomUUID();
+        const { error } = await supabaseAdmin
+          .from("volunteer_engineers")
+          .update({ access_token: token, token_expires_at: tokenExpiryFromNow() })
+          .eq("id", data.id);
+        if (error) return { ok: false };
+
+        await sendAccessEmail({
+          email: row.email,
+          name: row.name,
+          states: row.states ?? [],
+          token,
+          idempotencyKey: `volunteer-rotate-${data.id}-${Date.now()}`,
+        });
+        return { ok: true, accessToken: token };
+      } catch (e) {
+        console.error("[volunteers] adminRotateAccessLink failed", e);
+        return { ok: false };
+      }
+    },
+  );
+
 
 export const adminListHelpRequests = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => adminListSchema.parse(data))
