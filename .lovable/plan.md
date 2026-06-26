@@ -1,55 +1,39 @@
-# Better navigation for EvalúaYa
+## Two changes
 
-As the app grew (community map, methodology, saved-report accounts, volunteer engineers), navigation stayed split between a thin top bar and ad-hoc inline links. This restructures it into a clear, thumb-friendly system without touching any assessment logic.
+### A. Distinct social preview image for `/voluntarios`
 
-## What you'll get
+Today the volunteers page overrides title/description/URL but inherits the **general** site image from `__root.tsx`'s `og:image`. We'll give it its own.
 
-A persistent **bottom tab bar** (PWA-style, thumb-reachable, always visible) with the 4 primary destinations, plus a **"Más" sheet** for secondary ones. The top header gets slimmed and made consistent.
+1. **Generate** a branded volunteers preview image (1200×630, `public/og-voluntarios.jpg`) — on-brand teal (`#0f3443`), themed around volunteer engineers/organizations helping families assess post-earthquake damage, with the EvalúaYa wordmark and a short Spanish headline (e.g. "Ingenieros y organizaciones voluntarias").
+2. **Add leaf-level tags** to `head()` in `src/routes/voluntarios.index.tsx`: `og:image`, `twitter:image` (absolute URL via the existing `absoluteUrl()` helper), and `twitter:card: summary_large_image`. Because TanStack merges `meta` by `property`/`name`, these override the root image for this route only — every other route keeps the general image.
 
-```text
-┌───────────────────────────────┐
-│  🛡 EvalúaYa      ● En línea  ES│  ← slim header (brand, status, lang)
-│                               │
-│        page content           │
-│                               │
-├───────────────────────────────┤
-│  🏠     🗺      📁      ⋯      │  ← bottom tab bar
-│ Inicio  Mapa  Reportes  Más    │
-└───────────────────────────────┘
-```
+### B. Let organizations/companies join (not just individual engineers)
 
-### Bottom tab bar (primary)
-Four slots, each with active-state highlight:
-- **Inicio** → `/`
-- **Mapa** → `/mapa`
-- **Mis reportes** → `/mis-reportes` (the dedicated account slot you asked for)
-- **Más** → opens the sheet (not a route)
+Per your choices: a **type toggle at the top** of the form, and orgs live in the **same matching pool with their org name shown**.
 
-### "Más" sheet (secondary)
-Slide-up sheet listing everything that doesn't earn a permanent slot:
-- **Voluntarios** → `/voluntarios` (currently has no global entry point — this surfaces it)
-- **Metodología / Cómo funciona** → `/metodologia`
-- **Idioma / Language** toggle (moved here so the header stays clean, also kept in header)
-- Connection status reminder
+**Data model** (migration on `public.volunteer_engineers`):
+- Add `volunteer_type text NOT NULL DEFAULT 'individual'` with a check constraint allowing `'individual'` / `'organization'`. Existing rows default to `individual`.
 
-### Header cleanup (polish)
-- Keep brand wordmark, online/offline pill, and language toggle.
-- Remove the Map and Methodology text links from the header (now handled by the tab bar / Más sheet) so the top bar isn't cramped on small screens.
-- Keep the header responsive using grid + `min-w-0` + `shrink-0` so nothing clips on narrow phones.
+**Signup form** (`src/routes/voluntarios.index.tsx`):
+- Add a segmented toggle at the top: **"Ingeniero individual" / "Organización"**.
+- Individual (unchanged): Name (engineer) required, Organization optional, Specialization, WhatsApp, Email, States, Note.
+- Organization: **Organization name required**, **Contact person** required, fields relabeled (e.g. Specialization → "Áreas de especialización / servicios"); same WhatsApp/Email/States/Note.
+- Field validation adapts to the selected type before submit.
 
-### Small polish included
-- Consistent **active states** on the tab bar (primary color + filled icon for the current route).
-- Surface **Voluntarios** in the Más sheet (previously only reachable from result cards).
-- Content padding adjusted so the bottom bar never overlaps page content (the shell already uses `pb-28`; verified against the new bar height).
-- The home page's inline "Mis reportes" link stays, now reinforced by the permanent tab.
+**Server function** (`src/lib/volunteers.functions.ts`):
+- Extend `signupSchema` with `volunteerType: 'individual' | 'organization'` and make `organization` required when type is `organization`.
+- Persist `volunteer_type` on insert (status stays `pending` → admin review unchanged).
 
-## Technical approach
+**Matching / display** (same pool, show org name):
+- Include `volunteer_type` in the `get_approved_engineers` RPC and the `PublicEngineer` DTO so orgs can show an "Organización" badge.
+- In the resident-facing match UI (`ConnectEngineers`) and the admin/panel views, surface the organization name prominently and tag organizations with a small badge. Individuals render as today.
 
-- **`src/components/BottomNav.tsx`** (new): renders the 4-item tab bar with `@tanstack/react-router` `<Link>` using `activeProps`/`data-status` for highlight, and a `Sheet` (existing `src/components/ui/sheet.tsx`, `side="bottom"`) for "Más". Hidden via `print:hidden` so PDFs/share cards are unaffected.
-- **`src/components/AppShell.tsx`**: render `<BottomNav />` after `<main>`; remove the Map/Methodology header links; keep online pill + `LanguageToggle`. Bottom padding stays adequate for the fixed bar.
-- **`src/lib/i18n.tsx`**: add a few keys — `nav.home`, `nav.reports`, `nav.more`, `nav.volunteers`, `nav.language` (ES + EN). Reuse existing `nav.map`, `nav.methodology`.
-- No route files, server functions, database, or assessment logic change. Pure presentation/navigation refactor.
+**i18n** (`src/lib/i18n.tsx`): add ES + EN keys for the toggle labels, the organization-specific field labels/placeholders, and the "Organización" badge.
+
+## Technical notes
+- Updating the RPC's return signature requires `CREATE OR REPLACE FUNCTION` in the migration (it already has `SET search_path` and is service-role only — keep that).
+- After deploy, social platforms cache previews; the new volunteers image won't show on already-scraped links until each platform re-fetches (forceable via their link-preview debuggers).
 
 ## Out of scope
-- No redesign of individual pages or color/theme changes.
-- No changes to the assessment flow, AI analysis, PDF, or email systems.
+- No changes to other routes' preview images.
+- No auth/login changes; signups remain public + admin-approved.
