@@ -546,6 +546,40 @@ const es: Dict = {
   "admin.linkCopied": "Enlace copiado",
   "admin.none": "Sin registros.",
 
+  // Panel — matching enhancements
+  "panel.specialization": "Especialidad",
+  "panel.ageNew": "Nueva",
+  "panel.ageWaiting": "Esperando",
+  "panel.ageDays": "d",
+
+  // Admin dashboard
+  "dash.title": "Panel de administración",
+  "dash.subtitle": "Métricas de evaluaciones, voluntarios y conexiones.",
+  "dash.toReview": "Revisar voluntarios",
+  "dash.assessments": "Evaluaciones",
+  "dash.totalReports": "Reportes totales",
+  "dash.completion": "Tasa de análisis",
+  "dash.drafts": "Borradores",
+  "dash.areas": "Estados con datos",
+  "dash.distribution": "Distribución de riesgo",
+  "dash.trend": "Tendencia (30 días)",
+  "dash.topStates": "Estados con más reportes",
+  "dash.volunteers": "Voluntarios",
+  "dash.totalVolunteers": "Voluntarios totales",
+  "dash.orgs": "Organizaciones",
+  "dash.individuals": "individuales",
+  "dash.coverage": "Cobertura por estado",
+  "dash.matching": "Conexiones",
+  "dash.requests": "Solicitudes",
+  "dash.open": "Abiertas",
+  "dash.openShort": "abiertas",
+  "dash.claimRate": "Tasa de respuesta",
+  "dash.avgClaim": "Tiempo prom. de respuesta",
+  "dash.gaps": "Brechas de cobertura",
+  "dash.gapsHint": "Estados con solicitudes abiertas y sin ingenieros aprobados.",
+  "dash.noGaps": "Sin brechas de cobertura.",
+
+
   // Save / access reports (passwordless account)
   "account.saveTitle": "Guarda tus reportes",
   "account.saveBody":
@@ -1098,6 +1132,40 @@ const en: Dict = {
   "admin.copyLink": "Copy panel link",
   "admin.linkCopied": "Link copied",
   "admin.none": "No records.",
+
+  // Panel — matching enhancements
+  "panel.specialization": "Specialty",
+  "panel.ageNew": "New",
+  "panel.ageWaiting": "Waiting",
+  "panel.ageDays": "d",
+
+  // Admin dashboard
+  "dash.title": "Admin dashboard",
+  "dash.subtitle": "Assessment, volunteer and matching metrics.",
+  "dash.toReview": "Review volunteers",
+  "dash.assessments": "Assessments",
+  "dash.totalReports": "Total reports",
+  "dash.completion": "Analysis rate",
+  "dash.drafts": "Drafts",
+  "dash.areas": "States with data",
+  "dash.distribution": "Risk distribution",
+  "dash.trend": "Trend (30 days)",
+  "dash.topStates": "States with most reports",
+  "dash.volunteers": "Volunteers",
+  "dash.totalVolunteers": "Total volunteers",
+  "dash.orgs": "Organizations",
+  "dash.individuals": "individual",
+  "dash.coverage": "Coverage by state",
+  "dash.matching": "Matching",
+  "dash.requests": "Requests",
+  "dash.open": "Open",
+  "dash.openShort": "open",
+  "dash.claimRate": "Response rate",
+  "dash.avgClaim": "Avg. response time",
+  "dash.gaps": "Coverage gaps",
+  "dash.gapsHint": "States with open requests and no approved engineers.",
+  "dash.noGaps": "No coverage gaps.",
+
 
   // Save / access reports (passwordless account)
   "account.saveTitle": "Save your reports",

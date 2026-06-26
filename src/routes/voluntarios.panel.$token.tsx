@@ -92,6 +92,16 @@ function PanelPage() {
     );
   }
 
+  function ageLabel(createdAt: string): string {
+    const ms = Date.now() - new Date(createdAt).getTime();
+    if (!Number.isFinite(ms) || ms < 0) return "";
+    const hours = Math.floor(ms / 3_600_000);
+    if (hours < 1) return t("panel.ageNew");
+    if (hours < 24) return `${t("panel.ageWaiting")} ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `${t("panel.ageWaiting")} ${days}${t("panel.ageDays")}`;
+  }
+
   if (loading) {
     return (
       <AppShell>
@@ -137,6 +147,11 @@ function PanelPage() {
         <p className="mt-1 text-xs text-primary-foreground/70">
           {t("panel.coverage")}: {panel.engineer.states.join(", ")}
         </p>
+        {panel.engineer.specialization && (
+          <p className="mt-0.5 text-xs text-primary-foreground/70">
+            {t("panel.specialization")}: {panel.engineer.specialization}
+          </p>
+        )}
       </section>
 
       <div className="mt-5 flex items-center justify-between">
@@ -176,6 +191,11 @@ function PanelPage() {
                   <p className="mt-1 text-xs text-muted-foreground">
                     {new Date(r.createdAt).toLocaleString()}
                   </p>
+                  {r.status === "open" && ageLabel(r.createdAt) && (
+                    <p className="mt-0.5 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                      {ageLabel(r.createdAt)}
+                    </p>
+                  )}
                 </div>
                 {r.riskLevel && <RiskBadge level={r.riskLevel} />}
               </div>

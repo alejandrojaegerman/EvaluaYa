@@ -1,0 +1,198 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+// ---------------------------------------------------------------------------
+// Admin analytics — gated by VOLUNTEER_ADMIN_SECRET (same secret that unlocks
+// the volunteer review page). All reads go through the service-role client and
+// SECURITY DEFINER RPCs; nothing here is exposed to the public app.
+// ---------------------------------------------------------------------------
+
+export type AdminAnalytics = {
+  assessments: {
+    total: number;
+    green: number;
+    yellow: number;
+    red: number;
+    analyzed: number;
+    drafts: number;
+    completionRate: number; // analyzed / total, 0..1
+  };
+  timeseries: Array<{
+    day: string;
+    total: number;
+    green: number;
+    yellow: number;
+    red: number;
+  }>;
+  topStates: Array<{
+    state: string;
+    total: number;
+    green: number;
+    yellow: number;
+    red: number;
+  }>;
+  volunteers: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    individuals: number;
+    organizations: number;
+  };
+  coverage: Array<{ state: string; engineers: number }>;
+  matching: {
+    total: number;
+    open: number;
+    claimed: number;
+    closed: number;
+    claimRate: number; // (claimed + closed) / total, 0..1
+    avgClaimHours: number | null;
+  };
+  coverageGaps: Array<{ state: string; openRequests: number }>;
+};
+
+const EMPTY: AdminAnalytics = {
+  assessments: {
+    total: 0,
+    green: 0,
+    yellow: 0,
+    red: 0,
+    analyzed: 0,
+    drafts: 0,
+    completionRate: 0,
+  },
+  timeseries: [],
+  topStates: [],
+  volunteers: {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    individuals: 0,
+    organizations: 0,
+  },
+  coverage: [],
+  matching: {
+    total: 0,
+    open: 0,
+    claimed: 0,
+    closed: 0,
+    claimRate: 0,
+    avgClaimHours: null,
+  },
+  coverageGaps: [],
+};
+
+const adminSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+});
+
+/** Constant-time compare against VOLUNTEER_ADMIN_SECRET. */
+function adminOk(provided: string): boolean {
+  const expected = process.env.VOLUNTEER_ADMIN_SECRET;
+  if (!expected) return false;
+  if (provided.length !== expected.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < expected.length; i++) {
+    mismatch |= provided.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
+export const adminGetAnalytics = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => adminSchema.parse(data))
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; analytics: AdminAnalytics }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false, analytics: EMPTY };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+
+        const [
+          aStats,
+          aSeries,
+          aTop,
+          vStats,
+          cov,
+          mStats,
+          gaps,
+        ] = await Promise.all([
+          supabaseAdmin.rpc("get_admin_assessment_stats"),
+          supabaseAdmin.rpc("get_admin_assessment_timeseries"),
+          supabaseAdmin.rpc("get_admin_top_states"),
+          supabaseAdmin.rpc("get_admin_volunteer_stats"),
+          supabaseAdmin.rpc("get_admin_engineer_coverage"),
+          supabaseAdmin.rpc("get_admin_matching_stats"),
+          supabaseAdmin.rpc("get_admin_coverage_gaps"),
+        ]);
+
+        const a = aStats.data?.[0];
+        const v = vStats.data?.[0];
+        const m = mStats.data?.[0];
+
+        const assessTotal = a?.total ?? 0;
+        const analyzed = a?.analyzed ?? 0;
+        const matchTotal = m?.total ?? 0;
+        const claimedPlusClosed = (m?.claimed ?? 0) + (m?.closed ?? 0);
+
+        const analytics: AdminAnalytics = {
+          assessments: {
+            total: assessTotal,
+            green: a?.green ?? 0,
+            yellow: a?.yellow ?? 0,
+            red: a?.red ?? 0,
+            analyzed,
+            drafts: a?.drafts ?? 0,
+            completionRate: assessTotal > 0 ? analyzed / assessTotal : 0,
+          },
+          timeseries: (aSeries.data ?? []).map((r) => ({
+            day: String(r.day),
+            total: r.total ?? 0,
+            green: r.green ?? 0,
+            yellow: r.yellow ?? 0,
+            red: r.red ?? 0,
+          })),
+          topStates: (aTop.data ?? []).map((r) => ({
+            state: r.state,
+            total: r.total ?? 0,
+            green: r.green ?? 0,
+            yellow: r.yellow ?? 0,
+            red: r.red ?? 0,
+          })),
+          volunteers: {
+            total: v?.total ?? 0,
+            pending: v?.pending ?? 0,
+            approved: v?.approved ?? 0,
+            rejected: v?.rejected ?? 0,
+            individuals: v?.individuals ?? 0,
+            organizations: v?.organizations ?? 0,
+          },
+          coverage: (cov.data ?? []).map((r) => ({
+            state: r.state,
+            engineers: r.engineers ?? 0,
+          })),
+          matching: {
+            total: matchTotal,
+            open: m?.open ?? 0,
+            claimed: m?.claimed ?? 0,
+            closed: m?.closed ?? 0,
+            claimRate: matchTotal > 0 ? claimedPlusClosed / matchTotal : 0,
+            avgClaimHours:
+              m?.avg_claim_seconds != null
+                ? m.avg_claim_seconds / 3600
+                : null,
+          },
+          coverageGaps: (gaps.data ?? []).map((r) => ({
+            state: r.state,
+            openRequests: r.open_requests ?? 0,
+          })),
+        };
+
+        return { ok: true, analytics };
+      } catch (e) {
+        console.error("[admin-analytics] adminGetAnalytics failed", e);
+        return { ok: false, analytics: EMPTY };
+      }
+    },
+  );

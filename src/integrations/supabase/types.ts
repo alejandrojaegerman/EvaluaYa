@@ -377,6 +377,72 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_admin_assessment_stats: {
+        Args: never
+        Returns: {
+          analyzed: number
+          drafts: number
+          green: number
+          red: number
+          total: number
+          yellow: number
+        }[]
+      }
+      get_admin_assessment_timeseries: {
+        Args: never
+        Returns: {
+          day: string
+          green: number
+          red: number
+          total: number
+          yellow: number
+        }[]
+      }
+      get_admin_coverage_gaps: {
+        Args: never
+        Returns: {
+          open_requests: number
+          state: string
+        }[]
+      }
+      get_admin_engineer_coverage: {
+        Args: never
+        Returns: {
+          engineers: number
+          state: string
+        }[]
+      }
+      get_admin_matching_stats: {
+        Args: never
+        Returns: {
+          avg_claim_seconds: number
+          claimed: number
+          closed: number
+          open: number
+          total: number
+        }[]
+      }
+      get_admin_top_states: {
+        Args: never
+        Returns: {
+          green: number
+          red: number
+          state: string
+          total: number
+          yellow: number
+        }[]
+      }
+      get_admin_volunteer_stats: {
+        Args: never
+        Returns: {
+          approved: number
+          individuals: number
+          organizations: number
+          pending: number
+          rejected: number
+          total: number
+        }[]
+      }
       get_approved_engineers: {
         Args: { _state: string }
         Returns: {
@@ -410,6 +476,15 @@ export type Database = {
           red: number
           total: number
           yellow: number
+        }[]
+      }
+      get_engineers_to_notify: {
+        Args: { _state: string }
+        Returns: {
+          access_token: string
+          email: string
+          id: string
+          name: string
         }[]
       }
       move_to_dlq: {

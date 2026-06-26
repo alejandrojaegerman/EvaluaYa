@@ -41,6 +41,7 @@ export type EngineerPanel = {
     name: string;
     organization: string | null;
     states: string[];
+    specialization: string | null;
   };
   requests: EngineerRequest[];
 };
@@ -263,6 +264,41 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] submitHelpRequest", error);
         return { ok: false };
       }
+
+      // Notify approved engineers covering this estado (best-effort).
+      try {
+        const { data: engineers } = await supabaseAdmin.rpc(
+          "get_engineers_to_notify",
+          { _state: data.state || "" },
+        );
+        if (engineers && engineers.length > 0) {
+          const { sendSystemEmail } = await import("./notify-email.server");
+          const location =
+            [data.municipality, data.state].filter(Boolean).join(", ") || "—";
+          await Promise.all(
+            engineers.map((eng) =>
+              sendSystemEmail({
+                templateName: "help-request-notification",
+                recipientEmail: eng.email ?? undefined,
+                templateData: {
+                  engineerName: eng.name ?? "",
+                  riskLevel: data.riskLevel ?? "",
+                  location,
+                  note: data.note || "",
+                  panelUrl: eng.access_token
+                    ? `https://evaluaya.app/voluntarios/panel/${eng.access_token}`
+                    : "https://evaluaya.app/voluntarios",
+                },
+              }).catch((err) =>
+                console.error("[volunteers] notify engineer failed", err),
+              ),
+            ),
+          );
+        }
+      } catch (notifyErr) {
+        console.error("[volunteers] request notification failed", notifyErr);
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] submitHelpRequest failed", e);
@@ -284,7 +320,9 @@ async function loadEngineerByToken(token: string) {
   );
   const { data, error } = await supabaseAdmin
     .from("volunteer_engineers")
-    .select("id, name, organization, states, status, access_token")
+    .select(
+      "id, name, organization, states, specialization, status, access_token",
+    )
     .eq("access_token", token)
     .eq("status", "approved")
     .maybeSingle();
@@ -326,10 +364,16 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       });
 
       relevant.sort((a, b) => {
+        // Actionable (open) requests first.
+        const oa = a.status === "open" ? 0 : 1;
+        const ob = b.status === "open" ? 0 : 1;
+        if (oa !== ob) return oa - ob;
+        // Then by severity: red → yellow → green.
         const ra = RISK_ORDER[a.risk_level ?? "green"] ?? 3;
         const rb = RISK_ORDER[b.risk_level ?? "green"] ?? 3;
         if (ra !== rb) return ra - rb;
-        return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+        // Then oldest first, so the longest-waiting resident rises to the top.
+        return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
 
       const requests: EngineerRequest[] = relevant.map((r) => ({
@@ -357,11 +401,13 @@ function mapEng(e: {
   name: string;
   organization: string | null;
   states: string[] | null;
+  specialization?: string | null;
 }) {
   return {
     name: e.name,
     organization: e.organization,
     states: e.states ?? [],
+    specialization: e.specialization ?? null,
   };
 }
 
