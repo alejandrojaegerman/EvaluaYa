@@ -147,6 +147,11 @@ function PanelPage() {
         <p className="mt-1 text-xs text-primary-foreground/70">
           {t("panel.coverage")}: {panel.engineer.states.join(", ")}
         </p>
+        {panel.engineer.specialization && (
+          <p className="mt-0.5 text-xs text-primary-foreground/70">
+            {t("panel.specialization")}: {panel.engineer.specialization}
+          </p>
+        )}
       </section>
 
       <div className="mt-5 flex items-center justify-between">
