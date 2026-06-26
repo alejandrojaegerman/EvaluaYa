@@ -804,9 +804,15 @@ const en: Dict = {
   "methodology.red.pounding":
     "Pounding between neighboring buildings during the quake.",
   "methodology.red.plumbing": "Severe plumbing or gas damage.",
+  "methodology.red.combo":
+    "Very strong shaking (MMI VIII+ or PGA ≥0.50g) together with reported structural damage.",
   "methodology.yellow.title": "Escalate to YELLOW (caution)",
   "methodology.yellow.intensity":
-    "Estimated shaking intensity MMI VII or higher at your location.",
+    "Moderate shaking at your location: intensity MMI VI+ or peak ground acceleration (PGA) ≥0.25g.",
+  "methodology.yellow.spectral":
+    "High seismic demand for the building's height: spectral acceleration ≥0.40g at its estimated period.",
+  "methodology.yellow.soil":
+    "Soft or very soft soil (low vs30), which amplifies shaking and raises liquefaction risk.",
   "methodology.yellow.floors": "Buildings taller than 7 floors.",
   "methodology.yellow.structure":
     "More vulnerable structural systems: concrete moment frames, infill walls, precast, or low-rise reinforced masonry.",
