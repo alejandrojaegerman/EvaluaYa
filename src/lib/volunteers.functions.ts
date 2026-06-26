@@ -319,7 +319,9 @@ async function loadEngineerByToken(token: string) {
   );
   const { data, error } = await supabaseAdmin
     .from("volunteer_engineers")
-    .select("id, name, organization, states, status, access_token")
+    .select(
+      "id, name, organization, states, specialization, status, access_token",
+    )
     .eq("access_token", token)
     .eq("status", "approved")
     .maybeSingle();
