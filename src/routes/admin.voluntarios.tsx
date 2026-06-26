@@ -97,6 +97,31 @@ function AdminPage() {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  async function resendEmail(e: AdminEngineer) {
+    setBusy(true);
+    try {
+      const res = await resend({ data: { adminSecret: secret, id: e.id } });
+      if (res.ok) toast.success(t("admin.resent"));
+      else toast.error(t("admin.resendFailed"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function rotateLink(e: AdminEngineer) {
+    if (!window.confirm(t("admin.rotateConfirm"))) return;
+    setBusy(true);
+    try {
+      const res = await rotate({ data: { adminSecret: secret, id: e.id } });
+      if (res.ok) {
+        toast.success(t("admin.rotated"));
+        await refresh(secret);
+      } else toast.error(t("admin.rotateFailed"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!unlocked) {
     return (
       <AppShell>
