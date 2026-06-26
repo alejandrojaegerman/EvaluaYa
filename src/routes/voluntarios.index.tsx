@@ -316,7 +316,9 @@ function VolunteersPage() {
           </div>
 
           <div>
-            <Label htmlFor="vol-spec">{t("vol.specialization")}</Label>
+            <Label htmlFor="vol-spec">
+              {isOrg ? t("vol.orgSpecialization") : t("vol.specialization")}
+            </Label>
             <Input
               id="vol-spec"
               value={specialization}
