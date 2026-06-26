@@ -379,34 +379,12 @@ function MapPage() {
           {/* Risk distribution */}
           <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
             <p className="text-sm font-semibold">{t("map.distribution")}</p>
-            <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-muted">
-              <div
-                style={{ width: `${pct(totals!.red)}%`, backgroundColor: rgb("red") }}
-              />
-              <div
-                style={{
-                  width: `${pct(totals!.yellow)}%`,
-                  backgroundColor: rgb("yellow"),
-                }}
-              />
-              <div
-                style={{
-                  width: `${pct(totals!.green)}%`,
-                  backgroundColor: rgb("green"),
-                }}
-              />
-            </div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-              <RiskStat label={t("map.high")} value={totals!.red} color={rgb("red")} />
-              <RiskStat
-                label={t("map.moderate")}
-                value={totals!.yellow}
-                color={rgb("yellow")}
-              />
-              <RiskStat
-                label={t("map.low")}
-                value={totals!.green}
-                color={rgb("green")}
+            <div className="mt-3">
+              <RiskGauge
+                green={totals!.green}
+                yellow={totals!.yellow}
+                red={totals!.red}
+                label={t("map.totalAssessments")}
               />
             </div>
           </section>
