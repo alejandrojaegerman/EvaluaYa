@@ -106,6 +106,10 @@ const es: Dict = {
   "checklist.showOptional": "Agregar revisión de servicios (opcional)",
   "checklist.hideOptional": "Ocultar revisión de servicios",
   "checklist.coreProgress": "esenciales",
+  "checklist.remaining": "Te falta {n} para poder analizar",
+  "checklist.remainingOne": "pregunta esencial",
+  "checklist.remainingMany": "preguntas esenciales",
+  "checklist.photosOptional": "Las fotos son opcionales, pero mejoran el análisis.",
 
   "item.foundation.area": "Cimientos",
   "item.foundation.q": "¿Hay grietas visibles o hundimientos en los cimientos?",
@@ -290,6 +294,11 @@ const es: Dict = {
   "property.detected": "Ubicación detectada. Puedes cambiarla si no es correcta.",
   "property.detectFailed": "No pudimos detectar tu ubicación. Selecciona tu estado.",
   "property.stateRequired": "Selecciona tu estado para continuar.",
+  "property.effortHint": "Solo toma unos minutos. Las fotos son opcionales.",
+  "property.missingPrefix": "Para continuar, falta:",
+  "property.miss.state": "estado",
+  "property.miss.type": "tipo de edificio",
+  "property.miss.age": "antigüedad",
 
   "map.title": "Mapa de daños",
   "map.subtitle":
