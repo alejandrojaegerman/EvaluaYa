@@ -56,11 +56,40 @@ function rgb(level: "red" | "yellow" | "green"): string {
 function AdminDashboard() {
   const { t, lang } = useLang();
   const getAnalytics = useServerFn(adminGetAnalytics);
+  const getDrilldown = useServerFn(adminGetStateDrilldown);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState<AdminAnalytics | null>(null);
+
+  // Per-state "why" drill-down.
+  const [expandedState, setExpandedState] = useState<string | null>(null);
+  const [drilldownCache, setDrilldownCache] = useState<
+    Record<string, StateDrilldown>
+  >({});
+  const [drilldownLoading, setDrilldownLoading] = useState<string | null>(null);
+
+  function toggleState(state: string) {
+    if (expandedState === state) {
+      setExpandedState(null);
+      return;
+    }
+    setExpandedState(state);
+    if (drilldownCache[state]) return;
+    setDrilldownLoading(state);
+    getDrilldown({ data: { adminSecret: secret, state } })
+      .then((res) => {
+        if (res.ok) {
+          setDrilldownCache((prev) => ({ ...prev, [state]: res.drilldown }));
+        }
+      })
+      .catch(() => {})
+      .finally(() =>
+        setDrilldownLoading((cur) => (cur === state ? null : cur)),
+      );
+  }
+
 
   async function onUnlock(ev: React.FormEvent) {
     ev.preventDefault();
