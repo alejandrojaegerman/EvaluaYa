@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,6 +21,11 @@ import { Route as AdminVoluntariosRouteImport } from './routes/admin.voluntarios
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
 
+const MisReportesRoute = MisReportesRouteImport.update({
+  id: '/mis-reportes',
+  path: '/mis-reportes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MetodologiaRoute = MetodologiaRouteImport.update({
   id: '/metodologia',
   path: '/metodologia',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
+  '/mis-reportes': typeof MisReportesRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
+  '/mis-reportes': typeof MisReportesRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
+  '/mis-reportes': typeof MisReportesRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/mapa'
     | '/metodologia'
+    | '/mis-reportes'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/mapa'
     | '/metodologia'
+    | '/mis-reportes'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/mapa'
     | '/metodologia'
+    | '/mis-reportes'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
+  MisReportesRoute: typeof MisReportesRoute
   APublicIdRoute: typeof APublicIdRoute
   AdminVoluntariosRoute: typeof AdminVoluntariosRoute
   AssessAnalyzeRoute: typeof AssessAnalyzeRoute
@@ -162,6 +175,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/mis-reportes': {
+      id: '/mis-reportes'
+      path: '/mis-reportes'
+      fullPath: '/mis-reportes'
+      preLoaderRoute: typeof MisReportesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/metodologia': {
       id: '/metodologia'
       path: '/metodologia'
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
+  MisReportesRoute: MisReportesRoute,
   APublicIdRoute: APublicIdRoute,
   AdminVoluntariosRoute: AdminVoluntariosRoute,
   AssessAnalyzeRoute: AssessAnalyzeRoute,

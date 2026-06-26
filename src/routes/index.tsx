@@ -219,11 +219,20 @@ function Index() {
       {/* Recent assessments */}
       {history.length > 0 && (
         <section className="mt-8">
-          <div className="flex items-center gap-2">
-            <History className="size-4 text-muted-foreground" aria-hidden />
-            <h2 className="font-display text-lg font-bold">
-              {t("home.recentTitle")}
-            </h2>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <History className="size-4 text-muted-foreground" aria-hidden />
+              <h2 className="font-display text-lg font-bold">
+                {t("home.recentTitle")}
+              </h2>
+            </div>
+            <Link
+              to="/mis-reportes"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            >
+              {t("account.viewMyReports")}
+              <ChevronRight className="size-3.5" aria-hidden />
+            </Link>
           </div>
           <ul className="mt-3 space-y-2">
             {history.map((entry) => (

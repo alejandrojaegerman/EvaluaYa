@@ -531,6 +531,33 @@ const es: Dict = {
   "admin.copyLink": "Copiar enlace del panel",
   "admin.linkCopied": "Enlace copiado",
   "admin.none": "Sin registros.",
+
+  // Save / access reports (passwordless account)
+  "account.saveTitle": "Guarda tus reportes",
+  "account.saveBody":
+    "¿Quieres volver a ver este reporte más adelante o desde otro teléfono? Recibe un enlace por correo para guardarlo. Sin contraseña.",
+  "account.saveHint":
+    "Solo usamos tu correo para enviarte el enlace de acceso. No es obligatorio.",
+  "account.emailLabel": "Correo electrónico",
+  "account.emailPlaceholder": "tucorreo@ejemplo.com",
+  "account.sendLink": "Enviar enlace",
+  "account.sending": "Enviando…",
+  "account.invalidEmail": "Ingresa un correo válido.",
+  "account.sendError": "No se pudo enviar el enlace. Intenta de nuevo.",
+  "account.checkEmailTitle": "Revisa tu correo",
+  "account.checkEmailBody":
+    "Te enviamos un enlace de acceso. Ábrelo desde este teléfono o cualquier otro para ver tus reportes guardados.",
+  "account.savedTitle": "Tus reportes están guardados",
+  "account.savedBody":
+    "Tu sesión está activa. Puedes ver tus reportes en cualquier momento.",
+  "account.viewMyReports": "Mis reportes",
+  "account.myReportsTitle": "Mis reportes",
+  "account.signInBody":
+    "Inicia sesión con tu correo para ver los reportes que has guardado.",
+  "account.loading": "Cargando tus reportes…",
+  "account.emptyReports":
+    "Aún no tienes reportes guardados en esta cuenta. Cuando guardes un reporte, aparecerá aquí.",
+  "account.signOut": "Cerrar sesión",
 };
 
 
@@ -1043,6 +1070,33 @@ const en: Dict = {
   "admin.copyLink": "Copy panel link",
   "admin.linkCopied": "Link copied",
   "admin.none": "No records.",
+
+  // Save / access reports (passwordless account)
+  "account.saveTitle": "Save your reports",
+  "account.saveBody":
+    "Want to see this report later or from another phone? Get a link by email to save it. No password needed.",
+  "account.saveHint":
+    "We only use your email to send you the access link. It's optional.",
+  "account.emailLabel": "Email address",
+  "account.emailPlaceholder": "you@example.com",
+  "account.sendLink": "Send link",
+  "account.sending": "Sending…",
+  "account.invalidEmail": "Enter a valid email.",
+  "account.sendError": "Couldn't send the link. Please try again.",
+  "account.checkEmailTitle": "Check your email",
+  "account.checkEmailBody":
+    "We sent you an access link. Open it on this phone or any other to see your saved reports.",
+  "account.savedTitle": "Your reports are saved",
+  "account.savedBody":
+    "You're signed in. You can view your reports anytime.",
+  "account.viewMyReports": "My reports",
+  "account.myReportsTitle": "My reports",
+  "account.signInBody":
+    "Sign in with your email to see the reports you've saved.",
+  "account.loading": "Loading your reports…",
+  "account.emptyReports":
+    "You don't have any saved reports in this account yet. Once you save a report, it will appear here.",
+  "account.signOut": "Sign out",
 };
 
 

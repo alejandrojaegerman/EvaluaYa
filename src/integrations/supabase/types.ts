@@ -43,6 +43,7 @@ export type Database = {
           ai_result: Json | null
           answers: Json
           created_at: string
+          device_id: string | null
           geo_inferred: boolean
           id: string
           language: string
@@ -52,11 +53,13 @@ export type Database = {
           risk_level: string | null
           state: string | null
           status: string
+          user_id: string | null
         }
         Insert: {
           ai_result?: Json | null
           answers?: Json
           created_at?: string
+          device_id?: string | null
           geo_inferred?: boolean
           id?: string
           language?: string
@@ -66,11 +69,13 @@ export type Database = {
           risk_level?: string | null
           state?: string | null
           status?: string
+          user_id?: string | null
         }
         Update: {
           ai_result?: Json | null
           answers?: Json
           created_at?: string
+          device_id?: string | null
           geo_inferred?: boolean
           id?: string
           language?: string
@@ -80,6 +85,7 @@ export type Database = {
           risk_level?: string | null
           state?: string | null
           status?: string
+          user_id?: string | null
         }
         Relationships: []
       }

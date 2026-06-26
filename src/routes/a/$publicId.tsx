@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { ConnectEngineers } from "@/components/ConnectEngineers";
 import { RiskBadge } from "@/components/RiskBadge";
+import { SaveReportsCard } from "@/components/SaveReportsCard";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
 import type { AssessmentRecord } from "@/lib/assessment-types";
@@ -393,6 +394,9 @@ function ResultPage() {
           {t("result.newAssessment")}
         </Button>
       </div>
+
+      {/* Save reports — optional, passwordless account */}
+      <SaveReportsCard />
 
       {/* Community flywheel — invite + map */}
       <section className="mt-6 rounded-2xl border border-primary/20 bg-secondary/40 p-5">
