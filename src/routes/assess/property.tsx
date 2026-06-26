@@ -147,7 +147,11 @@ function PropertyStep() {
   if (state.trim() === "") missing.push(t("property.miss.state"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (age === null) missing.push(t("property.miss.age"));
-  const valid = missing.length === 0 && floors >= 1;
+  const valid =
+    buildingType !== null &&
+    age !== null &&
+    floors >= 1 &&
+    state.trim() !== "";
 
 
   async function handleContinue() {
