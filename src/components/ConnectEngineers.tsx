@@ -257,6 +257,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                 maxLength={40}
                 className="mt-1.5"
               />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("connect.whatsappHint")}
+              </p>
             </div>
             <div className="mt-3">
               <Label htmlFor="hr-note">{t("connect.noteOptional")}</Label>
