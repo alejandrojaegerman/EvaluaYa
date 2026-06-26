@@ -1001,6 +1001,7 @@ const en: Dict = {
   "connect.directTitle": "Engineers available in your area",
   "connect.coversYourState": "Covers your state",
   "connect.whatsappEngineer": "Message on WhatsApp",
+  "connect.orgBadge": "Organization",
   "connect.noneTitle": "We're still adding engineers in your state",
   "connect.noneBody":
     "Leave your number and a volunteer engineer will reach out as soon as there's coverage in your area.",
