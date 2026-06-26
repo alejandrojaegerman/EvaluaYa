@@ -14,8 +14,6 @@ export type PublicEngineer = {
   id: string;
   name: string;
   organization: string | null;
-  /** digits-only phone for a wa.me link */
-  whatsapp: string;
   states: string[];
   specialization: string | null;
   volunteerType: VolunteerType;
@@ -29,7 +27,8 @@ export type EngineerRequest = {
   state: string | null;
   municipality: string | null;
   riskLevel: RiskLevel | null;
-  residentWhatsapp: string;
+  /** null until the request is claimed by the viewing engineer */
+  residentWhatsapp: string | null;
   note: string | null;
   status: "open" | "claimed" | "closed";
   claimedByMe: boolean;
@@ -45,6 +44,12 @@ export type EngineerPanel = {
   };
   requests: EngineerRequest[];
 };
+
+/** Returned by getEngineerPanel when the access link has expired. */
+export type EngineerPanelResult =
+  | EngineerPanel
+  | { expired: true }
+  | null;
 
 export type AdminEngineer = {
   id: string;
