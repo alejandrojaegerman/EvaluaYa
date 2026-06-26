@@ -1,32 +1,45 @@
-## Goal
+# Review & approve volunteers — fix access + add notifications
 
-Take the look you liked on `/voluntarios` — the deep teal (`#0f3443`) background, the **EvalúaYa** wordmark, the friendly illustrated hard-hat engineer, and the shield-with-checkmark motif — and make it the consistent brand language across the app's other social previews, plus a few tasteful in-app accents.
+The construction company (Constructora ROMACA) already came through and is sitting in your queue as **pending**. The review/approve UI exists at `/admin/voluntarios`; the only blockers are (1) you don't know the unlock password, and (2) there's no alert when new applicants arrive. This plan fixes both.
 
-## A. Branded social preview images (1200×630)
+## 1. Give you a password you actually know
 
-Regenerate the remaining share/OG images in the same illustrated teal style as `og-voluntarios.jpg`, so every link unfurl looks like one family:
+The admin page is unlocked by a stored secret (`VOLUNTEER_ADMIN_SECRET`). Rather than reveal the old value, I'll open a secure form so you type a **new** password. Nothing is shown in code or chat.
 
-1. **`public/og-home.jpg`** (new) — homepage / default. Teal background, EvalúaYa wordmark, the engineer-with-house illustration, shield-check, Spanish headline like "Evalúa el daño de tu vivienda tras un sismo." Wire it into `src/routes/__root.tsx`, replacing the current plain screenshot URL for both `og:image` and `twitter:image`.
-2. **`public/og-map.jpg`** (replace) — same frame, map/location motif (pins over a stylized Venezuela), headline "Mapa de daños reportados."
-3. **`public/og-result-green.jpg` / `-yellow.jpg` / `-red.jpg`** (replace) — same teal frame and wordmark, with the risk color as a strong accent band + status icon (check / caution / alert) and the matching Spanish status word. Keeps them color-coded but on-brand.
+Then to review/approve:
+- Go to `https://evaluaya.app/admin/voluntarios` (unlisted page — reach it by typing the URL)
+- Enter your new password
+- ROMACA appears under **Pending** → click **Approve**
+- After approval it moves to **Approved**, where **Copy link** gives you their private engineer-panel URL to send them
 
-No route wiring changes needed for map/results — they already point at these filenames. Only `__root.tsx` gets the new home image reference.
+## 2. Email you when someone new signs up
 
-## B. Light in-app branding touches
+A notification will be sent to **ajaegerman@thinkampersand.com** every time the volunteer/organization form is submitted, so you never have to keep checking the page.
 
-Keep these small and presentation-only:
+The email will include:
+- Whether it's an individual engineer or an organization
+- Name / organization name
+- Coverage state(s), WhatsApp, email, specialization, and any note
+- A direct link to the admin page to review
 
-1. **Home hero** (`src/routes/index.tsx`) — add the branded engineer/house illustration (transparent PNG, `src/assets/`) into the teal hero section so the in-app first impression matches the share image. Sized responsively, decorative (empty alt).
-2. **Header lockup** (`src/components/AppShell.tsx`) — keep the existing shield mark but align its treatment to the brand (consistent rounded teal tile + wordmark), so the in-app logo and the OG wordmark read the same.
+```text
+New volunteer sign-up — EvalúaYa
+────────────────────────────────
+Type:        Organization
+Name:        Constructora ROMACA
+Contact:     Marisol Gil
+Coverage:    Distrito Capital
+WhatsApp:    +58 424-1418355
+Note:        —
+[ Review in admin panel ]
+```
 
 ## Technical notes
 
-- Images generated at 1200×630 JPG into `public/` (referenced by absolute URL via the existing `absoluteUrl()` / `SITE_URL` helpers — no code changes to `site.ts`).
-- In-app illustration generated as a transparent PNG into `src/assets/` and imported normally.
-- Risk colors pulled to match the app's `--risk-green/-yellow/-red` tokens for visual consistency.
-- After publish, social platforms cache previews — the new images won't appear on already-shared links until each platform re-scrapes (forceable via their link-preview debuggers).
-
-## Out of scope
-
-- No copy/feature/logic changes; no changes to the volunteers image (it's the reference).
-- No new routes or metadata structure changes beyond swapping the homepage image URL.
+- **Password**: update the existing `VOLUNTEER_ADMIN_SECRET` via the secure secret form (no code change; the admin route already compares against it).
+- **Email**: app-email infrastructure (queue/cron) is already provisioned; only the transactional send path needs scaffolding. Steps:
+  1. Scaffold transactional email (creates the send route + template registry).
+  2. Add a branded `volunteer-signup-notification` React Email template (teal `#0f3443` brand, Spanish-first) addressed to the fixed admin address.
+  3. In `submitEngineerSignup` (`src/lib/volunteers.functions.ts`), after a successful insert, enqueue the notification server-side with service-role credentials and an idempotency key (so it fires reliably even though the form is unauthenticated). A send failure is logged but never blocks the signup.
+- Recipient address is currently hardcoded to `ajaegerman@thinkampersand.com`; tell me if you'd like it configurable later.
+- Note: the hydration warnings you may see on this page come from a browser password-manager extension (Dashlane), not the app.
