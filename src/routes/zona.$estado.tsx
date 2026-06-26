@@ -1,20 +1,28 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import {
   ArrowRight,
+  ChevronDown,
   ChevronRight,
   CircleAlert,
   Map as MapIcon,
   MapPin,
 } from "lucide-react";
+import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
+import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
+import { RiskGauge } from "@/components/RiskGauge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/datetime";
 import { useLang } from "@/lib/i18n";
-import { RISK_HEX } from "@/lib/risk";
 import { absoluteUrl } from "@/lib/site";
-import { getStateStats, type StateStats } from "@/lib/stats.functions";
+import {
+  getRiskFactors,
+  getStateStats,
+  type RiskFactors,
+  type StateStats,
+} from "@/lib/stats.functions";
 import {
   ESTADOS,
   estadoSlug,
@@ -96,11 +104,6 @@ export const Route = createFileRoute("/zona/$estado")({
   errorComponent: ZonaError,
 });
 
-function rgb(level: "red" | "yellow" | "green"): string {
-  const [r, g, b] = RISK_HEX[level];
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
 function ZonaPage() {
   const { estadoName, stats } = Route.useLoaderData() as {
     estadoName: string;
@@ -108,11 +111,29 @@ function ZonaPage() {
   };
   const { t, lang } = useLang();
   const hasData = stats.total > 0;
-  const pct = (n: number) =>
-    stats.total > 0 ? Math.round((n / stats.total) * 100) : 0;
+
+  // Inline "why" drill-down for this state.
+  const [showWhy, setShowWhy] = useState(false);
+  const [factors, setFactors] = useState<RiskFactors | null>(null);
+  const [factorsLoading, setFactorsLoading] = useState(false);
+
+  function toggleWhy() {
+    if (showWhy) {
+      setShowWhy(false);
+      return;
+    }
+    setShowWhy(true);
+    if (factors) return;
+    setFactorsLoading(true);
+    getRiskFactors({ data: { state: estadoName } })
+      .then((f) => setFactors(f))
+      .catch(() => {})
+      .finally(() => setFactorsLoading(false));
+  }
 
   // Sibling states for internal linking (a few alphabetical neighbours).
   const others = ESTADOS.filter((e) => e.name !== estadoName).slice(0, 8);
+
 
   return (
     <AppShell>
@@ -163,22 +184,39 @@ function ZonaPage() {
             <Stat value={stats.municipios} label={t("zona.municipios")} />
           </section>
 
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <p className="text-sm font-semibold">{t("map.distribution")}</p>
-            <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-muted">
-              <div style={{ width: `${pct(stats.red)}%`, backgroundColor: rgb("red") }} />
-              <div style={{ width: `${pct(stats.yellow)}%`, backgroundColor: rgb("yellow") }} />
-              <div style={{ width: `${pct(stats.green)}%`, backgroundColor: rgb("green") }} />
+          <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="p-4">
+              <p className="text-sm font-semibold">{t("map.distribution")}</p>
+              <div className="mt-3">
+                <RiskGauge
+                  green={stats.green}
+                  yellow={stats.yellow}
+                  red={stats.red}
+                  label={t("zona.totalReports")}
+                />
+              </div>
+              {stats.lastReport && (
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  {t("zona.lastReport")}: {formatDate(stats.lastReport, lang)}
+                </p>
+              )}
             </div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-              <RiskStat label={t("map.high")} value={stats.red} color={rgb("red")} />
-              <RiskStat label={t("map.moderate")} value={stats.yellow} color={rgb("yellow")} />
-              <RiskStat label={t("map.low")} value={stats.green} color={rgb("green")} />
-            </div>
-            {stats.lastReport && (
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                {t("zona.lastReport")}: {formatDate(stats.lastReport, lang)}
-              </p>
+            <button
+              type="button"
+              onClick={toggleWhy}
+              aria-expanded={showWhy}
+              className="flex w-full items-center justify-center gap-1 border-t border-border px-3 py-2.5 text-xs font-medium text-primary transition-colors hover:bg-accent/40"
+            >
+              {showWhy ? t("factors.hideWhy") : t("factors.why")}
+              <ChevronDown
+                className={`size-3.5 transition-transform ${showWhy ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            {showWhy && (
+              <div className="border-t border-border bg-muted/30 p-3">
+                <RiskFactorsPanel factors={factors} loading={factorsLoading} />
+              </div>
             )}
           </section>
         </>
@@ -242,24 +280,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   );
 }
 
-function RiskStat({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div>
-      <p className="font-display text-lg font-bold tabular-nums" style={{ color }}>
-        {value}
-      </p>
-      <p className="text-muted-foreground">{label}</p>
-    </div>
-  );
-}
+
 
 function ZonaNotFound() {
   const { t } = useLang();

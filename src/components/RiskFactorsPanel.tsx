@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import type { FactorRow, RiskFactors } from "@/lib/stats.functions";
@@ -9,24 +11,26 @@ function rgb(level: "red" | "yellow" | "green"): string {
 
 type LabelFn = (key: string) => string;
 
-/** One factor group rendered as labelled, risk-split bars. */
+/** One factor group rendered as labelled, animated risk-split bars. */
 function FactorGroup({
   title,
   rows,
   label,
   max,
+  animate,
 }: {
   title: string;
   rows: FactorRow[];
   label: LabelFn;
   max: number;
+  animate: boolean;
 }) {
   if (rows.length === 0) return null;
   return (
     <div>
       <p className="text-xs font-semibold text-muted-foreground">{title}</p>
       <ul className="mt-2 space-y-2">
-        {rows.map((row) => {
+        {rows.map((row, i) => {
           const widthPct = max > 0 ? Math.max(6, (row.total / max) * 100) : 0;
           const seg = (n: number) =>
             row.total > 0 ? `${(n / row.total) * 100}%` : "0%";
@@ -51,10 +55,13 @@ function FactorGroup({
                   </span>
                 </span>
               </div>
-              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="flex h-full overflow-hidden rounded-full"
-                  style={{ width: `${widthPct}%` }}
+                  className="flex h-full overflow-hidden rounded-full transition-[width] duration-700 ease-out"
+                  style={{
+                    width: animate ? `${widthPct}%` : "0%",
+                    transitionDelay: `${Math.min(i, 8) * 60}ms`,
+                  }}
                 >
                   <div style={{ width: seg(row.red), backgroundColor: rgb("red") }} />
                   <div
@@ -81,6 +88,17 @@ export function RiskFactorsPanel({
   loading?: boolean;
 }) {
   const { t } = useLang();
+
+  // Trigger the bar grow-in animation once the panel has data on screen.
+  const [animate, setAnimate] = useState(false);
+  useEffect(() => {
+    if (loading || !factors) {
+      setAnimate(false);
+      return;
+    }
+    const id = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(id);
+  }, [loading, factors]);
 
   if (loading) {
     return (
@@ -124,30 +142,35 @@ export function RiskFactorsPanel({
         rows={factors.checklist}
         label={checklistLabel}
         max={maxOf(factors.checklist)}
+        animate={animate}
       />
       <FactorGroup
         title={t("factors.age")}
         rows={factors.age}
         label={ageLabel}
         max={maxOf(factors.age)}
+        animate={animate}
       />
       <FactorGroup
         title={t("factors.type")}
         rows={factors.type}
         label={typeLabel}
         max={maxOf(factors.type)}
+        animate={animate}
       />
       <FactorGroup
         title={t("factors.intensity")}
         rows={factors.intensity}
         label={intensityLabel}
         max={maxOf(factors.intensity)}
+        animate={animate}
       />
       <FactorGroup
         title={t("factors.rules")}
         rows={factors.safetyRule}
         label={ruleLabel}
         max={maxOf(factors.safetyRule)}
+        animate={animate}
       />
     </div>
   );
