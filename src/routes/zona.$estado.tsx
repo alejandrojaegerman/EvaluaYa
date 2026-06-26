@@ -280,24 +280,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   );
 }
 
-function RiskStat({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div>
-      <p className="font-display text-lg font-bold tabular-nums" style={{ color }}>
-        {value}
-      </p>
-      <p className="text-muted-foreground">{label}</p>
-    </div>
-  );
-}
+
 
 function ZonaNotFound() {
   const { t } = useLang();
