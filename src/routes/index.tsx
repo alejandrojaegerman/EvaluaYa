@@ -25,6 +25,8 @@ import { useLang } from "@/lib/i18n";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
+import heroEngineer from "@/assets/hero-engineer.png";
+
 
 
 export const Route = createFileRoute("/")({
