@@ -71,7 +71,7 @@ function AnalyzeStep() {
       return;
     }
     if (!navigator.onLine) {
-      setPhase("waiting");
+      void goProvisional();
       return;
     }
 
