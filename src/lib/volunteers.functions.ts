@@ -149,7 +149,34 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
         console.error("[volunteers] submitEngineerSignup", error);
         return { ok: false };
       }
+
+      // Notify the site owner (best-effort — never blocks the signup).
+      try {
+        const { sendSystemEmail } = await import("./notify-email.server");
+        const stateNames = data.states
+          .map((s) => ESTADO_NAMES.find((n) => n === s) ?? s)
+          .join(", ");
+        await sendSystemEmail({
+          templateName: "volunteer-signup-notification",
+          templateData: {
+            volunteerType: data.volunteerType,
+            name: data.name,
+            organization: data.organization || "",
+            contactName: data.name,
+            whatsapp: data.whatsapp,
+            email: data.email || "",
+            states: stateNames || "—",
+            specialization: data.specialization || "",
+            note: data.note || "",
+            adminUrl: "https://evaluaya.app/admin/voluntarios",
+          },
+        });
+      } catch (notifyErr) {
+        console.error("[volunteers] signup notification failed", notifyErr);
+      }
+
       return { ok: true };
+
     } catch (e) {
       console.error("[volunteers] submitEngineerSignup failed", e);
       return { ok: false };
