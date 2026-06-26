@@ -71,22 +71,32 @@ function Index() {
   return (
     <AppShell>
       {/* Hero */}
-      <section className="rounded-3xl bg-gradient-to-br from-primary to-primary/80 px-6 py-8 text-primary-foreground shadow-lg">
-        <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
-          {t("home.heroTitle")}
-        </h1>
-        <p className="mt-3 text-sm leading-relaxed text-primary-foreground/85">
-          {t("home.heroSubtitle")}
-        </p>
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary/80 px-6 py-8 text-primary-foreground shadow-lg">
+        <img
+          src={heroEngineer}
+          alt=""
+          aria-hidden
+          width={816}
+          height={816}
+          className="pointer-events-none absolute -right-6 -top-2 hidden h-44 w-44 select-none opacity-90 sm:block"
+        />
+        <div className="relative sm:max-w-[72%]">
+          <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
+            {t("home.heroTitle")}
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-primary-foreground/85">
+            {t("home.heroSubtitle")}
+          </p>
+        </div>
         <Button
           size="lg"
           onClick={() => navigate({ to: "/assess/property" })}
-          className="mt-6 w-full bg-card text-base font-semibold text-foreground shadow-md hover:bg-card/90"
+          className="relative mt-6 w-full bg-card text-base font-semibold text-foreground shadow-md hover:bg-card/90"
         >
           {t("home.startCta")}
           <ArrowRight className="size-5" />
         </Button>
-        <p className="mt-3 text-center text-xs font-medium text-primary-foreground/80">
+        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/80">
           {t("home.timePromise")}
         </p>
       </section>
