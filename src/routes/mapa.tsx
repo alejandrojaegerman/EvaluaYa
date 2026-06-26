@@ -209,6 +209,8 @@ function MapPage() {
         subtitle: null,
         muniKnown: false,
         stateName: null,
+        paramState: "Desconocido",
+        paramMunicipality: "Desconocido",
         total: unspecified.total,
         green: unspecified.green,
         yellow: unspecified.yellow,
