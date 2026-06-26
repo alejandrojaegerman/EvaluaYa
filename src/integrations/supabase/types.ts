@@ -319,48 +319,6 @@ export type Database = {
         }
         Relationships: []
       }
-      social_posts: {
-        Row: {
-          approved_at: string | null
-          body: string
-          created_at: string
-          dedupe_key: string | null
-          error_message: string | null
-          id: string
-          kind: string
-          posted_at: string | null
-          status: string
-          updated_at: string
-          x_post_id: string | null
-        }
-        Insert: {
-          approved_at?: string | null
-          body: string
-          created_at?: string
-          dedupe_key?: string | null
-          error_message?: string | null
-          id?: string
-          kind: string
-          posted_at?: string | null
-          status?: string
-          updated_at?: string
-          x_post_id?: string | null
-        }
-        Update: {
-          approved_at?: string | null
-          body?: string
-          created_at?: string
-          dedupe_key?: string | null
-          error_message?: string | null
-          id?: string
-          kind?: string
-          posted_at?: string | null
-          status?: string
-          updated_at?: string
-          x_post_id?: string | null
-        }
-        Relationships: []
-      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -557,17 +515,6 @@ export type Database = {
           email: string
           id: string
           name: string
-        }[]
-      }
-      get_weekly_insight: {
-        Args: never
-        Returns: {
-          green: number
-          red: number
-          top_state: string
-          top_state_total: number
-          total: number
-          yellow: number
         }[]
       }
       move_to_dlq: {
