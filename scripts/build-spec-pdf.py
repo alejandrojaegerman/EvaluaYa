@@ -66,38 +66,39 @@ def styles():
     base = getSampleStyleSheet()
     s = {}
     s["h1"] = ParagraphStyle(
-        "h1", parent=base["Title"], fontName="Helvetica-Bold",
-        fontSize=20, leading=24, textColor=INK, spaceAfter=4, alignment=TA_LEFT,
+        "h1", parent=base["Title"], fontName=FONT_BOLD,
+        fontSize=19, leading=24, textColor=INK, spaceAfter=4, alignment=TA_LEFT,
     )
     s["sub"] = ParagraphStyle(
-        "sub", parent=base["Normal"], fontName="Helvetica",
-        fontSize=10.5, leading=15, textColor=MUTED, spaceAfter=10,
+        "sub", parent=base["Normal"], fontName=FONT,
+        fontSize=10, leading=14.5, textColor=MUTED, spaceAfter=10,
     )
     s["h2"] = ParagraphStyle(
-        "h2", parent=base["Heading2"], fontName="Helvetica-Bold",
-        fontSize=13.5, leading=17, textColor=TEAL, spaceBefore=16, spaceAfter=6,
+        "h2", parent=base["Heading2"], fontName=FONT_BOLD,
+        fontSize=13, leading=17, textColor=TEAL, spaceBefore=16, spaceAfter=6,
     )
     s["body"] = ParagraphStyle(
-        "body", parent=base["Normal"], fontName="Helvetica",
-        fontSize=10, leading=14.5, textColor=INK, spaceAfter=6,
+        "body", parent=base["Normal"], fontName=FONT,
+        fontSize=9.5, leading=14, textColor=INK, spaceAfter=6,
     )
     s["src"] = ParagraphStyle(
-        "src", parent=base["Normal"], fontName="Helvetica-Oblique",
-        fontSize=8.5, leading=11, textColor=MUTED, spaceAfter=4,
+        "src", parent=base["Normal"], fontName=FONT_ITALIC,
+        fontSize=8, leading=11, textColor=MUTED, spaceAfter=4,
     )
     s["cell"] = ParagraphStyle(
-        "cell", parent=base["Normal"], fontName="Helvetica",
-        fontSize=9, leading=12, textColor=INK,
+        "cell", parent=base["Normal"], fontName=FONT,
+        fontSize=8.5, leading=11.5, textColor=INK,
     )
     s["cellb"] = ParagraphStyle(
-        "cellb", parent=base["Normal"], fontName="Helvetica-Bold",
-        fontSize=9, leading=12, textColor=INK,
+        "cellb", parent=base["Normal"], fontName=FONT_BOLD,
+        fontSize=8.5, leading=11.5, textColor=INK,
     )
     s["foot"] = ParagraphStyle(
-        "foot", parent=base["Normal"], fontName="Helvetica",
+        "foot", parent=base["Normal"], fontName=FONT,
         fontSize=8, leading=11, textColor=MUTED,
     )
     return s
+
 
 
 def tag(text, color):
