@@ -81,7 +81,8 @@ def styles():
 
 
 def tag(text, color):
-    return f'<font color="{color.hexval()[2:]}"><b>{text}</b></font>'
+    return f'<font color="#{color.hexval()[2:]}"><b>{text}</b></font>'
+
 
 
 def two_col_table(s, header, rows, c0=78 * mm, c1=None):
