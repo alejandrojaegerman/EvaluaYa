@@ -355,9 +355,9 @@ function RiskBar({
         <div style={{ width: `${pct(green)}%`, backgroundColor: rgb("green") }} />
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-        <Legend color={rgb("red")} label={t("risk.red")} value={red} />
-        <Legend color={rgb("yellow")} label={t("risk.yellow")} value={yellow} />
-        <Legend color={rgb("green")} label={t("risk.green")} value={green} />
+        <Legend color={rgb("red")} label={t("result.red.tag")} value={red} />
+        <Legend color={rgb("yellow")} label={t("result.yellow.tag")} value={yellow} />
+        <Legend color={rgb("green")} label={t("result.green.tag")} value={green} />
       </div>
     </Card>
   );
