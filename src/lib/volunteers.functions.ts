@@ -113,7 +113,7 @@ const signupSchema = z
       .refine((v) => v.length >= 7 && v.length <= 15, {
         message: "invalid_phone",
       }),
-    email: z.string().trim().email().max(255).optional().or(z.literal("")),
+    email: z.string().trim().email().max(255),
     states: z
       .array(z.string().trim())
       .min(1)
