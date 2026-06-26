@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Lock,
   BarChart3,
+  Building2,
   Users,
   HandHeart,
   AlertTriangle,
