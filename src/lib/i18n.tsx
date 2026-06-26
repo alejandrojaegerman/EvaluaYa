@@ -1133,6 +1133,40 @@ const en: Dict = {
   "admin.linkCopied": "Link copied",
   "admin.none": "No records.",
 
+  // Panel — matching enhancements
+  "panel.specialization": "Specialty",
+  "panel.ageNew": "New",
+  "panel.ageWaiting": "Waiting",
+  "panel.ageDays": "d",
+
+  // Admin dashboard
+  "dash.title": "Admin dashboard",
+  "dash.subtitle": "Assessment, volunteer and matching metrics.",
+  "dash.toReview": "Review volunteers",
+  "dash.assessments": "Assessments",
+  "dash.totalReports": "Total reports",
+  "dash.completion": "Analysis rate",
+  "dash.drafts": "Drafts",
+  "dash.areas": "States with data",
+  "dash.distribution": "Risk distribution",
+  "dash.trend": "Trend (30 days)",
+  "dash.topStates": "States with most reports",
+  "dash.volunteers": "Volunteers",
+  "dash.totalVolunteers": "Total volunteers",
+  "dash.orgs": "Organizations",
+  "dash.individuals": "individual",
+  "dash.coverage": "Coverage by state",
+  "dash.matching": "Matching",
+  "dash.requests": "Requests",
+  "dash.open": "Open",
+  "dash.openShort": "open",
+  "dash.claimRate": "Response rate",
+  "dash.avgClaim": "Avg. response time",
+  "dash.gaps": "Coverage gaps",
+  "dash.gapsHint": "States with open requests and no approved engineers.",
+  "dash.noGaps": "No coverage gaps.",
+
+
   // Save / access reports (passwordless account)
   "account.saveTitle": "Save your reports",
   "account.saveBody":
