@@ -7,6 +7,8 @@ import {
   MessageCircle,
   CheckCircle2,
   ArrowLeft,
+  User2,
+  Building2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
