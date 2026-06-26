@@ -19,6 +19,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { ConnectEngineers } from "@/components/ConnectEngineers";
 import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
@@ -217,6 +218,13 @@ function ResultPage() {
           </ul>
         </Section>
       )}
+
+      {/* Connect with a volunteer engineer (Red / Yellow only) */}
+      {(record.riskLevel === "red" || record.riskLevel === "yellow") && (
+        <ConnectEngineers record={record} />
+      )}
+
+
 
       {/* Seismic context (data-driven, from USGS ShakeMap) */}
       {typeof record.property.seismicIntensity === "number" && (

@@ -5,6 +5,7 @@ import {
   BookOpen,
   CheckCircle2,
   FileDown,
+  HardHat,
   Info,
   Layers,
   MapPin,
@@ -254,8 +255,15 @@ function MethodologyPage() {
             {t("methodology.specDownload")}
           </a>
         </Button>
+        <Button asChild size="lg" variant="ghost" className="mt-2 w-full">
+          <Link to="/voluntarios">
+            <HardHat className="size-4" aria-hidden />
+            {t("connect.areEngineer")}
+          </Link>
+        </Button>
 
       </section>
+
 
       {/* CTA */}
 
