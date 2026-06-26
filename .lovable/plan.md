@@ -1,40 +1,38 @@
-# Quick wins: more completed assessments + better sharing
+# Make all dates & times consistent in US Eastern across the app
 
-Tight, high-impact changes only — no new systems. Goal: get more people from Home all the way to a finished result, and make every finish spread the app. The public **Mapa** logic stays as-is; changes are frontend/presentation + copy.
+Right now dates/times are rendered in whatever timezone each viewer's device is set to, and the admin chart additionally buckets by UTC — so days don't line up and times differ per device. This makes everything use **US Eastern time (America/New_York)** consistently.
 
-## 1. Kill silent dead-ends in the flow (biggest conversion leak)
+## Root causes
+- The admin timeseries RPC buckets reports by **UTC** calendar day, so an evening Eastern report lands on the wrong day.
+- Every front-end date/time call (`new Date(...).toLocaleString()` / `toLocaleDateString()`) uses the **browser's** timezone, so the same report shows different days/times on different devices, and `new Date("2026-06-26")` (a bare date string) is parsed as UTC midnight — shifting it a day.
 
-Right now the **Continue / Analyze** buttons just go disabled with no reason shown — a common drop-off cause on mobile.
+## Changes
 
-- **Property step**: when Continue is disabled, show a small inline hint listing exactly what's still missing (e.g. "Falta: estado, tipo de edificio, antigüedad"). The button stays prominent; the hint sits just above the footer.
-- **Checklist step**: when Analyze is disabled, show "Te faltan X de Y preguntas" inline instead of only a toast on tap.
-- Make the disabled state visually clearly "almost there" rather than dead (keep enabled-looking with the hint), so people know it's reachable.
+### 1. Database migration
+Update `get_admin_assessment_timeseries()` to bucket by Eastern wall-clock day:
+- `(created_at AT TIME ZONE 'UTC')::date` → `(created_at AT TIME ZONE 'America/New_York')::date`
+- Keep the signature, `SECURITY DEFINER`, and `search_path` unchanged so grants stay intact.
 
-## 2. Lower perceived effort up front
+### 2. New shared date helper (`src/lib/datetime.ts`)
+One source of truth so every screen formats identically:
+- `APP_TIME_ZONE = "America/New_York"`
+- `formatDateTime(value, lang)` — date + time, forced to Eastern via `Intl.DateTimeFormat({ timeZone })`, with a short "ET" marker.
+- `formatDate(value, lang)` — date only, forced to Eastern.
+- `formatDayLabel(dayStr, lang)` — for `YYYY-MM-DD` strings from SQL: parse as a plain calendar date (no UTC shift) and render `month/day`.
 
-- **Home hero**: tighten the sub-copy and reinforce the three things that reduce hesitation — free, ~3 minutes, no photos required. Keep the existing trust pills.
-- **Property step**: add a one-line reassurance under the header ("Solo toma unos minutos. Las fotos son opcionales.") so people don't bail expecting a long form.
-- **Checklist**: make the "photos optional" message more visible near the top so users don't think every item needs a photo.
+All use the existing `es-VE` / `en-US` locale mapping already used in the app.
 
-## 3. Turn every finish into a share (growth flywheel)
+### 3. Replace every user-facing date/time render
+Swap raw `new Date(...).toLocale*` calls for the helpers:
+- `src/routes/admin.index.tsx` (line 115) — chart day labels → `formatDayLabel`.
+- `src/routes/voluntarios.panel.$token.tsx` (line 192) — request timestamp → `formatDateTime`.
+- `src/routes/index.tsx` (line 263) — recent report date → `formatDate`.
+- `src/routes/mis-reportes.tsx` (line 138) — saved report date → `formatDate`.
+- `src/lib/pdf.ts` (line 160) — "assessed on" date in the PDF → `formatDateTime`.
 
-- **Result page**: after a result, surface a focused "share so your neighbors check too" prompt with WhatsApp as the primary one-tap action (WhatsApp is the dominant channel in Venezuela), reusing the existing share-card image generation.
-- **Consistent WhatsApp-first**: align share copy and ordering across `ShareApp`, the result page, and the map so WhatsApp is always the first, biggest button.
-- **Sharper share copy**: rewrite `share.message` / `share.body` to be more compelling and action-oriented in both ES and EN (current copy is generic).
+The `ageLabel` "wait time" math in the panel is elapsed-duration based and timezone-independent, so it stays as-is.
 
-## 4. Whole-app polish
-
-- **Spacing/overlap audit**: confirm the fixed `StepFooter` and global `BottomNav` never overlap content on small screens; add consistent bottom padding where missing.
-- **Microcopy + empty states**: tighten loading, error, and empty-state wording for clarity and warmth (analyze states, map empty state, no-history home).
-- **Touch targets & focus states**: quick pass to ensure tappable controls are ≥44px and have visible focus rings for accessibility.
-- Quietly confirm the console hydration warning is only from the user's Dashlane browser extension (it injects `data-dashlane-*` attributes), not our code — no app fix needed.
-
-## Technical notes
-
-- Changes are confined to: `src/routes/index.tsx`, `src/routes/assess/property.tsx`, `src/routes/assess/checklist.tsx`, `src/routes/a/$publicId.tsx`, `src/components/ShareApp.tsx`, `src/routes/mapa.tsx`, and bilingual string additions in `src/lib/i18n.tsx`.
-- No backend, schema, RLS, or server-function changes. No new dependencies.
-- All new colors/styles use existing semantic tokens; new strings added to both `es` and `en` in `i18n.tsx`.
-
-## Out of scope (per your choices)
-- No bigger redesign or new features this round.
-- Mapa stays damage-only.
+## Notes / scope
+- Frontend + presentation plus one DB function update. No data is modified.
+- Backend ISO timestamps (`toISOString()` in email/rate-limit/server code) are storage values and stay in UTC — correct as-is; only human-readable displays change.
+- The hydration warnings in the preview come from a browser password-manager extension (Dashlane), not app code — not addressed here.
