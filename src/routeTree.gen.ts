@@ -20,6 +20,7 @@ import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
 import { Route as AdminVoluntariosRouteImport } from './routes/admin.voluntarios'
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const MisReportesRoute = MisReportesRouteImport.update({
   id: '/mis-reportes',
@@ -76,6 +77,12 @@ const VoluntariosPanelTokenRoute = VoluntariosPanelTokenRouteImport.update({
   path: '/voluntarios/panel/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/assess/property': typeof AssessPropertyRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/assess/property': typeof AssessPropertyRoute
   '/voluntarios': typeof VoluntariosIndexRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/assess/property': typeof AssessPropertyRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/assess/property'
     | '/voluntarios/'
     | '/voluntarios/panel/$token'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/assess/property'
     | '/voluntarios'
     | '/voluntarios/panel/$token'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/assess/property'
     | '/voluntarios/'
     | '/voluntarios/panel/$token'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +184,7 @@ export interface RootRouteChildren {
   AssessPropertyRoute: typeof AssessPropertyRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
   VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoluntariosPanelTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssessPropertyRoute: AssessPropertyRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
   VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
