@@ -201,6 +201,28 @@ function Index() {
         </Link>
       </section>
 
+      {/* Explore your state — regional landing pages for discovery + SEO */}
+      <section className="mt-6">
+        <h2 className="font-display text-lg font-bold">{t("home.exploreTitle")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("home.exploreDesc")}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {ESTADOS.map((e) => (
+            <Link
+              key={e.name}
+              to="/zona/$estado"
+              params={{ estado: estadoSlug(e.name) }}
+              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-foreground"
+            >
+              {e.name}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+
+
       {/* How it works */}
       <section className="mt-8">
         <h2 className="font-display text-lg font-bold">{t("home.howTitle")}</h2>
