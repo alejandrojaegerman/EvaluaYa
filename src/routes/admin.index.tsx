@@ -7,6 +7,8 @@ import {
   HandHeart,
   AlertTriangle,
   ArrowRight,
+  ChevronDown,
+  ChevronRight,
   ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
@@ -22,15 +24,18 @@ import {
 } from "recharts";
 
 import { AppShell } from "@/components/AppShell";
+import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/lib/i18n";
-import { formatDayLabel } from "@/lib/datetime";
+import { formatDate, formatDayLabel } from "@/lib/datetime";
 import { RISK_HEX } from "@/lib/risk";
 import {
   adminGetAnalytics,
+  adminGetStateDrilldown,
   type AdminAnalytics,
+  type StateDrilldown,
 } from "@/lib/admin-analytics.functions";
 
 export const Route = createFileRoute("/admin/")({
