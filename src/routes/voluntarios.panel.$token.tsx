@@ -249,13 +249,19 @@ function PanelPage() {
                     {t("panel.claim")}
                   </Button>
                 )}
-                <Button
-                  onClick={() => contactResident(r.residentWhatsapp)}
-                  className="bg-[#25D366] text-white hover:bg-[#1ebe5a]"
-                >
-                  <MessageCircle className="size-4" />
-                  {t("panel.contactResident")}
-                </Button>
+                {r.residentWhatsapp ? (
+                  <Button
+                    onClick={() => contactResident(r.residentWhatsapp!)}
+                    className="bg-[#25D366] text-white hover:bg-[#1ebe5a]"
+                  >
+                    <MessageCircle className="size-4" />
+                    {t("panel.contactResident")}
+                  </Button>
+                ) : (
+                  <p className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+                    {t("panel.contactLocked")}
+                  </p>
+                )}
                 {r.assessmentPublicId && (
                   <Button asChild variant="ghost" size="sm">
                     <a
