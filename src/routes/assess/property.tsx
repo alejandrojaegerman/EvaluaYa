@@ -29,6 +29,13 @@ import { cn } from "@/lib/utils";
 import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
+  validateSearch: (search: Record<string, unknown>): { estado?: string } => {
+    const estado =
+      typeof search.estado === "string" && search.estado.trim() !== ""
+        ? search.estado.trim()
+        : undefined;
+    return estado ? { estado } : {};
+  },
   component: PropertyStep,
 });
 
