@@ -1321,7 +1321,9 @@ const en: Dict = {
   "connect.requestDone": "Done! An engineer will contact you soon.",
   "connect.requestError": "Could not send. Please try again.",
   "connect.yourWhatsapp": "Your WhatsApp number",
-  "connect.whatsappPlaceholder": "e.g. +58 414 123 4567",
+  "connect.whatsappPlaceholder": "e.g. 0414 123 4567",
+  "connect.whatsappHint":
+    "Include your area code. If you're in Venezuela you can use your local number (e.g. 0414…); we add the country code (+58) automatically.",
   "connect.noteOptional": "Message (optional)",
   "connect.notePlaceholder": "e.g. Large cracks in the living room.",
   "connect.privacy":
