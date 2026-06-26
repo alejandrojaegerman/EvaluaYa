@@ -112,15 +112,47 @@ function buildPrompt(input: AnalyzeInput) {
   };
   const structuralType = input.property.structuralType ?? "unknown";
 
+  const p = input.property;
   const intensityLine =
-    typeof input.property.seismicIntensity === "number"
-      ? `Estimated ShakeMap shaking intensity at this location: MMI ${input.property.seismicIntensityRoman ?? ""} (${input.property.seismicIntensity}).`
+    typeof p.seismicIntensity === "number"
+      ? `Estimated ShakeMap shaking intensity at this location: MMI ${p.seismicIntensityRoman ?? ""} (${p.seismicIntensity}).`
+      : "";
+
+  // Data-driven ground-motion context from the USGS ShakeMap for this event.
+  const groundMotionBits: string[] = [];
+  if (typeof p.pga === "number") {
+    groundMotionBits.push(`peak ground acceleration ${(p.pga * 100).toFixed(0)}%g`);
+  }
+  if (typeof p.pgv === "number") {
+    groundMotionBits.push(`peak ground velocity ${p.pgv.toFixed(0)} cm/s`);
+  }
+  const groundMotionLine = groundMotionBits.length
+    ? `Recorded ground motion here: ${groundMotionBits.join(", ")}.`
+    : "";
+
+  const spectralLine =
+    typeof p.spectralDemand === "number" && typeof p.buildingPeriod === "number"
+      ? `Spectral acceleration at this building's estimated natural period (~${p.buildingPeriod.toFixed(1)} s, SA(${p.spectralBand ?? "?"})) is ${(p.spectralDemand * 100).toFixed(0)}%g — i.e. the shaking demand a building of this height actually experienced.`
+      : "";
+
+  const soilMap: Record<string, string> = {
+    rock: "rock / very stiff site (little amplification)",
+    stiff: "stiff soil site",
+    soft: "soft soil site (amplifies shaking, higher liquefaction risk)",
+    very_soft: "very soft soil site (strong amplification, high liquefaction risk)",
+  };
+  const soilLine =
+    p.soilClass && typeof p.vs30 === "number"
+      ? `Site soil: ${soilMap[p.soilClass]} (vs30 ≈ ${p.vs30} m/s).`
       : "";
 
   const userText = [
     `Property: ${input.property.buildingType}, ${input.property.floors} floor(s), built ${ageMap[input.property.age]}.`,
     `Structural system: ${structMap[structuralType]}.`,
     intensityLine,
+    groundMotionLine,
+    spectralLine,
+    soilLine,
     input.property.address ? `Location: ${input.property.address}.` : "",
     "",
     "Inspection answers (resident self-report):",
