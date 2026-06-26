@@ -92,6 +92,37 @@ export function downloadAssessmentPdf(record: AssessmentRecord) {
   ].join(" · ");
   paragraph(record.property.address ? `${record.property.address}\n${propLine}` : propLine);
 
+  // Seismic context (USGS ShakeMap) — only when location data is present
+  const sp = record.property;
+  if (typeof sp.seismicIntensity === "number") {
+    heading(t("result.seismicContext"));
+    const rows: Array<[string, string]> = [
+      [
+        t("result.mmi"),
+        `${sp.seismicIntensityRoman ?? ""} (${sp.seismicIntensity})`.trim(),
+      ],
+    ];
+    if (typeof sp.pga === "number")
+      rows.push([t("result.pga"), `${(sp.pga * 100).toFixed(0)}%g`]);
+    if (typeof sp.pgv === "number")
+      rows.push([t("result.pgv"), `${sp.pgv.toFixed(0)} cm/s`]);
+    if (typeof sp.spectralDemand === "number")
+      rows.push([
+        t("result.spectralDemand"),
+        `${(sp.spectralDemand * 100).toFixed(0)}%g${
+          sp.spectralBand ? ` · SA(${sp.spectralBand})` : ""
+        }`,
+      ]);
+    if (sp.soilClass) rows.push([t("result.soil"), t(`soil.${sp.soilClass}`)]);
+    for (const [label, value] of rows) {
+      const lines = doc.splitTextToSize(`•  ${label}: ${value}`, contentW - 6);
+      doc.text(lines, margin + 4, y);
+      addSpace(lines.length * 14 + 2);
+    }
+    addSpace(6);
+  }
+
+
   // Summary
   if (record.aiResult.summary) {
     heading(t("pdf.summary"));
