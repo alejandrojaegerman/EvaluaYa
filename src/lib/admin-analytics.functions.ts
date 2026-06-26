@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import {
+  EMPTY_RISK_FACTORS,
+  groupRiskFactorRows,
+  type RiskFactors,
+} from "@/lib/stats.functions";
+
 // ---------------------------------------------------------------------------
 // Admin analytics — gated by VOLUNTEER_ADMIN_SECRET (same secret that unlocks
 // the volunteer review page). All reads go through the service-role client and
