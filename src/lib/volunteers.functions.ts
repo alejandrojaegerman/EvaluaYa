@@ -8,6 +8,8 @@ import type { RiskLevel } from "./assessment-types";
 // Public DTOs (safe to ship to the browser)
 // ---------------------------------------------------------------------------
 
+export type VolunteerType = "individual" | "organization";
+
 export type PublicEngineer = {
   id: string;
   name: string;
@@ -16,6 +18,7 @@ export type PublicEngineer = {
   whatsapp: string;
   states: string[];
   specialization: string | null;
+  volunteerType: VolunteerType;
   coversState: boolean;
 };
 
