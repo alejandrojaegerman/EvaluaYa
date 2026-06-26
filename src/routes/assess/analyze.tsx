@@ -148,7 +148,7 @@ function AnalyzeStep() {
         if (!navigator.onLine) {
           clearTimeout(thinkingTimer);
           runningRef.current = false;
-          setPhase("waiting");
+          void goProvisional();
           return;
         }
         try {
