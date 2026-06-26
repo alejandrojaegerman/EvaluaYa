@@ -827,7 +827,7 @@ const en: Dict = {
 
   "methodology.seismicTitle": "Seismic context",
   "methodology.seismicBody":
-    "If you share your location, we estimate the shaking intensity (Modified Mercalli Intensity, MMI) by interpolating the official USGS ShakeMap grid for the active earthquake. Higher intensity raises the caution level.",
+    "If you share your location, we read several layers of the official USGS ShakeMap grid for the active earthquake, interpolated to your exact point: intensity (MMI), peak ground acceleration (PGA), peak ground velocity (PGV), spectral acceleration at different periods, and soil stiffness (vs30). We estimate the building's natural period from its height (T ≈ 0.1 × floors) and match it to the spectral acceleration at that period, to gauge how much shaking a building of that height actually felt. Soft soil (low vs30) is flagged because it amplifies shaking and favors liquefaction. These values raise the caution level in a graduated way and are included in the context the AI receives.",
 
   "methodology.sourcesTitle": "Sources & credibility",
   "methodology.sourcesIntro":
