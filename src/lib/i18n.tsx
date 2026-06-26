@@ -455,6 +455,7 @@ const es: Dict = {
   "connect.directTitle": "Ingenieros disponibles en tu zona",
   "connect.coversYourState": "Cubre tu estado",
   "connect.whatsappEngineer": "Escribir por WhatsApp",
+  "connect.orgBadge": "Organización",
   "connect.noneTitle": "Aún estamos sumando ingenieros en tu estado",
   "connect.noneBody":
     "Deja tu número y un ingeniero voluntario te contactará en cuanto haya cobertura en tu zona.",
@@ -502,6 +503,15 @@ const es: Dict = {
     "Revisaremos tu solicitud y te enviaremos un enlace privado para ver las solicitudes de tu zona.",
   "vol.error": "Revisa los campos e intenta de nuevo.",
   "vol.selectStates": "Selecciona al menos un estado.",
+  "vol.typeLabel": "Me sumo como",
+  "vol.typeIndividual": "Ingeniero individual",
+  "vol.typeOrg": "Organización / empresa",
+  "vol.orgName": "Nombre de la organización",
+  "vol.orgNamePlaceholder": "Ej.: Soluciones Estructurales C.A.",
+  "vol.contactName": "Persona de contacto",
+  "vol.contactNamePlaceholder": "Ej.: Ing. María Pérez",
+  "vol.orgSpecialization": "Áreas de especialización / servicios (opcional)",
+  "vol.orgRequired": "Indica el nombre de la organización.",
 
   // Engineer panel
   "panel.title": "Panel de ingeniero voluntario",
@@ -1001,6 +1011,7 @@ const en: Dict = {
   "connect.directTitle": "Engineers available in your area",
   "connect.coversYourState": "Covers your state",
   "connect.whatsappEngineer": "Message on WhatsApp",
+  "connect.orgBadge": "Organization",
   "connect.noneTitle": "We're still adding engineers in your state",
   "connect.noneBody":
     "Leave your number and a volunteer engineer will reach out as soon as there's coverage in your area.",
@@ -1047,6 +1058,15 @@ const en: Dict = {
     "We'll review your request and send you a private link to see requests in your area.",
   "vol.error": "Check the fields and try again.",
   "vol.selectStates": "Select at least one state.",
+  "vol.typeLabel": "I'm joining as",
+  "vol.typeIndividual": "Individual engineer",
+  "vol.typeOrg": "Organization / company",
+  "vol.orgName": "Organization name",
+  "vol.orgNamePlaceholder": "e.g. Structural Solutions C.A.",
+  "vol.contactName": "Contact person",
+  "vol.contactNamePlaceholder": "e.g. Eng. María Pérez",
+  "vol.orgSpecialization": "Areas of expertise / services (optional)",
+  "vol.orgRequired": "Please enter the organization name.",
 
   "panel.title": "Volunteer engineer panel",
   "panel.welcome": "Hi",

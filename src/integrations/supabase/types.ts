@@ -329,6 +329,7 @@ export type Database = {
           states: string[]
           status: string
           updated_at: string
+          volunteer_type: string
           whatsapp: string
         }
         Insert: {
@@ -343,6 +344,7 @@ export type Database = {
           states?: string[]
           status?: string
           updated_at?: string
+          volunteer_type?: string
           whatsapp: string
         }
         Update: {
@@ -357,6 +359,7 @@ export type Database = {
           states?: string[]
           status?: string
           updated_at?: string
+          volunteer_type?: string
           whatsapp?: string
         }
         Relationships: []
@@ -383,6 +386,7 @@ export type Database = {
           organization: string
           specialization: string
           states: string[]
+          volunteer_type: string
           whatsapp: string
         }[]
       }

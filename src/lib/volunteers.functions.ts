@@ -8,6 +8,8 @@ import type { RiskLevel } from "./assessment-types";
 // Public DTOs (safe to ship to the browser)
 // ---------------------------------------------------------------------------
 
+export type VolunteerType = "individual" | "organization";
+
 export type PublicEngineer = {
   id: string;
   name: string;
@@ -16,6 +18,7 @@ export type PublicEngineer = {
   whatsapp: string;
   states: string[];
   specialization: string | null;
+  volunteerType: VolunteerType;
   coversState: boolean;
 };
 
@@ -93,27 +96,36 @@ function adminOk(provided: string): boolean {
 // Engineer signup (public, insert-only)
 // ---------------------------------------------------------------------------
 
-const signupSchema = z.object({
-  name: z.string().trim().min(2).max(120),
-  organization: z.string().trim().max(160).optional().default(""),
-  whatsapp: z
-    .string()
-    .trim()
-    .max(40)
-    .transform(normalizePhone)
-    .refine((v) => v.length >= 7 && v.length <= 15, {
-      message: "invalid_phone",
-    }),
-  email: z.string().trim().email().max(255).optional().or(z.literal("")),
-  states: z
-    .array(z.string().trim())
-    .min(1)
-    .max(ESTADO_NAMES.length)
-    .transform((arr) => arr.filter((s) => ESTADO_NAMES.includes(s)))
-    .refine((arr) => arr.length >= 1, { message: "invalid_states" }),
-  specialization: z.string().trim().max(160).optional().default(""),
-  note: z.string().trim().max(1000).optional().default(""),
-});
+const signupSchema = z
+  .object({
+    volunteerType: z
+      .enum(["individual", "organization"])
+      .optional()
+      .default("individual"),
+    name: z.string().trim().min(2).max(120),
+    organization: z.string().trim().max(160).optional().default(""),
+    whatsapp: z
+      .string()
+      .trim()
+      .max(40)
+      .transform(normalizePhone)
+      .refine((v) => v.length >= 7 && v.length <= 15, {
+        message: "invalid_phone",
+      }),
+    email: z.string().trim().email().max(255).optional().or(z.literal("")),
+    states: z
+      .array(z.string().trim())
+      .min(1)
+      .max(ESTADO_NAMES.length)
+      .transform((arr) => arr.filter((s) => ESTADO_NAMES.includes(s)))
+      .refine((arr) => arr.length >= 1, { message: "invalid_states" }),
+    specialization: z.string().trim().max(160).optional().default(""),
+    note: z.string().trim().max(1000).optional().default(""),
+  })
+  .refine(
+    (d) => d.volunteerType !== "organization" || d.organization.length >= 2,
+    { message: "organization_required", path: ["organization"] },
+  );
 
 export const submitEngineerSignup = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => signupSchema.parse(data))
@@ -123,6 +135,7 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
         "@/integrations/supabase/client.server"
       );
       const { error } = await supabaseAdmin.from("volunteer_engineers").insert({
+        volunteer_type: data.volunteerType,
         name: data.name,
         organization: data.organization || null,
         whatsapp: data.whatsapp,
@@ -173,6 +186,8 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
         whatsapp: r.whatsapp,
         states: r.states ?? [],
         specialization: r.specialization,
+        volunteerType:
+          (r.volunteer_type as VolunteerType | null) ?? "individual",
         coversState: r.covers_state ?? false,
       }));
     } catch (e) {

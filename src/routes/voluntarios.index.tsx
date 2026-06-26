@@ -7,6 +7,8 @@ import {
   MessageCircle,
   CheckCircle2,
   ArrowLeft,
+  User2,
+  Building2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -20,13 +22,17 @@ import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
-import { submitEngineerSignup } from "@/lib/volunteers.functions";
+import {
+  submitEngineerSignup,
+  type VolunteerType,
+} from "@/lib/volunteers.functions";
 
 export const Route = createFileRoute("/voluntarios/")({
   head: () => {
     const title = "Ingenieros voluntarios | EvalúaYa";
     const description =
-      "Súmate como ingeniero voluntario y ayuda a familias en Venezuela a entender el daño estructural de sus viviendas tras un sismo.";
+      "Súmate como ingeniero voluntario u organización y ayuda a familias en Venezuela a entender el daño estructural de sus viviendas tras un sismo.";
+    const image = absoluteUrl("/og-voluntarios.jpg");
     return {
       meta: [
         { title },
@@ -34,6 +40,9 @@ export const Route = createFileRoute("/voluntarios/")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:url", content: absoluteUrl("/voluntarios") },
+        { property: "og:image", content: image },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: image },
       ],
       links: [{ rel: "canonical", href: absoluteUrl("/voluntarios") }],
     };
@@ -45,6 +54,8 @@ function VolunteersPage() {
   const { t } = useLang();
   const submit = useServerFn(submitEngineerSignup);
 
+  const [volunteerType, setVolunteerType] =
+    useState<VolunteerType>("individual");
   const [name, setName] = useState("");
   const [org, setOrg] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -54,6 +65,8 @@ function VolunteersPage() {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+
+  const isOrg = volunteerType === "organization";
 
   function toggleState(s: string) {
     setStates((prev) =>
@@ -68,10 +81,15 @@ function VolunteersPage() {
       toast.error(t("vol.selectStates"));
       return;
     }
+    if (isOrg && org.trim().length < 2) {
+      toast.error(t("vol.orgRequired"));
+      return;
+    }
     setBusy(true);
     try {
       const res = await submit({
         data: {
+          volunteerType,
           name,
           organization: org,
           whatsapp,
@@ -157,17 +175,90 @@ function VolunteersPage() {
 
         <div className="mt-4 space-y-4">
           <div>
-            <Label htmlFor="vol-name">{t("vol.name")}</Label>
-            <Input
-              id="vol-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("vol.namePlaceholder")}
-              required
-              maxLength={120}
-              className="mt-1.5"
-            />
+            <Label>{t("vol.typeLabel")}</Label>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {(
+                [
+                  { value: "individual", icon: User2, label: t("vol.typeIndividual") },
+                  { value: "organization", icon: Building2, label: t("vol.typeOrg") },
+                ] as const
+              ).map((opt) => {
+                const active = volunteerType === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setVolunteerType(opt.value)}
+                    aria-pressed={active}
+                    className={cn(
+                      "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors",
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50",
+                    )}
+                  >
+                    <opt.icon className="size-4" aria-hidden />
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {isOrg ? (
+            <>
+              <div>
+                <Label htmlFor="vol-org">{t("vol.orgName")}</Label>
+                <Input
+                  id="vol-org"
+                  value={org}
+                  onChange={(e) => setOrg(e.target.value)}
+                  placeholder={t("vol.orgNamePlaceholder")}
+                  required
+                  maxLength={160}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vol-name">{t("vol.contactName")}</Label>
+                <Input
+                  id="vol-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("vol.contactNamePlaceholder")}
+                  required
+                  maxLength={120}
+                  className="mt-1.5"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <Label htmlFor="vol-name">{t("vol.name")}</Label>
+                <Input
+                  id="vol-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("vol.namePlaceholder")}
+                  required
+                  maxLength={120}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vol-org">{t("vol.org")}</Label>
+                <Input
+                  id="vol-org"
+                  value={org}
+                  onChange={(e) => setOrg(e.target.value)}
+                  placeholder={t("vol.orgPlaceholder")}
+                  maxLength={160}
+                  className="mt-1.5"
+                />
+              </div>
+            </>
+          )}
 
           <div>
             <Label htmlFor="vol-wa">{t("vol.whatsapp")}</Label>
@@ -180,18 +271,6 @@ function VolunteersPage() {
               placeholder={t("connect.whatsappPlaceholder")}
               required
               maxLength={40}
-              className="mt-1.5"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="vol-org">{t("vol.org")}</Label>
-            <Input
-              id="vol-org"
-              value={org}
-              onChange={(e) => setOrg(e.target.value)}
-              placeholder={t("vol.orgPlaceholder")}
-              maxLength={160}
               className="mt-1.5"
             />
           </div>
@@ -237,7 +316,9 @@ function VolunteersPage() {
           </div>
 
           <div>
-            <Label htmlFor="vol-spec">{t("vol.specialization")}</Label>
+            <Label htmlFor="vol-spec">
+              {isOrg ? t("vol.orgSpecialization") : t("vol.specialization")}
+            </Label>
             <Input
               id="vol-spec"
               value={specialization}
