@@ -343,6 +343,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
 
     const { error: insertError } = await supabaseAdmin.from("assessments").insert({
       public_id: publicId,
+      device_id: data.deviceId?.trim() || null,
       language: data.language,
       property: data.property,
       state: data.property.state?.trim() || null,
