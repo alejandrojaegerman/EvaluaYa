@@ -59,14 +59,34 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
     };
   }, [fetchEngineers, state]);
 
-  function contactEngineer(phone: string) {
-    const text = `${t("connect.waMessage")} ${reportUrl}`;
-    window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(text)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+  // Two-tap consent: first tap shows the consent line, second tap fetches the
+  // number (kept out of the page payload) and opens WhatsApp.
+  async function contactEngineer(id: string) {
+    if (confirmingId !== id) {
+      setConfirmingId(id);
+      return;
+    }
+    setRevealingId(id);
+    try {
+      const res = await reveal({ data: { engineerId: id } });
+      if (!res.whatsapp) {
+        toast.error(t("connect.revealError"));
+        return;
+      }
+      const text = `${t("connect.waMessage")} ${reportUrl}`;
+      window.open(
+        `https://wa.me/${res.whatsapp}?text=${encodeURIComponent(text)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+      setConfirmingId(null);
+    } catch {
+      toast.error(t("connect.revealError"));
+    } finally {
+      setRevealingId(null);
+    }
   }
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
