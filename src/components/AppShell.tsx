@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { BottomNav } from "./BottomNav";
 import { LanguageToggle } from "./LanguageToggle";
+import { OfflineBanner } from "./OfflineBanner";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
