@@ -202,3 +202,87 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
       }
     },
   );
+
+// ---------------------------------------------------------------------------
+// Per-state "why" drill-down: the same anonymized factor breakdown the public
+// map shows, PLUS individual recent reports (no PII) for this gated view.
+// ---------------------------------------------------------------------------
+
+export type StateReport = {
+  publicId: string;
+  createdAt: string;
+  riskLevel: "green" | "yellow" | "red";
+  municipality: string;
+  buildingType: string | null;
+  age: string | null;
+  structuralType: string | null;
+  seismicIntensity: number | null;
+  flaggedCount: number;
+};
+
+export type StateDrilldown = {
+  factors: RiskFactors;
+  reports: StateReport[];
+};
+
+const EMPTY_DRILLDOWN: StateDrilldown = {
+  factors: EMPTY_RISK_FACTORS,
+  reports: [],
+};
+
+const drilldownSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  state: z.string().trim().min(1).max(120),
+});
+
+export const adminGetStateDrilldown = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => drilldownSchema.parse(data))
+  .handler(
+    async ({
+      data,
+    }): Promise<{ ok: boolean; drilldown: StateDrilldown }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false, drilldown: EMPTY_DRILLDOWN };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+
+        const [factorsRes, reportsRes] = await Promise.all([
+          supabaseAdmin.rpc("get_risk_factors", {
+            _state: data.state,
+            _municipality: undefined,
+          }),
+          supabaseAdmin.rpc("get_admin_state_reports", {
+            _state: data.state,
+            _limit: 25,
+          }),
+        ]);
+
+        if (factorsRes.error) {
+          console.error("[admin-analytics] drilldown factors", factorsRes.error);
+        }
+        if (reportsRes.error) {
+          console.error("[admin-analytics] drilldown reports", reportsRes.error);
+        }
+
+        const factors = groupRiskFactorRows(factorsRes.data ?? []);
+        const reports: StateReport[] = (reportsRes.data ?? []).map((r) => ({
+          publicId: r.public_id,
+          createdAt: String(r.created_at),
+          riskLevel: (r.risk_level ?? "green") as "green" | "yellow" | "red",
+          municipality: r.municipality ?? "Desconocido",
+          buildingType: r.building_type ?? null,
+          age: r.age ?? null,
+          structuralType: r.structural_type ?? null,
+          seismicIntensity:
+            r.seismic_intensity != null ? Number(r.seismic_intensity) : null,
+          flaggedCount: r.flagged_count ?? 0,
+        }));
+
+        return { ok: true, drilldown: { factors, reports } };
+      } catch (e) {
+        console.error("[admin-analytics] adminGetStateDrilldown failed", e);
+        return { ok: false, drilldown: EMPTY_DRILLDOWN };
+      }
+    },
+  );
