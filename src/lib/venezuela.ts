@@ -47,6 +47,28 @@ export function getEstado(name: string | null | undefined): Estado | undefined {
 }
 
 /**
+ * URL-safe slug for an estado name (accent-stripped, lowercase, hyphenated).
+ * e.g. "Distrito Capital" -> "distrito-capital", "Anzoátegui" -> "anzoategui".
+ */
+export function estadoSlug(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+const ESTADO_BY_SLUG = new Map(ESTADOS.map((e) => [estadoSlug(e.name), e]));
+
+/** Resolve a slug back to its estado, or undefined for unknown slugs. */
+export function getEstadoBySlug(slug: string | null | undefined): Estado | undefined {
+  if (!slug) return undefined;
+  return ESTADO_BY_SLUG.get(slug.trim().toLowerCase());
+}
+
+/**
  * Snap a coordinate to the closest estado centroid. Pure math against the
  * static list — no external geocoding service, works fully offline.
  */
