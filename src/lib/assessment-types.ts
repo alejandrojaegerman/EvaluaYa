@@ -1,3 +1,5 @@
+import type { SoilClass, SpectralBand } from "./shakemap";
+
 export type RiskLevel = "green" | "yellow" | "red";
 
 export type AnswerValue = "yes" | "no" | "unsure";
