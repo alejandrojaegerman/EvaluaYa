@@ -519,7 +519,9 @@ const es: Dict = {
   "vol.org": "Empresa u organización (opcional)",
   "vol.orgPlaceholder": "Ej.: Colegio de Ingenieros",
   "vol.whatsapp": "WhatsApp",
-  "vol.email": "Correo (opcional)",
+  "vol.email": "Correo electrónico",
+  "vol.emailHint":
+    "Lo necesitamos para enviarte tu enlace de acceso cuando te validemos.",
   "vol.states": "Estados que puedes cubrir",
   "vol.statesHint": "Selecciona uno o más.",
   "vol.specialization": "Especialidad (opcional)",
@@ -573,6 +575,8 @@ const es: Dict = {
   "admin.reject": "Rechazar",
   "admin.copyLink": "Copiar enlace del panel",
   "admin.linkCopied": "Enlace copiado",
+  "admin.notifyWhatsapp": "Avisar por WhatsApp",
+  "admin.noEmail": "Sin email",
   "admin.none": "Sin registros.",
 
   // Panel — matching enhancements
