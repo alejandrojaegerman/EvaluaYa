@@ -37,7 +37,7 @@ export const Route = createFileRoute("/voluntarios/panel/$token")({
 
 function PanelPage() {
   const { token } = Route.useParams();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const fetchPanel = useServerFn(getEngineerPanel);
   const claim = useServerFn(claimHelpRequest);
   const close = useServerFn(closeHelpRequest);
