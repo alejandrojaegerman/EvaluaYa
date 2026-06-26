@@ -1,14 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Loader2,
   ShieldAlert,
   WifiOff,
   RefreshCw,
   ScanSearch,
+  Home as HomeIcon,
+  FileText,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
+import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { analyzeAssessment } from "@/lib/assessment.functions";
@@ -16,12 +19,21 @@ import { getDeviceId } from "@/lib/device-id";
 import { clearDraft, loadDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { addHistory } from "@/lib/history";
 import { useLang } from "@/lib/i18n";
+import { computeProvisional, type ProvisionalResult } from "@/lib/provisional";
+import { enqueueOutbox } from "@/lib/outbox-store";
+import { syncOutboxItem } from "@/lib/outbox-sync";
 
 export const Route = createFileRoute("/assess/analyze")({
   component: AnalyzeStep,
 });
 
-type Phase = "loading" | "waiting" | "uploading" | "thinking" | "error";
+type Phase =
+  | "loading"
+  | "waiting"
+  | "uploading"
+  | "thinking"
+  | "error"
+  | "provisional";
 
 function AnalyzeStep() {
   const { t, lang } = useLang();
@@ -30,8 +42,26 @@ function AnalyzeStep() {
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [provisional, setProvisional] = useState<ProvisionalResult | null>(null);
   const draftRef = useRef<AssessmentDraft | null>(null);
+  const outboxIdRef = useRef<string | null>(null);
   const runningRef = useRef(false);
+
+  // Save the finished assessment to the offline outbox and show a provisional,
+  // deterministic safety result so the resident is never left without guidance.
+  const goProvisional = useCallback(async () => {
+    const draft = draftRef.current;
+    if (!draft) return;
+    const result = computeProvisional(draft);
+    setProvisional(result);
+    if (!outboxIdRef.current) {
+      const item = await enqueueOutbox(draft, result);
+      outboxIdRef.current = item.id;
+      await clearDraft();
+    }
+    setPhase("provisional");
+  }, []);
+
 
   const run = useCallback(async () => {
     if (runningRef.current) return;
