@@ -26,9 +26,21 @@ import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
 import { cn } from "@/lib/utils";
-import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
+import {
+  ESTADO_NAMES,
+  getEstado,
+  getEstadoBySlug,
+  nearestEstado,
+} from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
+  validateSearch: (search: Record<string, unknown>): { estado?: string } => {
+    const estado =
+      typeof search.estado === "string" && search.estado.trim() !== ""
+        ? search.estado.trim()
+        : undefined;
+    return estado ? { estado } : {};
+  },
   component: PropertyStep,
 });
 
@@ -52,6 +64,7 @@ const STRUCTURAL_TYPES: StructuralType[] = [
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
+  const { estado: estadoParam } = Route.useSearch();
 
   const [address, setAddress] = useState("");
   const [state, setState] = useState("");
@@ -142,6 +155,19 @@ function PropertyStep() {
     }, 600);
     return () => clearTimeout(timer);
   }, [state]);
+
+  // Preselect estado when arriving from a regional landing page (?estado=).
+  // Accepts either the full name or a slug; never overrides a chosen value.
+  useEffect(() => {
+    if (!estadoParam) return;
+    const match =
+      getEstado(estadoParam)?.name ?? getEstadoBySlug(estadoParam)?.name;
+    if (!match) return;
+    geoTried.current = true; // skip geo auto-detect — user picked this region
+    setState((cur) => (cur.trim() === "" ? match : cur));
+  }, [estadoParam]);
+
+
 
   const missing: string[] = [];
   if (state.trim() === "") missing.push(t("property.miss.state"));

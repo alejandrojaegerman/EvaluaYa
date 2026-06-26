@@ -283,6 +283,26 @@ const es: Dict = {
   "home.mapTitle": "Mapa comunitario de daños",
   "home.mapDesc": "Mira cómo está tu zona según los reportes de otras personas.",
   "home.viewMap": "Ver mapa de daños",
+  "home.exploreTitle": "Explora tu estado",
+  "home.exploreDesc":
+    "Consulta los reportes y evalúa tu vivienda según tu estado.",
+  "zona.breadcrumbHome": "Inicio",
+  "zona.eyebrow": "Reporte regional",
+  "zona.h1Prefix": "Daños estructurales en",
+  "zona.intro":
+    "Mira cómo está {estado} según los reportes anónimos de la comunidad y evalúa tu vivienda gratis, sin registro y en pocos minutos.",
+  "zona.ctaPrefix": "Evaluar mi vivienda en",
+  "zona.totalReports": "Reportes en el estado",
+  "zona.municipios": "Municipios con reportes",
+  "zona.lastReport": "Último reporte",
+  "zona.noData":
+    "Aún no hay reportes en {estado}. Sé la primera persona en evaluar tu vivienda y ayudar a tu comunidad.",
+  "zona.aboutTitle": "¿Cómo se calculan estos datos?",
+  "zona.aboutBody":
+    "Las cifras son conteos anónimos de autoevaluaciones realizadas en la app. Nunca mostramos direcciones, fotos ni datos personales.",
+  "zona.viewMap": "Ver el mapa completo",
+  "zona.otherStates": "Otros estados",
+  "zona.notFound": "No encontramos ese estado.",
 
   "property.state": "Estado",
   "property.statePlaceholder": "Selecciona",
@@ -884,6 +904,27 @@ const en: Dict = {
   "home.mapTitle": "Community damage map",
   "home.mapDesc": "See how your area is doing based on reports from others.",
   "home.viewMap": "View damage map",
+  "home.exploreTitle": "Explore your state",
+  "home.exploreDesc":
+    "Check reports and assess your home based on your state.",
+  "zona.breadcrumbHome": "Home",
+  "zona.eyebrow": "Regional report",
+  "zona.h1Prefix": "Structural damage in",
+  "zona.intro":
+    "See how {estado} is doing based on anonymous community reports, and assess your home for free, with no sign-up, in just a few minutes.",
+  "zona.ctaPrefix": "Assess my home in",
+  "zona.totalReports": "Reports in the state",
+  "zona.municipios": "Municipalities with reports",
+  "zona.lastReport": "Last report",
+  "zona.noData":
+    "There are no reports in {estado} yet. Be the first to assess your home and help your community.",
+  "zona.aboutTitle": "How is this data calculated?",
+  "zona.aboutBody":
+    "The figures are anonymous counts of self-assessments done in the app. We never show addresses, photos or personal data.",
+  "zona.viewMap": "View the full map",
+  "zona.otherStates": "Other states",
+  "zona.notFound": "We couldn't find that state.",
+
 
   "property.state": "State",
   "property.statePlaceholder": "Select",

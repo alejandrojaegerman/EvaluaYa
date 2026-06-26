@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Download, ImageDown, MapPin } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, ChevronRight, Download, ImageDown, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +17,13 @@ import {
   type AreaAggregate,
   type DamageTotals,
 } from "@/lib/stats.functions";
-import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
+import {
+  ESTADOS,
+  estadoSlug,
+  getEstado,
+  outlinePath,
+  projectToSvg,
+} from "@/lib/venezuela";
 
 const MAP_OG = absoluteUrl("/og-map.jpg");
 
@@ -71,6 +77,8 @@ type DisplayArea = {
   title: string;
   subtitle: string | null;
   muniKnown: boolean;
+  /** Resolved estado name when known, for linking to its regional page. */
+  stateName: string | null;
   total: number;
   green: number;
   yellow: number;
@@ -83,6 +91,7 @@ const MAP_H = 300;
 
 function MapPage() {
   const { t, lang } = useLang();
+  const navigate = useNavigate();
   const [totals, setTotals] = useState<DamageTotals | null>(null);
   const [areas, setAreas] = useState<AreaAggregate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,6 +171,7 @@ function MapPage() {
         title: muniKnown ? a.municipality : a.state,
         subtitle: muniKnown ? a.state : t("map.unspecifiedMunicipality"),
         muniKnown,
+        stateName: stateKnown ? a.state : null,
         total: a.total,
         green: a.green,
         yellow: a.yellow,
@@ -183,6 +193,7 @@ function MapPage() {
         title: t("map.unspecifiedLocation"),
         subtitle: null,
         muniKnown: false,
+        stateName: null,
         total: unspecified.total,
         green: unspecified.green,
         yellow: unspecified.yellow,
@@ -382,7 +393,27 @@ function MapPage() {
                 );
               })}
               {stateBubbles.map((b) => (
-                <g key={b.state}>
+                <g
+                  key={b.state}
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer outline-none"
+                  onClick={() =>
+                    navigate({
+                      to: "/zona/$estado",
+                      params: { estado: estadoSlug(b.state) },
+                    })
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate({
+                        to: "/zona/$estado",
+                        params: { estado: estadoSlug(b.state) },
+                      });
+                    }
+                  }}
+                >
                   <circle
                     cx={b.x}
                     cy={b.y}
@@ -427,11 +458,9 @@ function MapPage() {
             <ul className="mt-3 space-y-2">
               {topAreas.map((a) => {
                 const level = dominantRisk(a);
-                return (
-                  <li
-                    key={a.key}
-                    className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm"
-                  >
+                const linkable = a.stateName && getEstado(a.stateName);
+                const inner = (
+                  <>
                     <span
                       className="size-3 shrink-0 rounded-full"
                       style={{ backgroundColor: rgb(level) }}
@@ -453,6 +482,29 @@ function MapPage() {
                       <span style={{ color: rgb("yellow") }}>{a.yellow}</span>
                       <span style={{ color: rgb("green") }}>{a.green}</span>
                     </div>
+                    {linkable && (
+                      <ChevronRight
+                        className="size-4 shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                    )}
+                  </>
+                );
+                return (
+                  <li key={a.key}>
+                    {linkable ? (
+                      <Link
+                        to="/zona/$estado"
+                        params={{ estado: estadoSlug(a.stateName!) }}
+                        className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm transition-colors hover:bg-accent/40"
+                      >
+                        {inner}
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm">
+                        {inner}
+                      </div>
+                    )}
                   </li>
                 );
               })}
