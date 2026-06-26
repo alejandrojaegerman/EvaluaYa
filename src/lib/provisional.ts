@@ -32,7 +32,18 @@ export function computeProvisional(draft: AssessmentDraft): ProvisionalResult {
   const t = (k: string) => translate(lang, k);
 
   const answers = draft.answers.map((a) => ({ id: a.id, value: a.value }));
-  const base = evaluateSafetyRules(lang, draft.property, answers);
+  const base = evaluateSafetyRules(
+    lang,
+    {
+      structuralType: draft.property.structuralType,
+      floors: draft.property.floors ?? 1,
+      seismicIntensity: draft.property.seismicIntensity,
+      pga: draft.property.pga,
+      spectralDemand: draft.property.spectralDemand,
+      soilClass: draft.property.soilClass,
+    },
+    answers,
+  );
 
   let level: RiskLevel = base.level;
   const findings = [...base.findings];
