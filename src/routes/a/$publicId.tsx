@@ -425,6 +425,24 @@ function ResultPage() {
         </div>
       </section>
 
+      {/* Feedback prompt */}
+      <Link
+        to="/feedback"
+        className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+          <MessageSquareHeart className="size-5" aria-hidden />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold leading-tight">
+            {t("feedback.promptTitle")}
+          </p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {t("feedback.promptBody")}
+          </p>
+        </div>
+      </Link>
+
       {/* Disclaimer */}
       <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-border bg-muted/50 p-4">
         <Info className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
