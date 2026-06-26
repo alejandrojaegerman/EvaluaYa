@@ -382,9 +382,15 @@ const es: Dict = {
   "methodology.red.pounding":
     "Golpeteo entre edificios vecinos durante el sismo.",
   "methodology.red.plumbing": "Daño grave en tuberías o gas.",
+  "methodology.red.combo":
+    "Sacudida muy fuerte (MMI VIII+ o PGA ≥0.50g) junto con daño estructural reportado.",
   "methodology.yellow.title": "Elevan a AMARILLO (precaución)",
   "methodology.yellow.intensity":
-    "Intensidad estimada del sismo MMI VII o mayor en tu ubicación.",
+    "Sacudida moderada en tu ubicación: intensidad MMI VI+ o aceleración pico (PGA) ≥0.25g.",
+  "methodology.yellow.spectral":
+    "Demanda sísmica alta para la altura del edificio: aceleración espectral ≥0.40g en su período estimado.",
+  "methodology.yellow.soil":
+    "Suelo blando o muy blando (vs30 bajo), que amplifica la sacudida y aumenta el riesgo de licuefacción.",
   "methodology.yellow.floors": "Edificios de más de 7 pisos.",
   "methodology.yellow.structure":
     "Sistemas estructurales más vulnerables: pórticos de concreto, paredes de relleno, prefabricado o mampostería reforzada baja.",
