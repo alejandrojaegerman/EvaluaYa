@@ -6,43 +6,51 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
-  Link,
   Preview,
+  Section,
   Text,
 } from '@react-email/components'
 
 interface InviteEmailProps {
-  siteName: string
-  siteUrl: string
+  siteName?: string
+  siteUrl?: string
   confirmationUrl: string
 }
 
-export const InviteEmail = ({
-  siteName,
-  siteUrl,
-  confirmationUrl,
-}: InviteEmailProps) => (
-  <Html lang="en" dir="ltr">
+export const InviteEmail = ({ confirmationUrl }: InviteEmailProps) => (
+  <Html lang="es" dir="ltr">
     <Head />
-    <Preview>You've been invited to join {siteName}</Preview>
+    <Preview>Te invitaron a EvalúaYa</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>You've been invited</Heading>
-        <Text style={text}>
-          You've been invited to join{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          . Click the button below to accept the invitation and create your
-          account.
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Accept Invitation
-        </Button>
-        <Text style={footer}>
-          If you weren't expecting this invitation, you can safely ignore this
-          email.
+        <Section style={header}>
+          <Text style={brand}>EvalúaYa</Text>
+          <Text style={brandSub}>Evaluación estructural tras un sismo</Text>
+        </Section>
+        <Section style={card}>
+          <Heading style={h1}>Te invitaron a EvalúaYa</Heading>
+          <Text style={text}>
+            Recibiste una invitación para unirte a EvalúaYa. Toca el botón para
+            aceptar y crear tu cuenta.
+          </Text>
+          <Button style={button} href={confirmationUrl}>
+            Aceptar invitación
+          </Button>
+          <Text style={footer}>
+            Si no esperabas esta invitación, puedes ignorar este correo.
+          </Text>
+          <Hr style={hr} />
+          <Text style={textEn}>
+            <strong>In English:</strong> You've been invited to join EvalúaYa.
+            Tap the button to accept and create your account. If you weren't
+            expecting this, you can safely ignore this email.
+          </Text>
+        </Section>
+        <Text style={legal}>
+          EvalúaYa · evaluaya.app · Herramienta de orientación, no sustituye la
+          inspección de un ingeniero.
         </Text>
       </Container>
     </Body>
@@ -51,27 +59,61 @@ export const InviteEmail = ({
 
 export default InviteEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
+const main = {
+  backgroundColor: '#ffffff',
+  fontFamily:
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+}
+const container = { padding: '24px 16px', maxWidth: '480px', margin: '0 auto' }
+const header = { padding: '4px 4px 16px' }
+const brand = {
+  fontSize: '24px',
   fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  color: '#0f3443',
+  margin: '0',
+  letterSpacing: '-0.5px',
+}
+const brandSub = { fontSize: '12px', color: '#64748b', margin: '2px 0 0' }
+const card = {
+  backgroundColor: '#f8fafc',
+  border: '1px solid #e2e8f0',
+  borderRadius: '16px',
+  padding: '28px 24px',
+}
+const h1 = {
+  fontSize: '20px',
+  fontWeight: 'bold' as const,
+  color: '#0f3443',
+  margin: '0 0 14px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
+  fontSize: '15px',
+  color: '#334155',
+  lineHeight: '1.55',
+  margin: '0 0 22px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const textEn = {
+  fontSize: '13px',
+  color: '#64748b',
+  lineHeight: '1.55',
+  margin: '0',
+}
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#0f3443',
   color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
+  fontSize: '15px',
+  fontWeight: 'bold' as const,
+  borderRadius: '10px',
+  padding: '13px 22px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = { fontSize: '13px', color: '#94a3b8', margin: '22px 0 0' }
+const hr = { borderColor: '#e2e8f0', margin: '22px 0' }
+const legal = {
+  fontSize: '11px',
+  color: '#94a3b8',
+  lineHeight: '1.5',
+  margin: '20px 4px 0',
+  textAlign: 'center' as const,
+}
