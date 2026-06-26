@@ -11,9 +11,11 @@ import { cn } from "@/lib/utils";
 export function AppShell({
   children,
   className,
+  hideBottomNav = false,
 }: {
   children: ReactNode;
   className?: string;
+  hideBottomNav?: boolean;
 }) {
   const { t } = useLang();
   const online = useOnline();
