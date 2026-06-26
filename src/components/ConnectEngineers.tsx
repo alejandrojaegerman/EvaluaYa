@@ -21,6 +21,7 @@ import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
   getApprovedEngineersForState,
+  revealEngineerContact,
   submitHelpRequest,
   type PublicEngineer,
 } from "@/lib/volunteers.functions";
@@ -33,6 +34,7 @@ import {
 export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const { t } = useLang();
   const fetchEngineers = useServerFn(getApprovedEngineersForState);
+  const reveal = useServerFn(revealEngineerContact);
   const submit = useServerFn(submitHelpRequest);
 
   const state = record.property.state ?? "";
@@ -40,6 +42,8 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const isRed = record.riskLevel === "red";
 
   const [engineers, setEngineers] = useState<PublicEngineer[]>([]);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [revealingId, setRevealingId] = useState<string | null>(null);
   const [whatsapp, setWhatsapp] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
@@ -59,14 +63,34 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
     };
   }, [fetchEngineers, state]);
 
-  function contactEngineer(phone: string) {
-    const text = `${t("connect.waMessage")} ${reportUrl}`;
-    window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(text)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+  // Two-tap consent: first tap shows the consent line, second tap fetches the
+  // number (kept out of the page payload) and opens WhatsApp.
+  async function contactEngineer(id: string) {
+    if (confirmingId !== id) {
+      setConfirmingId(id);
+      return;
+    }
+    setRevealingId(id);
+    try {
+      const res = await reveal({ data: { engineerId: id } });
+      if (!res.whatsapp) {
+        toast.error(t("connect.revealError"));
+        return;
+      }
+      const text = `${t("connect.waMessage")} ${reportUrl}`;
+      window.open(
+        `https://wa.me/${res.whatsapp}?text=${encodeURIComponent(text)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+      setConfirmingId(null);
+    } catch {
+      toast.error(t("connect.revealError"));
+    } finally {
+      setRevealingId(null);
+    }
   }
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -166,14 +190,23 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                       {t("connect.coversYourState")}
                     </p>
                   )}
+                  {confirmingId === e.id && (
+                    <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                      {t("connect.revealConsent")}
+                    </p>
+                  )}
                   <Button
-                    onClick={() => contactEngineer(e.whatsapp)}
+                    onClick={() => contactEngineer(e.id)}
+                    disabled={revealingId === e.id}
                     className="mt-2 w-full bg-[#25D366] text-white hover:bg-[#1ebe5a]"
                     size="sm"
                   >
                     <MessageCircle className="size-4" />
-                    {t("connect.whatsappEngineer")}
+                    {revealingId === e.id
+                      ? t("connect.revealing")
+                      : t("connect.whatsappEngineer")}
                   </Button>
+
                 </li>
               );
             })}

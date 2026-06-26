@@ -14,8 +14,6 @@ export type PublicEngineer = {
   id: string;
   name: string;
   organization: string | null;
-  /** digits-only phone for a wa.me link */
-  whatsapp: string;
   states: string[];
   specialization: string | null;
   volunteerType: VolunteerType;
@@ -29,7 +27,8 @@ export type EngineerRequest = {
   state: string | null;
   municipality: string | null;
   riskLevel: RiskLevel | null;
-  residentWhatsapp: string;
+  /** null until the request is claimed by the viewing engineer */
+  residentWhatsapp: string | null;
   note: string | null;
   status: "open" | "claimed" | "closed";
   claimedByMe: boolean;
@@ -45,6 +44,12 @@ export type EngineerPanel = {
   };
   requests: EngineerRequest[];
 };
+
+/** Returned by getEngineerPanel when the access link has expired. */
+export type EngineerPanelResult =
+  | EngineerPanel
+  | { expired: true }
+  | null;
 
 export type AdminEngineer = {
   id: string;
@@ -211,7 +216,6 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
         id: r.id,
         name: r.name,
         organization: r.organization,
-        whatsapp: r.whatsapp,
         states: r.states ?? [],
         specialization: r.specialization,
         volunteerType:
@@ -221,6 +225,36 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
     } catch (e) {
       console.error("[volunteers] getApprovedEngineers failed", e);
       return [];
+    }
+  });
+
+// ---------------------------------------------------------------------------
+// Reveal a single engineer's WhatsApp — only after the resident taps to
+// connect. Keeping numbers out of the directory payload prevents bulk scraping.
+// ---------------------------------------------------------------------------
+
+const revealSchema = z.object({
+  engineerId: z.string().trim().uuid(),
+});
+
+export const revealEngineerContact = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => revealSchema.parse(data))
+  .handler(async ({ data }): Promise<{ whatsapp: string | null }> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: row, error } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("whatsapp, status")
+        .eq("id", data.engineerId)
+        .eq("status", "approved")
+        .maybeSingle();
+      if (error || !row || !row.whatsapp) return { whatsapp: null };
+      return { whatsapp: row.whatsapp };
+    } catch (e) {
+      console.error("[volunteers] revealEngineerContact failed", e);
+      return { whatsapp: null };
     }
   });
 
@@ -321,7 +355,7 @@ async function loadEngineerByToken(token: string) {
   const { data, error } = await supabaseAdmin
     .from("volunteer_engineers")
     .select(
-      "id, name, organization, states, specialization, status, access_token",
+      "id, name, organization, states, specialization, status, access_token, token_expires_at",
     )
     .eq("access_token", token)
     .eq("status", "approved")
@@ -330,15 +364,66 @@ async function loadEngineerByToken(token: string) {
   return data;
 }
 
+/** True when an access link has a past expiry timestamp. */
+function tokenExpired(row: { token_expires_at?: string | null }): boolean {
+  return (
+    !!row.token_expires_at &&
+    new Date(row.token_expires_at).getTime() < Date.now()
+  );
+}
+
+/** Access links live for 90 days; rotation/approval refreshes this. */
+const TOKEN_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+function tokenExpiryFromNow(): string {
+  return new Date(Date.now() + TOKEN_TTL_MS).toISOString();
+}
+
+/**
+ * Best-effort send of the "you're validated, here's your panel link" email.
+ * Returns true when the email was enqueued. No-op (returns false) when the
+ * volunteer has no email on file.
+ */
+async function sendAccessEmail(params: {
+  email?: string | null;
+  name?: string | null;
+  states: string[];
+  token: string;
+  idempotencyKey: string;
+}): Promise<boolean> {
+  const email = params.email?.trim();
+  if (!email) return false;
+  try {
+    const { sendSystemEmail } = await import("./notify-email.server");
+    const stateNames = (params.states ?? [])
+      .map((s: string) => ESTADO_NAMES.find((n) => n === s) ?? s)
+      .join(", ");
+    const res = await sendSystemEmail({
+      templateName: "volunteer-approved",
+      recipientEmail: email,
+      idempotencyKey: params.idempotencyKey,
+      templateData: {
+        name: params.name ?? "",
+        states: stateNames,
+        panelUrl: `https://evaluaya.app/voluntarios/panel/${params.token}`,
+      },
+    });
+    return res.ok;
+  } catch (e) {
+    console.error("[volunteers] sendAccessEmail failed", e);
+    return false;
+  }
+}
+
 export const getEngineerPanel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => tokenSchema.parse(data))
-  .handler(async ({ data }): Promise<EngineerPanel | null> => {
+  .handler(async ({ data }): Promise<EngineerPanelResult> => {
     try {
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
       const engineer = await loadEngineerByToken(data.token);
       if (!engineer) return null;
+      if (tokenExpired(engineer)) return { expired: true };
 
       const states = engineer.states ?? [];
       const { data: rows, error } = await supabaseAdmin
@@ -376,19 +461,23 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
         return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
 
-      const requests: EngineerRequest[] = relevant.map((r) => ({
-        id: r.id,
-        publicId: r.public_id,
-        assessmentPublicId: r.assessment_public_id,
-        state: r.state,
-        municipality: r.municipality,
-        riskLevel: (r.risk_level as RiskLevel | null) ?? null,
-        residentWhatsapp: r.resident_whatsapp,
-        note: r.note,
-        status: r.status as "open" | "claimed" | "closed",
-        claimedByMe: r.claimed_by === engineer.id,
-        createdAt: r.created_at,
-      }));
+      const requests: EngineerRequest[] = relevant.map((r) => {
+        const mine = r.claimed_by === engineer.id;
+        return {
+          id: r.id,
+          publicId: r.public_id,
+          assessmentPublicId: r.assessment_public_id,
+          state: r.state,
+          municipality: r.municipality,
+          riskLevel: (r.risk_level as RiskLevel | null) ?? null,
+          // Resident contact is only revealed after this engineer claims it.
+          residentWhatsapp: mine ? r.resident_whatsapp : null,
+          note: r.note,
+          status: r.status as "open" | "claimed" | "closed",
+          claimedByMe: mine,
+          createdAt: r.created_at,
+        };
+      });
 
       return { engineer: mapEng(engineer), requests };
     } catch (e) {
@@ -396,6 +485,7 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       return null;
     }
   });
+
 
 function mapEng(e: {
   name: string;
@@ -424,7 +514,8 @@ export const claimHelpRequest = createServerFn({ method: "POST" })
         "@/integrations/supabase/client.server"
       );
       const engineer = await loadEngineerByToken(data.token);
-      if (!engineer) return { ok: false };
+      if (!engineer || tokenExpired(engineer)) return { ok: false };
+
       const { error } = await supabaseAdmin
         .from("help_requests")
         .update({
@@ -453,7 +544,7 @@ export const closeHelpRequest = createServerFn({ method: "POST" })
         "@/integrations/supabase/client.server"
       );
       const engineer = await loadEngineerByToken(data.token);
-      if (!engineer) return { ok: false };
+      if (!engineer || tokenExpired(engineer)) return { ok: false };
       const { error } = await supabaseAdmin
         .from("help_requests")
         .update({ status: "closed" })
@@ -553,32 +644,22 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
         const token = existing?.access_token ?? crypto.randomUUID();
         const { error } = await supabaseAdmin
           .from("volunteer_engineers")
-          .update({ status: "approved", access_token: token })
+          .update({
+            status: "approved",
+            access_token: token,
+            token_expires_at: tokenExpiryFromNow(),
+          })
           .eq("id", data.id);
         if (error) return { ok: false };
 
         // Notify the volunteer they were approved (best-effort, email only).
-        const email = existing?.email?.trim();
-        if (email) {
-          try {
-            const { sendSystemEmail } = await import("./notify-email.server");
-            const stateNames = (existing?.states ?? [])
-              .map((s: string) => ESTADO_NAMES.find((n) => n === s) ?? s)
-              .join(", ");
-            await sendSystemEmail({
-              templateName: "volunteer-approved",
-              recipientEmail: email,
-              idempotencyKey: `volunteer-approved-${data.id}`,
-              templateData: {
-                name: existing?.name ?? "",
-                states: stateNames,
-                panelUrl: `https://evaluaya.app/voluntarios/panel/${token}`,
-              },
-            });
-          } catch (e) {
-            console.error("[volunteers] approval email failed", e);
-          }
-        }
+        await sendAccessEmail({
+          email: existing?.email,
+          name: existing?.name,
+          states: existing?.states ?? [],
+          token,
+          idempotencyKey: `volunteer-approved-${data.id}`,
+        });
 
         return { ok: true, accessToken: token };
       } catch (e) {
@@ -587,6 +668,88 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
       }
     },
   );
+
+const idSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  id: z.string().trim().uuid(),
+});
+
+/** Resend the access-link email to an already-approved volunteer (admin). */
+export const adminResendAccessLink = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => idSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean; reason?: string }> => {
+    if (!adminOk(data.adminSecret)) return { ok: false };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: row } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("access_token, name, email, states, status")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (!row || row.status !== "approved" || !row.access_token) {
+        return { ok: false, reason: "not_approved" };
+      }
+      if (!row.email?.trim()) return { ok: false, reason: "no_email" };
+
+      const sent = await sendAccessEmail({
+        email: row.email,
+        name: row.name,
+        states: row.states ?? [],
+        token: row.access_token,
+        // unique key per resend so the queue never dedupes it
+        idempotencyKey: `volunteer-resend-${data.id}-${Date.now()}`,
+      });
+      return sent ? { ok: true } : { ok: false, reason: "send_failed" };
+    } catch (e) {
+      console.error("[volunteers] adminResendAccessLink failed", e);
+      return { ok: false };
+    }
+  });
+
+/** Rotate a volunteer's access link (new token + fresh expiry), re-email it. */
+export const adminRotateAccessLink = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => idSchema.parse(data))
+  .handler(
+    async ({
+      data,
+    }): Promise<{ ok: boolean; accessToken?: string | null; reason?: string }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: row } = await supabaseAdmin
+          .from("volunteer_engineers")
+          .select("name, email, states, status")
+          .eq("id", data.id)
+          .maybeSingle();
+        if (!row || row.status !== "approved") {
+          return { ok: false, reason: "not_approved" };
+        }
+        const token = crypto.randomUUID();
+        const { error } = await supabaseAdmin
+          .from("volunteer_engineers")
+          .update({ access_token: token, token_expires_at: tokenExpiryFromNow() })
+          .eq("id", data.id);
+        if (error) return { ok: false };
+
+        await sendAccessEmail({
+          email: row.email,
+          name: row.name,
+          states: row.states ?? [],
+          token,
+          idempotencyKey: `volunteer-rotate-${data.id}-${Date.now()}`,
+        });
+        return { ok: true, accessToken: token };
+      } catch (e) {
+        console.error("[volunteers] adminRotateAccessLink failed", e);
+        return { ok: false };
+      }
+    },
+  );
+
 
 export const adminListHelpRequests = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => adminListSchema.parse(data))

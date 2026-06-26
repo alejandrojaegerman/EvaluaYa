@@ -43,6 +43,7 @@ function PanelPage() {
   const close = useServerFn(closeHelpRequest);
 
   const [panel, setPanel] = useState<EngineerPanel | null>(null);
+  const [expired, setExpired] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
 
@@ -50,7 +51,13 @@ function PanelPage() {
     setLoading(true);
     try {
       const res = await fetchPanel({ data: { token } });
-      setPanel(res);
+      if (res && "expired" in res) {
+        setExpired(true);
+        setPanel(null);
+      } else {
+        setExpired(false);
+        setPanel(res);
+      }
     } catch {
       setPanel(null);
     } finally {
@@ -108,6 +115,23 @@ function PanelPage() {
       <AppShell>
         <div className="flex min-h-[50vh] items-center justify-center text-sm text-muted-foreground">
           …
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (expired) {
+    return (
+      <AppShell>
+        <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+          <AlertCircle className="size-12 text-amber-500" aria-hidden />
+          <p className="mt-4 text-lg font-semibold">{t("panel.expired")}</p>
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            {t("panel.expiredBody")}
+          </p>
+          <Link to="/" className="mt-6">
+            <Button variant="outline">{t("result.goHome")}</Button>
+          </Link>
         </div>
       </AppShell>
     );
@@ -225,13 +249,19 @@ function PanelPage() {
                     {t("panel.claim")}
                   </Button>
                 )}
-                <Button
-                  onClick={() => contactResident(r.residentWhatsapp)}
-                  className="bg-[#25D366] text-white hover:bg-[#1ebe5a]"
-                >
-                  <MessageCircle className="size-4" />
-                  {t("panel.contactResident")}
-                </Button>
+                {r.residentWhatsapp ? (
+                  <Button
+                    onClick={() => contactResident(r.residentWhatsapp!)}
+                    className="bg-[#25D366] text-white hover:bg-[#1ebe5a]"
+                  >
+                    <MessageCircle className="size-4" />
+                    {t("panel.contactResident")}
+                  </Button>
+                ) : (
+                  <p className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+                    {t("panel.contactLocked")}
+                  </p>
+                )}
                 {r.assessmentPublicId && (
                   <Button asChild variant="ghost" size="sm">
                     <a

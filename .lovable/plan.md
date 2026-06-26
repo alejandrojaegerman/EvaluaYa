@@ -1,50 +1,47 @@
-# Close the volunteer notification gap
+# Volunteer notifications + contact-info hardening
 
-Today, approving a volunteer silently generates a private panel link — nothing is ever sent to them, so they don't know they're validated or where to claim requests. On top of that, 3 of the 4 approved volunteers signed up without an email (2 individuals, 1 organization), so email alone can't reach them. This plan fixes both: require email going forward, auto-notify on approval when we have an email, and give you a one-tap WhatsApp message for everyone (the only channel that reaches the 3 with no email).
+Two problems to fix:
+1. Validated volunteers were never notified (the approval email only fires at click-time, and all 4 were approved before it existed). Only Daniel Herrera has an email.
+2. Contact info is over-exposed: engineer WhatsApp numbers are publicly scrapable on result pages, and resident numbers are reachable through any (non-expiring) panel link.
 
-## 1. Make email required for new volunteers
+Decisions confirmed: send Daniel's email now; gate engineer numbers behind resident consent; mask resident numbers until claimed AND add expiring/re-issuable panel links.
 
-- **Form** (`src/routes/voluntarios.index.tsx`): mark the email field as required (add the required indicator, `required` attribute, and a small "needed so we can send your access link" helper line). Keep WhatsApp required too.
-- **Validation** (`src/lib/volunteers.functions.ts`): change the signup schema so `email` is a required, valid address (drop the `.optional()/.or(literal(""))`). Server-side rejection returns a friendly bilingual error.
-- **i18n** (`src/lib/i18n.tsx`): add/adjust keys for the required-email label, helper text, and the validation error.
+---
 
-This only affects new signups; existing rows are untouched.
+## 1. Send approval/access email to Daniel (and make it repeatable)
 
-## 2. Auto-notify volunteers on approval (when we have an email)
+Add a **"Reenviar enlace de acceso"** (Resend access link) button on each *approved* volunteer card that has an email, in the admin panel (`src/routes/admin.voluntarios.tsx`). The admin secret is already entered there.
 
-- New email template `src/lib/email-templates/volunteer-approved.tsx` (Spanish-first, EvalúaYa teal branding, matching the existing template style): "You've been validated — here's your private panel link," with the panel button and a short note that the link is personal.
-- Register it in `src/lib/email-templates/registry.ts`.
-- In `adminReviewEngineer` (approve branch) in `src/lib/volunteers.functions.ts`: after generating the access token, best-effort send the approval email via `sendSystemEmail` **only if the volunteer has an email** (never blocks the approval). Fetch the volunteer's name/email/type alongside the existing token lookup.
+- New admin-gated server function `adminResendAccessLink({ adminSecret, id })` in `src/lib/volunteers.functions.ts` that re-sends the existing `volunteer-approved` template to the volunteer's email using the current `access_token`.
+- After building, I'll trigger it once for Daniel and confirm `email_send_log` shows `volunteer-approved` → `sent`.
+- The 3 without email keep their existing green **"Avisar por WhatsApp"** button (unchanged).
 
-## 3. One-tap WhatsApp notification in the admin panel (reaches everyone)
+## 2. Engineer phone numbers — reveal only after resident consent
 
-This is the manual message you asked for — works for the 3 without email and as a fallback for anyone.
+Goal: numbers must not be in the public page payload at all, so they can't be bulk-scraped.
 
-- In `src/routes/admin.voluntarios.tsx`, on each **approved** volunteer card add a green **"Avisar por WhatsApp"** button next to "Copy link". It opens `https://wa.me/<digits>?text=<prefilled message>` in a new tab using the volunteer's stored WhatsApp number and their panel link.
-- The prefilled message is a friendly Spanish validation notice, e.g.:
+- `getApprovedEngineersForState` stops returning `whatsapp`. It returns only display fields (id, name, org, specialization, coverage). Update `PublicEngineer` type and the `get_approved_engineers` usage accordingly (DB function can stay; we just drop the field from the DTO).
+- New server function `revealEngineerContact({ engineerId, state })` returns the `wa.me` link for a single engineer, called only when the resident explicitly taps to connect. Light per-call rate limiting via the existing `rate-limit.server.ts` to discourage enumeration.
+- `ConnectEngineers.tsx`: each engineer card shows a **"Contactar por WhatsApp"** button that, on tap, shows a short consent line ("Al continuar compartirás tu contacto con este voluntario") and then fetches + opens the link. Number is never rendered in the DOM before the tap.
 
-```text
-Hola {nombre}, ¡buenas noticias! Tu inscripción como voluntario en EvalúaYa
-fue validada. Desde este enlace privado puedes ver y atender solicitudes de
-ayuda en {estados}: {panelUrl}
+## 3. Resident contact info on the engineer panel
 
-Guárdalo, es personal y no requiere contraseña.
-```
+### a. Mask resident WhatsApp until the request is claimed
+- In `getEngineerPanel`, only include `residentWhatsapp` for requests where `claimed_by === engineer.id`. For open/unclaimed requests, return it as `null`.
+- In `voluntarios.panel.$token.tsx`, hide the "Contactar residente" button until the request is claimed; show a hint that claiming reveals the contact. (Claim flow already exists.)
 
-- For volunteers **missing an email**, show a subtle "Sin email" badge on the card so you can see at a glance who can only be reached by WhatsApp.
-- Add the message template + button label to i18n (bilingual). The phone is already stored digits-only, so the `wa.me` link is built directly — no new backend, no secrets.
+### b. Expiring + re-issuable panel links
+- Migration: add `token_expires_at timestamptz` to `volunteer_engineers`. Set it on approval (e.g. now + 90 days). Backfill existing approved rows to now + 90 days so current links keep working.
+- `loadEngineerByToken` rejects tokens past `token_expires_at`; the panel then shows an "enlace vencido — solicita uno nuevo" state instead of data.
+- Admin panel gets a **"Generar enlace nuevo"** (rotate) action → new server function `adminRotateAccessLink({ adminSecret, id })` that regenerates `access_token`, extends `token_expires_at`, and (if email present) re-sends the access email. This also serves as the "leaked link" remedy.
 
-## What you'll do for the existing 3
+## 4. i18n
 
-After this ships, open `/admin/voluntarios`, unlock, and in the Approved list tap **"Avisar por WhatsApp"** on each of the 3 (and the 4th if you like). It opens WhatsApp with the validated-message + their personal panel link prefilled; you just hit send.
+Add bilingual keys for: consent line + reveal button (ConnectEngineers), "claim to reveal contact" hint and "link expired" state (panel), and admin "Reenviar enlace"/"Generar enlace nuevo" buttons + toasts.
+
+---
 
 ## Technical notes
-
-- No database migration needed — `email`, `whatsapp`, and `access_token` already exist on `volunteer_engineers`.
-- WhatsApp uses click-to-chat `wa.me` deep links (no Twilio, no API key).
-- Approval email is best-effort and wrapped so a send failure never blocks approval.
-- All new copy is bilingual via the existing `useLang` system.
-
-## Out of scope
-- Automated WhatsApp sending from the server (would require Twilio + business verification) — manual click-to-send keeps it simple and free.
-- Backfilling emails for existing volunteers (you can collect those via the WhatsApp reply if needed).
+- No change to who can *see* requests by area — only the phone numbers are gated.
+- `volunteer-approved` template and `notify-email.server.ts` already exist and are reused; idempotency keys will differ for resend/rotate so they aren't deduped.
+- Verification: after build, resend Daniel's email and check `email_send_log`; load a result page to confirm no phone numbers appear in the network payload until consent; confirm an unclaimed request hides the resident number on the panel.

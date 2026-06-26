@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Lock, MessageCircle, ShieldCheck } from "lucide-react";
+import { Copy, Lock, Mail, MessageCircle, RotateCcw, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import {
   adminListEngineers,
   adminReviewEngineer,
+  adminResendAccessLink,
+  adminRotateAccessLink,
   adminListHelpRequests,
   type AdminEngineer,
   type AdminHelpRequest,
@@ -33,6 +35,8 @@ function AdminPage() {
   const { t } = useLang();
   const listEngineers = useServerFn(adminListEngineers);
   const review = useServerFn(adminReviewEngineer);
+  const resend = useServerFn(adminResendAccessLink);
+  const rotate = useServerFn(adminRotateAccessLink);
   const listRequests = useServerFn(adminListHelpRequests);
 
   const [secret, setSecret] = useState("");
@@ -95,6 +99,31 @@ function AdminPage() {
       `Guárdalo: es personal y no requiere contraseña.`;
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  async function resendEmail(e: AdminEngineer) {
+    setBusy(true);
+    try {
+      const res = await resend({ data: { adminSecret: secret, id: e.id } });
+      if (res.ok) toast.success(t("admin.resent"));
+      else toast.error(t("admin.resendFailed"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function rotateLink(e: AdminEngineer) {
+    if (!window.confirm(t("admin.rotateConfirm"))) return;
+    setBusy(true);
+    try {
+      const res = await rotate({ data: { adminSecret: secret, id: e.id } });
+      if (res.ok) {
+        toast.success(t("admin.rotated"));
+        await refresh(secret);
+      } else toast.error(t("admin.rotateFailed"));
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (!unlocked) {
@@ -180,6 +209,26 @@ function AdminPage() {
                   >
                     <Copy className="size-4" />
                     {t("admin.copyLink")}
+                  </Button>
+                  {e.email && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={busy}
+                      onClick={() => resendEmail(e)}
+                    >
+                      <Mail className="size-4" />
+                      {t("admin.resendEmail")}
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busy}
+                    onClick={() => rotateLink(e)}
+                  >
+                    <RotateCcw className="size-4" />
+                    {t("admin.rotateLink")}
                   </Button>
                 </>
               )}

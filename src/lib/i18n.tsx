@@ -484,6 +484,10 @@ const es: Dict = {
   "connect.directTitle": "Ingenieros disponibles en tu zona",
   "connect.coversYourState": "Cubre tu estado",
   "connect.whatsappEngineer": "Escribir por WhatsApp",
+  "connect.revealConsent":
+    "Al continuar compartirás tu contacto con este voluntario por WhatsApp.",
+  "connect.revealing": "Abriendo…",
+  "connect.revealError": "No se pudo abrir el contacto. Intenta de nuevo.",
   "connect.orgBadge": "Organización",
   "connect.noneTitle": "Aún estamos sumando ingenieros en tu estado",
   "connect.noneBody":
@@ -557,6 +561,11 @@ const es: Dict = {
   "panel.claimed": "La estás atendiendo",
   "panel.close": "Marcar como atendida",
   "panel.contactResident": "Escribir al residente",
+  "panel.contactLocked":
+    "Marca \"Estoy disponible\" para ver el contacto del residente.",
+  "panel.expired": "Enlace vencido",
+  "panel.expiredBody":
+    "Tu enlace de acceso caducó por seguridad. Escríbenos para recibir uno nuevo.",
   "panel.viewReport": "Ver reporte",
   "panel.noLocation": "Ubicación sin especificar",
   "panel.refresh": "Actualizar",
@@ -577,6 +586,14 @@ const es: Dict = {
   "admin.linkCopied": "Enlace copiado",
   "admin.notifyWhatsapp": "Avisar por WhatsApp",
   "admin.noEmail": "Sin email",
+  "admin.resendEmail": "Reenviar enlace por email",
+  "admin.resent": "Enlace reenviado por email.",
+  "admin.resendFailed": "No se pudo reenviar el email.",
+  "admin.rotateLink": "Generar enlace nuevo",
+  "admin.rotateConfirm":
+    "Esto invalidará el enlace anterior del voluntario y generará uno nuevo. ¿Continuar?",
+  "admin.rotated": "Enlace nuevo generado.",
+  "admin.rotateFailed": "No se pudo generar el enlace.",
   "admin.none": "Sin registros.",
 
   // Panel — matching enhancements
@@ -1108,6 +1125,10 @@ const en: Dict = {
   "connect.directTitle": "Engineers available in your area",
   "connect.coversYourState": "Covers your state",
   "connect.whatsappEngineer": "Message on WhatsApp",
+  "connect.revealConsent":
+    "By continuing you'll share your contact with this volunteer on WhatsApp.",
+  "connect.revealing": "Opening…",
+  "connect.revealError": "Couldn't open the contact. Please try again.",
   "connect.orgBadge": "Organization",
   "connect.noneTitle": "We're still adding engineers in your state",
   "connect.noneBody":
@@ -1179,6 +1200,11 @@ const en: Dict = {
   "panel.claimed": "You're handling this",
   "panel.close": "Mark as handled",
   "panel.contactResident": "Message resident",
+  "panel.contactLocked":
+    "Tap \"I'm available\" to see the resident's contact.",
+  "panel.expired": "Link expired",
+  "panel.expiredBody":
+    "Your access link expired for security. Contact us to get a new one.",
   "panel.viewReport": "View report",
   "panel.noLocation": "Location not specified",
   "panel.refresh": "Refresh",
@@ -1198,6 +1224,14 @@ const en: Dict = {
   "admin.linkCopied": "Link copied",
   "admin.notifyWhatsapp": "Notify via WhatsApp",
   "admin.noEmail": "No email",
+  "admin.resendEmail": "Resend link by email",
+  "admin.resent": "Link resent by email.",
+  "admin.resendFailed": "Couldn't resend the email.",
+  "admin.rotateLink": "Generate new link",
+  "admin.rotateConfirm":
+    "This invalidates the volunteer's previous link and creates a new one. Continue?",
+  "admin.rotated": "New link generated.",
+  "admin.rotateFailed": "Couldn't generate the link.",
   "admin.none": "No records.",
 
   // Panel — matching enhancements

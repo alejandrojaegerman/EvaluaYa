@@ -328,6 +328,7 @@ export type Database = {
           specialization: string | null
           states: string[]
           status: string
+          token_expires_at: string | null
           updated_at: string
           volunteer_type: string
           whatsapp: string
@@ -343,6 +344,7 @@ export type Database = {
           specialization?: string | null
           states?: string[]
           status?: string
+          token_expires_at?: string | null
           updated_at?: string
           volunteer_type?: string
           whatsapp: string
@@ -358,6 +360,7 @@ export type Database = {
           specialization?: string | null
           states?: string[]
           status?: string
+          token_expires_at?: string | null
           updated_at?: string
           volunteer_type?: string
           whatsapp?: string
