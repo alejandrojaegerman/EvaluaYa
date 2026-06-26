@@ -257,16 +257,24 @@ function Empty({ t }: { t: (k: string) => string }) {
 
 function EngineerCard({
   e,
+  t,
   children,
 }: {
   e: AdminEngineer;
+  t?: (key: string) => string;
   children: React.ReactNode;
 }) {
+  const hasEmail = !!e.email?.trim();
   return (
     <div className="rounded-xl border border-border bg-background p-3">
       <div className="flex items-center gap-2">
         <ShieldCheck className="size-4 text-primary" aria-hidden />
         <p className="font-semibold">{e.name}</p>
+        {!hasEmail && t && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+            {t("admin.noEmail")}
+          </span>
+        )}
       </div>
       {e.organization && (
         <p className="text-xs text-muted-foreground">{e.organization}</p>
