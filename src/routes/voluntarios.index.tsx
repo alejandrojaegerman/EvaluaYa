@@ -22,7 +22,10 @@ import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
-import { submitEngineerSignup } from "@/lib/volunteers.functions";
+import {
+  submitEngineerSignup,
+  type VolunteerType,
+} from "@/lib/volunteers.functions";
 
 export const Route = createFileRoute("/voluntarios/")({
   head: () => {
