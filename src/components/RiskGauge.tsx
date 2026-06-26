@@ -65,7 +65,7 @@ export function RiskGauge({
               tick={false}
             />
             <RadialBar
-              background={{ fill: "hsl(var(--muted))" }}
+              background={{ fill: "var(--muted)" }}
               dataKey="value"
               cornerRadius={6}
               isAnimationActive
