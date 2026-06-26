@@ -80,7 +80,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       }
       const text = `${t("connect.waMessage")} ${reportUrl}`;
       window.open(
-        `https://wa.me/${res.whatsapp}?text=${encodeURIComponent(text)}`,
+        `https://wa.me/${toWhatsappNumber(res.whatsapp)}?text=${encodeURIComponent(text)}`,
         "_blank",
         "noopener,noreferrer",
       );
