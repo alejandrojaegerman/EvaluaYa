@@ -139,4 +139,14 @@ export type AssessmentRecord = {
   createdAt: string;
   /** signed urls per item id; may contain multiple photos per item */
   photoUrls: Record<string, string[]>;
+  /**
+   * Anonymized "same building" context — null when no building name was
+   * detected. Counts only; never addresses, photos or report ids.
+   */
+  building?: {
+    name: string;
+    /** number of OTHER analyzed reports from the same building */
+    others: number;
+    peers: { total: number; green: number; yellow: number; red: number };
+  } | null;
 };
