@@ -954,7 +954,97 @@ const en: Dict = {
   "methodology.cta": "Start assessment",
   "methodology.disclaimer":
     "In an emergency, call Civil Protection or emergency services.",
+
+  // ----- Volunteer engineers (EN) -----
+  "nav.volunteers": "Volunteer engineers",
+
+  "connect.title": "Talk to a volunteer engineer",
+  "connect.subtitleRed":
+    "Your result is RED. A volunteer engineer can guide you on next steps. Free and no obligation.",
+  "connect.subtitleYellow":
+    "A volunteer engineer can help you interpret these findings. Free and no obligation.",
+  "connect.directTitle": "Engineers available in your area",
+  "connect.coversYourState": "Covers your state",
+  "connect.whatsappEngineer": "Message on WhatsApp",
+  "connect.noneTitle": "We're still adding engineers in your state",
+  "connect.noneBody":
+    "Leave your number and a volunteer engineer will reach out as soon as there's coverage in your area.",
+  "connect.requestTitle": "Request a callback",
+  "connect.requestBody":
+    "Prefer an engineer to message you? Leave your WhatsApp and we'll share your report only with approved engineers in your state.",
+  "connect.requestCta": "Request contact",
+  "connect.requestSending": "Sending…",
+  "connect.requestDone": "Done! An engineer will contact you soon.",
+  "connect.requestError": "Could not send. Please try again.",
+  "connect.yourWhatsapp": "Your WhatsApp number",
+  "connect.whatsappPlaceholder": "e.g. +58 414 123 4567",
+  "connect.noteOptional": "Message (optional)",
+  "connect.notePlaceholder": "e.g. Large cracks in the living room.",
+  "connect.privacy":
+    "Your number is only shared with approved volunteer engineers in your state. It's never published.",
+  "connect.areEngineer": "Are you an engineer? Join as a volunteer",
+  "connect.waMessage":
+    "Hi, I completed an EvalúaYa assessment and my result needs guidance. Here's my report:",
+
+  "vol.title": "Volunteer engineers",
+  "vol.subtitle":
+    "Lend your expertise to help families understand the damage to their homes after an earthquake.",
+  "vol.how1": "Sign up with your WhatsApp and the states you can cover.",
+  "vol.how2": "We review your request and send you a private link.",
+  "vol.how3":
+    "You receive requests from people with risk results in your area and respond over WhatsApp.",
+  "vol.formTitle": "I want to volunteer",
+  "vol.name": "Full name",
+  "vol.namePlaceholder": "e.g. Eng. María Pérez",
+  "vol.org": "Company or organization (optional)",
+  "vol.orgPlaceholder": "e.g. Engineering Association",
+  "vol.whatsapp": "WhatsApp",
+  "vol.email": "Email (optional)",
+  "vol.states": "States you can cover",
+  "vol.statesHint": "Select one or more.",
+  "vol.specialization": "Specialty (optional)",
+  "vol.specializationPlaceholder": "e.g. Structures, geotechnics…",
+  "vol.note": "Message (optional)",
+  "vol.submit": "Submit request",
+  "vol.sending": "Sending…",
+  "vol.successTitle": "Thanks for joining!",
+  "vol.successBody":
+    "We'll review your request and send you a private link to see requests in your area.",
+  "vol.error": "Check the fields and try again.",
+  "vol.selectStates": "Select at least one state.",
+
+  "panel.title": "Volunteer engineer panel",
+  "panel.welcome": "Hi",
+  "panel.coverage": "Coverage",
+  "panel.invalid": "Invalid or unapproved link",
+  "panel.invalidBody":
+    "This link doesn't match an approved volunteer. If you think this is a mistake, contact us.",
+  "panel.empty": "No open requests in your area right now.",
+  "panel.openRequests": "Requests",
+  "panel.claim": "I'm available",
+  "panel.claimed": "You're handling this",
+  "panel.close": "Mark as handled",
+  "panel.contactResident": "Message resident",
+  "panel.viewReport": "View report",
+  "panel.noLocation": "Location not specified",
+  "panel.refresh": "Refresh",
+  "panel.waResident":
+    "Hi, I'm a volunteer engineer from EvalúaYa. I saw your request for guidance after your assessment. How can I help?",
+
+  "admin.title": "Volunteer administration",
+  "admin.secret": "Admin key",
+  "admin.unlock": "Enter",
+  "admin.wrong": "Incorrect key.",
+  "admin.pending": "Pending",
+  "admin.approved": "Approved",
+  "admin.requests": "Resident requests",
+  "admin.approve": "Approve",
+  "admin.reject": "Reject",
+  "admin.copyLink": "Copy panel link",
+  "admin.linkCopied": "Link copied",
+  "admin.none": "No records.",
 };
+
 
 const dictionaries: Record<Lang, Dict> = { es, en };
 
