@@ -193,7 +193,7 @@ function PropertyStep() {
   }
 
   return (
-    <AppShell>
+    <AppShell hideBottomNav>
       <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
 
       <div className="mt-6 space-y-7">

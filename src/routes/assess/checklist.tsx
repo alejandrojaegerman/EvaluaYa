@@ -151,7 +151,8 @@ function ChecklistStep() {
 
   if (loading) {
     return (
-      <AppShell>
+      <AppShell hideBottomNav>
+
         <div className="flex min-h-[50vh] items-center justify-center">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
@@ -173,7 +174,7 @@ function ChecklistStep() {
   );
 
   return (
-    <AppShell>
+    <AppShell hideBottomNav>
       <StepHeader step={2} title={t("checklist.title")} subtitle={t("checklist.subtitle")} />
 
       {/* Required-progress bar (only the essential structural checks gate

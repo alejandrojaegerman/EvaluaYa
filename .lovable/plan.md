@@ -1,45 +1,26 @@
-# Review & approve volunteers — fix access + add notifications
+## Problem
 
-The construction company (Constructora ROMACA) already came through and is sitting in your queue as **pending**. The review/approve UI exists at `/admin/voluntarios`; the only blockers are (1) you don't know the unlock password, and (2) there's no alert when new applicants arrive. This plan fixes both.
+In the assessment flow, each step renders a `StepFooter` (Back / Continue) that is `fixed inset-x-0 bottom-0 z-30`. But every page wrapped in `AppShell` also renders the global `BottomNav`, which is `fixed inset-x-0 bottom-0 z-40`. Two bars stacked at the same spot — the higher z-index nav bar covers the Continue button on mobile.
 
-## 1. Give you a password you actually know
+## Fix
 
-The admin page is unlocked by a stored secret (`VOLUNTEER_ADMIN_SECRET`). Rather than reveal the old value, I'll open a secure form so you type a **new** password. Nothing is shown in code or chat.
+Suppress the global bottom nav on the focused wizard steps that already have their own Back/Continue footer. This is the standard pattern for a multi-step flow (the tab bar is noise during a guided task and there's no room for both bars).
 
-Then to review/approve:
-- Go to `https://evaluaya.app/admin/voluntarios` (unlisted page — reach it by typing the URL)
-- Enter your new password
-- ROMACA appears under **Pending** → click **Approve**
-- After approval it moves to **Approved**, where **Copy link** gives you their private engineer-panel URL to send them
+### 1. `src/components/AppShell.tsx`
+- Add an optional `hideBottomNav?: boolean` prop.
+- Only render `<BottomNav />` when `hideBottomNav` is not set.
+- Keep the existing `pb-28` bottom padding on `<main>` so content still clears the fixed `StepFooter` (its height is similar to the nav's).
 
-## 2. Email you when someone new signs up
+### 2. `src/routes/assess/property.tsx`
+- Pass `hideBottomNav` to `<AppShell>` so only the `StepFooter` shows.
 
-A notification will be sent to **ajaegerman@thinkampersand.com** every time the volunteer/organization form is submitted, so you never have to keep checking the page.
+### 3. `src/routes/assess/checklist.tsx`
+- Same: pass `hideBottomNav` to its `<AppShell>` (it also uses `StepFooter`), including the loading/empty state shell so the layout is consistent.
 
-The email will include:
-- Whether it's an individual engineer or an organization
-- Name / organization name
-- Coverage state(s), WhatsApp, email, specialization, and any note
-- A direct link to the admin page to review
+`analyze.tsx` does not use `StepFooter`, so it keeps the normal bottom nav — no change there.
 
-```text
-New volunteer sign-up — EvalúaYa
-────────────────────────────────
-Type:        Organization
-Name:        Constructora ROMACA
-Contact:     Marisol Gil
-Coverage:    Distrito Capital
-WhatsApp:    +58 424-1418355
-Note:        —
-[ Review in admin panel ]
-```
+## Verification
 
-## Technical notes
-
-- **Password**: update the existing `VOLUNTEER_ADMIN_SECRET` via the secure secret form (no code change; the admin route already compares against it).
-- **Email**: app-email infrastructure (queue/cron) is already provisioned; only the transactional send path needs scaffolding. Steps:
-  1. Scaffold transactional email (creates the send route + template registry).
-  2. Add a branded `volunteer-signup-notification` React Email template (teal `#0f3443` brand, Spanish-first) addressed to the fixed admin address.
-  3. In `submitEngineerSignup` (`src/lib/volunteers.functions.ts`), after a successful insert, enqueue the notification server-side with service-role credentials and an idempotency key (so it fires reliably even though the form is unauthenticated). A send failure is logged but never blocks the signup.
-- Recipient address is currently hardcoded to `ajaegerman@thinkampersand.com`; tell me if you'd like it configurable later.
-- Note: the hydration warnings you may see on this page come from a browser password-manager extension (Dashlane), not the app.
+- On mobile viewport, open `/assess/property`: the Continue button is fully tappable with no nav bar over it.
+- Confirm `/assess/checklist` Back/Continue are likewise unobstructed.
+- Confirm other pages (home, map, reports) still show the global bottom nav.
