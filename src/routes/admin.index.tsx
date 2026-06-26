@@ -104,6 +104,11 @@ function AdminDashboard() {
       if (res.ok) {
         setData(res.analytics);
         setUnlocked(true);
+        getClusters({ data: { adminSecret: secret } })
+          .then((c) => {
+            if (c.ok) setClusters(c.clusters);
+          })
+          .catch(() => {});
       } else {
         toast.error(t("admin.wrong"));
       }
