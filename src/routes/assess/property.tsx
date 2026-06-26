@@ -143,6 +143,10 @@ function PropertyStep() {
     return () => clearTimeout(timer);
   }, [state]);
 
+  const missing: string[] = [];
+  if (state.trim() === "") missing.push(t("property.miss.state"));
+  if (buildingType === null) missing.push(t("property.miss.type"));
+  if (age === null) missing.push(t("property.miss.age"));
   const valid =
     buildingType !== null &&
     age !== null &&
@@ -195,6 +199,9 @@ function PropertyStep() {
   return (
     <AppShell hideBottomNav>
       <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
+
+      <p className="mt-3 text-sm text-muted-foreground">{t("property.effortHint")}</p>
+
 
       <div className="mt-6 space-y-7">
         {/* Address */}
@@ -479,6 +486,15 @@ function PropertyStep() {
           </div>
         </div>
       </div>
+
+      {!valid && missing.length > 0 && (
+        <p className="mt-6 rounded-xl bg-muted px-4 py-3 text-center text-sm text-muted-foreground">
+          {t("property.missingPrefix")}{" "}
+          <span className="font-semibold text-foreground">
+            {missing.join(", ")}
+          </span>
+        </p>
+      )}
 
       <StepFooter
         onBack={() => navigate({ to: "/" })}

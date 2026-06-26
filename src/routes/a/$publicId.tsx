@@ -347,10 +347,20 @@ function ResultPage() {
         </ul>
       </Section>
 
-      {/* Actions */}
+      {/* Actions — WhatsApp first: it's the dominant sharing channel in
+          Venezuela, so it's the primary one-tap action. */}
       <div className="mt-6 grid grid-cols-2 gap-2">
         <Button
           size="lg"
+          onClick={shareWhatsApp}
+          className="col-span-2 bg-[#25D366] text-white hover:bg-[#1ebe5a]"
+        >
+          <MessageCircle className="size-4" />
+          {t("result.shareWhatsapp")}
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
           onClick={shareCard}
           disabled={cardBusy}
           className="col-span-2"
@@ -365,15 +375,6 @@ function ResultPage() {
         <Button size="lg" variant="outline" onClick={copyLink}>
           <Copy className="size-4" />
           {t("result.copyLink")}
-        </Button>
-
-        <Button
-          size="lg"
-          onClick={shareWhatsApp}
-          className="col-span-2 bg-[#25D366] text-white hover:bg-[#1ebe5a]"
-        >
-          <MessageCircle className="size-4" />
-          {t("result.shareWhatsapp")}
         </Button>
         <Button
           size="lg"
@@ -394,6 +395,7 @@ function ResultPage() {
           {t("result.newAssessment")}
         </Button>
       </div>
+
 
       {/* Save reports — optional, passwordless account */}
       <SaveReportsCard />

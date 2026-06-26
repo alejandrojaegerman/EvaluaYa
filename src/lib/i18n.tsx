@@ -106,6 +106,10 @@ const es: Dict = {
   "checklist.showOptional": "Agregar revisión de servicios (opcional)",
   "checklist.hideOptional": "Ocultar revisión de servicios",
   "checklist.coreProgress": "esenciales",
+  "checklist.remaining": "Te falta {n} para poder analizar",
+  "checklist.remainingOne": "pregunta esencial",
+  "checklist.remainingMany": "preguntas esenciales",
+  "checklist.photosOptional": "Las fotos son opcionales, pero mejoran el análisis.",
 
   "item.foundation.area": "Cimientos",
   "item.foundation.q": "¿Hay grietas visibles o hundimientos en los cimientos?",
@@ -290,6 +294,11 @@ const es: Dict = {
   "property.detected": "Ubicación detectada. Puedes cambiarla si no es correcta.",
   "property.detectFailed": "No pudimos detectar tu ubicación. Selecciona tu estado.",
   "property.stateRequired": "Selecciona tu estado para continuar.",
+  "property.effortHint": "Solo toma unos minutos. Las fotos son opcionales.",
+  "property.missingPrefix": "Para continuar, falta:",
+  "property.miss.state": "estado",
+  "property.miss.type": "tipo de edificio",
+  "property.miss.age": "antigüedad",
 
   "map.title": "Mapa de daños",
   "map.subtitle":
@@ -702,6 +711,10 @@ const en: Dict = {
   "checklist.showOptional": "Add utility checks (optional)",
   "checklist.hideOptional": "Hide utility checks",
   "checklist.coreProgress": "essential",
+  "checklist.remaining": "{n} left before you can analyze",
+  "checklist.remainingOne": "essential question",
+  "checklist.remainingMany": "essential questions",
+  "checklist.photosOptional": "Photos are optional, but they improve the analysis.",
 
   "item.foundation.area": "Foundation",
   "item.foundation.q": "Are there visible cracks or shifts in the foundation?",
@@ -882,6 +895,11 @@ const en: Dict = {
   "property.detected": "Location detected. You can change it if it's not correct.",
   "property.detectFailed": "We couldn't detect your location. Please select your state.",
   "property.stateRequired": "Select your state to continue.",
+  "property.effortHint": "It only takes a few minutes. Photos are optional.",
+  "property.missingPrefix": "To continue, you still need:",
+  "property.miss.state": "state",
+  "property.miss.type": "building type",
+  "property.miss.age": "age",
 
   "map.title": "Damage map",
   "map.subtitle":
