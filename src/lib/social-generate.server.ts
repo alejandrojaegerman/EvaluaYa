@@ -120,7 +120,7 @@ export async function generateSocialDrafts(): Promise<GenResult> {
     if (drafts.length === 0) return { ok: true, created: 0 };
 
     // ignoreDuplicates: existing dedupe_key rows are skipped silently.
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await db
       .from("social_posts")
       .upsert(drafts, { onConflict: "dedupe_key", ignoreDuplicates: true })
       .select("id");
