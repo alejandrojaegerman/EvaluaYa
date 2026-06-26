@@ -77,6 +77,8 @@ type DisplayArea = {
   title: string;
   subtitle: string | null;
   muniKnown: boolean;
+  /** Resolved estado name when known, for linking to its regional page. */
+  stateName: string | null;
   total: number;
   green: number;
   yellow: number;
