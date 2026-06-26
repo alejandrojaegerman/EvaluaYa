@@ -1,54 +1,37 @@
-# Dynamic risk visuals + drill-down everywhere
+## Goal
+Replace the hand-drawn SVG bubble map on `/mapa` with a real, zoomable Google Map, and drop to **municipality-level** bubbles (sized by report count, colored by dominant risk) wherever we can resolve a municipality's location — rolling unknowns up to their state.
 
-Bring the "why behind the risk" drill-down to the regional pages and give the map, regional and admin views a more engaging look using **radial gauges** for risk distribution and **animated segmented bars** for the factor breakdowns. No new dependencies — uses the existing `recharts` library plus CSS animation.
+## Important caveat (please read)
+- The app is published on the custom domain **evaluaya.app**. Lovable's **managed** Google Maps key is referrer-locked to `*.lovable.app` / `*.lovableproject.com`, so the map will load in the Lovable preview but will show a blank/error tile on evaluaya.app until you add your **own** Google Cloud API key (Maps JavaScript API enabled, billing on, referrer allowlist including `https://evaluaya.app/*` and `https://*.evaluaya.app/*`).
+- To keep the page working everywhere — and to preserve the original low-bandwidth/offline behavior — the existing SVG bubble map stays in the codebase as an automatic **fallback** whenever Google Maps can't load (no key, blocked referrer, offline, or low-data preference).
 
-## What changes for the user
+## What gets built
 
-- **Regional pages (`/zona/$estado`)** gain a "Ver por qué / See why" toggle that reveals the same flagged-items, building age/type, seismic intensity and safety-rule breakdown already on the map — scoped to that state.
-- **Risk distribution** (high/moderate/low) is shown as a polished **radial gauge** with the total in the center, on the map, regional and admin pages — replacing the current flat horizontal bar.
-- **Factor breakdown bars** animate into place (segments grow on reveal) and read more clearly, making the drill-down feel alive.
+### 1. Curated municipality centroids (`src/lib/venezuela.ts`)
+- Add a `MUNICIPIOS` lookup of `{ state, name, lat, lng }` for the most-reported municipalities, prioritizing the Caracas metro cluster (Libertador, Sucre/Petare, Chacao, Baruta, El Hatillo, plus Maracaibo, Valencia, Barquisimeto/Iribarren, Caroní/Ciudad Guayana, Maracay/Girardot, etc.).
+- Add `normalizeMunicipio()` + an alias map to absorb the messy free-text in the data (e.g. `petarr`→Petare, `Libertados`→Libertador, `baruta`/`Baruta`, case/accents). 
+- Add `resolveMunicipio(state, municipality)` → returns the municipality centroid when known, otherwise the state centroid (so every aggregate still lands somewhere sensible).
 
-## New / changed pieces
+### 2. New map component (`src/components/DamageMap.tsx`)
+- Loads the Maps JS API asynchronously (`loading=async` + global `callback`, browser key, `channel` tracking id) exactly per the connector rules; loads it once across mounts.
+- Renders one `google.maps.Circle` (or scaled `Marker`) per resolved location, radius ∝ report count, fill color from `RISK_HEX` dominant risk — same color language as today.
+- Click a bubble → info window with the area name + Verde/Amarillo/Rojo counts and a "Ver zona" link to `/zona/$estado`; municipality-resolved bubbles label the municipality.
+- Native pinch/scroll/double-tap zoom and pan; centered on Venezuela, fit to the data bounds.
+- No `mapId`, uses `google.maps.Marker`/`Circle` (not AdvancedMarker), per connector constraints.
 
-### 1. New component: `src/components/RiskGauge.tsx`
-A reusable radial gauge that renders the green/yellow/red split as concentric `recharts` `RadialBarChart` rings, with the total count and a small high/moderate/low legend below. Colors come from `RISK_HEX` (no hardcoded colors). Built-in recharts animation gives the sweep-in effect. Props: `{ green; yellow; red; label? }`.
+### 3. Wire into `/mapa` (`src/routes/mapa.tsx`)
+- Build municipality-level bubble data from the existing `getDamageAggregates()` (already returns state + municipality + counts) — no DB/RPC change needed.
+- Swap the current `<svg>` "Vista geográfica" block for `<DamageMap>`; if the Maps API isn't available, render the current SVG bubble map instead (extracted into a small `<StaticBubbleMap>` so both paths share code).
+- Keep the headline counters, risk gauge, legend, and "Zonas con más reportes" list unchanged.
 
-### 2. Upgrade `src/components/RiskFactorsPanel.tsx`
-Keep the grouped structure but turn each factor row into an **animated segmented bar**:
-- Risk-split segments (red/yellow/green) animate their width from 0 on mount using a CSS transition keyed to an "in view" state.
-- Cleaner counts with a subtle count-up via CSS, consistent label/legend.
-- Same `FactorGroup` API, so both map and admin drill-downs inherit the upgrade automatically.
+### 4. Connector + i18n
+- Connect the managed **Google Maps** connector (provides the browser key + tracking id env vars).
+- Add ES/EN strings for any new labels (loading, "ver zona", municipality fallback note) to `src/lib/i18n.tsx`.
 
-### 3. Regional page: `src/routes/zona.$estado.tsx`
-- Replace the flat distribution bar with `<RiskGauge>`.
-- Add a "Ver por qué" toggle (matching the map's pattern) that lazily calls the existing `getRiskFactors({ state })` server function and renders `<RiskFactorsPanel>` inline. Reuses the existing chevron + `factors.why` / `factors.hideWhy` i18n keys.
-
-### 4. Map page: `src/routes/mapa.tsx`
-- Swap the manual distribution stacked bar (the `RiskStat` row) for `<RiskGauge>`.
-- Drill-down list keeps working; it inherits the animated `RiskFactorsPanel`.
-
-### 5. Admin dashboard: `src/routes/admin.index.tsx`
-- Replace the `RiskBar` distribution block with `<RiskGauge>`.
-- Per-state drill-down inherits the animated `RiskFactorsPanel`.
-- Leave the existing trend `AreaChart` as-is (already styled).
+## Out of scope
+- No change to how/what location data is stored (still coarse state/municipality; no per-user coordinates plotted).
+- No geocoding service calls — municipality positions come only from the curated static list.
 
 ## Technical notes
-
-- No backend or schema changes; `getRiskFactors` already accepts an optional `state` and is the public, anonymized RPC powering the map drill-down.
-- All colors stay on `RISK_HEX` / semantic risk tokens — no `text-white`/hex literals in components.
-- Animations use existing Tailwind keyframes (`fade-in`, `scale-in`) and CSS width transitions plus recharts' built-in `isAnimationActive`; nothing new to install.
-- Gauge and bars are SSR-safe (no `Date.now()`/`Math.random()` at render) to avoid hydration mismatches.
-
-```text
-RiskGauge (radial rings + center total)
- ┌───────────────┐
- │     ◜◝         │   used on: /mapa, /zona/$estado, /admin
- │   ◜  N  ◝      │
- │     ◟◞         │
- │ ● high ● mod ● low │
- └───────────────┘
-
-RiskFactorsPanel (animated segmented bars)
- Grietas exteriores   ██████▓▓░░  12
- Muros interiores     ████▓░       7
-```
+- Browser key: `import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY`; channel: `VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID`. Both injected by the connector; map renders only when present, else fallback SVG.
+- Verify with Playwright in the sandbox (preview origin is `*.lovable.app`, so the managed key works there) that bubbles render, zoom/pan works, and clicking opens the zona link.
