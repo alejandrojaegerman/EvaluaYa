@@ -178,6 +178,7 @@ function RootComponent() {
 
   useEffect(() => {
     registerServiceWorker();
+    void import("../lib/outbox-sync").then((m) => m.startOutboxAutoSync());
   }, []);
 
   return (

@@ -1,14 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Loader2,
   ShieldAlert,
   WifiOff,
   RefreshCw,
   ScanSearch,
+  Home as HomeIcon,
+  FileText,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
+import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { analyzeAssessment } from "@/lib/assessment.functions";
@@ -16,12 +19,21 @@ import { getDeviceId } from "@/lib/device-id";
 import { clearDraft, loadDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { addHistory } from "@/lib/history";
 import { useLang } from "@/lib/i18n";
+import { computeProvisional, type ProvisionalResult } from "@/lib/provisional";
+import { enqueueOutbox } from "@/lib/outbox-store";
+import { syncOutboxItem } from "@/lib/outbox-sync";
 
 export const Route = createFileRoute("/assess/analyze")({
   component: AnalyzeStep,
 });
 
-type Phase = "loading" | "waiting" | "uploading" | "thinking" | "error";
+type Phase =
+  | "loading"
+  | "waiting"
+  | "uploading"
+  | "thinking"
+  | "error"
+  | "provisional";
 
 function AnalyzeStep() {
   const { t, lang } = useLang();
@@ -30,8 +42,26 @@ function AnalyzeStep() {
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [provisional, setProvisional] = useState<ProvisionalResult | null>(null);
   const draftRef = useRef<AssessmentDraft | null>(null);
+  const outboxIdRef = useRef<string | null>(null);
   const runningRef = useRef(false);
+
+  // Save the finished assessment to the offline outbox and show a provisional,
+  // deterministic safety result so the resident is never left without guidance.
+  const goProvisional = useCallback(async () => {
+    const draft = draftRef.current;
+    if (!draft) return;
+    const result = computeProvisional(draft);
+    setProvisional(result);
+    if (!outboxIdRef.current) {
+      const item = await enqueueOutbox(draft, result);
+      outboxIdRef.current = item.id;
+      await clearDraft();
+    }
+    setPhase("provisional");
+  }, []);
+
 
   const run = useCallback(async () => {
     if (runningRef.current) return;
@@ -41,7 +71,7 @@ function AnalyzeStep() {
       return;
     }
     if (!navigator.onLine) {
-      setPhase("waiting");
+      void goProvisional();
       return;
     }
 
@@ -118,7 +148,7 @@ function AnalyzeStep() {
         if (!navigator.onLine) {
           clearTimeout(thinkingTimer);
           runningRef.current = false;
-          setPhase("waiting");
+          void goProvisional();
           return;
         }
         try {
@@ -174,7 +204,7 @@ function AnalyzeStep() {
       setErrorMsg(t("analyze.genericError"));
       setPhase("error");
     }
-  }, [navigate, t]);
+  }, [navigate, t, goProvisional]);
 
 
   // Load draft once.
@@ -200,6 +230,21 @@ function AnalyzeStep() {
     if (online && phase === "waiting") run();
   }, [online, phase, run]);
 
+  // Once a provisional result is queued, complete it as soon as we're online
+  // and jump straight to the full result.
+  useEffect(() => {
+    if (!online || phase !== "provisional" || !outboxIdRef.current) return;
+    let active = true;
+    syncOutboxItem(outboxIdRef.current).then((publicId) => {
+      if (active && publicId) {
+        navigate({ to: "/a/$publicId", params: { publicId } });
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [online, phase, navigate]);
+
   function retry() {
     runningRef.current = false;
     setPhase("loading");
@@ -209,7 +254,9 @@ function AnalyzeStep() {
   return (
     <AppShell>
       <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-        {phase === "waiting" ? (
+        {phase === "provisional" && provisional ? (
+          <ProvisionalState result={provisional} online={online} />
+        ) : phase === "waiting" ? (
           <WaitingState />
         ) : phase === "error" ? (
           <ErrorState message={errorMsg} onRetry={retry} onBack={() => navigate({ to: "/assess/checklist" })} />
@@ -220,6 +267,86 @@ function AnalyzeStep() {
     </AppShell>
   );
 
+  function ProvisionalState({
+    result,
+    online,
+  }: {
+    result: ProvisionalResult;
+    online: boolean;
+  }) {
+    return (
+      <div className="w-full max-w-sm text-left">
+        <div className="flex flex-col items-center text-center">
+          <RiskBadge level={result.riskLevel} />
+          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            {online ? (
+              <Loader2 className="size-3.5 animate-spin" aria-hidden />
+            ) : (
+              <WifiOff className="size-3.5" aria-hidden />
+            )}
+            {online ? t("provisional.syncing") : t("provisional.badge")}
+          </p>
+        </div>
+
+        <h1 className="mt-6 text-center font-display text-xl font-extrabold tracking-tight">
+          {t("provisional.title")}
+        </h1>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          {t("provisional.subtitle")}
+        </p>
+
+        {result.findings.length > 0 && (
+          <section className="mt-6">
+            <h2 className="text-sm font-bold">{t("result.findings")}</h2>
+            <ul className="mt-2 space-y-1.5">
+              {result.findings.map((f, i) => (
+                <li
+                  key={i}
+                  className="flex gap-2 text-sm leading-snug text-foreground"
+                >
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-foreground/40" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {result.nextSteps.length > 0 && (
+          <section className="mt-5">
+            <h2 className="text-sm font-bold">{t("result.nextSteps")}</h2>
+            <ul className="mt-2 space-y-1.5">
+              {result.nextSteps.map((s, i) => (
+                <li
+                  key={i}
+                  className="flex gap-2 text-sm leading-snug text-foreground"
+                >
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div className="mt-8 flex flex-col gap-2">
+          <Button asChild size="lg" variant="outline">
+            <Link to="/mis-reportes">
+              <FileText className="size-4" />
+              {t("provisional.viewReports")}
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="ghost">
+            <Link to="/">
+              <HomeIcon className="size-4" />
+              {t("provisional.home")}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   function WorkingState({ phase }: { phase: Phase }) {
     const label =
       phase === "thinking" ? t("analyze.thinking") : t("analyze.uploading");
@@ -228,6 +355,7 @@ function AnalyzeStep() {
         <div className="relative flex size-24 items-center justify-center">
           <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
           <span className="flex size-24 items-center justify-center rounded-full bg-primary/10">
+
             <ScanSearch className="size-10 text-primary" aria-hidden />
           </span>
         </div>
