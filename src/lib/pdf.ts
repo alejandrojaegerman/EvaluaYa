@@ -158,9 +158,7 @@ export function downloadAssessmentPdf(record: AssessmentRecord) {
   doc.line(margin, footerY - 14, pageW - margin, footerY - 14);
   doc.setFontSize(9);
   doc.setTextColor(120, 128, 136);
-  const date = new Date(record.createdAt).toLocaleString(
-    lang === "es" ? "es-VE" : "en-US",
-  );
+  const date = formatDateTime(record.createdAt, lang);
   doc.text(`${t("result.assessedOn")} ${date}`, margin, footerY);
   doc.text(t("result.disclaimerShort"), margin, footerY + 12, {
     maxWidth: contentW,
