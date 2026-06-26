@@ -1,49 +1,61 @@
-# Fix: "Escribir al residente" WhatsApp link fails
+# Drill into the "why" behind risk results
 
-## What's happening
-Daniel (an approved volunteer) taps **Escribir al residente** in his engineer panel and WhatsApp shows *"This link couldn't be opened. Check the link and try again."*
+Today the map and admin pages only show Green/Yellow/Red counts per area. This adds an expandable panel that explains *what drove those results* — broken down by the four factors you picked, color-coded by risk level. On the public map it stays fully anonymized; in the gated admin view you can also drill all the way to individual reports.
 
-## Root cause
-Residents type their number in local Venezuelan format. The field placeholder literally says `Ej.: 0414 123 4567`. We store it as digits-only (`normalizePhone` just strips non-digits), so it becomes `04141234567`. WhatsApp links (`https://wa.me/<number>`) require the **full international number with country code and no leading zero** — `584141234567`. A leading-zero local number is invalid, which is exactly the error Daniel sees.
+## What you'll see
 
-This affects every `wa.me` link built from a resident number (engineer panel and any resident-facing flow), and the same weakness exists for engineer numbers entered locally.
+**On the map (`/mapa`)** — tap any area in the "Top areas" list to expand a "Why these results" panel showing:
+- **Flagged structural issues** — which checklist items (cracks, columns/beams, roof, foundation…) were most often answered "Yes" or "Unsure", with Red/Yellow/Green split per issue.
+- **Building age & type** — how risk breaks down across pre-1970 / 1970–2000 / post-2000 and house / apartment / commercial.
+- **Seismic intensity** — distribution across shaking bands (light / moderate / strong / severe) behind those reports.
+- **Safety rules triggered** — count of reports forced to Red/Yellow by deterministic rules (older masonry, liquefaction, pounding, gas/plumbing risk, strong shaking + damage).
 
-## The fix
+All aggregate-only — no addresses, photos, or individual reports on the public map.
 
-Introduce one robust phone normalizer that converts a number to WhatsApp/E.164 form, defaulting to Venezuela (country code `58`) since residents are in-country:
+**On the admin dashboard (`/admin`)** — tap any state in "Top states" to expand the same four-factor panel, *plus* a "Recent reports" list (date, risk tag, building type/age, intensity, number of issues flagged) where each row links to the full report at `/a/{id}`.
 
 ```text
-- strip everything but digits
-- if it already starts with 58 and is long enough  -> keep as-is
-- if it starts with 0 (local)                      -> drop the 0, prepend 58
-- if it's a 10-digit local mobile (starts with 4)  -> prepend 58
-- otherwise (already has another country code)      -> keep as-is
+Top areas
+┌─────────────────────────────────────────┐
+│ ● Chacao            Miranda · 42  R Y G ⌄│
+│   ▸ expands ▾                             │
+│   ┌─ Why these results ─────────────────┐│
+│   │ Flagged issues                      ││
+│   │  Columns/beams   ███ 18  R12 Y4 G2  ││
+│   │  Exterior walls  ██  11  R6  Y3 G2  ││
+│   │ Building age      pre-1970 ▆ mostly R││
+│   │ Seismic intensity strong ▆▆▆        ││
+│   │ Safety rules      URM ×7 · Pounding ×3│
+│   └─────────────────────────────────────┘│
+└─────────────────────────────────────────┘
 ```
 
-Engineers abroad (like Daniel) who enter a full international number are preserved, while Venezuelan locals get the `58` prefix.
+## Technical approach
 
-### Where it's applied
+All "why" data already lives in the `assessments` table JSONB columns (`property`, `answers`, `ai_result`) plus `risk_level` — no schema changes, only new read-side aggregation.
 
-1. **Storage (server) — `src/lib/volunteers.functions.ts`**
-   - Replace the digits-only transform on the resident `whatsapp` field (`submitHelpRequest`) with the new normalizer, so new requests are stored in correct international form.
-   - Apply the same normalizer to the engineer `whatsapp` field (`submitEngineerSignup`) for consistency.
+### Database (migration — new SECURITY DEFINER functions, execute restricted to `service_role` per existing hardening)
 
-2. **Link build sites (defensive) — so already-saved bad rows also work**
-   - `src/routes/voluntarios.panel.$token.tsx` `contactResident()` — normalize before building the `wa.me` URL.
-   - `src/components/ConnectEngineers.tsx` `contactEngineer()` — normalize the revealed engineer number before building the `wa.me` URL.
+1. `get_risk_factors(_state text default null, _municipality text default null)` — returns a normalized long-format table `(factor_group text, factor_key text, total int, green int, yellow int, red int)` covering all four factor groups, optionally filtered by state/municipality. Implementation:
+   - **checklist**: unnest `answers` JSONB, count rows where each item's `value in ('yes','unsure')`, grouped by item `id`, split by `risk_level`.
+   - **age** / **type**: group by `property->>'age'` and `property->>'buildingType'`.
+   - **intensity**: bucket `(property->>'seismicIntensity')::numeric` into bands (<5, 5–5.9, 6–7.9, ≥8).
+   - **safety_rule**: boolean detection of the main deterministic triggers directly from the JSONB (`structuralType = 'URM'`, `liquefaction/pounding/plumbing = 'yes'`, severe shaking via MMI≥8 or PGA≥0.5), mirroring `src/lib/safety-rules.ts`.
+   - Scoped to `status = 'analyzed' AND risk_level IS NOT NULL`.
+2. `get_admin_state_reports(_state text, _limit int default 25)` — recent individual reports for a state: `public_id, created_at, risk_level, building_type, age, structural_type, seismic_intensity, flagged_count`. No address / no PII.
 
-3. **Backfill existing data**
-   - Run a one-time update on `help_requests.resident_whatsapp` (and `volunteer_engineers.whatsapp`) to convert already-stored local numbers (leading `0` / 10-digit) to the `58…` form, so historical requests like Daniel's open instead of erroring.
+### Server functions
+- `src/lib/stats.functions.ts`: add `getRiskFactors({ state, municipality })` (public, anonymized) brokering `get_risk_factors` through the service-role client, same pattern as `getDamageAggregates`. Returns a typed `RiskFactors` shape grouped client-side.
+- `src/lib/admin-analytics.functions.ts`: add `adminGetStateDrilldown({ adminSecret, state })` — gated by `VOLUNTEER_ADMIN_SECRET` (constant-time compare, existing `adminOk`), returning both the factor aggregates (`get_risk_factors`) and individual reports (`get_admin_state_reports`).
 
-4. **Clarify the input UX (small copy tweak)**
-   - Update the Spanish/English placeholders and helper text so residents understand a country code is handled automatically (e.g. show `+58` context), reducing future malformed entries. No layout change.
+### UI
+- New shared component `src/components/RiskFactorsPanel.tsx` — renders the four-factor breakdown from a `RiskFactors` object (bars + Red/Yellow/Green chips), reused by both pages. Loading + empty states.
+- `src/routes/mapa.tsx`: add expand/collapse state to each `Top areas` row; on first expand, lazy-fetch `getRiskFactors` for that area and render `RiskFactorsPanel`. Keep existing state-link chevron behavior accessible (chevron still navigates to the regional page; a separate "Why" affordance toggles the panel).
+- `src/routes/admin.index.tsx`: make each `Top states` row expandable; on expand call `adminGetStateDrilldown` (reusing the unlocked secret already in state) and render `RiskFactorsPanel` + a "Recent reports" list linking each row to `/a/{publicId}`.
+- `src/lib/i18n.tsx`: add ES (primary) + EN keys for panel headings, factor-group labels, intensity-band labels, and safety-rule labels. Checklist item names and age/type labels already exist and will be reused.
 
-## Technical notes
-- The normalizer lives in `volunteers.functions.ts` (server) and a tiny shared client copy used at the two link sites — or a single exported helper imported by both. Keep it dependency-free (no libphonenumber) to stay edge/Worker-safe.
-- Validation still enforces a 7–15 digit length after normalization.
-- No schema changes; only a data backfill + code.
+### Privacy
+- Public map: aggregate counts only, never individual rows or addresses.
+- Admin individual reports: exposed only behind the existing admin secret, and contain no address/photos — each links out to the existing `/a/{publicId}` report page for full detail.
 
-## Verification
-- Submit a help request with `0414 1234567`; confirm it stores as `584141234567`.
-- Open the engineer panel and confirm **Escribir al residente** launches WhatsApp to the correct chat.
-- Confirm an engineer-entered international number (e.g. Argentine `+54 9 11…`) is left untouched.
+No new tables, no new dependencies, no changes to assessment capture or scoring logic.
