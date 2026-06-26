@@ -176,6 +176,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          language: string | null
+          message: string
+          page: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          language?: string | null
+          message: string
+          page?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          language?: string | null
+          message?: string
+          page?: string | null
+        }
+        Relationships: []
+      }
       help_requests: {
         Row: {
           assessment_public_id: string | null
