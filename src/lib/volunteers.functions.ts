@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { ESTADO_NAMES } from "./venezuela";
+import { toWhatsappNumber } from "./phone";
 import type { RiskLevel } from "./assessment-types";
 
 // ---------------------------------------------------------------------------
