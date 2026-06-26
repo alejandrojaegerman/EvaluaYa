@@ -113,10 +113,7 @@ function AdminDashboard() {
   const fmtPct = (n: number) => `${Math.round(n * 100)}%`;
   const series = data.timeseries.map((d) => ({
     ...d,
-    label: new Date(d.day).toLocaleDateString(lang, {
-      month: "short",
-      day: "numeric",
-    }),
+    label: formatDayLabel(d.day, lang),
   }));
 
   return (
