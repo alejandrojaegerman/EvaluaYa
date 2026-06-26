@@ -120,6 +120,23 @@ function PanelPage() {
     );
   }
 
+  if (expired) {
+    return (
+      <AppShell>
+        <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+          <AlertCircle className="size-12 text-amber-500" aria-hidden />
+          <p className="mt-4 text-lg font-semibold">{t("panel.expired")}</p>
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            {t("panel.expiredBody")}
+          </p>
+          <Link to="/" className="mt-6">
+            <Button variant="outline">{t("result.goHome")}</Button>
+          </Link>
+        </div>
+      </AppShell>
+    );
+  }
+
   if (!panel) {
     return (
       <AppShell>
