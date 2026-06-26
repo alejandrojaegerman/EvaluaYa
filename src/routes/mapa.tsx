@@ -224,6 +224,37 @@ function MapPage() {
 
   const hasData = !!totals && totals.total > 0;
 
+  // Inline "why" drill-down per area.
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const [factorsCache, setFactorsCache] = useState<Record<string, RiskFactors>>(
+    {},
+  );
+  const [factorsLoading, setFactorsLoading] = useState<string | null>(null);
+
+  function toggleWhy(area: DisplayArea) {
+    if (expandedKey === area.key) {
+      setExpandedKey(null);
+      return;
+    }
+    setExpandedKey(area.key);
+    if (factorsCache[area.key]) return;
+    setFactorsLoading(area.key);
+    getRiskFactors({
+      data: {
+        state: area.paramState,
+        municipality: area.paramMunicipality ?? undefined,
+      },
+    })
+      .then((f) =>
+        setFactorsCache((prev) => ({ ...prev, [area.key]: f })),
+      )
+      .catch(() => {})
+      .finally(() =>
+        setFactorsLoading((cur) => (cur === area.key ? null : cur)),
+      );
+  }
+
+
   function downloadCsv() {
     const header = [
       "state",
