@@ -49,17 +49,18 @@ type Marker = { re: RegExp; label: string };
  */
 const MARKERS: Marker[] = [
   // Conjunto Residencial / C.R.
-  { re: /\b(?:conjunto\s+residencial|cjto\.?\s*residencial|c\.?\s*r\.?)\s+([^,.;]+)/i, label: "Conjunto Residencial" },
-  // Residencias / Res.
-  { re: /\b(?:residencias?|resd?\.?|res\.?)\s+([^,.;]+)/i, label: "Residencias" },
+  // Conjunto Residencial / C.R.  (allow "C.R." with no trailing space)
+  { re: /\b(?:conjunto\s+residencial|cjto\.?\s*residencial|c\.?\s*r\.?)[\s.]+([^,.;]+)/i, label: "Conjunto Residencial" },
+  // Residencias / Res.  (allow "Res.Doral" with no space after the period)
+  { re: /\b(?:residencias?|resd?|res)[\s.]+([^,.;]+)/i, label: "Residencias" },
   // Edificio / Edif. / Ed.
-  { re: /\b(?:edificio|edif\.?|ed\.?)\s+([^,.;]+)/i, label: "Edificio" },
+  { re: /\b(?:edificio|edif|ed)[\s.]+([^,.;]+)/i, label: "Edificio" },
   // Torre
-  { re: /\btorre\s+([^,.;]+)/i, label: "Torre" },
+  { re: /\btorre[\s.]+([^,.;]+)/i, label: "Torre" },
   // Quinta / Qta.
-  { re: /\b(?:quinta|qta\.?)\s+([^,.;]+)/i, label: "Quinta" },
+  { re: /\b(?:quinta|qta)[\s.]+([^,.;]+)/i, label: "Quinta" },
   // Bloque
-  { re: /\b(?:bloque|blq\.?)\s+([^,.;]+)/i, label: "Bloque" },
+  { re: /\b(?:bloque|blq)[\s.]+([^,.;]+)/i, label: "Bloque" },
 ];
 
 /** Words that, if they're all that's captured, mean we found no real name. */
