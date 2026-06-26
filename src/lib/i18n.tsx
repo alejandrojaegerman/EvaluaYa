@@ -978,6 +978,76 @@ const en: Dict = {
   "nav.reports": "My reports",
   "nav.more": "More",
   "nav.language": "Language",
+  "nav.help": "Help",
+  "nav.feedback": "Send feedback",
+
+  "feedback.title": "Send feedback",
+  "feedback.subtitle":
+    "Have an idea, a question, or found a problem? Tell us and help make EvalúaYa better.",
+  "feedback.messageLabel": "Your message",
+  "feedback.messagePlaceholder":
+    "Write your comment, suggestion, or problem here…",
+  "feedback.emailLabel": "Your email",
+  "feedback.emailPlaceholder": "you@example.com",
+  "feedback.emailHint": "Only if you'd like us to reply.",
+  "feedback.submit": "Send feedback",
+  "feedback.sending": "Sending…",
+  "feedback.error": "Couldn't send. Please try again in a moment.",
+  "feedback.thanksTitle": "Thanks for your feedback!",
+  "feedback.thanksBody":
+    "We read every message. Your input helps make EvalúaYa more useful for everyone.",
+  "feedback.backHome": "Back to home",
+  "feedback.privacy":
+    "We don't collect personal data. Your email is optional and only used to reply to you.",
+  "feedback.promptTitle": "How was it?",
+  "feedback.promptBody": "Share your thoughts to help improve the app.",
+
+  "help.title": "Help",
+  "help.subtitle":
+    "Learn how to use EvalúaYa and find answers to common questions.",
+  "help.quickStartTitle": "How to run an assessment",
+  "help.step1Title": "1. Property info",
+  "help.step1Desc":
+    "Enter the address, building type, number of floors, and approximate age.",
+  "help.step2Title": "2. Guided inspection",
+  "help.step2Desc":
+    "Answer simple Yes / No / Unsure questions area by area and, if you can, add a photo.",
+  "help.step3Title": "3. AI analysis",
+  "help.step3Desc":
+    "Get a risk level (Green / Yellow / Red) with a plain-language explanation and next steps.",
+  "help.step4Title": "4. Save & share",
+  "help.step4Desc":
+    "Download a PDF, share it on WhatsApp, or save it to reference later.",
+  "help.startCta": "Start assessment",
+  "help.faqTitle": "Frequently asked questions",
+  "help.faq.freeQ": "Is the app free?",
+  "help.faq.freeA": "Yes. EvalúaYa is completely free.",
+  "help.faq.signupQ": "Do I need to sign up?",
+  "help.faq.signupA":
+    "No. You can assess your home without creating an account. If you'd like to save your reports for later, you can create an optional account with your email.",
+  "help.faq.offlineQ": "Does it work offline or with a weak signal?",
+  "help.faq.offlineA":
+    "Yes. You can fill out the checklist with low signal; your progress is saved on your device and the analysis is sent once you're back online.",
+  "help.faq.resultsQ": "What do the result colors mean?",
+  "help.faq.resultsA":
+    "Green: no obvious structural risk detected. Yellow: use the building with caution and seek a professional review. Red: possible serious danger; evacuate and contact the authorities.",
+  "help.faq.privacyQ": "Is my data private?",
+  "help.faq.privacyA":
+    "Yes. The assessment is anonymous. We don't ask for your name or personal details to use the app.",
+  "help.faq.saveQ": "How do I save and revisit my reports?",
+  "help.faq.saveA":
+    "On the results screen you can create an account with your email (passwordless magic link) to access your reports from “My reports” anytime.",
+  "help.faq.photosQ": "Are photos required?",
+  "help.faq.photosA":
+    "No. Photos are optional, but they help make the analysis more accurate.",
+  "help.faq.officialQ": "Does this replace an official inspection?",
+  "help.faq.officialA":
+    "No. EvalúaYa offers preliminary guidance and does not replace an inspection by a licensed structural engineer or Civil Protection.",
+  "help.moreTitle": "Need more help?",
+  "help.moreBody":
+    "Reach out if you have a question that isn't covered here, or learn how we calculate results.",
+  "help.contactCta": "Send a message",
+
 
   "home.timePromise": "Free · 2 minutes · no sign-up",
   "home.trustFree": "Free",
