@@ -186,6 +186,8 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
         whatsapp: r.whatsapp,
         states: r.states ?? [],
         specialization: r.specialization,
+        volunteerType:
+          (r.volunteer_type as VolunteerType | null) ?? "individual",
         coversState: r.covers_state ?? false,
       }));
     } catch (e) {
