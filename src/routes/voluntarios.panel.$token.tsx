@@ -16,6 +16,7 @@ import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/datetime";
 import { absoluteUrl } from "@/lib/site";
 import {
   getEngineerPanel,
