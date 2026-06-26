@@ -98,7 +98,7 @@ function AdminPage() {
         states ? ` en ${states}` : ""
       }: ${panelUrl}\n\n` +
       `Guárdalo: es personal y no requiere contraseña.`;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${toWhatsappNumber(phone)}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
