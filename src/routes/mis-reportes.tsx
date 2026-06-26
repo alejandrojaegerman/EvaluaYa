@@ -136,8 +136,9 @@ function MyReportsPage() {
                         {r.address || r.state || t("home.viewResult")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(r.createdAt).toLocaleDateString(
-                          r.language === "es" ? "es-VE" : "en-US",
+                        {formatDate(
+                          r.createdAt,
+                          r.language === "es" ? "es" : "en",
                         )}
                       </p>
                     </div>
