@@ -41,6 +41,7 @@ export type EngineerPanel = {
     name: string;
     organization: string | null;
     states: string[];
+    specialization: string | null;
   };
   requests: EngineerRequest[];
 };
