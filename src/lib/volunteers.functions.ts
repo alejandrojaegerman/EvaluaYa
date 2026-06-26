@@ -374,13 +374,14 @@ function tokenExpired(row: { token_expires_at?: string | null }): boolean {
 
 export const getEngineerPanel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => tokenSchema.parse(data))
-  .handler(async ({ data }): Promise<EngineerPanel | null> => {
+  .handler(async ({ data }): Promise<EngineerPanelResult> => {
     try {
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
       const engineer = await loadEngineerByToken(data.token);
       if (!engineer) return null;
+      if (tokenExpired(engineer)) return { expired: true };
 
       const states = engineer.states ?? [];
       const { data: rows, error } = await supabaseAdmin
@@ -418,19 +419,23 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
         return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
 
-      const requests: EngineerRequest[] = relevant.map((r) => ({
-        id: r.id,
-        publicId: r.public_id,
-        assessmentPublicId: r.assessment_public_id,
-        state: r.state,
-        municipality: r.municipality,
-        riskLevel: (r.risk_level as RiskLevel | null) ?? null,
-        residentWhatsapp: r.resident_whatsapp,
-        note: r.note,
-        status: r.status as "open" | "claimed" | "closed",
-        claimedByMe: r.claimed_by === engineer.id,
-        createdAt: r.created_at,
-      }));
+      const requests: EngineerRequest[] = relevant.map((r) => {
+        const mine = r.claimed_by === engineer.id;
+        return {
+          id: r.id,
+          publicId: r.public_id,
+          assessmentPublicId: r.assessment_public_id,
+          state: r.state,
+          municipality: r.municipality,
+          riskLevel: (r.risk_level as RiskLevel | null) ?? null,
+          // Resident contact is only revealed after this engineer claims it.
+          residentWhatsapp: mine ? r.resident_whatsapp : null,
+          note: r.note,
+          status: r.status as "open" | "claimed" | "closed",
+          claimedByMe: mine,
+          createdAt: r.created_at,
+        };
+      });
 
       return { engineer: mapEng(engineer), requests };
     } catch (e) {
@@ -438,6 +443,7 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       return null;
     }
   });
+
 
 function mapEng(e: {
   name: string;
