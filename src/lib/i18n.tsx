@@ -258,6 +258,10 @@ const es: Dict = {
 
   "common.loading": "Cargando…",
   "nav.map": "Mapa",
+  "nav.home": "Inicio",
+  "nav.reports": "Mis reportes",
+  "nav.more": "Más",
+  "nav.language": "Idioma",
 
   "home.timePromise": "Gratis · 2 minutos · sin registro",
   "home.trustFree": "Gratis",
@@ -802,6 +806,10 @@ const en: Dict = {
 
   "common.loading": "Loading…",
   "nav.map": "Map",
+  "nav.home": "Home",
+  "nav.reports": "My reports",
+  "nav.more": "More",
+  "nav.language": "Language",
 
   "home.timePromise": "Free · 2 minutes · no sign-up",
   "home.trustFree": "Free",
