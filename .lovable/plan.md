@@ -1,47 +1,46 @@
-# Volunteer notifications + contact-info hardening
+# Feedback & Help
 
-Two problems to fix:
-1. Validated volunteers were never notified (the approval email only fires at click-time, and all 4 were approved before it existed). Only Daniel Herrera has an email.
-2. Contact info is over-exposed: engineer WhatsApp numbers are publicly scrapable on result pages, and resident numbers are reachable through any (non-expiring) panel link.
+Add two lightweight, mobile-first, bilingual (ES primary) features: a low-friction **feedback** form that saves to the database and emails you, and a **help center** with an FAQ and a quick-start how-to. Surfaced in the bottom-nav "Más" sheet and on the result page after an assessment. No login required, consistent with the rest of the app.
 
-Decisions confirmed: send Daniel's email now; gate engineer numbers behind resident consent; mask resident numbers until claimed AND add expiring/re-issuable panel links.
+## 1. Feedback
 
----
+**Form (minimal, low friction):**
+- Single message box (required) + optional email (so you can reply).
+- Submit with success confirmation; works without sign-in.
+- Captures lightweight context automatically (current page/route, language) to help you triage — no PII beyond the optional email.
 
-## 1. Send approval/access email to Daniel (and make it repeatable)
+**Where it lives:**
+- New route `/feedback` with its own page.
+- Entry in the "Más" sheet ("Enviar comentarios" / "Send feedback").
+- A compact "¿Cómo te fue? / Was this helpful?" prompt on the result card (`/a/$publicId`) that links to `/feedback`.
 
-Add a **"Reenviar enlace de acceso"** (Resend access link) button on each *approved* volunteer card that has an email, in the admin panel (`src/routes/admin.voluntarios.tsx`). The admin secret is already entered there.
+**What happens on submit:**
+- Saved to a new `feedback` table.
+- A best-effort notification email is sent to ajaegerman@thinkampersand.com (reusing the existing system-email pipeline). Email failure never blocks the save.
 
-- New admin-gated server function `adminResendAccessLink({ adminSecret, id })` in `src/lib/volunteers.functions.ts` that re-sends the existing `volunteer-approved` template to the volunteer's email using the current `access_token`.
-- After building, I'll trigger it once for Daniel and confirm `email_send_log` shows `volunteer-approved` → `sent`.
-- The 3 without email keep their existing green **"Avisar por WhatsApp"** button (unchanged).
+## 2. Help center
 
-## 2. Engineer phone numbers — reveal only after resident consent
+- New route `/ayuda` ("Help") page with:
+  - **Quick start**: step-by-step how-to for running an assessment (property info → checklist → photos → AI result → share/save), reusing existing iconography.
+  - **FAQ**: collapsible accordion covering the most common questions — is it free / no sign-up, does it work offline / low signal, what the Green/Yellow/Red results mean, privacy/anonymity, how to save & access reports later, photos optional, and that it's guidance not an official inspection.
+  - Links out to the existing Methodology page and the volunteer-engineer help flow for deeper needs.
+- Entry in the "Más" sheet ("Ayuda" / "Help").
 
-Goal: numbers must not be in the public page payload at all, so they can't be bulk-scraped.
+## Placement summary
 
-- `getApprovedEngineersForState` stops returning `whatsapp`. It returns only display fields (id, name, org, specialization, coverage). Update `PublicEngineer` type and the `get_approved_engineers` usage accordingly (DB function can stay; we just drop the field from the DTO).
-- New server function `revealEngineerContact({ engineerId, state })` returns the `wa.me` link for a single engineer, called only when the resident explicitly taps to connect. Light per-call rate limiting via the existing `rate-limit.server.ts` to discourage enumeration.
-- `ConnectEngineers.tsx`: each engineer card shows a **"Contactar por WhatsApp"** button that, on tap, shows a short consent line ("Al continuar compartirás tu contacto con este voluntario") and then fetches + opens the link. Number is never rendered in the DOM before the tap.
+```text
+Más sheet:  Voluntarios | Metodología | Ayuda | Enviar comentarios | Language | Status
+Result card: small "¿Te resultó útil?" → Send feedback link
+```
 
-## 3. Resident contact info on the engineer panel
+## Technical details
 
-### a. Mask resident WhatsApp until the request is claimed
-- In `getEngineerPanel`, only include `residentWhatsapp` for requests where `claimed_by === engineer.id`. For open/unclaimed requests, return it as `null`.
-- In `voluntarios.panel.$token.tsx`, hide the "Contactar residente" button until the request is claimed; show a hint that claiming reveals the contact. (Claim flow already exists.)
-
-### b. Expiring + re-issuable panel links
-- Migration: add `token_expires_at timestamptz` to `volunteer_engineers`. Set it on approval (e.g. now + 90 days). Backfill existing approved rows to now + 90 days so current links keep working.
-- `loadEngineerByToken` rejects tokens past `token_expires_at`; the panel then shows an "enlace vencido — solicita uno nuevo" state instead of data.
-- Admin panel gets a **"Generar enlace nuevo"** (rotate) action → new server function `adminRotateAccessLink({ adminSecret, id })` that regenerates `access_token`, extends `token_expires_at`, and (if email present) re-sends the access email. This also serves as the "leaked link" remedy.
-
-## 4. i18n
-
-Add bilingual keys for: consent line + reveal button (ConnectEngineers), "claim to reveal contact" hint and "link expired" state (panel), and admin "Reenviar enlace"/"Generar enlace nuevo" buttons + toasts.
-
----
-
-## Technical notes
-- No change to who can *see* requests by area — only the phone numbers are gated.
-- `volunteer-approved` template and `notify-email.server.ts` already exist and are reused; idempotency keys will differ for resend/rotate so they aren't deduped.
-- Verification: after build, resend Daniel's email and check `email_send_log`; load a result page to confirm no phone numbers appear in the network payload until consent; confirm an unclaimed request hides the resident number on the panel.
+- **DB migration** — new `public.feedback` table:
+  - `id uuid pk default gen_random_uuid()`, `message text not null`, `email text`, `page text`, `language text`, `created_at timestamptz default now()`.
+  - GRANT `INSERT` to `anon` + `authenticated` (anonymous submissions, matching app's no-login model); GRANT `ALL` to `service_role`. Enable RLS; INSERT-only policy for anon/authenticated, no public SELECT (admin reads via service role).
+- **Server function** `src/lib/feedback.functions.ts` — `submitFeedback` (`createServerFn`, validated with zod: message required ≤2000 chars, email optional/valid ≤255). Inserts via the server publishable (anon) client, then best-effort `sendSystemEmail` to you.
+- **Email template** — new `feedback-notification.tsx` in `src/lib/email-templates/` registered in `registry.ts`, Spanish-first, branded teal, showing message + optional reply-to email + page context.
+- **Routes** — `src/routes/feedback.tsx` and `src/routes/ayuda.tsx`, each wrapped in `AppShell` with proper `head()` meta (unique title/description, canonical).
+- **Nav** — add "Ayuda" and "Enviar comentarios" links to `src/components/BottomNav.tsx` More sheet; add the feedback prompt to `src/routes/a/$publicId.tsx`.
+- **i18n** — add bilingual keys (ES/EN) for nav labels, feedback form (heading, placeholder, email label, submit, success/error), and all FAQ/quick-start copy in `src/lib/i18n.tsx`.
+- No changes to assessment business logic; FAQ/quick-start are presentation only.
