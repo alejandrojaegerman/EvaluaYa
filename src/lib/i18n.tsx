@@ -546,6 +546,40 @@ const es: Dict = {
   "admin.linkCopied": "Enlace copiado",
   "admin.none": "Sin registros.",
 
+  // Panel — matching enhancements
+  "panel.specialization": "Especialidad",
+  "panel.ageNew": "Nueva",
+  "panel.ageWaiting": "Esperando",
+  "panel.ageDays": "d",
+
+  // Admin dashboard
+  "dash.title": "Panel de administración",
+  "dash.subtitle": "Métricas de evaluaciones, voluntarios y conexiones.",
+  "dash.toReview": "Revisar voluntarios",
+  "dash.assessments": "Evaluaciones",
+  "dash.totalReports": "Reportes totales",
+  "dash.completion": "Tasa de análisis",
+  "dash.drafts": "Borradores",
+  "dash.areas": "Estados con datos",
+  "dash.distribution": "Distribución de riesgo",
+  "dash.trend": "Tendencia (30 días)",
+  "dash.topStates": "Estados con más reportes",
+  "dash.volunteers": "Voluntarios",
+  "dash.totalVolunteers": "Voluntarios totales",
+  "dash.orgs": "Organizaciones",
+  "dash.individuals": "individuales",
+  "dash.coverage": "Cobertura por estado",
+  "dash.matching": "Conexiones",
+  "dash.requests": "Solicitudes",
+  "dash.open": "Abiertas",
+  "dash.openShort": "abiertas",
+  "dash.claimRate": "Tasa de respuesta",
+  "dash.avgClaim": "Tiempo prom. de respuesta",
+  "dash.gaps": "Brechas de cobertura",
+  "dash.gapsHint": "Estados con solicitudes abiertas y sin ingenieros aprobados.",
+  "dash.noGaps": "Sin brechas de cobertura.",
+
+
   // Save / access reports (passwordless account)
   "account.saveTitle": "Guarda tus reportes",
   "account.saveBody":
