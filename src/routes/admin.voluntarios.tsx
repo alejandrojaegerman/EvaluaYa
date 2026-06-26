@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Lock, ShieldCheck } from "lucide-react";
+import { Copy, Lock, MessageCircle, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -79,6 +79,22 @@ function AdminPage() {
     } catch {
       /* ignore */
     }
+  }
+
+  function notifyWhatsapp(e: AdminEngineer) {
+    if (!e.accessToken) return;
+    const phone = (e.whatsapp || "").replace(/\D/g, "");
+    const panelUrl = absoluteUrl(`/voluntarios/panel/${e.accessToken}`);
+    const states = e.states.join(", ");
+    const firstName = (e.name || "").trim().split(/\s+/)[0] || "";
+    const message =
+      `Hola ${firstName}, ¡buenas noticias! Tu inscripción como voluntario(a) en EvalúaYa fue validada. ` +
+      `Desde este enlace privado puedes ver y atender solicitudes de ayuda${
+        states ? ` en ${states}` : ""
+      }: ${panelUrl}\n\n` +
+      `Guárdalo: es personal y no requiere contraseña.`;
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   if (!unlocked) {
