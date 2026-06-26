@@ -164,10 +164,26 @@ function PropertyStep() {
         floors,
         age,
         ...(intensity
-          ? {
-              seismicIntensity: intensity.mmi,
-              seismicIntensityRoman: intensity.roman,
-            }
+          ? (() => {
+              const demand = spectralDemand(intensity, floors);
+              return {
+                seismicIntensity: intensity.mmi,
+                seismicIntensityRoman: intensity.roman,
+                ...(intensity.pga != null ? { pga: intensity.pga } : {}),
+                ...(intensity.pgv != null ? { pgv: intensity.pgv } : {}),
+                ...(intensity.vs30 != null ? { vs30: intensity.vs30 } : {}),
+                ...(intensity.soilClass
+                  ? { soilClass: intensity.soilClass }
+                  : {}),
+                ...(demand
+                  ? {
+                      buildingPeriod: demand.period,
+                      spectralDemand: demand.value,
+                      spectralBand: demand.band,
+                    }
+                  : {}),
+              };
+            })()
           : {}),
       },
       answers: existing?.answers ?? [],
