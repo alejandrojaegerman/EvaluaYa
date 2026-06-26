@@ -612,21 +612,3 @@ function MapPage() {
   );
 }
 
-function RiskStat({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div>
-      <p className="font-display text-lg font-bold" style={{ color }}>
-        {value.toLocaleString()}
-      </p>
-      <p className="text-muted-foreground">{label}</p>
-    </div>
-  );
-}
