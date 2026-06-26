@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import {
   adminListEngineers,
   adminReviewEngineer,
+  adminResendAccessLink,
+  adminRotateAccessLink,
   adminListHelpRequests,
   type AdminEngineer,
   type AdminHelpRequest,
