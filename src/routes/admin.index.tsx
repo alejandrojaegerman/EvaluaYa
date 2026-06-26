@@ -7,6 +7,8 @@ import {
   HandHeart,
   AlertTriangle,
   ArrowRight,
+  ChevronDown,
+  ChevronRight,
   ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
@@ -22,15 +24,18 @@ import {
 } from "recharts";
 
 import { AppShell } from "@/components/AppShell";
+import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/lib/i18n";
-import { formatDayLabel } from "@/lib/datetime";
+import { formatDate, formatDayLabel } from "@/lib/datetime";
 import { RISK_HEX } from "@/lib/risk";
 import {
   adminGetAnalytics,
+  adminGetStateDrilldown,
   type AdminAnalytics,
+  type StateDrilldown,
 } from "@/lib/admin-analytics.functions";
 
 export const Route = createFileRoute("/admin/")({
@@ -51,11 +56,40 @@ function rgb(level: "red" | "yellow" | "green"): string {
 function AdminDashboard() {
   const { t, lang } = useLang();
   const getAnalytics = useServerFn(adminGetAnalytics);
+  const getDrilldown = useServerFn(adminGetStateDrilldown);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState<AdminAnalytics | null>(null);
+
+  // Per-state "why" drill-down.
+  const [expandedState, setExpandedState] = useState<string | null>(null);
+  const [drilldownCache, setDrilldownCache] = useState<
+    Record<string, StateDrilldown>
+  >({});
+  const [drilldownLoading, setDrilldownLoading] = useState<string | null>(null);
+
+  function toggleState(state: string) {
+    if (expandedState === state) {
+      setExpandedState(null);
+      return;
+    }
+    setExpandedState(state);
+    if (drilldownCache[state]) return;
+    setDrilldownLoading(state);
+    getDrilldown({ data: { adminSecret: secret, state } })
+      .then((res) => {
+        if (res.ok) {
+          setDrilldownCache((prev) => ({ ...prev, [state]: res.drilldown }));
+        }
+      })
+      .catch(() => {})
+      .finally(() =>
+        setDrilldownLoading((cur) => (cur === state ? null : cur)),
+      );
+  }
+
 
   async function onUnlock(ev: React.FormEvent) {
     ev.preventDefault();
@@ -195,18 +229,94 @@ function AdminDashboard() {
       {data.topStates.length > 0 && (
         <Card>
           <p className="text-sm font-semibold">{t("dash.topStates")}</p>
-          <ul className="mt-3 divide-y divide-border">
-            {data.topStates.map((s) => (
-              <li key={s.state} className="flex items-center justify-between gap-2 py-2 text-sm">
-                <span className="truncate">{s.state}</span>
-                <span className="flex items-center gap-2">
-                  <MiniDots green={s.green} yellow={s.yellow} red={s.red} />
-                  <span className="w-8 text-right font-semibold tabular-nums">
-                    {s.total}
-                  </span>
-                </span>
-              </li>
-            ))}
+          <ul className="mt-3 space-y-1">
+            {data.topStates.map((s) => {
+              const expanded = expandedState === s.state;
+              const drill = drilldownCache[s.state];
+              return (
+                <li key={s.state} className="border-b border-border last:border-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleState(s.state)}
+                    aria-expanded={expanded}
+                    className="flex w-full items-center justify-between gap-2 py-2 text-left text-sm transition-colors hover:bg-accent/30"
+                  >
+                    <span className="flex min-w-0 items-center gap-1.5">
+                      <ChevronDown
+                        className={`size-3.5 shrink-0 text-muted-foreground transition-transform ${
+                          expanded ? "rotate-180" : ""
+                        }`}
+                        aria-hidden
+                      />
+                      <span className="truncate">{s.state}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <MiniDots green={s.green} yellow={s.yellow} red={s.red} />
+                      <span className="w-8 text-right font-semibold tabular-nums">
+                        {s.total}
+                      </span>
+                    </span>
+                  </button>
+                  {expanded && (
+                    <div className="space-y-4 rounded-xl bg-muted/30 p-3">
+                      <RiskFactorsPanel
+                        factors={drill?.factors ?? null}
+                        loading={drilldownLoading === s.state}
+                      />
+                      {drill && drill.reports.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground">
+                            {t("dash.recentReports")}
+                          </p>
+                          <ul className="mt-2 divide-y divide-border">
+                            {drill.reports.map((r) => (
+                              <li key={r.publicId}>
+                                <Link
+                                  to="/a/$publicId"
+                                  params={{ publicId: r.publicId }}
+                                  className="flex items-center gap-2 py-2 text-xs transition-colors hover:bg-accent/30"
+                                >
+                                  <span
+                                    className="size-2.5 shrink-0 rounded-full"
+                                    style={{ backgroundColor: rgb(r.riskLevel) }}
+                                    aria-hidden
+                                  />
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block truncate font-medium">
+                                      {[
+                                        r.buildingType
+                                          ? t(`property.type.${r.buildingType}`)
+                                          : null,
+                                        r.age
+                                          ? t(`property.age.${r.age}`)
+                                          : null,
+                                      ]
+                                        .filter(Boolean)
+                                        .join(" · ") || r.municipality}
+                                    </span>
+                                    <span className="block truncate text-muted-foreground">
+                                      {formatDate(r.createdAt, lang)} ·{" "}
+                                      {r.flaggedCount} {t("dash.issuesWord")}
+                                      {r.seismicIntensity != null
+                                        ? ` · MMI ${r.seismicIntensity}`
+                                        : ""}
+                                    </span>
+                                  </span>
+                                  <ChevronRight
+                                    className="size-4 shrink-0 text-muted-foreground"
+                                    aria-hidden
+                                  />
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </Card>
       )}

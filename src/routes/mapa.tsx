@@ -1,10 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Download, ImageDown, MapPin } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  Download,
+  ImageDown,
+  MapPin,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
@@ -14,8 +22,10 @@ import { absoluteUrl } from "@/lib/site";
 import {
   getDamageAggregates,
   getDamageTotals,
+  getRiskFactors,
   type AreaAggregate,
   type DamageTotals,
+  type RiskFactors,
 } from "@/lib/stats.functions";
 import {
   ESTADOS,
@@ -79,6 +89,9 @@ type DisplayArea = {
   muniKnown: boolean;
   /** Resolved estado name when known, for linking to its regional page. */
   stateName: string | null;
+  /** exact values to filter the risk-factor drill-down by */
+  paramState: string;
+  paramMunicipality: string | null;
   total: number;
   green: number;
   yellow: number;
@@ -172,6 +185,8 @@ function MapPage() {
         subtitle: muniKnown ? a.state : t("map.unspecifiedMunicipality"),
         muniKnown,
         stateName: stateKnown ? a.state : null,
+        paramState: a.state,
+        paramMunicipality: muniKnown ? a.municipality : null,
         total: a.total,
         green: a.green,
         yellow: a.yellow,
@@ -194,6 +209,8 @@ function MapPage() {
         subtitle: null,
         muniKnown: false,
         stateName: null,
+        paramState: "Desconocido",
+        paramMunicipality: "Desconocido",
         total: unspecified.total,
         green: unspecified.green,
         yellow: unspecified.yellow,
@@ -206,6 +223,37 @@ function MapPage() {
 
 
   const hasData = !!totals && totals.total > 0;
+
+  // Inline "why" drill-down per area.
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const [factorsCache, setFactorsCache] = useState<Record<string, RiskFactors>>(
+    {},
+  );
+  const [factorsLoading, setFactorsLoading] = useState<string | null>(null);
+
+  function toggleWhy(area: DisplayArea) {
+    if (expandedKey === area.key) {
+      setExpandedKey(null);
+      return;
+    }
+    setExpandedKey(area.key);
+    if (factorsCache[area.key]) return;
+    setFactorsLoading(area.key);
+    getRiskFactors({
+      data: {
+        state: area.paramState,
+        municipality: area.paramMunicipality ?? undefined,
+      },
+    })
+      .then((f) =>
+        setFactorsCache((prev) => ({ ...prev, [area.key]: f })),
+      )
+      .catch(() => {})
+      .finally(() =>
+        setFactorsLoading((cur) => (cur === area.key ? null : cur)),
+      );
+  }
+
 
   function downloadCsv() {
     const header = [
@@ -490,19 +538,43 @@ function MapPage() {
                     )}
                   </>
                 );
+                const expanded = expandedKey === a.key;
                 return (
-                  <li key={a.key}>
+                  <li
+                    key={a.key}
+                    className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                  >
                     {linkable ? (
                       <Link
                         to="/zona/$estado"
                         params={{ estado: estadoSlug(a.stateName!) }}
-                        className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm transition-colors hover:bg-accent/40"
+                        className="flex items-center gap-3 p-3 transition-colors hover:bg-accent/40"
                       >
                         {inner}
                       </Link>
                     ) : (
-                      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm">
-                        {inner}
+                      <div className="flex items-center gap-3 p-3">{inner}</div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => toggleWhy(a)}
+                      aria-expanded={expanded}
+                      className="flex w-full items-center justify-center gap-1 border-t border-border px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-accent/40"
+                    >
+                      {expanded ? t("factors.hideWhy") : t("factors.why")}
+                      <ChevronDown
+                        className={`size-3.5 transition-transform ${
+                          expanded ? "rotate-180" : ""
+                        }`}
+                        aria-hidden
+                      />
+                    </button>
+                    {expanded && (
+                      <div className="border-t border-border bg-muted/30 p-3">
+                        <RiskFactorsPanel
+                          factors={factorsCache[a.key] ?? null}
+                          loading={factorsLoading === a.key}
+                        />
                       </div>
                     )}
                   </li>

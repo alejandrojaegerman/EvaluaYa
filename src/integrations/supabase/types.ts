@@ -452,6 +452,20 @@ export type Database = {
           total: number
         }[]
       }
+      get_admin_state_reports: {
+        Args: { _limit?: number; _state: string }
+        Returns: {
+          age: string
+          building_type: string
+          created_at: string
+          flagged_count: number
+          municipality: string
+          public_id: string
+          risk_level: string
+          seismic_intensity: number
+          structural_type: string
+        }[]
+      }
       get_admin_top_states: {
         Args: never
         Returns: {
@@ -515,6 +529,17 @@ export type Database = {
           email: string
           id: string
           name: string
+        }[]
+      }
+      get_risk_factors: {
+        Args: { _municipality?: string; _state?: string }
+        Returns: {
+          factor_group: string
+          factor_key: string
+          green: number
+          red: number
+          total: number
+          yellow: number
         }[]
       }
       move_to_dlq: {
