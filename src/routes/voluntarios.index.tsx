@@ -26,7 +26,8 @@ export const Route = createFileRoute("/voluntarios/")({
   head: () => {
     const title = "Ingenieros voluntarios | EvalúaYa";
     const description =
-      "Súmate como ingeniero voluntario y ayuda a familias en Venezuela a entender el daño estructural de sus viviendas tras un sismo.";
+      "Súmate como ingeniero voluntario u organización y ayuda a familias en Venezuela a entender el daño estructural de sus viviendas tras un sismo.";
+    const image = absoluteUrl("/og-voluntarios.jpg");
     return {
       meta: [
         { title },
@@ -34,6 +35,9 @@ export const Route = createFileRoute("/voluntarios/")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:url", content: absoluteUrl("/voluntarios") },
+        { property: "og:image", content: image },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: image },
       ],
       links: [{ rel: "canonical", href: absoluteUrl("/voluntarios") }],
     };
