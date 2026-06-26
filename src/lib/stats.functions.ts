@@ -59,6 +59,77 @@ export const getDamageAggregates = createServerFn({ method: "GET" }).handler(
   },
 );
 
+export type StateStats = {
+  state: string;
+  total: number;
+  green: number;
+  yellow: number;
+  red: number;
+  municipios: number;
+  lastReport: string | null;
+};
+
+/**
+ * Anonymized aggregated stats for a single estado, derived from the same
+ * public RPC that powers the map. Counts only — never addresses, photos or ids.
+ */
+export const getStateStats = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) =>
+    z.object({ state: z.string().trim().min(1).max(120) }).parse(data),
+  )
+  .handler(async ({ data }): Promise<StateStats> => {
+    const empty: StateStats = {
+      state: data.state,
+      total: 0,
+      green: 0,
+      yellow: 0,
+      red: 0,
+      municipios: 0,
+      lastReport: null,
+    };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } =
+        await supabaseAdmin.rpc("get_damage_aggregates");
+      if (error || !rows) {
+        if (error) console.error("[stats] getStateStats", error);
+        return empty;
+      }
+      const wanted = data.state.trim().toLowerCase();
+      const matched = rows.filter(
+        (r) => (r.state ?? "").trim().toLowerCase() === wanted,
+      );
+      const municipios = new Set<string>();
+      let lastReport: string | null = null;
+      const agg = matched.reduce(
+        (acc, r) => {
+          acc.total += r.total ?? 0;
+          acc.green += r.green ?? 0;
+          acc.yellow += r.yellow ?? 0;
+          acc.red += r.red ?? 0;
+          const muni = (r.municipality ?? "").trim();
+          if (muni && muni.toLowerCase() !== "desconocido") municipios.add(muni);
+          if (r.last_report && (!lastReport || r.last_report > lastReport)) {
+            lastReport = r.last_report;
+          }
+          return acc;
+        },
+        { total: 0, green: 0, yellow: 0, red: 0 },
+      );
+      return {
+        state: data.state,
+        ...agg,
+        municipios: municipios.size,
+        lastReport,
+      };
+    } catch (e) {
+      console.error("[stats] getStateStats failed", e);
+      return empty;
+    }
+  });
+
 /** Small headline counts for the home trust banner. */
 export const getDamageTotals = createServerFn({ method: "GET" }).handler(
   async (): Promise<DamageTotals> => {
