@@ -590,6 +590,8 @@ const es: Dict = {
   "connect.requestError": "No se pudo enviar. Intenta de nuevo.",
   "connect.yourWhatsapp": "Tu número de WhatsApp",
   "connect.whatsappPlaceholder": "Ej.: 0414 123 4567",
+  "connect.whatsappHint":
+    "Incluye el código de área. Si estás en Venezuela puedes usar tu número local (ej.: 0414…); le agregamos el código de país (+58) automáticamente.",
   "connect.noteOptional": "Mensaje (opcional)",
   "connect.notePlaceholder": "Ej.: Hay grietas grandes en la sala.",
   "connect.privacy":
