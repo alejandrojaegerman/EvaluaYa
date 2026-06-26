@@ -1142,7 +1142,9 @@ const en: Dict = {
   "vol.org": "Company or organization (optional)",
   "vol.orgPlaceholder": "e.g. Engineering Association",
   "vol.whatsapp": "WhatsApp",
-  "vol.email": "Email (optional)",
+  "vol.email": "Email",
+  "vol.emailHint":
+    "We need it to send you your access link once you're validated.",
   "vol.states": "States you can cover",
   "vol.statesHint": "Select one or more.",
   "vol.specialization": "Specialty (optional)",
@@ -1194,6 +1196,8 @@ const en: Dict = {
   "admin.reject": "Reject",
   "admin.copyLink": "Copy panel link",
   "admin.linkCopied": "Link copied",
+  "admin.notifyWhatsapp": "Notify via WhatsApp",
+  "admin.noEmail": "No email",
   "admin.none": "No records.",
 
   // Panel — matching enhancements
