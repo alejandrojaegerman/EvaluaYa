@@ -156,6 +156,19 @@ function PropertyStep() {
     return () => clearTimeout(timer);
   }, [state]);
 
+  // Preselect estado when arriving from a regional landing page (?estado=).
+  // Accepts either the full name or a slug; never overrides a chosen value.
+  useEffect(() => {
+    if (!estadoParam) return;
+    const match =
+      getEstado(estadoParam)?.name ?? getEstadoBySlug(estadoParam)?.name;
+    if (!match) return;
+    geoTried.current = true; // skip geo auto-detect — user picked this region
+    setState((cur) => (cur.trim() === "" ? match : cur));
+  }, [estadoParam]);
+
+
+
   const missing: string[] = [];
   if (state.trim() === "") missing.push(t("property.miss.state"));
   if (buildingType === null) missing.push(t("property.miss.type"));
