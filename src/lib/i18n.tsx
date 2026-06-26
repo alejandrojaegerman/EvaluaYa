@@ -438,7 +438,101 @@ const es: Dict = {
   "methodology.cta": "Iniciar evaluación",
   "methodology.disclaimer":
     "En una emergencia, llama a Protección Civil o a los servicios de emergencia.",
+
+  // ----- Volunteer engineers (ES) -----
+  "nav.volunteers": "Ingenieros voluntarios",
+
+  // Result page connect section
+  "connect.title": "Habla con un ingeniero voluntario",
+  "connect.subtitleRed":
+    "Tu resultado es ROJO. Un ingeniero voluntario puede orientarte sobre los próximos pasos. Es gratuito y sin compromiso.",
+  "connect.subtitleYellow":
+    "Un ingeniero voluntario puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
+  "connect.directTitle": "Ingenieros disponibles en tu zona",
+  "connect.coversYourState": "Cubre tu estado",
+  "connect.whatsappEngineer": "Escribir por WhatsApp",
+  "connect.noneTitle": "Aún estamos sumando ingenieros en tu estado",
+  "connect.noneBody":
+    "Deja tu número y un ingeniero voluntario te contactará en cuanto haya cobertura en tu zona.",
+  "connect.requestTitle": "Pedir que me contacten",
+  "connect.requestBody":
+    "¿Prefieres que un ingeniero te escriba? Deja tu WhatsApp y compartiremos tu reporte solo con ingenieros aprobados de tu estado.",
+  "connect.requestCta": "Solicitar contacto",
+  "connect.requestSending": "Enviando…",
+  "connect.requestDone": "¡Listo! Un ingeniero te contactará pronto.",
+  "connect.requestError": "No se pudo enviar. Intenta de nuevo.",
+  "connect.yourWhatsapp": "Tu número de WhatsApp",
+  "connect.whatsappPlaceholder": "Ej.: 0414 123 4567",
+  "connect.noteOptional": "Mensaje (opcional)",
+  "connect.notePlaceholder": "Ej.: Hay grietas grandes en la sala.",
+  "connect.privacy":
+    "Tu número solo se comparte con ingenieros voluntarios aprobados de tu estado. No se publica.",
+  "connect.areEngineer": "¿Eres ingeniero? Súmate como voluntario",
+  "connect.waMessage":
+    "Hola, completé una evaluación con EvalúaYa y mi resultado necesita orientación. Este es mi reporte:",
+
+  // Volunteer landing + signup
+  "vol.title": "Ingenieros voluntarios",
+  "vol.subtitle":
+    "Suma tu experiencia para ayudar a familias a entender el daño en sus viviendas tras un sismo.",
+  "vol.how1": "Te registras con tu WhatsApp y los estados que puedes cubrir.",
+  "vol.how2": "Revisamos tu solicitud y te enviamos un enlace privado.",
+  "vol.how3":
+    "Recibes solicitudes de personas con resultados de riesgo en tu zona y respondes por WhatsApp.",
+  "vol.formTitle": "Quiero ser voluntario",
+  "vol.name": "Nombre completo",
+  "vol.namePlaceholder": "Ej.: Ing. María Pérez",
+  "vol.org": "Empresa u organización (opcional)",
+  "vol.orgPlaceholder": "Ej.: Colegio de Ingenieros",
+  "vol.whatsapp": "WhatsApp",
+  "vol.email": "Correo (opcional)",
+  "vol.states": "Estados que puedes cubrir",
+  "vol.statesHint": "Selecciona uno o más.",
+  "vol.specialization": "Especialidad (opcional)",
+  "vol.specializationPlaceholder": "Ej.: Estructuras, geotecnia…",
+  "vol.note": "Mensaje (opcional)",
+  "vol.submit": "Enviar solicitud",
+  "vol.sending": "Enviando…",
+  "vol.successTitle": "¡Gracias por sumarte!",
+  "vol.successBody":
+    "Revisaremos tu solicitud y te enviaremos un enlace privado para ver las solicitudes de tu zona.",
+  "vol.error": "Revisa los campos e intenta de nuevo.",
+  "vol.selectStates": "Selecciona al menos un estado.",
+
+  // Engineer panel
+  "panel.title": "Panel de ingeniero voluntario",
+  "panel.welcome": "Hola",
+  "panel.coverage": "Cobertura",
+  "panel.invalid": "Enlace no válido o no aprobado",
+  "panel.invalidBody":
+    "Este enlace no corresponde a un voluntario aprobado. Si crees que es un error, contáctanos.",
+  "panel.empty": "No hay solicitudes abiertas en tu zona por ahora.",
+  "panel.openRequests": "Solicitudes",
+  "panel.claim": "Estoy disponible",
+  "panel.claimed": "La estás atendiendo",
+  "panel.close": "Marcar como atendida",
+  "panel.contactResident": "Escribir al residente",
+  "panel.viewReport": "Ver reporte",
+  "panel.noLocation": "Ubicación sin especificar",
+  "panel.refresh": "Actualizar",
+  "panel.waResident":
+    "Hola, soy ingeniero voluntario de EvalúaYa. Vi tu solicitud de orientación tras tu evaluación. ¿En qué puedo ayudarte?",
+
+  // Admin
+  "admin.title": "Administración de voluntarios",
+  "admin.secret": "Clave de administrador",
+  "admin.unlock": "Entrar",
+  "admin.wrong": "Clave incorrecta.",
+  "admin.pending": "Pendientes",
+  "admin.approved": "Aprobados",
+  "admin.requests": "Solicitudes de residentes",
+  "admin.approve": "Aprobar",
+  "admin.reject": "Rechazar",
+  "admin.copyLink": "Copiar enlace del panel",
+  "admin.linkCopied": "Enlace copiado",
+  "admin.none": "Sin registros.",
 };
+
 
 const en: Dict = {
   "app.name": "EvalúaYa",
