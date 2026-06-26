@@ -266,6 +266,76 @@ const es: Dict = {
   "nav.reports": "Mis reportes",
   "nav.more": "Más",
   "nav.language": "Idioma",
+  "nav.help": "Ayuda",
+  "nav.feedback": "Enviar comentarios",
+
+  "feedback.title": "Enviar comentarios",
+  "feedback.subtitle":
+    "¿Tienes una idea, una duda o encontraste un problema? Cuéntanos y nos ayudas a mejorar EvalúaYa.",
+  "feedback.messageLabel": "Tu mensaje",
+  "feedback.messagePlaceholder":
+    "Escribe aquí tu comentario, sugerencia o problema…",
+  "feedback.emailLabel": "Tu correo",
+  "feedback.emailPlaceholder": "tucorreo@ejemplo.com",
+  "feedback.emailHint": "Solo si quieres que te respondamos.",
+  "feedback.submit": "Enviar comentario",
+  "feedback.sending": "Enviando…",
+  "feedback.error": "No se pudo enviar. Intenta de nuevo en un momento.",
+  "feedback.thanksTitle": "¡Gracias por tu comentario!",
+  "feedback.thanksBody":
+    "Leemos cada mensaje. Tu opinión nos ayuda a hacer EvalúaYa más útil para todos.",
+  "feedback.backHome": "Volver al inicio",
+  "feedback.privacy":
+    "No registramos datos personales. Tu correo es opcional y solo se usa para responderte.",
+  "feedback.promptTitle": "¿Cómo te resultó?",
+  "feedback.promptBody": "Comparte tu opinión para mejorar la app.",
+
+  "help.title": "Ayuda",
+  "help.subtitle":
+    "Aprende a usar EvalúaYa y resuelve las dudas más comunes.",
+  "help.quickStartTitle": "Cómo hacer una evaluación",
+  "help.step1Title": "1. Datos de la propiedad",
+  "help.step1Desc":
+    "Indica la dirección, el tipo de edificación, los pisos y la antigüedad.",
+  "help.step2Title": "2. Inspección guiada",
+  "help.step2Desc":
+    "Responde preguntas simples (Sí / No / No estoy seguro) área por área y, si puedes, sube una foto.",
+  "help.step3Title": "3. Análisis con IA",
+  "help.step3Desc":
+    "Recibes un nivel de riesgo (Verde / Amarillo / Rojo) con una explicación clara y pasos a seguir.",
+  "help.step4Title": "4. Guarda y comparte",
+  "help.step4Desc":
+    "Descarga un PDF, compártelo por WhatsApp o guárdalo para consultarlo después.",
+  "help.startCta": "Iniciar evaluación",
+  "help.faqTitle": "Preguntas frecuentes",
+  "help.faq.freeQ": "¿La app es gratis?",
+  "help.faq.freeA": "Sí. EvalúaYa es completamente gratis.",
+  "help.faq.signupQ": "¿Necesito registrarme?",
+  "help.faq.signupA":
+    "No. Puedes evaluar tu vivienda sin crear una cuenta. Si quieres guardar tus reportes para verlos más adelante, puedes crear una cuenta opcional con tu correo.",
+  "help.faq.offlineQ": "¿Funciona sin internet o con poca señal?",
+  "help.faq.offlineA":
+    "Sí. Puedes responder el cuestionario con poca señal; tu avance se guarda en el dispositivo y el análisis se envía cuando recuperes conexión.",
+  "help.faq.resultsQ": "¿Qué significan los colores del resultado?",
+  "help.faq.resultsA":
+    "Verde: sin señales de riesgo estructural evidente. Amarillo: usa el inmueble con precaución y busca revisión profesional. Rojo: posible peligro grave; evacúa y contacta a las autoridades.",
+  "help.faq.privacyQ": "¿Mis datos son privados?",
+  "help.faq.privacyA":
+    "Sí. La evaluación es anónima. No pedimos tu nombre ni datos personales para usar la app.",
+  "help.faq.saveQ": "¿Cómo guardo y vuelvo a ver mis reportes?",
+  "help.faq.saveA":
+    "En la pantalla de resultados puedes crear una cuenta con tu correo (enlace mágico, sin contraseña) para acceder a tus reportes desde “Mis reportes” cuando quieras.",
+  "help.faq.photosQ": "¿Las fotos son obligatorias?",
+  "help.faq.photosA":
+    "No. Las fotos son opcionales, pero ayudan a que el análisis sea más preciso.",
+  "help.faq.officialQ": "¿Esto reemplaza una inspección oficial?",
+  "help.faq.officialA":
+    "No. EvalúaYa ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil.",
+  "help.moreTitle": "¿Necesitas más ayuda?",
+  "help.moreBody":
+    "Escríbenos si tienes una duda que no aparece aquí, o conoce cómo calculamos los resultados.",
+  "help.contactCta": "Enviar un comentario",
+
 
   "home.timePromise": "Gratis · 2 minutos · sin registro",
   "home.trustFree": "Gratis",
