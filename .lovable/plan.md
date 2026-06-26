@@ -1,42 +1,55 @@
-# Fix: Auth emails not sending / "No authentication emails yet"
+# Better navigation for EvalúaYa
 
-## What's happening
+As the app grew (community map, methodology, saved-report accounts, volunteer engineers), navigation stayed split between a thin top bar and ad-hoc inline links. This restructures it into a clear, thumb-friendly system without touching any assessment logic.
 
-Your branded email system is fully built and is **working in preview**, but it is **not live yet**.
+## What you'll get
 
-Diagnostic results:
-- Domain `notify.evaluaya.app`: ✅ verified and ready.
-- Preview webhook (`/lovable/email/auth/webhook`): ✅ returns 401 (route is live, verifying signatures — correct behavior).
-- **Live webhook + queue route on `evaluaya.app`: ❌ return 404 (routes not deployed).**
-- `email_send_log` table: empty — no auth email has ever been queued or sent.
-
-The auth system calls the **live** webhook URL when someone requests a magic link / sign-up confirmation. Because that live route 404s, nothing gets queued, nothing is logged, and the dashboard shows "No authentication emails yet."
-
-## The fix: publish
-
-The email webhook and queue routes (added in the previous turn, along with the `start.ts` middleware bypass and `vite.config.ts` changes) only exist in the preview build. Publishing pushes them to the live site, and the publish step also provisions the production email queue cron + vault secret needed to actually send.
+A persistent **bottom tab bar** (PWA-style, thumb-reachable, always visible) with the 4 primary destinations, plus a **"Más" sheet** for secondary ones. The top header gets slimmed and made consistent.
 
 ```text
-Publish  →  live routes go live (/lovable/email/auth/webhook, /lovable/email/queue/process)
-         →  Supabase auth hook can reach the live webhook
-         →  magic-link / signup request enqueues an email
-         →  cron drains queue → branded email sends from notify.evaluaya.app
+┌───────────────────────────────┐
+│  🛡 EvalúaYa      ● En línea  ES│  ← slim header (brand, status, lang)
+│                               │
+│        page content           │
+│                               │
+├───────────────────────────────┤
+│  🏠     🗺      📁      ⋯      │  ← bottom tab bar
+│ Inicio  Mapa  Reportes  Más    │
+└───────────────────────────────┘
 ```
 
-## Steps
+### Bottom tab bar (primary)
+Four slots, each with active-state highlight:
+- **Inicio** → `/`
+- **Mapa** → `/mapa`
+- **Mis reportes** → `/mis-reportes` (the dedicated account slot you asked for)
+- **Más** → opens the sheet (not a route)
 
-1. **Publish the app** so the email routes deploy to `evaluaya.app` and production email infrastructure provisions.
-   - This is the single required action and is done from the Publish button.
-2. **Verify after publish** (I'll do this):
-   - Confirm `https://evaluaya.app/lovable/email/auth/webhook` returns 401 (not 404).
-   - Confirm `https://evaluaya.app/lovable/email/queue/process` is reachable.
-3. **Trigger a real test**: from the live site, go through "Save my reports" / sign-in to request a magic link, then confirm a row appears in `email_send_log` with status moving `pending → sent`, and that the branded email arrives.
-4. If anything is still stuck after publish (e.g. the dashboard still shows no emails, or a row stays `pending`), I'll check the auth hook activation status and the production cron job and finish wiring it.
+### "Más" sheet (secondary)
+Slide-up sheet listing everything that doesn't earn a permanent slot:
+- **Voluntarios** → `/voluntarios` (currently has no global entry point — this surfaces it)
+- **Metodología / Cómo funciona** → `/metodologia`
+- **Idioma / Language** toggle (moved here so the header stays clean, also kept in header)
+- Connection status reminder
 
-## Note on the dashboard panel
+### Header cleanup (polish)
+- Keep brand wordmark, online/offline pill, and language toggle.
+- Remove the Map and Methodology text links from the header (now handled by the tab bar / Más sheet) so the top bar isn't cramped on small screens.
+- Keep the header responsive using grid + `min-w-0` + `shrink-0` so nothing clips on narrow phones.
 
-The "No authentication emails yet" card you're looking at is populated from sent-email history. It will stay empty until the first auth email actually flows through the live system — which can't happen until the routes are published. It is not a separate broken step.
+### Small polish included
+- Consistent **active states** on the tab bar (primary color + filled icon for the current route).
+- Surface **Voluntarios** in the Más sheet (previously only reachable from result cards).
+- Content padding adjusted so the bottom bar never overlaps page content (the shell already uses `pb-28`; verified against the new bar height).
+- The home page's inline "Mis reportes" link stays, now reinforced by the permanent tab.
 
-<presentation-actions>
-<presentation-open-publish>Publish your app</presentation-open-publish>
-</presentation-actions>
+## Technical approach
+
+- **`src/components/BottomNav.tsx`** (new): renders the 4-item tab bar with `@tanstack/react-router` `<Link>` using `activeProps`/`data-status` for highlight, and a `Sheet` (existing `src/components/ui/sheet.tsx`, `side="bottom"`) for "Más". Hidden via `print:hidden` so PDFs/share cards are unaffected.
+- **`src/components/AppShell.tsx`**: render `<BottomNav />` after `<main>`; remove the Map/Methodology header links; keep online pill + `LanguageToggle`. Bottom padding stays adequate for the fixed bar.
+- **`src/lib/i18n.tsx`**: add a few keys — `nav.home`, `nav.reports`, `nav.more`, `nav.volunteers`, `nav.language` (ES + EN). Reuse existing `nav.map`, `nav.methodology`.
+- No route files, server functions, database, or assessment logic change. Pure presentation/navigation refactor.
+
+## Out of scope
+- No redesign of individual pages or color/theme changes.
+- No changes to the assessment flow, AI analysis, PDF, or email systems.
