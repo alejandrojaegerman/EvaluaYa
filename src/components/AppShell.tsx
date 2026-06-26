@@ -65,7 +65,7 @@ export function AppShell({
         {children}
       </main>
 
-      <BottomNav />
+      {!hideBottomNav && <BottomNav />}
     </div>
   );
 }
