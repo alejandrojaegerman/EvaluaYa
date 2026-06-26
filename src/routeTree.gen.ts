@@ -16,6 +16,7 @@ import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
+import { Route as AdminVoluntariosRouteImport } from './routes/admin.voluntarios'
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
 
@@ -54,6 +55,11 @@ const AssessAnalyzeRoute = AssessAnalyzeRouteImport.update({
   path: '/assess/analyze',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminVoluntariosRoute = AdminVoluntariosRouteImport.update({
+  id: '/admin/voluntarios',
+  path: '/admin/voluntarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const APublicIdRoute = APublicIdRouteImport.update({
   id: '/a/$publicId',
   path: '/a/$publicId',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/a/$publicId': typeof APublicIdRoute
+  '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/a/$publicId': typeof APublicIdRoute
+  '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/a/$publicId': typeof APublicIdRoute
+  '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/a/$publicId'
+    | '/admin/voluntarios'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/a/$publicId'
+    | '/admin/voluntarios'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/a/$publicId'
+    | '/admin/voluntarios'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   APublicIdRoute: typeof APublicIdRoute
+  AdminVoluntariosRoute: typeof AdminVoluntariosRoute
   AssessAnalyzeRoute: typeof AssessAnalyzeRoute
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessAnalyzeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/voluntarios': {
+      id: '/admin/voluntarios'
+      path: '/admin/voluntarios'
+      fullPath: '/admin/voluntarios'
+      preLoaderRoute: typeof AdminVoluntariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/a/$publicId': {
       id: '/a/$publicId'
       path: '/a/$publicId'
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   APublicIdRoute: APublicIdRoute,
+  AdminVoluntariosRoute: AdminVoluntariosRoute,
   AssessAnalyzeRoute: AssessAnalyzeRoute,
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
