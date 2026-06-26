@@ -160,7 +160,7 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
       );
       const { data: rows, error } = await supabaseAdmin.rpc(
         "get_approved_engineers",
-        { _state: data.state || null },
+        { _state: data.state || "" },
       );
       if (error || !rows) {
         if (error) console.error("[volunteers] getApprovedEngineers", error);
