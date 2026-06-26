@@ -399,7 +399,7 @@ def footer(canvas, doc):
     canvas.saveState()
     canvas.setStrokeColor(LINE)
     canvas.line(20 * mm, 14 * mm, 190 * mm, 14 * mm)
-    canvas.setFont("Helvetica", 8)
+    canvas.setFont(FONT, 8)
     canvas.setFillColor(MUTED)
     canvas.drawString(20 * mm, 9 * mm, "EvalúaYa · evaluaya.app")
     canvas.drawRightString(190 * mm, 9 * mm, "Page %d" % doc.page)
