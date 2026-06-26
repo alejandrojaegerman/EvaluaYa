@@ -1025,6 +1025,14 @@ const en: Dict = {
   "result.summary": "Summary",
   "result.findings": "Key findings",
   "result.nextSteps": "Recommended next steps",
+  // Same-building context (resident result)
+  "building.title": "Other reports from this building",
+  "building.subtitle": "There are {count} more evaluation(s) from {name}.",
+  "building.legend.red": "red",
+  "building.legend.yellow": "yellow",
+  "building.legend.green": "green",
+  "building.note":
+    "Structural problems often affect a whole building. Share your result with your neighbors and the building's administration or condo board so the structure can be assessed together.",
   // Offline outbox / sync
   "offline.banner": "You're offline. Your assessment was saved and will send itself when the connection returns.",
   "offline.pendingOne": "1 assessment waiting to send.",
