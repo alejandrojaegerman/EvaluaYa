@@ -18,7 +18,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "tremor-check"
+const SITE_NAME = "EvalúaYa"
 const ROOT_DOMAIN = "evaluaya.app"
 
 // Sample data for preview mode ONLY (not used in actual email sending).
