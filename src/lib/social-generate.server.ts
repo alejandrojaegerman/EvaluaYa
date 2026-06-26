@@ -66,11 +66,17 @@ function weeklyInsightBody(i: {
 export async function generateSocialDrafts(): Promise<GenResult> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // social_posts table + get_weekly_insight RPC are not in the generated
+    // types yet; cast to reach them without type errors.
+    const db = supabaseAdmin as unknown as {
+      rpc: (name: string) => Promise<{ data: any[] | null; error: unknown }>;
+      from: (table: string) => any;
+    };
 
     const [totalsRes, volRes, weeklyRes] = await Promise.all([
-      supabaseAdmin.rpc("get_damage_totals"),
-      supabaseAdmin.rpc("get_admin_volunteer_stats"),
-      supabaseAdmin.rpc("get_weekly_insight"),
+      db.rpc("get_damage_totals"),
+      db.rpc("get_admin_volunteer_stats"),
+      db.rpc("get_weekly_insight"),
     ]);
 
     const assessmentsTotal = totalsRes.data?.[0]?.total ?? 0;
