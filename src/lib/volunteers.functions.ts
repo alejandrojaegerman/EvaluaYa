@@ -216,7 +216,6 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
         id: r.id,
         name: r.name,
         organization: r.organization,
-        whatsapp: r.whatsapp,
         states: r.states ?? [],
         specialization: r.specialization,
         volunteerType:
@@ -226,6 +225,36 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
     } catch (e) {
       console.error("[volunteers] getApprovedEngineers failed", e);
       return [];
+    }
+  });
+
+// ---------------------------------------------------------------------------
+// Reveal a single engineer's WhatsApp — only after the resident taps to
+// connect. Keeping numbers out of the directory payload prevents bulk scraping.
+// ---------------------------------------------------------------------------
+
+const revealSchema = z.object({
+  engineerId: z.string().trim().uuid(),
+});
+
+export const revealEngineerContact = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => revealSchema.parse(data))
+  .handler(async ({ data }): Promise<{ whatsapp: string | null }> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: row, error } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("whatsapp, status")
+        .eq("id", data.engineerId)
+        .eq("status", "approved")
+        .maybeSingle();
+      if (error || !row || !row.whatsapp) return { whatsapp: null };
+      return { whatsapp: row.whatsapp };
+    } catch (e) {
+      console.error("[volunteers] revealEngineerContact failed", e);
+      return { whatsapp: null };
     }
   });
 
