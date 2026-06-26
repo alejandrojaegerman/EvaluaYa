@@ -33,6 +33,7 @@ import {
 export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const { t } = useLang();
   const fetchEngineers = useServerFn(getApprovedEngineersForState);
+  const reveal = useServerFn(revealEngineerContact);
   const submit = useServerFn(submitHelpRequest);
 
   const state = record.property.state ?? "";
