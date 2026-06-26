@@ -230,6 +230,21 @@ function AnalyzeStep() {
     if (online && phase === "waiting") run();
   }, [online, phase, run]);
 
+  // Once a provisional result is queued, complete it as soon as we're online
+  // and jump straight to the full result.
+  useEffect(() => {
+    if (!online || phase !== "provisional" || !outboxIdRef.current) return;
+    let active = true;
+    syncOutboxItem(outboxIdRef.current).then((publicId) => {
+      if (active && publicId) {
+        navigate({ to: "/a/$publicId", params: { publicId } });
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [online, phase, navigate]);
+
   function retry() {
     runningRef.current = false;
     setPhase("loading");
