@@ -42,6 +42,9 @@ export type Database = {
         Row: {
           ai_result: Json | null
           answers: Json
+          building_inferred: boolean
+          building_key: string | null
+          building_name: string | null
           created_at: string
           device_id: string | null
           geo_inferred: boolean
@@ -58,6 +61,9 @@ export type Database = {
         Insert: {
           ai_result?: Json | null
           answers?: Json
+          building_inferred?: boolean
+          building_key?: string | null
+          building_name?: string | null
           created_at?: string
           device_id?: string | null
           geo_inferred?: boolean
@@ -74,6 +80,9 @@ export type Database = {
         Update: {
           ai_result?: Json | null
           answers?: Json
+          building_inferred?: boolean
+          building_key?: string | null
+          building_name?: string | null
           created_at?: string
           device_id?: string | null
           geo_inferred?: boolean
@@ -428,6 +437,20 @@ export type Database = {
           yellow: number
         }[]
       }
+      get_admin_building_clusters: {
+        Args: { _state?: string }
+        Returns: {
+          building_key: string
+          building_name: string
+          green: number
+          last_report: string
+          municipality: string
+          red: number
+          state: string
+          total: number
+          yellow: number
+        }[]
+      }
       get_admin_coverage_gaps: {
         Args: never
         Returns: {
@@ -498,6 +521,16 @@ export type Database = {
           states: string[]
           volunteer_type: string
           whatsapp: string
+        }[]
+      }
+      get_building_peers: {
+        Args: { _building_key: string; _municipality: string; _state: string }
+        Returns: {
+          green: number
+          last_report: string
+          red: number
+          total: number
+          yellow: number
         }[]
       }
       get_damage_aggregates: {

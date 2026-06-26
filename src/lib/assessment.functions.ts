@@ -4,6 +4,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { extractBuilding } from "./building";
 import {
   CHECKLIST_ITEMS,
   type AiResult,
@@ -286,6 +287,33 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     }
 
 
+    // Detect a building / house name from the free-text address so we can
+    // recognize multiple evaluations of the same building.
+    const building = extractBuilding(data.property.address);
+
+    // Look up prior analyzed reports from this same building (anonymized
+    // counts only) to give the AI neighbor-damage context.
+    let peerContext = "";
+    if (building) {
+      try {
+        const { data: peers } = await supabaseAdmin.rpc("get_building_peers", {
+          _state: data.property.state ?? "",
+          _municipality: data.property.municipality ?? "",
+          _building_key: building.key,
+        });
+        const row = Array.isArray(peers) ? peers[0] : peers;
+        if (row && (row.total ?? 0) > 0) {
+          peerContext =
+            `Context: ${row.total} previous evaluation(s) from this same building ` +
+            `("${building.name}") — ${row.red ?? 0} red / ${row.yellow ?? 0} yellow / ` +
+            `${row.green ?? 0} green. Structural damage often affects a whole building, ` +
+            `so weigh shared/neighbor findings accordingly.`;
+        }
+      } catch (e) {
+        console.error("[analyze] building peers lookup failed", e);
+      }
+    }
+
     // Call Lovable AI for structural triage.
     let aiResult: AiResult | null = null;
     try {
@@ -295,6 +323,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       const userContent: Array<
         { type: "text"; text: string } | { type: "image"; image: string }
       > = [{ type: "text", text: buildPrompt(data) }];
+      if (peerContext) {
+        userContent.push({ type: "text", text: peerContext });
+      }
       for (const url of imageDataUrls) {
         userContent.push({ type: "image", image: url });
       }
@@ -348,6 +379,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       property: data.property,
       state: data.property.state?.trim() || null,
       municipality: data.property.municipality?.trim() || null,
+      building_name: building?.name ?? null,
+      building_key: building?.key ?? null,
+      building_inferred: building ? true : false,
       answers: storedAnswers,
       ai_result: aiResult,
       risk_level: finalRisk,
@@ -411,6 +445,35 @@ export const getAssessment = createServerFn({ method: "GET" })
       answers.find((a) => a.id === item.id),
     ).filter(Boolean) as AssessmentRecord["answers"];
 
+    // Anonymized "other reports from this building" context (counts only).
+    let building: AssessmentRecord["building"] = null;
+    const buildingName = (row.building_name as string | null) ?? null;
+    const buildingKey = (row.building_key as string | null) ?? null;
+    if (buildingName && buildingKey) {
+      let peers = { total: 0, green: 0, yellow: 0, red: 0 };
+      try {
+        const { data: peerRows } = await supabaseAdmin.rpc("get_building_peers", {
+          _state: (row.state as string | null) ?? "",
+          _municipality: (row.municipality as string | null) ?? "",
+          _building_key: buildingKey,
+        });
+        const pr = Array.isArray(peerRows) ? peerRows[0] : peerRows;
+        if (pr) {
+          peers = {
+            total: pr.total ?? 0,
+            green: pr.green ?? 0,
+            yellow: pr.yellow ?? 0,
+            red: pr.red ?? 0,
+          };
+        }
+      } catch (e) {
+        console.error("[getAssessment] building peers failed", e);
+      }
+      // Exclude this report itself from the "others" count.
+      const others = Math.max(0, peers.total - 1);
+      building = { name: buildingName, others, peers };
+    }
+
     return {
       publicId: row.public_id,
       language: (row.language as "es" | "en") ?? "es",
@@ -420,5 +483,7 @@ export const getAssessment = createServerFn({ method: "GET" })
       riskLevel: (row.risk_level as RiskLevel) ?? "yellow",
       createdAt: row.created_at,
       photoUrls,
+      building,
     };
   });
+

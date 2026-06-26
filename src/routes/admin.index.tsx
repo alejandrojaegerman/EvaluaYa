@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Lock,
   BarChart3,
+  Building2,
   Users,
   HandHeart,
   AlertTriangle,
@@ -34,8 +35,10 @@ import { formatDate, formatDayLabel } from "@/lib/datetime";
 import { RISK_HEX } from "@/lib/risk";
 import {
   adminGetAnalytics,
+  adminGetBuildingClusters,
   adminGetStateDrilldown,
   type AdminAnalytics,
+  type BuildingCluster,
   type StateDrilldown,
 } from "@/lib/admin-analytics.functions";
 
@@ -58,11 +61,13 @@ function AdminDashboard() {
   const { t, lang } = useLang();
   const getAnalytics = useServerFn(adminGetAnalytics);
   const getDrilldown = useServerFn(adminGetStateDrilldown);
+  const getClusters = useServerFn(adminGetBuildingClusters);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState<AdminAnalytics | null>(null);
+  const [clusters, setClusters] = useState<BuildingCluster[]>([]);
 
   // Per-state "why" drill-down.
   const [expandedState, setExpandedState] = useState<string | null>(null);
@@ -100,6 +105,11 @@ function AdminDashboard() {
       if (res.ok) {
         setData(res.analytics);
         setUnlocked(true);
+        getClusters({ data: { adminSecret: secret } })
+          .then((c) => {
+            if (c.ok) setClusters(c.clusters);
+          })
+          .catch(() => {});
       } else {
         toast.error(t("admin.wrong"));
       }
@@ -327,7 +337,68 @@ function AdminDashboard() {
         </Card>
       )}
 
-      {/* Volunteers */}
+      {/* Buildings with multiple reports */}
+      {clusters.length > 0 && (
+        <>
+          <SectionTitle icon={Building2} title={t("dash.buildings")} />
+          <Card>
+            <p className="text-xs text-muted-foreground">
+              {t("dash.buildingsHint")}
+            </p>
+            <ul className="mt-3 space-y-2">
+              {clusters.map((c, i) => (
+                <li
+                  key={`${c.state}-${c.municipality}-${c.buildingName}-${i}`}
+                  className="rounded-xl border bg-card/50 p-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {c.buildingName}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {c.municipality} · {c.state}
+                        {c.lastReport
+                          ? ` · ${formatDate(c.lastReport, lang)}`
+                          : ""}
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary tabular-nums">
+                      {c.total} {t("dash.reportsWord")}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex h-2 w-full overflow-hidden rounded-full bg-muted">
+                    {c.red > 0 && (
+                      <div
+                        className="h-full bg-risk-red"
+                        style={{ width: `${(c.red / c.total) * 100}%` }}
+                      />
+                    )}
+                    {c.yellow > 0 && (
+                      <div
+                        className="h-full bg-risk-yellow"
+                        style={{ width: `${(c.yellow / c.total) * 100}%` }}
+                      />
+                    )}
+                    {c.green > 0 && (
+                      <div
+                        className="h-full bg-risk-green"
+                        style={{ width: `${(c.green / c.total) * 100}%` }}
+                      />
+                    )}
+                  </div>
+                  <div className="mt-1.5 flex gap-3 text-xs text-muted-foreground">
+                    <span>{c.red} {t("building.legend.red")}</span>
+                    <span>{c.yellow} {t("building.legend.yellow")}</span>
+                    <span>{c.green} {t("building.legend.green")}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </>
+      )}
+
       <SectionTitle icon={Users} title={t("dash.volunteers")} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label={t("dash.totalVolunteers")} value={v.total} />

@@ -255,6 +255,14 @@ const es: Dict = {
   "result.summary": "Resumen",
   "result.findings": "Hallazgos clave",
   "result.nextSteps": "Pasos recomendados",
+  // Same-building context (resident result)
+  "building.title": "Otras evaluaciones de este edificio",
+  "building.subtitle": "Hay {count} evaluación(es) más de {name}.",
+  "building.legend.red": "rojo",
+  "building.legend.yellow": "amarillo",
+  "building.legend.green": "verde",
+  "building.note":
+    "Los problemas estructurales suelen afectar a todo el edificio. Comparte tu resultado con tus vecinos y con la administración o junta de condominio para evaluar la estructura en conjunto.",
   // Offline outbox / sync
   "offline.banner": "Sin conexión. Tu evaluación se guardó y se enviará sola al volver el internet.",
   "offline.pendingOne": "1 evaluación pendiente de enviar.",
@@ -735,6 +743,10 @@ const es: Dict = {
   "dash.trend": "Tendencia (30 días)",
   "dash.topStates": "Estados con más reportes",
   "dash.volunteers": "Voluntarios",
+  "dash.buildings": "Edificios con varios reportes",
+  "dash.buildingsHint":
+    "Estructuras con 2 o más evaluaciones. Útil para detectar un mismo edificio que genera varias alertas.",
+  "dash.reportsWord": "reportes",
   "dash.totalVolunteers": "Voluntarios totales",
   "dash.orgs": "Organizaciones",
   "dash.individuals": "individuales",
@@ -1017,6 +1029,14 @@ const en: Dict = {
   "result.summary": "Summary",
   "result.findings": "Key findings",
   "result.nextSteps": "Recommended next steps",
+  // Same-building context (resident result)
+  "building.title": "Other reports from this building",
+  "building.subtitle": "There are {count} more evaluation(s) from {name}.",
+  "building.legend.red": "red",
+  "building.legend.yellow": "yellow",
+  "building.legend.green": "green",
+  "building.note":
+    "Structural problems often affect a whole building. Share your result with your neighbors and the building's administration or condo board so the structure can be assessed together.",
   // Offline outbox / sync
   "offline.banner": "You're offline. Your assessment was saved and will send itself when the connection returns.",
   "offline.pendingOne": "1 assessment waiting to send.",
@@ -1493,6 +1513,10 @@ const en: Dict = {
   "dash.trend": "Trend (30 days)",
   "dash.topStates": "States with most reports",
   "dash.volunteers": "Volunteers",
+  "dash.buildings": "Buildings with multiple reports",
+  "dash.buildingsHint":
+    "Structures with 2 or more evaluations. Useful for spotting a single building generating several alerts.",
+  "dash.reportsWord": "reports",
   "dash.totalVolunteers": "Total volunteers",
   "dash.orgs": "Organizations",
   "dash.individuals": "individual",

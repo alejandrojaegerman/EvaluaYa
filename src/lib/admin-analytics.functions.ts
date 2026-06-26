@@ -286,3 +286,59 @@ export const adminGetStateDrilldown = createServerFn({ method: "POST" })
       }
     },
   );
+
+// ---------------------------------------------------------------------------
+// Buildings with multiple reports — helps spot a single structure generating
+// several flags. Anonymized aggregates only (no addresses/photos/report ids).
+// ---------------------------------------------------------------------------
+
+export type BuildingCluster = {
+  state: string;
+  municipality: string;
+  buildingName: string;
+  total: number;
+  green: number;
+  yellow: number;
+  red: number;
+  lastReport: string | null;
+};
+
+const clustersSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  state: z.string().trim().min(1).max(120).optional(),
+});
+
+export const adminGetBuildingClusters = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => clustersSchema.parse(data))
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; clusters: BuildingCluster[] }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false, clusters: [] };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: rows, error } = await supabaseAdmin.rpc(
+          "get_admin_building_clusters",
+          { _state: data.state ?? undefined },
+        );
+        if (error) {
+          console.error("[admin-analytics] building clusters", error);
+          return { ok: false, clusters: [] };
+        }
+        const clusters: BuildingCluster[] = (rows ?? []).map((r) => ({
+          state: r.state ?? "Desconocido",
+          municipality: r.municipality ?? "Desconocido",
+          buildingName: r.building_name ?? "—",
+          total: r.total ?? 0,
+          green: r.green ?? 0,
+          yellow: r.yellow ?? 0,
+          red: r.red ?? 0,
+          lastReport: r.last_report ?? null,
+        }));
+        return { ok: true, clusters };
+      } catch (e) {
+        console.error("[admin-analytics] adminGetBuildingClusters failed", e);
+        return { ok: false, clusters: [] };
+      }
+    },
+  );
