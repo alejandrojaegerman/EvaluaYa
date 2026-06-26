@@ -93,8 +93,9 @@ function PanelPage() {
 
   function contactResident(phone: string) {
     const text = t("panel.waResident");
+    const number = toWhatsappNumber(phone);
     window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(text)}`,
+      `https://wa.me/${number}?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer",
     );
