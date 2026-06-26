@@ -263,6 +263,41 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] submitHelpRequest", error);
         return { ok: false };
       }
+
+      // Notify approved engineers covering this estado (best-effort).
+      try {
+        const { data: engineers } = await supabaseAdmin.rpc(
+          "get_engineers_to_notify",
+          { _state: data.state || "" },
+        );
+        if (engineers && engineers.length > 0) {
+          const { sendSystemEmail } = await import("./notify-email.server");
+          const location =
+            [data.municipality, data.state].filter(Boolean).join(", ") || "—";
+          await Promise.all(
+            engineers.map((eng) =>
+              sendSystemEmail({
+                templateName: "help-request-notification",
+                recipientEmail: eng.email ?? undefined,
+                templateData: {
+                  engineerName: eng.name ?? "",
+                  riskLevel: data.riskLevel ?? "",
+                  location,
+                  note: data.note || "",
+                  panelUrl: eng.access_token
+                    ? `https://evaluaya.app/voluntarios/panel/${eng.access_token}`
+                    : "https://evaluaya.app/voluntarios",
+                },
+              }).catch((err) =>
+                console.error("[volunteers] notify engineer failed", err),
+              ),
+            ),
+          );
+        }
+      } catch (notifyErr) {
+        console.error("[volunteers] request notification failed", notifyErr);
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] submitHelpRequest failed", e);
