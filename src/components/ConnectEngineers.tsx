@@ -21,6 +21,7 @@ import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
   getApprovedEngineersForState,
+  revealEngineerContact,
   submitHelpRequest,
   type PublicEngineer,
 } from "@/lib/volunteers.functions";
