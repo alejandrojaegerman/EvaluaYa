@@ -570,9 +570,29 @@ const en: Dict = {
   "rule.plumbing.step":
     "Shut off the main gas and water valves, avoid lights or flames, and evacuate.",
   "rule.intensity.finding":
-    "Intense shaking (intensity VII or greater) at this location.",
+    "Moderate shaking (intensity VI or acceleration ≥0.25g) at this location.",
   "rule.intensity.step":
     "Increase caution: inspect more carefully and prioritize a professional assessment.",
+  "rule.intensity_severe.finding":
+    "Very strong shaking (intensity VIII+ or acceleration ≥0.50g) at this location.",
+  "rule.intensity_severe.step":
+    "This area received some of the strongest shaking from the quake. Treat any damage with maximum caution.",
+  "rule.spectral.finding":
+    "Seismic demand for buildings of this height was high (spectral acceleration ≥0.40g).",
+  "rule.spectral.step":
+    "Buildings of this height felt the shaking especially hard. Prioritize a professional review.",
+  "rule.softsoil.finding":
+    "Soft soil: amplifies shaking and raises liquefaction risk.",
+  "rule.softsoil.step":
+    "Watch for ground or building settlement and tilting.",
+  "rule.softsoil_severe.finding":
+    "Very soft soil: strong shaking amplification and high liquefaction risk.",
+  "rule.softsoil_severe.step":
+    "Inspect the ground and foundations carefully; prioritize a professional assessment.",
+  "rule.combo_shaking.finding":
+    "Very strong shaking combined with reported structural damage: critical life-safety risk.",
+  "rule.combo_shaking.step":
+    "Do not consider it safe. Evacuate and wait for an engineer or Civil Protection to confirm.",
   "rule.floors.finding": "Building over 7 floors: extra caution required.",
   "rule.floors.step":
     "Limit use until an engineer confirms the upper floors are safe.",
