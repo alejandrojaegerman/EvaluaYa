@@ -447,58 +447,7 @@ function Stat({
   );
 }
 
-function RiskBar({
-  green,
-  yellow,
-  red,
-  t,
-}: {
-  green: number;
-  yellow: number;
-  red: number;
-  t: (k: string) => string;
-}) {
-  const total = green + yellow + red;
-  const pct = (n: number) => (total > 0 ? (n / total) * 100 : 0);
-  return (
-    <Card>
-      <p className="text-sm font-semibold">{t("dash.distribution")}</p>
-      <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-muted">
-        <div style={{ width: `${pct(red)}%`, backgroundColor: rgb("red") }} />
-        <div style={{ width: `${pct(yellow)}%`, backgroundColor: rgb("yellow") }} />
-        <div style={{ width: `${pct(green)}%`, backgroundColor: rgb("green") }} />
-      </div>
-      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-        <Legend color={rgb("red")} label={t("result.red.tag")} value={red} />
-        <Legend color={rgb("yellow")} label={t("result.yellow.tag")} value={yellow} />
-        <Legend color={rgb("green")} label={t("result.green.tag")} value={green} />
-      </div>
-    </Card>
-  );
-}
 
-function Legend({
-  color,
-  label,
-  value,
-}: {
-  color: string;
-  label: string;
-  value: number;
-}) {
-  return (
-    <div>
-      <span className="flex items-center justify-center gap-1.5">
-        <span
-          className="inline-block size-2.5 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-        <span className="font-semibold">{value}</span>
-      </span>
-      <span className="text-muted-foreground">{label}</span>
-    </div>
-  );
-}
 
 function MiniDots({
   green,
