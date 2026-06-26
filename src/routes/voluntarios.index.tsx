@@ -81,10 +81,15 @@ function VolunteersPage() {
       toast.error(t("vol.selectStates"));
       return;
     }
+    if (isOrg && org.trim().length < 2) {
+      toast.error(t("vol.orgRequired"));
+      return;
+    }
     setBusy(true);
     try {
       const res = await submit({
         data: {
+          volunteerType,
           name,
           organization: org,
           whatsapp,
