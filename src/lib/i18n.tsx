@@ -1070,6 +1070,33 @@ const en: Dict = {
   "admin.copyLink": "Copy panel link",
   "admin.linkCopied": "Link copied",
   "admin.none": "No records.",
+
+  // Save / access reports (passwordless account)
+  "account.saveTitle": "Save your reports",
+  "account.saveBody":
+    "Want to see this report later or from another phone? Get a link by email to save it. No password needed.",
+  "account.saveHint":
+    "We only use your email to send you the access link. It's optional.",
+  "account.emailLabel": "Email address",
+  "account.emailPlaceholder": "you@example.com",
+  "account.sendLink": "Send link",
+  "account.sending": "Sending…",
+  "account.invalidEmail": "Enter a valid email.",
+  "account.sendError": "Couldn't send the link. Please try again.",
+  "account.checkEmailTitle": "Check your email",
+  "account.checkEmailBody":
+    "We sent you an access link. Open it on this phone or any other to see your saved reports.",
+  "account.savedTitle": "Your reports are saved",
+  "account.savedBody":
+    "You're signed in. You can view your reports anytime.",
+  "account.viewMyReports": "My reports",
+  "account.myReportsTitle": "My reports",
+  "account.signInBody":
+    "Sign in with your email to see the reports you've saved.",
+  "account.loading": "Loading your reports…",
+  "account.emptyReports":
+    "You don't have any saved reports in this account yet. Once you save a report, it will appear here.",
+  "account.signOut": "Sign out",
 };
 
 
