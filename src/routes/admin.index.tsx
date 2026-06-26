@@ -34,8 +34,10 @@ import { formatDate, formatDayLabel } from "@/lib/datetime";
 import { RISK_HEX } from "@/lib/risk";
 import {
   adminGetAnalytics,
+  adminGetBuildingClusters,
   adminGetStateDrilldown,
   type AdminAnalytics,
+  type BuildingCluster,
   type StateDrilldown,
 } from "@/lib/admin-analytics.functions";
 
