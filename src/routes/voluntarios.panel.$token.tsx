@@ -189,7 +189,7 @@ function PanelPage() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {new Date(r.createdAt).toLocaleString()}
+                    {formatDateTime(r.createdAt, lang)}
                   </p>
                   {r.status === "open" && ageLabel(r.createdAt) && (
                     <p className="mt-0.5 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
