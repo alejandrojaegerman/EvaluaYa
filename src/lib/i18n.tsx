@@ -1513,6 +1513,10 @@ const en: Dict = {
   "dash.trend": "Trend (30 days)",
   "dash.topStates": "States with most reports",
   "dash.volunteers": "Volunteers",
+  "dash.buildings": "Buildings with multiple reports",
+  "dash.buildingsHint":
+    "Structures with 2 or more evaluations. Useful for spotting a single building generating several alerts.",
+  "dash.reportsWord": "reports",
   "dash.totalVolunteers": "Total volunteers",
   "dash.orgs": "Organizations",
   "dash.individuals": "individual",
