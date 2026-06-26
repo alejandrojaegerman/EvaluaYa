@@ -22,6 +22,7 @@ import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
+import { formatDate } from "@/lib/datetime";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
