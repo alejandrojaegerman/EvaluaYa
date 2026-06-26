@@ -743,6 +743,10 @@ const es: Dict = {
   "dash.trend": "Tendencia (30 días)",
   "dash.topStates": "Estados con más reportes",
   "dash.volunteers": "Voluntarios",
+  "dash.buildings": "Edificios con varios reportes",
+  "dash.buildingsHint":
+    "Estructuras con 2 o más evaluaciones. Útil para detectar un mismo edificio que genera varias alertas.",
+  "dash.reportsWord": "reportes",
   "dash.totalVolunteers": "Voluntarios totales",
   "dash.orgs": "Organizaciones",
   "dash.individuals": "individuales",
