@@ -487,6 +487,15 @@ function PropertyStep() {
         </div>
       </div>
 
+      {!valid && missing.length > 0 && (
+        <p className="mt-6 rounded-xl bg-muted px-4 py-3 text-center text-sm text-muted-foreground">
+          {t("property.missingPrefix")}{" "}
+          <span className="font-semibold text-foreground">
+            {missing.join(", ")}
+          </span>
+        </p>
+      )}
+
       <StepFooter
         onBack={() => navigate({ to: "/" })}
         onNext={handleContinue}
