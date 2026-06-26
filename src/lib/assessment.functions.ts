@@ -57,6 +57,13 @@ const analyzeSchema = z.object({
     age: z.enum(["pre1970", "1970to2000", "post2000"]),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
+    pga: z.number().min(0).max(10).optional(),
+    pgv: z.number().min(0).max(1000).optional(),
+    vs30: z.number().min(0).max(3000).optional(),
+    soilClass: z.enum(["rock", "stiff", "soft", "very_soft"]).optional(),
+    buildingPeriod: z.number().min(0).max(10).optional(),
+    spectralDemand: z.number().min(0).max(10).optional(),
+    spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
   answers: z.array(answerSchema).min(1).max(13),
 });
