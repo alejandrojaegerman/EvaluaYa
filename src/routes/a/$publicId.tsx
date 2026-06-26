@@ -23,6 +23,7 @@ import { AppShell } from "@/components/AppShell";
 import { ConnectEngineers } from "@/components/ConnectEngineers";
 import { RiskBadge } from "@/components/RiskBadge";
 import { SaveReportsCard } from "@/components/SaveReportsCard";
+import { SameBuildingCard } from "@/components/SameBuildingCard";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
 import type { AssessmentRecord } from "@/lib/assessment-types";
