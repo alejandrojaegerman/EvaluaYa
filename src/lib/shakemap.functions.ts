@@ -3,7 +3,12 @@ import { z } from "zod";
 
 import type { Json } from "@/integrations/supabase/types";
 
-import { intensityAt, type MmiGrid, type SeismicIntensity } from "./shakemap";
+import {
+  seismicAt,
+  type MmiGrid,
+  type SeismicGrid,
+  type SeismicReading,
+} from "./shakemap";
 
 const intensitySchema = z.object({
   lat: z.number().min(-90).max(90),
@@ -11,14 +16,15 @@ const intensitySchema = z.object({
 });
 
 /**
- * Public, read-only lookup: returns the estimated ShakeMap intensity (MMI) at
- * a coordinate for the currently active seismic event, or null if there is no
- * active event or the point is outside coverage. Only the intensity value is
+ * Public, read-only lookup: returns the estimated ShakeMap ground-motion
+ * metrics (MMI, PGA, PGV, spectral accelerations and soil vs30) at a
+ * coordinate for the currently active seismic event, or null if there is no
+ * active event or the point is outside coverage. Only the point reading is
  * returned — the full grid never leaves the server.
  */
 export const getSeismicIntensity = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => intensitySchema.parse(data))
-  .handler(async ({ data }): Promise<SeismicIntensity | null> => {
+  .handler(async ({ data }): Promise<SeismicReading | null> => {
     try {
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
@@ -29,8 +35,8 @@ export const getSeismicIntensity = createServerFn({ method: "POST" })
         .eq("is_active", true)
         .maybeSingle();
       if (error || !row) return null;
-      const grid = row.grid as unknown as MmiGrid;
-      return intensityAt(grid, data.lat, data.lng);
+      const grid = row.grid as unknown as SeismicGrid | MmiGrid;
+      return seismicAt(grid, data.lat, data.lng);
     } catch (err) {
       console.error("[getSeismicIntensity] error", err);
       return null;

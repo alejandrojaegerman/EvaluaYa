@@ -1,3 +1,5 @@
+import type { SoilClass, SpectralBand } from "./shakemap";
+
 export type RiskLevel = "green" | "yellow" | "red";
 
 export type AnswerValue = "yes" | "no" | "unsure";
@@ -85,6 +87,20 @@ export type PropertyInfo = {
   seismicIntensity?: number;
   /** Roman-numeral label for the MMI (e.g. "VII") */
   seismicIntensityRoman?: string;
+  /** peak ground acceleration at the location (g) */
+  pga?: number;
+  /** peak ground velocity at the location (cm/s) */
+  pgv?: number;
+  /** site shear-wave velocity vs30 (m/s) */
+  vs30?: number;
+  /** coarse NEHRP-style soil class derived from vs30 */
+  soilClass?: SoilClass;
+  /** estimated fundamental period of the building (s) */
+  buildingPeriod?: number;
+  /** spectral acceleration at the building's period (g) — demand it "felt" */
+  spectralDemand?: number;
+  /** which spectral band matched the building's period */
+  spectralBand?: SpectralBand;
 };
 
 /** Max photos a resident can attach per checklist item. */

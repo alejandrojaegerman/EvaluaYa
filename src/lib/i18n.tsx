@@ -158,9 +158,29 @@ const es: Dict = {
   "rule.plumbing.step":
     "Cierra la llave principal de gas y agua, no enciendas luces ni llamas, y evacúa.",
   "rule.intensity.finding":
-    "Sacudida sísmica intensa (intensidad VII o mayor) en esta ubicación.",
+    "Sacudida sísmica moderada (intensidad VI o aceleración ≥0.25g) en esta ubicación.",
   "rule.intensity.step":
     "Aumenta la precaución: revisa con más cuidado y prioriza una evaluación profesional.",
+  "rule.intensity_severe.finding":
+    "Sacudida sísmica muy fuerte (intensidad VIII+ o aceleración ≥0.50g) en esta ubicación.",
+  "rule.intensity_severe.step":
+    "Esta zona recibió una de las sacudidas más fuertes del sismo. Trata cualquier daño con máxima cautela.",
+  "rule.spectral.finding":
+    "La demanda sísmica para edificaciones de esta altura fue alta (aceleración espectral ≥0.40g).",
+  "rule.spectral.step":
+    "Edificios de esta altura sintieron la sacudida con especial fuerza. Prioriza una revisión profesional.",
+  "rule.softsoil.finding":
+    "Suelo blando: amplifica la sacudida y aumenta el riesgo de licuefacción.",
+  "rule.softsoil.step":
+    "Vigila asentamientos o inclinaciones del terreno y de la edificación.",
+  "rule.softsoil_severe.finding":
+    "Suelo muy blando: fuerte amplificación de la sacudida y alto riesgo de licuefacción.",
+  "rule.softsoil_severe.step":
+    "Observa con cuidado el terreno y los cimientos; prioriza una evaluación profesional.",
+  "rule.combo_shaking.finding":
+    "Sacudida muy fuerte combinada con daño estructural reportado: riesgo crítico para la vida.",
+  "rule.combo_shaking.step":
+    "No la consideres segura. Evacúa y espera la confirmación de un ingeniero o Protección Civil.",
   "rule.floors.finding":
     "Edificación de más de 7 pisos: requiere precaución adicional.",
   "rule.floors.step":
@@ -169,6 +189,13 @@ const es: Dict = {
     "El sistema estructural de esta edificación requiere precaución adicional.",
   "rule.structure.step":
     "Limita el uso y prioriza una evaluación profesional.",
+
+  "soil.rock": "Suelo firme / roca",
+  "soil.stiff": "Suelo rígido",
+  "soil.soft": "Suelo blando",
+  "soil.very_soft": "Suelo muy blando",
+
+
 
 
 
@@ -201,6 +228,14 @@ const es: Dict = {
   "result.findings": "Hallazgos clave",
   "result.nextSteps": "Pasos recomendados",
   "result.photos": "Fotos enviadas",
+  "result.seismicContext": "Contexto sísmico",
+  "result.mmi": "Intensidad (MMI)",
+  "result.pga": "Aceleración pico (PGA)",
+  "result.pgv": "Velocidad pico (PGV)",
+  "result.spectralDemand": "Demanda para esta altura",
+  "result.soil": "Suelo del sitio",
+  "result.seismicContextHint":
+    "Datos del mapa de sacudida (ShakeMap) del USGS para este sismo, según la ubicación. La demanda para esta altura es la aceleración espectral en el período estimado de la edificación.",
   "result.share": "Compartir",
   "result.copyLink": "Copiar enlace",
   "result.copied": "¡Enlace copiado!",
@@ -347,9 +382,15 @@ const es: Dict = {
   "methodology.red.pounding":
     "Golpeteo entre edificios vecinos durante el sismo.",
   "methodology.red.plumbing": "Daño grave en tuberías o gas.",
+  "methodology.red.combo":
+    "Sacudida muy fuerte (MMI VIII+ o PGA ≥0.50g) junto con daño estructural reportado.",
   "methodology.yellow.title": "Elevan a AMARILLO (precaución)",
   "methodology.yellow.intensity":
-    "Intensidad estimada del sismo MMI VII o mayor en tu ubicación.",
+    "Sacudida moderada en tu ubicación: intensidad MMI VI+ o aceleración pico (PGA) ≥0.25g.",
+  "methodology.yellow.spectral":
+    "Demanda sísmica alta para la altura del edificio: aceleración espectral ≥0.40g en su período estimado.",
+  "methodology.yellow.soil":
+    "Suelo blando o muy blando (vs30 bajo), que amplifica la sacudida y aumenta el riesgo de licuefacción.",
   "methodology.yellow.floors": "Edificios de más de 7 pisos.",
   "methodology.yellow.structure":
     "Sistemas estructurales más vulnerables: pórticos de concreto, paredes de relleno, prefabricado o mampostería reforzada baja.",
@@ -364,7 +405,7 @@ const es: Dict = {
 
   "methodology.seismicTitle": "Contexto sísmico",
   "methodology.seismicBody":
-    "Si compartes tu ubicación, estimamos la intensidad de sacudida (escala de Mercalli Modificada, MMI) interpolando la malla oficial de ShakeMap del USGS para el sismo activo. Una mayor intensidad eleva el nivel de precaución.",
+    "Si compartes tu ubicación, leemos varias capas de la malla oficial de ShakeMap del USGS para el sismo activo, interpoladas a tu punto exacto: la intensidad (MMI), la aceleración pico del suelo (PGA), la velocidad pico (PGV), la aceleración espectral en distintos períodos y la rigidez del suelo (vs30). Estimamos el período natural del edificio según su altura (T ≈ 0.1 × pisos) y lo comparamos con la aceleración espectral de ese período, para saber cuánta sacudida sintió realmente una edificación de esa altura. El suelo blando (vs30 bajo) se marca porque amplifica la sacudida y favorece la licuefacción. Estos valores elevan el nivel de precaución de forma graduada y se incluyen en el contexto que recibe la IA.",
 
   "methodology.sourcesTitle": "Fuentes y credibilidad",
   "methodology.sourcesIntro":
@@ -543,15 +584,42 @@ const en: Dict = {
   "rule.plumbing.step":
     "Shut off the main gas and water valves, avoid lights or flames, and evacuate.",
   "rule.intensity.finding":
-    "Intense shaking (intensity VII or greater) at this location.",
+    "Moderate shaking (intensity VI or acceleration ≥0.25g) at this location.",
   "rule.intensity.step":
     "Increase caution: inspect more carefully and prioritize a professional assessment.",
+  "rule.intensity_severe.finding":
+    "Very strong shaking (intensity VIII+ or acceleration ≥0.50g) at this location.",
+  "rule.intensity_severe.step":
+    "This area received some of the strongest shaking from the quake. Treat any damage with maximum caution.",
+  "rule.spectral.finding":
+    "Seismic demand for buildings of this height was high (spectral acceleration ≥0.40g).",
+  "rule.spectral.step":
+    "Buildings of this height felt the shaking especially hard. Prioritize a professional review.",
+  "rule.softsoil.finding":
+    "Soft soil: amplifies shaking and raises liquefaction risk.",
+  "rule.softsoil.step":
+    "Watch for ground or building settlement and tilting.",
+  "rule.softsoil_severe.finding":
+    "Very soft soil: strong shaking amplification and high liquefaction risk.",
+  "rule.softsoil_severe.step":
+    "Inspect the ground and foundations carefully; prioritize a professional assessment.",
+  "rule.combo_shaking.finding":
+    "Very strong shaking combined with reported structural damage: critical life-safety risk.",
+  "rule.combo_shaking.step":
+    "Do not consider it safe. Evacuate and wait for an engineer or Civil Protection to confirm.",
   "rule.floors.finding": "Building over 7 floors: extra caution required.",
   "rule.floors.step":
     "Limit use until an engineer confirms the upper floors are safe.",
   "rule.structure.finding":
     "This building's structural system requires extra caution.",
   "rule.structure.step": "Limit use and prioritize a professional assessment.",
+
+  "soil.rock": "Firm soil / rock",
+  "soil.stiff": "Stiff soil",
+  "soil.soft": "Soft soil",
+  "soil.very_soft": "Very soft soil",
+
+
 
 
   "analyze.title": "Analyzing",
@@ -583,6 +651,14 @@ const en: Dict = {
   "result.findings": "Key findings",
   "result.nextSteps": "Recommended next steps",
   "result.photos": "Submitted photos",
+  "result.seismicContext": "Seismic context",
+  "result.mmi": "Intensity (MMI)",
+  "result.pga": "Peak acceleration (PGA)",
+  "result.pgv": "Peak velocity (PGV)",
+  "result.spectralDemand": "Demand for this height",
+  "result.soil": "Site soil",
+  "result.seismicContextHint":
+    "Data from the USGS ShakeMap for this earthquake, at this location. 'Demand for this height' is the spectral acceleration at the building's estimated natural period.",
   "result.share": "Share",
   "result.copyLink": "Copy link",
   "result.copied": "Link copied!",
@@ -728,9 +804,15 @@ const en: Dict = {
   "methodology.red.pounding":
     "Pounding between neighboring buildings during the quake.",
   "methodology.red.plumbing": "Severe plumbing or gas damage.",
+  "methodology.red.combo":
+    "Very strong shaking (MMI VIII+ or PGA ≥0.50g) together with reported structural damage.",
   "methodology.yellow.title": "Escalate to YELLOW (caution)",
   "methodology.yellow.intensity":
-    "Estimated shaking intensity MMI VII or higher at your location.",
+    "Moderate shaking at your location: intensity MMI VI+ or peak ground acceleration (PGA) ≥0.25g.",
+  "methodology.yellow.spectral":
+    "High seismic demand for the building's height: spectral acceleration ≥0.40g at its estimated period.",
+  "methodology.yellow.soil":
+    "Soft or very soft soil (low vs30), which amplifies shaking and raises liquefaction risk.",
   "methodology.yellow.floors": "Buildings taller than 7 floors.",
   "methodology.yellow.structure":
     "More vulnerable structural systems: concrete moment frames, infill walls, precast, or low-rise reinforced masonry.",
@@ -745,7 +827,7 @@ const en: Dict = {
 
   "methodology.seismicTitle": "Seismic context",
   "methodology.seismicBody":
-    "If you share your location, we estimate the shaking intensity (Modified Mercalli Intensity, MMI) by interpolating the official USGS ShakeMap grid for the active earthquake. Higher intensity raises the caution level.",
+    "If you share your location, we read several layers of the official USGS ShakeMap grid for the active earthquake, interpolated to your exact point: intensity (MMI), peak ground acceleration (PGA), peak ground velocity (PGV), spectral acceleration at different periods, and soil stiffness (vs30). We estimate the building's natural period from its height (T ≈ 0.1 × floors) and match it to the spectral acceleration at that period, to gauge how much shaking a building of that height actually felt. Soft soil (low vs30) is flagged because it amplifies shaking and favors liquefaction. These values raise the caution level in a graduated way and are included in the context the AI receives.",
 
   "methodology.sourcesTitle": "Sources & credibility",
   "methodology.sourcesIntro":

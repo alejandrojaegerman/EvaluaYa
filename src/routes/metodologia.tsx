@@ -49,9 +49,12 @@ function MethodologyPage() {
     t("methodology.red.liquefaction"),
     t("methodology.red.pounding"),
     t("methodology.red.plumbing"),
+    t("methodology.red.combo"),
   ];
   const yellowItems = [
     t("methodology.yellow.intensity"),
+    t("methodology.yellow.spectral"),
+    t("methodology.yellow.soil"),
     t("methodology.yellow.floors"),
     t("methodology.yellow.structure"),
   ];

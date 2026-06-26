@@ -57,6 +57,13 @@ const analyzeSchema = z.object({
     age: z.enum(["pre1970", "1970to2000", "post2000"]),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
+    pga: z.number().min(0).max(10).optional(),
+    pgv: z.number().min(0).max(1000).optional(),
+    vs30: z.number().min(0).max(3000).optional(),
+    soilClass: z.enum(["rock", "stiff", "soft", "very_soft"]).optional(),
+    buildingPeriod: z.number().min(0).max(10).optional(),
+    spectralDemand: z.number().min(0).max(10).optional(),
+    spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
   answers: z.array(answerSchema).min(1).max(13),
 });
@@ -105,15 +112,47 @@ function buildPrompt(input: AnalyzeInput) {
   };
   const structuralType = input.property.structuralType ?? "unknown";
 
+  const p = input.property;
   const intensityLine =
-    typeof input.property.seismicIntensity === "number"
-      ? `Estimated ShakeMap shaking intensity at this location: MMI ${input.property.seismicIntensityRoman ?? ""} (${input.property.seismicIntensity}).`
+    typeof p.seismicIntensity === "number"
+      ? `Estimated ShakeMap shaking intensity at this location: MMI ${p.seismicIntensityRoman ?? ""} (${p.seismicIntensity}).`
+      : "";
+
+  // Data-driven ground-motion context from the USGS ShakeMap for this event.
+  const groundMotionBits: string[] = [];
+  if (typeof p.pga === "number") {
+    groundMotionBits.push(`peak ground acceleration ${(p.pga * 100).toFixed(0)}%g`);
+  }
+  if (typeof p.pgv === "number") {
+    groundMotionBits.push(`peak ground velocity ${p.pgv.toFixed(0)} cm/s`);
+  }
+  const groundMotionLine = groundMotionBits.length
+    ? `Recorded ground motion here: ${groundMotionBits.join(", ")}.`
+    : "";
+
+  const spectralLine =
+    typeof p.spectralDemand === "number" && typeof p.buildingPeriod === "number"
+      ? `Spectral acceleration at this building's estimated natural period (~${p.buildingPeriod.toFixed(1)} s, SA(${p.spectralBand ?? "?"})) is ${(p.spectralDemand * 100).toFixed(0)}%g — i.e. the shaking demand a building of this height actually experienced.`
+      : "";
+
+  const soilMap: Record<string, string> = {
+    rock: "rock / very stiff site (little amplification)",
+    stiff: "stiff soil site",
+    soft: "soft soil site (amplifies shaking, higher liquefaction risk)",
+    very_soft: "very soft soil site (strong amplification, high liquefaction risk)",
+  };
+  const soilLine =
+    p.soilClass && typeof p.vs30 === "number"
+      ? `Site soil: ${soilMap[p.soilClass]} (vs30 ≈ ${p.vs30} m/s).`
       : "";
 
   const userText = [
     `Property: ${input.property.buildingType}, ${input.property.floors} floor(s), built ${ageMap[input.property.age]}.`,
     `Structural system: ${structMap[structuralType]}.`,
     intensityLine,
+    groundMotionLine,
+    spectralLine,
+    soilLine,
     input.property.address ? `Location: ${input.property.address}.` : "",
     "",
     "Inspection answers (resident self-report):",
@@ -142,6 +181,7 @@ Decision guidance:
 - "yes" to ground liquefaction signs, building-to-building pounding, or severe plumbing/gas damage are critical life-safety hazards (treat as red).
 - Damaged flooring, electrical panels/wiring, or hanging fixtures suggest at least yellow.
 - Exposed rebar + spalling on columns/beams, or roof collapse, should push toward red.
+- Ground-motion context (from USGS ShakeMap): higher MMI / PGA means this location was shaken harder, so weigh reported damage more heavily. The spectral acceleration at the building's own period is the demand a building of THAT height actually felt — high values there (≥0.4g) make even partial damage reports more concerning. Soft/very-soft soil sites amplify shaking and are more prone to liquefaction and settlement. Treat strong shaking together with any reported structural damage as a serious (red) combination. Ground motion alone, with no observed damage, should not by itself force red.
 - Use the photos to confirm or downgrade severity. Be conservative: when life-safety is uncertain, do not choose green.
 
 Write for a frightened, non-technical resident: short, calm, plain language. Avoid jargon. Always remind them this is preliminary and a licensed engineer or Civil Protection must confirm.

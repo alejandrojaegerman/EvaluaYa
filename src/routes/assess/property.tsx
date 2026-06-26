@@ -24,6 +24,7 @@ import type {
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
+import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
@@ -64,10 +65,7 @@ function PropertyStep() {
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
-  const [intensity, setIntensity] = useState<{
-    mmi: number;
-    roman: string;
-  } | null>(null);
+  const [intensity, setIntensity] = useState<SeismicReading | null>(null);
 
   const draftLoaded = useRef(false);
   const geoTried = useRef(false);
@@ -90,9 +88,18 @@ function PropertyStep() {
       if (p.floors) setFloors(p.floors);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
+        const sa: SeismicReading["sa"] = {};
+        if (p.spectralBand && typeof p.spectralDemand === "number") {
+          sa[p.spectralBand] = p.spectralDemand;
+        }
         setIntensity({
           mmi: p.seismicIntensity,
           roman: p.seismicIntensityRoman ?? "",
+          pga: typeof p.pga === "number" ? p.pga : null,
+          pgv: typeof p.pgv === "number" ? p.pgv : null,
+          sa,
+          vs30: typeof p.vs30 === "number" ? p.vs30 : null,
+          soilClass: p.soilClass ?? null,
         });
       }
     });
@@ -157,10 +164,26 @@ function PropertyStep() {
         floors,
         age,
         ...(intensity
-          ? {
-              seismicIntensity: intensity.mmi,
-              seismicIntensityRoman: intensity.roman,
-            }
+          ? (() => {
+              const demand = spectralDemand(intensity, floors);
+              return {
+                seismicIntensity: intensity.mmi,
+                seismicIntensityRoman: intensity.roman,
+                ...(intensity.pga != null ? { pga: intensity.pga } : {}),
+                ...(intensity.pgv != null ? { pgv: intensity.pgv } : {}),
+                ...(intensity.vs30 != null ? { vs30: intensity.vs30 } : {}),
+                ...(intensity.soilClass
+                  ? { soilClass: intensity.soilClass }
+                  : {}),
+                ...(demand
+                  ? {
+                      buildingPeriod: demand.period,
+                      spectralDemand: demand.value,
+                      spectralBand: demand.band,
+                    }
+                  : {}),
+              };
+            })()
           : {}),
       },
       answers: existing?.answers ?? [],
@@ -274,6 +297,17 @@ function PropertyStep() {
                   {t("property.intensityHigh")}
                 </p>
               )}
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground tabular-nums">
+                {intensity.pga != null && (
+                  <span>PGA {(intensity.pga * 100).toFixed(0)}%g</span>
+                )}
+                {intensity.pgv != null && (
+                  <span>PGV {intensity.pgv.toFixed(0)} cm/s</span>
+                )}
+                {intensity.soilClass && (
+                  <span>{t(`soil.${intensity.soilClass}`)}</span>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -73,6 +73,27 @@ function AnalyzeStep() {
                   seismicIntensityRoman: draft.property.seismicIntensityRoman,
                 }
               : {}),
+            ...(typeof draft.property.pga === "number"
+              ? { pga: draft.property.pga }
+              : {}),
+            ...(typeof draft.property.pgv === "number"
+              ? { pgv: draft.property.pgv }
+              : {}),
+            ...(typeof draft.property.vs30 === "number"
+              ? { vs30: draft.property.vs30 }
+              : {}),
+            ...(draft.property.soilClass
+              ? { soilClass: draft.property.soilClass }
+              : {}),
+            ...(typeof draft.property.buildingPeriod === "number"
+              ? { buildingPeriod: draft.property.buildingPeriod }
+              : {}),
+            ...(typeof draft.property.spectralDemand === "number"
+              ? { spectralDemand: draft.property.spectralDemand }
+              : {}),
+            ...(draft.property.spectralBand
+              ? { spectralBand: draft.property.spectralBand }
+              : {}),
           },
           answers: draft.answers.map((a) => ({
             id: a.id,
