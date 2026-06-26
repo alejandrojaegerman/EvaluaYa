@@ -450,6 +450,11 @@ const es: Dict = {
   "map.reports": "reportes",
   "map.unspecifiedMunicipality": "Municipio sin especificar",
   "map.unspecifiedLocation": "Ubicación sin especificar",
+  "map.interactiveHint": "Acerca para ver el detalle por municipio. Toca una zona para ver sus datos.",
+  "map.viewZone": "Ver zona",
+  "map.mapLoading": "Cargando mapa…",
+  "map.mapUnavailable": "El mapa interactivo no está disponible aquí. Mostrando vista simplificada.",
+  "map.atState": "Ubicado a nivel de estado",
 
   "map.lastUpdated": "Actualizado",
   "map.empty": "Aún no hay evaluaciones suficientes para mostrar el mapa.",
@@ -1208,6 +1213,11 @@ const en: Dict = {
   "map.reports": "reports",
   "map.unspecifiedMunicipality": "Municipality not specified",
   "map.unspecifiedLocation": "Location not specified",
+  "map.interactiveHint": "Zoom in for municipality-level detail. Tap an area to see its data.",
+  "map.viewZone": "View zone",
+  "map.mapLoading": "Loading map…",
+  "map.mapUnavailable": "The interactive map isn't available here. Showing a simplified view.",
+  "map.atState": "Located at state level",
 
   "map.lastUpdated": "Updated",
   "map.empty": "Not enough assessments yet to show the map.",
