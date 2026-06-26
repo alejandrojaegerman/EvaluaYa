@@ -16,6 +16,7 @@ import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
@@ -63,6 +64,11 @@ const VoluntariosIndexRoute = VoluntariosIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZonaEstadoRoute = ZonaEstadoRouteImport.update({
+  id: '/zona/$estado',
+  path: '/zona/$estado',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/zona/$estado': typeof ZonaEstadoRoute
   '/admin': typeof AdminIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/zona/$estado'
     | '/admin/'
     | '/voluntarios/'
     | '/lovable/email/suppression'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/zona/$estado'
     | '/admin'
     | '/voluntarios'
     | '/lovable/email/suppression'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/zona/$estado'
     | '/admin/'
     | '/voluntarios/'
     | '/lovable/email/suppression'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  ZonaEstadoRoute: typeof ZonaEstadoRoute
   AdminIndexRoute: typeof AdminIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zona/$estado': {
+      id: '/zona/$estado'
+      path: '/zona/$estado'
+      fullPath: '/zona/$estado'
+      preLoaderRoute: typeof ZonaEstadoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -450,6 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  ZonaEstadoRoute: ZonaEstadoRoute,
   AdminIndexRoute: AdminIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,

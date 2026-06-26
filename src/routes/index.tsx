@@ -26,6 +26,7 @@ import { formatDate } from "@/lib/datetime";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
+import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 import heroEngineer from "@/assets/hero-engineer.png";
 
 
