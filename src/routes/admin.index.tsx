@@ -25,6 +25,7 @@ import {
 
 import { AppShell } from "@/components/AppShell";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
+import { RiskGauge } from "@/components/RiskGauge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
