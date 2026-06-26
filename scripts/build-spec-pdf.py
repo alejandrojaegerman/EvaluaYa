@@ -21,6 +21,8 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
     HRFlowable,
     Paragraph,
@@ -32,6 +34,23 @@ from reportlab.platypus import (
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public")
 
+# Embed real TrueType fonts (Bitstream Vera, bundled with reportlab) so the
+# PDFs render identically in every viewer — including mobile browsers, where
+# non-embedded base-14 fonts get substituted with broken glyph metrics.
+_FONTS = os.path.join(os.path.dirname(pdfmetrics.__file__), "..", "fonts")
+pdfmetrics.registerFont(TTFont("Body", os.path.join(_FONTS, "Vera.ttf")))
+pdfmetrics.registerFont(TTFont("Body-Bold", os.path.join(_FONTS, "VeraBd.ttf")))
+pdfmetrics.registerFont(TTFont("Body-Italic", os.path.join(_FONTS, "VeraIt.ttf")))
+pdfmetrics.registerFont(TTFont("Body-BoldItalic", os.path.join(_FONTS, "VeraBI.ttf")))
+pdfmetrics.registerFontFamily(
+    "Body", normal="Body", bold="Body-Bold",
+    italic="Body-Italic", boldItalic="Body-BoldItalic",
+)
+
+FONT = "Body"
+FONT_BOLD = "Body-Bold"
+FONT_ITALIC = "Body-Italic"
+
 INK = colors.HexColor("#1f2937")
 MUTED = colors.HexColor("#6b7280")
 LINE = colors.HexColor("#e5e7eb")
@@ -40,6 +59,7 @@ YELLOW = colors.HexColor("#d97706")
 GREEN = colors.HexColor("#16a34a")
 TEAL = colors.HexColor("#0f766e")
 SOFT = colors.HexColor("#f8fafc")
+
 
 
 def styles():
