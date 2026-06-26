@@ -40,6 +40,8 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const isRed = record.riskLevel === "red";
 
   const [engineers, setEngineers] = useState<PublicEngineer[]>([]);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [revealingId, setRevealingId] = useState<string | null>(null);
   const [whatsapp, setWhatsapp] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
