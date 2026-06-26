@@ -200,6 +200,10 @@ function ChecklistStep() {
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
           {t("checklist.optionalNote")}
         </p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          {t("checklist.photosOptional")}
+        </p>
+
       </div>
 
       {/* Structural checks (required) */}
