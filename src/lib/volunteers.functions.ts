@@ -472,7 +472,8 @@ export const claimHelpRequest = createServerFn({ method: "POST" })
         "@/integrations/supabase/client.server"
       );
       const engineer = await loadEngineerByToken(data.token);
-      if (!engineer) return { ok: false };
+      if (!engineer || tokenExpired(engineer)) return { ok: false };
+
       const { error } = await supabaseAdmin
         .from("help_requests")
         .update({
