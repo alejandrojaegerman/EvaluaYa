@@ -547,7 +547,7 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
         // approve: generate a stable access token if not already present
         const { data: existing } = await supabaseAdmin
           .from("volunteer_engineers")
-          .select("access_token")
+          .select("access_token, name, email, states")
           .eq("id", data.id)
           .maybeSingle();
         const token = existing?.access_token ?? crypto.randomUUID();
@@ -556,6 +556,30 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
           .update({ status: "approved", access_token: token })
           .eq("id", data.id);
         if (error) return { ok: false };
+
+        // Notify the volunteer they were approved (best-effort, email only).
+        const email = existing?.email?.trim();
+        if (email) {
+          try {
+            const { sendSystemEmail } = await import("./notify-email.server");
+            const stateNames = (existing?.states ?? [])
+              .map((s: string) => ESTADO_NAMES.find((n) => n === s) ?? s)
+              .join(", ");
+            await sendSystemEmail({
+              templateName: "volunteer-approved",
+              recipientEmail: email,
+              idempotencyKey: `volunteer-approved-${data.id}`,
+              templateData: {
+                name: existing?.name ?? "",
+                states: stateNames,
+                panelUrl: `https://evaluaya.app/voluntarios/panel/${token}`,
+              },
+            });
+          } catch (e) {
+            console.error("[volunteers] approval email failed", e);
+          }
+        }
+
         return { ok: true, accessToken: token };
       } catch (e) {
         console.error("[volunteers] adminReviewEngineer failed", e);
