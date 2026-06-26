@@ -80,9 +80,13 @@ export type AdminHelpRequest = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Keep only digits — what wa.me expects (no +, spaces or punctuation). */
+/**
+ * Normalize a phone number to WhatsApp/E.164 digits (no +, spaces or
+ * punctuation), defaulting to the Venezuela country code so local numbers like
+ * "0414 123 4567" become valid wa.me targets ("584141234567").
+ */
 function normalizePhone(raw: string): string {
-  return raw.replace(/[^\d]/g, "");
+  return toWhatsappNumber(raw);
 }
 
 const RISK_ORDER: Record<string, number> = { red: 0, yellow: 1, green: 2 };
