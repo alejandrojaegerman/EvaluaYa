@@ -531,6 +531,33 @@ const es: Dict = {
   "admin.copyLink": "Copiar enlace del panel",
   "admin.linkCopied": "Enlace copiado",
   "admin.none": "Sin registros.",
+
+  // Save / access reports (passwordless account)
+  "account.saveTitle": "Guarda tus reportes",
+  "account.saveBody":
+    "¿Quieres volver a ver este reporte más adelante o desde otro teléfono? Recibe un enlace por correo para guardarlo. Sin contraseña.",
+  "account.saveHint":
+    "Solo usamos tu correo para enviarte el enlace de acceso. No es obligatorio.",
+  "account.emailLabel": "Correo electrónico",
+  "account.emailPlaceholder": "tucorreo@ejemplo.com",
+  "account.sendLink": "Enviar enlace",
+  "account.sending": "Enviando…",
+  "account.invalidEmail": "Ingresa un correo válido.",
+  "account.sendError": "No se pudo enviar el enlace. Intenta de nuevo.",
+  "account.checkEmailTitle": "Revisa tu correo",
+  "account.checkEmailBody":
+    "Te enviamos un enlace de acceso. Ábrelo desde este teléfono o cualquier otro para ver tus reportes guardados.",
+  "account.savedTitle": "Tus reportes están guardados",
+  "account.savedBody":
+    "Tu sesión está activa. Puedes ver tus reportes en cualquier momento.",
+  "account.viewMyReports": "Mis reportes",
+  "account.myReportsTitle": "Mis reportes",
+  "account.signInBody":
+    "Inicia sesión con tu correo para ver los reportes que has guardado.",
+  "account.loading": "Cargando tus reportes…",
+  "account.emptyReports":
+    "Aún no tienes reportes guardados en esta cuenta. Cuando guardes un reporte, aparecerá aquí.",
+  "account.signOut": "Cerrar sesión",
 };
 
 
