@@ -91,6 +91,7 @@ const MAP_H = 300;
 
 function MapPage() {
   const { t, lang } = useLang();
+  const navigate = useNavigate();
   const [totals, setTotals] = useState<DamageTotals | null>(null);
   const [areas, setAreas] = useState<AreaAggregate[]>([]);
   const [loading, setLoading] = useState(true);
