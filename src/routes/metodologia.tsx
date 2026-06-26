@@ -246,15 +246,15 @@ function MethodologyPage() {
         </p>
         <Button asChild size="lg" variant="outline" className="mt-4 w-full">
           <a
-            href="/evaluaya-algorithm-spec.pdf"
+            href={lang === "es" ? "/evaluaya-spec-es.pdf" : "/evaluaya-spec-en.pdf"}
             target="_blank"
             rel="noopener noreferrer"
-            download
           >
             <FileDown className="size-4" aria-hidden />
             {t("methodology.specDownload")}
           </a>
         </Button>
+
       </section>
 
       {/* CTA */}
