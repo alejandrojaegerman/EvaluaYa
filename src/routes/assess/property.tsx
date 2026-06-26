@@ -24,6 +24,7 @@ import type {
 import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
+import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
 
