@@ -54,6 +54,8 @@ function VolunteersPage() {
   const { t } = useLang();
   const submit = useServerFn(submitEngineerSignup);
 
+  const [volunteerType, setVolunteerType] =
+    useState<VolunteerType>("individual");
   const [name, setName] = useState("");
   const [org, setOrg] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -63,6 +65,8 @@ function VolunteersPage() {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+
+  const isOrg = volunteerType === "organization";
 
   function toggleState(s: string) {
     setStates((prev) =>
