@@ -184,22 +184,39 @@ function ZonaPage() {
             <Stat value={stats.municipios} label={t("zona.municipios")} />
           </section>
 
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <p className="text-sm font-semibold">{t("map.distribution")}</p>
-            <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-muted">
-              <div style={{ width: `${pct(stats.red)}%`, backgroundColor: rgb("red") }} />
-              <div style={{ width: `${pct(stats.yellow)}%`, backgroundColor: rgb("yellow") }} />
-              <div style={{ width: `${pct(stats.green)}%`, backgroundColor: rgb("green") }} />
+          <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="p-4">
+              <p className="text-sm font-semibold">{t("map.distribution")}</p>
+              <div className="mt-3">
+                <RiskGauge
+                  green={stats.green}
+                  yellow={stats.yellow}
+                  red={stats.red}
+                  label={t("zona.totalReports")}
+                />
+              </div>
+              {stats.lastReport && (
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  {t("zona.lastReport")}: {formatDate(stats.lastReport, lang)}
+                </p>
+              )}
             </div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-              <RiskStat label={t("map.high")} value={stats.red} color={rgb("red")} />
-              <RiskStat label={t("map.moderate")} value={stats.yellow} color={rgb("yellow")} />
-              <RiskStat label={t("map.low")} value={stats.green} color={rgb("green")} />
-            </div>
-            {stats.lastReport && (
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                {t("zona.lastReport")}: {formatDate(stats.lastReport, lang)}
-              </p>
+            <button
+              type="button"
+              onClick={toggleWhy}
+              aria-expanded={showWhy}
+              className="flex w-full items-center justify-center gap-1 border-t border-border px-3 py-2.5 text-xs font-medium text-primary transition-colors hover:bg-accent/40"
+            >
+              {showWhy ? t("factors.hideWhy") : t("factors.why")}
+              <ChevronDown
+                className={`size-3.5 transition-transform ${showWhy ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            {showWhy && (
+              <div className="border-t border-border bg-muted/30 p-3">
+                <RiskFactorsPanel factors={factors} loading={factorsLoading} />
+              </div>
             )}
           </section>
         </>
