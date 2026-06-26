@@ -59,7 +59,7 @@ function buildPayload(item: OutboxItem) {
             ? [a.photoDataUrl]
             : [],
     })),
-  } as Parameters<typeof analyzeAssessment>[0]["data"];
+  };
 }
 
 /**
