@@ -182,7 +182,12 @@ function AdminDashboard() {
         <Stat label={t("dash.areas")} value={data.topStates.length} />
       </div>
 
-      <RiskBar green={a.green} yellow={a.yellow} red={a.red} t={t} />
+      <Card>
+        <p className="text-sm font-semibold">{t("dash.distribution")}</p>
+        <div className="mt-3">
+          <RiskGauge green={a.green} yellow={a.yellow} red={a.red} />
+        </div>
+      </Card>
 
       {series.length > 0 && (
         <Card>
