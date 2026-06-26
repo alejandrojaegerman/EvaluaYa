@@ -157,6 +157,109 @@ export const getDamageTotals = createServerFn({ method: "GET" }).handler(
   },
 );
 
+// ---------------------------------------------------------------------------
+// Risk-factor drill-down ("why" behind the results). Anonymized aggregates
+// only — never addresses, photos or report ids. Brokered through the service
+// role so the locked base table stays private.
+// ---------------------------------------------------------------------------
+
+export type FactorRow = {
+  key: string;
+  total: number;
+  green: number;
+  yellow: number;
+  red: number;
+};
+
+export type RiskFactors = {
+  checklist: FactorRow[];
+  age: FactorRow[];
+  type: FactorRow[];
+  intensity: FactorRow[];
+  safetyRule: FactorRow[];
+};
+
+export const EMPTY_RISK_FACTORS: RiskFactors = {
+  checklist: [],
+  age: [],
+  type: [],
+  intensity: [],
+  safetyRule: [],
+};
+
+const GROUP_MAP: Record<string, keyof RiskFactors> = {
+  checklist: "checklist",
+  age: "age",
+  type: "type",
+  intensity: "intensity",
+  safety_rule: "safetyRule",
+};
+
+/** Shape a flat factor-row list into the grouped RiskFactors object. */
+export function groupRiskFactorRows(
+  rows: Array<{
+    factor_group: string;
+    factor_key: string;
+    total: number | null;
+    green: number | null;
+    yellow: number | null;
+    red: number | null;
+  }>,
+): RiskFactors {
+  const out: RiskFactors = {
+    checklist: [],
+    age: [],
+    type: [],
+    intensity: [],
+    safetyRule: [],
+  };
+  for (const r of rows) {
+    const group = GROUP_MAP[r.factor_group];
+    if (!group) continue;
+    out[group].push({
+      key: r.factor_key,
+      total: r.total ?? 0,
+      green: r.green ?? 0,
+      yellow: r.yellow ?? 0,
+      red: r.red ?? 0,
+    });
+  }
+  for (const g of Object.values(out)) g.sort((a, b) => b.total - a.total);
+  return out;
+}
+
+const riskFactorsSchema = z.object({
+  state: z.string().trim().min(1).max(120).optional(),
+  municipality: z.string().trim().min(1).max(120).optional(),
+});
+
+/**
+ * Public, anonymized breakdown of WHY an area's results look the way they do:
+ * flagged checklist items, building age/type, seismic intensity bands and the
+ * deterministic safety rules that fired — each split by risk level.
+ */
+export const getRiskFactors = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => riskFactorsSchema.parse(data ?? {}))
+  .handler(async ({ data }): Promise<RiskFactors> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } = await supabaseAdmin.rpc("get_risk_factors", {
+        _state: data.state ?? undefined,
+        _municipality: data.municipality ?? undefined,
+      });
+      if (error || !rows) {
+        if (error) console.error("[stats] getRiskFactors", error);
+        return EMPTY_RISK_FACTORS;
+      }
+      return groupRiskFactorRows(rows);
+    } catch (e) {
+      console.error("[stats] getRiskFactors failed", e);
+      return EMPTY_RISK_FACTORS;
+    }
+  });
+
 const leadSchema = z.object({
   organization: z.string().trim().min(1).max(200),
   contactName: z.string().trim().max(200).optional().default(""),
