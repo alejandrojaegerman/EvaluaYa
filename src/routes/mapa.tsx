@@ -393,7 +393,27 @@ function MapPage() {
                 );
               })}
               {stateBubbles.map((b) => (
-                <g key={b.state}>
+                <g
+                  key={b.state}
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer outline-none"
+                  onClick={() =>
+                    navigate({
+                      to: "/zona/$estado",
+                      params: { estado: estadoSlug(b.state) },
+                    })
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate({
+                        to: "/zona/$estado",
+                        params: { estado: estadoSlug(b.state) },
+                      });
+                    }
+                  }}
+                >
                   <circle
                     cx={b.x}
                     cy={b.y}
