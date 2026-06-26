@@ -147,3 +147,139 @@ export function outlinePath(width: number, height: number): string {
     }).join(" ") + " Z"
   );
 }
+
+// ---------------------------------------------------------------------------
+// Municipality centroids (curated, approximate).
+//
+// Only a subset of Venezuela's 335 municipios is listed — the ones that show up
+// most in the data, prioritizing the Caracas metro cluster plus the larger
+// cities. Anything not listed rolls up to its state centroid via
+// resolveMunicipio(). No per-user coordinates are ever used; these are static
+// city/municipio centers so the public map can show finer geography.
+
+export type Municipio = {
+  /** estado the municipio belongs to */
+  state: string;
+  /** canonical display name */
+  name: string;
+  lat: number;
+  lng: number;
+};
+
+export const MUNICIPIOS: Municipio[] = [
+  // --- Caracas metropolitan area ---
+  { state: "Distrito Capital", name: "Libertador", lat: 10.5, lng: -66.92 },
+  { state: "Miranda", name: "Sucre", lat: 10.49, lng: -66.81 }, // Petare
+  { state: "Miranda", name: "Chacao", lat: 10.5, lng: -66.85 },
+  { state: "Miranda", name: "Baruta", lat: 10.43, lng: -66.87 },
+  { state: "Miranda", name: "El Hatillo", lat: 10.42, lng: -66.82 },
+  { state: "Miranda", name: "Plaza", lat: 10.32, lng: -66.61 }, // Guarenas
+  { state: "Miranda", name: "Cristóbal Rojas", lat: 10.3, lng: -66.78 }, // Charallave
+  { state: "Distrito Capital", name: "Sucre", lat: 10.52, lng: -66.93 }, // Catia/Sucre parish
+  { state: "La Guaira", name: "Vargas", lat: 10.6, lng: -66.93 },
+  // --- Other major cities / capitals ---
+  { state: "Zulia", name: "Maracaibo", lat: 10.65, lng: -71.64 },
+  { state: "Carabobo", name: "Valencia", lat: 10.18, lng: -68.0 },
+  { state: "Lara", name: "Iribarren", lat: 10.07, lng: -69.32 }, // Barquisimeto
+  { state: "Bolívar", name: "Caroní", lat: 8.36, lng: -62.65 }, // Ciudad Guayana
+  { state: "Bolívar", name: "Heres", lat: 8.13, lng: -63.55 }, // Ciudad Bolívar
+  { state: "Aragua", name: "Girardot", lat: 10.25, lng: -67.6 }, // Maracay
+  { state: "Anzoátegui", name: "Simón Bolívar", lat: 10.13, lng: -64.68 }, // Barcelona
+  { state: "Anzoátegui", name: "Sotillo", lat: 10.21, lng: -64.62 }, // Puerto La Cruz
+  { state: "Monagas", name: "Maturín", lat: 9.75, lng: -63.18 },
+  { state: "Sucre", name: "Sucre", lat: 10.45, lng: -64.17 }, // Cumaná
+  { state: "Táchira", name: "San Cristóbal", lat: 7.77, lng: -72.22 },
+  { state: "Mérida", name: "Libertador", lat: 8.59, lng: -71.15 }, // Mérida city
+  { state: "Trujillo", name: "Valera", lat: 9.32, lng: -70.6 },
+  { state: "Barinas", name: "Barinas", lat: 8.62, lng: -70.21 },
+  { state: "Portuguesa", name: "Guanare", lat: 9.04, lng: -69.74 },
+  { state: "Falcón", name: "Miranda", lat: 11.4, lng: -69.67 }, // Coro
+  { state: "Cojedes", name: "San Carlos", lat: 9.66, lng: -68.58 },
+  { state: "Guárico", name: "Juan Germán Roscio", lat: 9.91, lng: -67.36 }, // San Juan de los Morros
+  { state: "Nueva Esparta", name: "Mariño", lat: 10.96, lng: -63.85 }, // Porlamar
+  { state: "Apure", name: "San Fernando", lat: 7.89, lng: -67.47 },
+  { state: "Yaracuy", name: "San Felipe", lat: 10.34, lng: -68.74 },
+  { state: "Delta Amacuro", name: "Tucupita", lat: 9.06, lng: -62.05 },
+  { state: "Amazonas", name: "Atures", lat: 5.66, lng: -67.62 }, // Puerto Ayacucho
+];
+
+/** Strip accents + lowercase + collapse whitespace for fuzzy matching. */
+function normKey(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+// Common free-text variants/typos seen in the data -> canonical municipio name.
+const MUNICIPIO_ALIASES: Record<string, string> = {
+  petare: "Sucre",
+  petarr: "Sucre",
+  "el paraiso": "Libertador",
+  "23 de enero": "Libertador",
+  "santa rosalia": "Libertador",
+  "los chorros": "Sucre",
+  catia: "Libertador",
+  libertados: "Libertador",
+  caracas: "Libertador",
+  hatillo: "El Hatillo",
+  maracay: "Girardot",
+  barquisimeto: "Iribarren",
+  "ciudad guayana": "Caroní",
+  "puerto ordaz": "Caroní",
+  "ciudad bolivar": "Heres",
+  "puerto la cruz": "Sotillo",
+  barcelona: "Simón Bolívar",
+  coro: "Miranda",
+  cumana: "Sucre",
+  porlamar: "Mariño",
+  merida: "Libertador",
+  "puerto ayacucho": "Atures",
+  "san juan de los morros": "Juan Germán Roscio",
+};
+
+// Index municipios by "state|normalizedName" for fast resolution.
+const MUNICIPIO_INDEX = new Map<string, Municipio>(
+  MUNICIPIOS.map((m) => [`${normKey(m.state)}|${normKey(m.name)}`, m]),
+);
+
+/**
+ * Resolve a (state, municipality) pair to coordinates. Returns the municipio
+ * centroid when we recognize the name (handling accents/typos/aliases),
+ * otherwise falls back to the state centroid. Returns null only when the state
+ * itself is unknown.
+ */
+export function resolveMunicipio(
+  state: string | null | undefined,
+  municipality: string | null | undefined,
+): { lat: number; lng: number; level: "municipio" | "estado"; name: string; stateName: string } | null {
+  const est = getEstado(state ?? undefined);
+  if (!est) return null;
+
+  if (municipality && municipality.trim()) {
+    const raw = normKey(municipality);
+    const canonical = MUNICIPIO_ALIASES[raw] ?? municipality.trim();
+    const hit =
+      MUNICIPIO_INDEX.get(`${normKey(est.name)}|${normKey(canonical)}`) ??
+      MUNICIPIO_INDEX.get(`${normKey(est.name)}|${raw}`);
+    if (hit) {
+      return {
+        lat: hit.lat,
+        lng: hit.lng,
+        level: "municipio",
+        name: hit.name,
+        stateName: est.name,
+      };
+    }
+  }
+
+  return {
+    lat: est.lat,
+    lng: est.lng,
+    level: "estado",
+    name: est.name,
+    stateName: est.name,
+  };
+}
