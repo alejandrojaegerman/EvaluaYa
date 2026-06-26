@@ -1200,6 +1200,11 @@ const en: Dict = {
   "panel.claimed": "You're handling this",
   "panel.close": "Mark as handled",
   "panel.contactResident": "Message resident",
+  "panel.contactLocked":
+    "Tap \"I'm available\" to see the resident's contact.",
+  "panel.expired": "Link expired",
+  "panel.expiredBody":
+    "Your access link expired for security. Contact us to get a new one.",
   "panel.viewReport": "View report",
   "panel.noLocation": "Location not specified",
   "panel.refresh": "Refresh",
