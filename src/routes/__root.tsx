@@ -21,7 +21,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider } from "../lib/i18n";
 import { registerServiceWorker } from "../lib/pwa";
 import { Toaster } from "../components/ui/sonner";
-import { SITE_URL } from "../lib/site";
+import { SITE_URL, absoluteUrl } from "../lib/site";
 
 function NotFoundComponent() {
   return (
@@ -123,8 +123,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Autoevaluación de daños estructurales tras un sismo. Gratis, sin registro y funciona con poca señal.",
       },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cJy4f9Hr3ub8meqhg39MueCFNYX2/social-images/social-1782403490801-Screenshot_2026-06-25_at_12.04.39_PM.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cJy4f9Hr3ub8meqhg39MueCFNYX2/social-images/social-1782403490801-Screenshot_2026-06-25_at_12.04.39_PM.webp" },
+      { property: "og:image", content: absoluteUrl("/og-home.jpg") },
+      { name: "twitter:image", content: absoluteUrl("/og-home.jpg") },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
