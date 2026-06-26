@@ -33,6 +33,8 @@ function AdminPage() {
   const { t } = useLang();
   const listEngineers = useServerFn(adminListEngineers);
   const review = useServerFn(adminReviewEngineer);
+  const resend = useServerFn(adminResendAccessLink);
+  const rotate = useServerFn(adminRotateAccessLink);
   const listRequests = useServerFn(adminListHelpRequests);
 
   const [secret, setSecret] = useState("");
