@@ -286,7 +286,7 @@ function ZonaError() {
     <AppShell>
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
         <CircleAlert className="size-12 text-muted-foreground" aria-hidden />
-        <p className="mt-4 text-lg font-semibold">{t("result.genericError")}</p>
+        <p className="mt-4 text-lg font-semibold">{t("analyze.errorTitle")}</p>
         <Button size="lg" className="mt-6" onClick={() => router.invalidate()}>
           {t("common.retry")}
         </Button>
