@@ -204,7 +204,7 @@ function AnalyzeStep() {
       setErrorMsg(t("analyze.genericError"));
       setPhase("error");
     }
-  }, [navigate, t]);
+  }, [navigate, t, goProvisional]);
 
 
   // Load draft once.
