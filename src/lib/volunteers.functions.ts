@@ -355,13 +355,21 @@ async function loadEngineerByToken(token: string) {
   const { data, error } = await supabaseAdmin
     .from("volunteer_engineers")
     .select(
-      "id, name, organization, states, specialization, status, access_token",
+      "id, name, organization, states, specialization, status, access_token, token_expires_at",
     )
     .eq("access_token", token)
     .eq("status", "approved")
     .maybeSingle();
   if (error || !data) return null;
   return data;
+}
+
+/** True when an access link has a past expiry timestamp. */
+function tokenExpired(row: { token_expires_at?: string | null }): boolean {
+  return (
+    !!row.token_expires_at &&
+    new Date(row.token_expires_at).getTime() < Date.now()
+  );
 }
 
 export const getEngineerPanel = createServerFn({ method: "POST" })
