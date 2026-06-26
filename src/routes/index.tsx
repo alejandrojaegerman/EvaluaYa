@@ -22,6 +22,7 @@ import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
+import { formatDate } from "@/lib/datetime";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
@@ -260,8 +261,9 @@ function Index() {
                       {entry.address || t("home.viewResult")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(entry.createdAt).toLocaleDateString(
-                        entry.language === "es" ? "es-VE" : "en-US",
+                      {formatDate(
+                        entry.createdAt,
+                        entry.language === "es" ? "es" : "en",
                       )}
                     </p>
                   </div>

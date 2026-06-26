@@ -16,6 +16,7 @@ import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/datetime";
 import { absoluteUrl } from "@/lib/site";
 import {
   getEngineerPanel,
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/voluntarios/panel/$token")({
 
 function PanelPage() {
   const { token } = Route.useParams();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const fetchPanel = useServerFn(getEngineerPanel);
   const claim = useServerFn(claimHelpRequest);
   const close = useServerFn(closeHelpRequest);
@@ -189,7 +190,7 @@ function PanelPage() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {new Date(r.createdAt).toLocaleString()}
+                    {formatDateTime(r.createdAt, lang)}
                   </p>
                   {r.status === "open" && ageLabel(r.createdAt) && (
                     <p className="mt-0.5 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
