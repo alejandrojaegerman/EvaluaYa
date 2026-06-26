@@ -15,6 +15,7 @@ import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
@@ -57,6 +58,11 @@ const IndexRoute = IndexRouteImport.update({
 const VoluntariosIndexRoute = VoluntariosIndexRouteImport.update({
   id: '/voluntarios/',
   path: '/voluntarios/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/admin': typeof AdminIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/admin/'
     | '/voluntarios/'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/admin'
     | '/voluntarios'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/admin/'
     | '/voluntarios/'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
@@ -322,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/voluntarios'
       fullPath: '/voluntarios/'
       preLoaderRoute: typeof VoluntariosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  AdminIndexRoute: AdminIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,
