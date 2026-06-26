@@ -104,11 +104,6 @@ export const Route = createFileRoute("/zona/$estado")({
   errorComponent: ZonaError,
 });
 
-function rgb(level: "red" | "yellow" | "green"): string {
-  const [r, g, b] = RISK_HEX[level];
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
 function ZonaPage() {
   const { estadoName, stats } = Route.useLoaderData() as {
     estadoName: string;
@@ -116,11 +111,29 @@ function ZonaPage() {
   };
   const { t, lang } = useLang();
   const hasData = stats.total > 0;
-  const pct = (n: number) =>
-    stats.total > 0 ? Math.round((n / stats.total) * 100) : 0;
+
+  // Inline "why" drill-down for this state.
+  const [showWhy, setShowWhy] = useState(false);
+  const [factors, setFactors] = useState<RiskFactors | null>(null);
+  const [factorsLoading, setFactorsLoading] = useState(false);
+
+  function toggleWhy() {
+    if (showWhy) {
+      setShowWhy(false);
+      return;
+    }
+    setShowWhy(true);
+    if (factors) return;
+    setFactorsLoading(true);
+    getRiskFactors({ data: { state: estadoName } })
+      .then((f) => setFactors(f))
+      .catch(() => {})
+      .finally(() => setFactorsLoading(false));
+  }
 
   // Sibling states for internal linking (a few alphabetical neighbours).
   const others = ESTADOS.filter((e) => e.name !== estadoName).slice(0, 8);
+
 
   return (
     <AppShell>
