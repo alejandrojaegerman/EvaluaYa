@@ -190,14 +190,23 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                       {t("connect.coversYourState")}
                     </p>
                   )}
+                  {confirmingId === e.id && (
+                    <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                      {t("connect.revealConsent")}
+                    </p>
+                  )}
                   <Button
-                    onClick={() => contactEngineer(e.whatsapp)}
+                    onClick={() => contactEngineer(e.id)}
+                    disabled={revealingId === e.id}
                     className="mt-2 w-full bg-[#25D366] text-white hover:bg-[#1ebe5a]"
                     size="sm"
                   >
                     <MessageCircle className="size-4" />
-                    {t("connect.whatsappEngineer")}
+                    {revealingId === e.id
+                      ? t("connect.revealing")
+                      : t("connect.whatsappEngineer")}
                   </Button>
+
                 </li>
               );
             })}
