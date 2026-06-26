@@ -600,6 +600,13 @@ const en: Dict = {
     "This building's structural system requires extra caution.",
   "rule.structure.step": "Limit use and prioritize a professional assessment.",
 
+  "soil.rock": "Firm soil / rock",
+  "soil.stiff": "Stiff soil",
+  "soil.soft": "Soft soil",
+  "soil.very_soft": "Very soft soil",
+
+
+
 
   "analyze.title": "Analyzing",
   "analyze.uploading": "Processing photos…",
