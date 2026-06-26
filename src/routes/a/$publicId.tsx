@@ -10,6 +10,7 @@ import {
   Info,
   ImageDown,
   MessageCircle,
+  MessageSquareHeart,
   Map as MapIcon,
   Users,
   Activity,
