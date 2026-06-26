@@ -561,6 +561,11 @@ const es: Dict = {
   "panel.claimed": "La estás atendiendo",
   "panel.close": "Marcar como atendida",
   "panel.contactResident": "Escribir al residente",
+  "panel.contactLocked":
+    "Marca \"Estoy disponible\" para ver el contacto del residente.",
+  "panel.expired": "Enlace vencido",
+  "panel.expiredBody":
+    "Tu enlace de acceso caducó por seguridad. Escríbenos para recibir uno nuevo.",
   "panel.viewReport": "Ver reporte",
   "panel.noLocation": "Ubicación sin especificar",
   "panel.refresh": "Actualizar",
