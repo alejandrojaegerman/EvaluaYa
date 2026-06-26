@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
+import { toWhatsappNumber } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import {
   adminListEngineers,
@@ -97,7 +98,7 @@ function AdminPage() {
         states ? ` en ${states}` : ""
       }: ${panelUrl}\n\n` +
       `Guárdalo: es personal y no requiere contraseña.`;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${toWhatsappNumber(phone)}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 

@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
+import { toWhatsappNumber } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import {
   getApprovedEngineersForState,
@@ -79,7 +80,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       }
       const text = `${t("connect.waMessage")} ${reportUrl}`;
       window.open(
-        `https://wa.me/${res.whatsapp}?text=${encodeURIComponent(text)}`,
+        `https://wa.me/${toWhatsappNumber(res.whatsapp)}?text=${encodeURIComponent(text)}`,
         "_blank",
         "noopener,noreferrer",
       );
@@ -256,6 +257,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                 maxLength={40}
                 className="mt-1.5"
               />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("connect.whatsappHint")}
+              </p>
             </div>
             <div className="mt-3">
               <Label htmlFor="hr-note">{t("connect.noteOptional")}</Label>

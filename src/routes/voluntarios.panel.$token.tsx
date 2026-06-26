@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/datetime";
 import { absoluteUrl } from "@/lib/site";
+import { toWhatsappNumber } from "@/lib/phone";
 import {
   getEngineerPanel,
   claimHelpRequest,
@@ -93,8 +94,9 @@ function PanelPage() {
 
   function contactResident(phone: string) {
     const text = t("panel.waResident");
+    const number = toWhatsappNumber(phone);
     window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(text)}`,
+      `https://wa.me/${number}?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer",
     );
