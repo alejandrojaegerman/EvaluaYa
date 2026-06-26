@@ -9,21 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
 import { Route as AdminVoluntariosRouteImport } from './routes/admin.voluntarios'
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MisReportesRoute = MisReportesRouteImport.update({
   id: '/mis-reportes',
   path: '/mis-reportes',
@@ -47,6 +57,11 @@ const IndexRoute = IndexRouteImport.update({
 const VoluntariosIndexRoute = VoluntariosIndexRouteImport.update({
   id: '/voluntarios/',
   path: '/voluntarios/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssessPropertyRoute = AssessPropertyRouteImport.update({
@@ -79,6 +94,23 @@ const VoluntariosPanelTokenRoute = VoluntariosPanelTokenRouteImport.update({
   path: '/voluntarios/panel/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -101,32 +133,42 @@ export interface FileRoutesByFullPath {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/voluntarios': typeof VoluntariosIndexRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,16 +176,21 @@ export interface FileRoutesById {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
   '/assess/analyze': typeof AssessAnalyzeRoute
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,48 +199,63 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
+    | '/email/unsubscribe'
     | '/voluntarios/'
+    | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
+    | '/email/unsubscribe'
     | '/voluntarios'
+    | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
     | '/assess/analyze'
     | '/assess/checklist'
     | '/assess/property'
+    | '/email/unsubscribe'
     | '/voluntarios/'
+    | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -201,20 +263,32 @@ export interface RootRouteChildren {
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   MisReportesRoute: typeof MisReportesRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   APublicIdRoute: typeof APublicIdRoute
   AdminVoluntariosRoute: typeof AdminVoluntariosRoute
   AssessAnalyzeRoute: typeof AssessAnalyzeRoute
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mis-reportes': {
       id: '/mis-reportes'
       path: '/mis-reportes'
@@ -248,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/voluntarios'
       fullPath: '/voluntarios/'
       preLoaderRoute: typeof VoluntariosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assess/property': {
@@ -292,6 +373,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoluntariosPanelTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -321,16 +423,21 @@ const rootRouteChildren: RootRouteChildren = {
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   MisReportesRoute: MisReportesRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   APublicIdRoute: APublicIdRoute,
   AdminVoluntariosRoute: AdminVoluntariosRoute,
   AssessAnalyzeRoute: AssessAnalyzeRoute,
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
