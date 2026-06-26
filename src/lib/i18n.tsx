@@ -405,7 +405,7 @@ const es: Dict = {
 
   "methodology.seismicTitle": "Contexto sísmico",
   "methodology.seismicBody":
-    "Si compartes tu ubicación, estimamos la intensidad de sacudida (escala de Mercalli Modificada, MMI) interpolando la malla oficial de ShakeMap del USGS para el sismo activo. Una mayor intensidad eleva el nivel de precaución.",
+    "Si compartes tu ubicación, leemos varias capas de la malla oficial de ShakeMap del USGS para el sismo activo, interpoladas a tu punto exacto: la intensidad (MMI), la aceleración pico del suelo (PGA), la velocidad pico (PGV), la aceleración espectral en distintos períodos y la rigidez del suelo (vs30). Estimamos el período natural del edificio según su altura (T ≈ 0.1 × pisos) y lo comparamos con la aceleración espectral de ese período, para saber cuánta sacudida sintió realmente una edificación de esa altura. El suelo blando (vs30 bajo) se marca porque amplifica la sacudida y favorece la licuefacción. Estos valores elevan el nivel de precaución de forma graduada y se incluyen en el contexto que recibe la IA.",
 
   "methodology.sourcesTitle": "Fuentes y credibilidad",
   "methodology.sourcesIntro":
