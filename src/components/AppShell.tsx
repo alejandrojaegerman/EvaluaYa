@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Map, ShieldCheck, Wifi, WifiOff } from "lucide-react";
+import { ShieldCheck, Wifi, WifiOff } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { BottomNav } from "./BottomNav";
 import { LanguageToggle } from "./LanguageToggle";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
