@@ -450,6 +450,11 @@ const es: Dict = {
   "map.reports": "reportes",
   "map.unspecifiedMunicipality": "Municipio sin especificar",
   "map.unspecifiedLocation": "Ubicación sin especificar",
+  "map.interactiveHint": "Acerca para ver el detalle por municipio. Toca una zona para ver sus datos.",
+  "map.viewZone": "Ver zona",
+  "map.mapLoading": "Cargando mapa…",
+  "map.mapUnavailable": "El mapa interactivo no está disponible aquí. Mostrando vista simplificada.",
+  "map.atState": "Ubicado a nivel de estado",
 
   "map.lastUpdated": "Actualizado",
   "map.empty": "Aún no hay evaluaciones suficientes para mostrar el mapa.",
