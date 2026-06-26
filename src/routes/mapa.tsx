@@ -538,19 +538,43 @@ function MapPage() {
                     )}
                   </>
                 );
+                const expanded = expandedKey === a.key;
                 return (
-                  <li key={a.key}>
+                  <li
+                    key={a.key}
+                    className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                  >
                     {linkable ? (
                       <Link
                         to="/zona/$estado"
                         params={{ estado: estadoSlug(a.stateName!) }}
-                        className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm transition-colors hover:bg-accent/40"
+                        className="flex items-center gap-3 p-3 transition-colors hover:bg-accent/40"
                       >
                         {inner}
                       </Link>
                     ) : (
-                      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm">
-                        {inner}
+                      <div className="flex items-center gap-3 p-3">{inner}</div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => toggleWhy(a)}
+                      aria-expanded={expanded}
+                      className="flex w-full items-center justify-center gap-1 border-t border-border px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-accent/40"
+                    >
+                      {expanded ? t("factors.hideWhy") : t("factors.why")}
+                      <ChevronDown
+                        className={`size-3.5 transition-transform ${
+                          expanded ? "rotate-180" : ""
+                        }`}
+                        aria-hidden
+                      />
+                    </button>
+                    {expanded && (
+                      <div className="border-t border-border bg-muted/30 p-3">
+                        <RiskFactorsPanel
+                          factors={factorsCache[a.key] ?? null}
+                          loading={factorsLoading === a.key}
+                        />
                       </div>
                     )}
                   </li>
