@@ -1,10 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Download, ImageDown, MapPin } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  Download,
+  ImageDown,
+  MapPin,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
@@ -14,8 +22,10 @@ import { absoluteUrl } from "@/lib/site";
 import {
   getDamageAggregates,
   getDamageTotals,
+  getRiskFactors,
   type AreaAggregate,
   type DamageTotals,
+  type RiskFactors,
 } from "@/lib/stats.functions";
 import {
   ESTADOS,
