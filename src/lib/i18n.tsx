@@ -255,6 +255,14 @@ const es: Dict = {
   "result.summary": "Resumen",
   "result.findings": "Hallazgos clave",
   "result.nextSteps": "Pasos recomendados",
+  // Same-building context (resident result)
+  "building.title": "Otras evaluaciones de este edificio",
+  "building.subtitle": "Hay {count} evaluación(es) más de {name}.",
+  "building.legend.red": "rojo",
+  "building.legend.yellow": "amarillo",
+  "building.legend.green": "verde",
+  "building.note":
+    "Los problemas estructurales suelen afectar a todo el edificio. Comparte tu resultado con tus vecinos y con la administración o junta de condominio para evaluar la estructura en conjunto.",
   // Offline outbox / sync
   "offline.banner": "Sin conexión. Tu evaluación se guardó y se enviará sola al volver el internet.",
   "offline.pendingOne": "1 evaluación pendiente de enviar.",
