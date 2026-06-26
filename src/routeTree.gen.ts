@@ -17,6 +17,7 @@ import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
+import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
 
 const MetodologiaRoute = MetodologiaRouteImport.update({
   id: '/metodologia',
@@ -58,6 +59,11 @@ const APublicIdRoute = APublicIdRouteImport.update({
   path: '/a/$publicId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VoluntariosPanelTokenRoute = VoluntariosPanelTokenRouteImport.update({
+  id: '/voluntarios/panel/$token',
+  path: '/voluntarios/panel/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
+  '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/voluntarios': typeof VoluntariosIndexRoute
+  '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
+  '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/voluntarios/'
+    | '/voluntarios/panel/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/voluntarios'
+    | '/voluntarios/panel/$token'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/voluntarios/'
+    | '/voluntarios/panel/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
+  VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof APublicIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/voluntarios/panel/$token': {
+      id: '/voluntarios/panel/$token'
+      path: '/voluntarios/panel/$token'
+      fullPath: '/voluntarios/panel/$token'
+      preLoaderRoute: typeof VoluntariosPanelTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
+  VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
