@@ -181,6 +181,7 @@ Decision guidance:
 - "yes" to ground liquefaction signs, building-to-building pounding, or severe plumbing/gas damage are critical life-safety hazards (treat as red).
 - Damaged flooring, electrical panels/wiring, or hanging fixtures suggest at least yellow.
 - Exposed rebar + spalling on columns/beams, or roof collapse, should push toward red.
+- Ground-motion context (from USGS ShakeMap): higher MMI / PGA means this location was shaken harder, so weigh reported damage more heavily. The spectral acceleration at the building's own period is the demand a building of THAT height actually felt — high values there (≥0.4g) make even partial damage reports more concerning. Soft/very-soft soil sites amplify shaking and are more prone to liquefaction and settlement. Treat strong shaking together with any reported structural damage as a serious (red) combination. Ground motion alone, with no observed damage, should not by itself force red.
 - Use the photos to confirm or downgrade severity. Be conservative: when life-safety is uncertain, do not choose green.
 
 Write for a frightened, non-technical resident: short, calm, plain language. Avoid jargon. Always remind them this is preliminary and a licensed engineer or Civil Protection must confirm.
