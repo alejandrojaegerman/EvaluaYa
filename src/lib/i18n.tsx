@@ -455,6 +455,7 @@ const es: Dict = {
   "connect.directTitle": "Ingenieros disponibles en tu zona",
   "connect.coversYourState": "Cubre tu estado",
   "connect.whatsappEngineer": "Escribir por WhatsApp",
+  "connect.orgBadge": "Organización",
   "connect.noneTitle": "Aún estamos sumando ingenieros en tu estado",
   "connect.noneBody":
     "Deja tu número y un ingeniero voluntario te contactará en cuanto haya cobertura en tu zona.",
