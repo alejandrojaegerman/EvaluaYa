@@ -363,10 +363,16 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       });
 
       relevant.sort((a, b) => {
+        // Actionable (open) requests first.
+        const oa = a.status === "open" ? 0 : 1;
+        const ob = b.status === "open" ? 0 : 1;
+        if (oa !== ob) return oa - ob;
+        // Then by severity: red → yellow → green.
         const ra = RISK_ORDER[a.risk_level ?? "green"] ?? 3;
         const rb = RISK_ORDER[b.risk_level ?? "green"] ?? 3;
         if (ra !== rb) return ra - rb;
-        return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+        // Then oldest first, so the longest-waiting resident rises to the top.
+        return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
 
       const requests: EngineerRequest[] = relevant.map((r) => ({
