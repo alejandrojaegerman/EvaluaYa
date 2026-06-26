@@ -196,6 +196,9 @@ function PropertyStep() {
     <AppShell hideBottomNav>
       <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
 
+      <p className="mt-3 text-sm text-muted-foreground">{t("property.effortHint")}</p>
+
+
       <div className="mt-6 space-y-7">
         {/* Address */}
         <div>
