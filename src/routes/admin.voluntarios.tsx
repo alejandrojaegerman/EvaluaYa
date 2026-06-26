@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Lock, MessageCircle, ShieldCheck } from "lucide-react";
+import { Copy, Lock, Mail, MessageCircle, RotateCcw, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
