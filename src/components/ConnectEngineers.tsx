@@ -129,40 +129,53 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
             {t("connect.directTitle")}
           </h3>
           <ul className="mt-2 space-y-2">
-            {engineers.map((e) => (
-              <li
-                key={e.id}
-                className="rounded-xl border border-border bg-card p-3"
-              >
-                <div className="flex items-center gap-1.5">
-                  <BadgeCheck className="size-4 text-primary" aria-hidden />
-                  <p className="font-semibold">{e.name}</p>
-                </div>
-                {e.organization && (
-                  <p className="text-xs text-muted-foreground">
-                    {e.organization}
-                  </p>
-                )}
-                {e.specialization && (
-                  <p className="text-xs text-muted-foreground">
-                    {e.specialization}
-                  </p>
-                )}
-                {e.coversState && (
-                  <p className="mt-0.5 text-[11px] font-medium text-risk-green">
-                    {t("connect.coversYourState")}
-                  </p>
-                )}
-                <Button
-                  onClick={() => contactEngineer(e.whatsapp)}
-                  className="mt-2 w-full bg-[#25D366] text-white hover:bg-[#1ebe5a]"
-                  size="sm"
+            {engineers.map((e) => {
+              const isOrg = e.volunteerType === "organization";
+              const primary = isOrg ? e.organization || e.name : e.name;
+              const secondary = isOrg
+                ? e.name && e.name !== e.organization
+                  ? e.name
+                  : null
+                : e.organization;
+              return (
+                <li
+                  key={e.id}
+                  className="rounded-xl border border-border bg-card p-3"
                 >
-                  <MessageCircle className="size-4" />
-                  {t("connect.whatsappEngineer")}
-                </Button>
-              </li>
-            ))}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <BadgeCheck className="size-4 text-primary" aria-hidden />
+                    <p className="font-semibold">{primary}</p>
+                    {isOrg && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                        <Building2 className="size-3" aria-hidden />
+                        {t("connect.orgBadge")}
+                      </span>
+                    )}
+                  </div>
+                  {secondary && (
+                    <p className="text-xs text-muted-foreground">{secondary}</p>
+                  )}
+                  {e.specialization && (
+                    <p className="text-xs text-muted-foreground">
+                      {e.specialization}
+                    </p>
+                  )}
+                  {e.coversState && (
+                    <p className="mt-0.5 text-[11px] font-medium text-risk-green">
+                      {t("connect.coversYourState")}
+                    </p>
+                  )}
+                  <Button
+                    onClick={() => contactEngineer(e.whatsapp)}
+                    className="mt-2 w-full bg-[#25D366] text-white hover:bg-[#1ebe5a]"
+                    size="sm"
+                  >
+                    <MessageCircle className="size-4" />
+                    {t("connect.whatsappEngineer")}
+                  </Button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
