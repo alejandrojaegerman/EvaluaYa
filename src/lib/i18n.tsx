@@ -158,9 +158,29 @@ const es: Dict = {
   "rule.plumbing.step":
     "Cierra la llave principal de gas y agua, no enciendas luces ni llamas, y evacúa.",
   "rule.intensity.finding":
-    "Sacudida sísmica intensa (intensidad VII o mayor) en esta ubicación.",
+    "Sacudida sísmica moderada (intensidad VI o aceleración ≥0.25g) en esta ubicación.",
   "rule.intensity.step":
     "Aumenta la precaución: revisa con más cuidado y prioriza una evaluación profesional.",
+  "rule.intensity_severe.finding":
+    "Sacudida sísmica muy fuerte (intensidad VIII+ o aceleración ≥0.50g) en esta ubicación.",
+  "rule.intensity_severe.step":
+    "Esta zona recibió una de las sacudidas más fuertes del sismo. Trata cualquier daño con máxima cautela.",
+  "rule.spectral.finding":
+    "La demanda sísmica para edificaciones de esta altura fue alta (aceleración espectral ≥0.40g).",
+  "rule.spectral.step":
+    "Edificios de esta altura sintieron la sacudida con especial fuerza. Prioriza una revisión profesional.",
+  "rule.softsoil.finding":
+    "Suelo blando: amplifica la sacudida y aumenta el riesgo de licuefacción.",
+  "rule.softsoil.step":
+    "Vigila asentamientos o inclinaciones del terreno y de la edificación.",
+  "rule.softsoil_severe.finding":
+    "Suelo muy blando: fuerte amplificación de la sacudida y alto riesgo de licuefacción.",
+  "rule.softsoil_severe.step":
+    "Observa con cuidado el terreno y los cimientos; prioriza una evaluación profesional.",
+  "rule.combo_shaking.finding":
+    "Sacudida muy fuerte combinada con daño estructural reportado: riesgo crítico para la vida.",
+  "rule.combo_shaking.step":
+    "No la consideres segura. Evacúa y espera la confirmación de un ingeniero o Protección Civil.",
   "rule.floors.finding":
     "Edificación de más de 7 pisos: requiere precaución adicional.",
   "rule.floors.step":
