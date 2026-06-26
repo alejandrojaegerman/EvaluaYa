@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Download, ImageDown, MapPin } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, ChevronRight, Download, ImageDown, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +17,13 @@ import {
   type AreaAggregate,
   type DamageTotals,
 } from "@/lib/stats.functions";
-import { ESTADOS, getEstado, outlinePath, projectToSvg } from "@/lib/venezuela";
+import {
+  ESTADOS,
+  estadoSlug,
+  getEstado,
+  outlinePath,
+  projectToSvg,
+} from "@/lib/venezuela";
 
 const MAP_OG = absoluteUrl("/og-map.jpg");
 
