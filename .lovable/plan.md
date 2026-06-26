@@ -1,62 +1,44 @@
-# Plan: Data-driven seismic logic from the ShakeMap HDF
+## Goal
 
-Today the only geographic signal is one rule (`MMI ≥ 7 → caution`) plus an MMI line in the AI prompt. The uploaded `shake_result.hdf` (real M7.5 Yumare / Venezuela event `us6000t7zp`) contains much richer per-location data. We'll extract it, store it as the active event, and use it to drive **both** the deterministic safety rules and the AI context.
+Make the new multi-layer USGS ShakeMap logic show up everywhere it should, and fix the broken spec-download button on the methodology page.
 
-## New seismic signals we'll use
+## Root cause of the broken button
 
-- **PGA** (peak ground acceleration, in %g) — graduated shaking-demand bands
-- **PGV** (peak ground velocity, cm/s) — secondary demand indicator
-- **Period-matched spectral demand** — estimate the building's natural period `T ≈ 0.1 × floors`, then read the matching spectral acceleration band (0.3s for low-rise, 1.0s/3.0s for taller). This is the most building-specific engineering signal: it asks "how hard was *this kind of building* shaken?"
-- **Soft-soil amplification (vs30)** — flag NEHRP soil class D/E (vs30 < 360 / < 180 m/s) where shaking amplifies and liquefaction risk rises
+`public/evaluaya-algorithm-spec.pdf` is a **9-byte stub** — an invalid PDF. The real spec (12 KB) only exists in `/mnt/documents` and was never copied into `public/`. So the methodology button serves a corrupt file that fails to open (most visibly on mobile, where the browser can't fall back to an inline viewer). There is also only one PDF/button, with no language variant.
 
-## What changes for the resident / SME
+## Changes
 
-- The result card gains a short "Seismic context" block (PGA, soil class, demand at building's height).
-- Red/Yellow can now be raised by graduated, defensible seismic thresholds — not just MMI ≥ 7.
-- The methodology page and validation docs get updated so the SME can still trace every rule to code.
+### 1. Reproducible spec-PDF generator (new script)
+Add `scripts/build-spec-pdf.py` (committed, so it's regenerable) that produces **two valid technical-spec PDFs**, one per language:
+- `public/evaluaya-spec-es.pdf` (Español)
+- `public/evaluaya-spec-en.pdf` (English)
 
-## Decision logic (graduated, conservative)
+Content of both, kept in sync with the actual code (`safety-rules.ts`, `shakemap.ts`, `assessment.functions.ts`):
+- Two-layer model (deterministic rules + AI), and how they combine (rules can override AI).
+- **Layer 1 — deterministic rules**, listed with exact thresholds:
+  - Forced RED: URM system, liquefaction, pounding, severe plumbing/gas, and the combo rule (severe shaking + any structural "yes").
+  - Forced YELLOW: graduated shaking (moderate MMI ≥ 6 / PGA ≥ 0.25g; severe MMI ≥ 8 / PGA ≥ 0.50g), spectral demand ≥ 0.40g at the building's period, soft / very-soft soil, > 7 floors, CMF/CIW/PCF/RML systems.
+- **USGS ShakeMap integration (the new data-driven part):** multi-layer grid (MMI, PGA, PGV, vs30→soil class, spectral acceleration bands SA03/SA10/etc.), bilinear interpolation to the exact point, building period estimate T ≈ 0.1 × floors, period-matched spectral demand. This is the section to expand most.
+- **Layer 2 — AI triage**: the exact context passed to the model (now including PGA/PGV/soil/period-matched demand) and the structured output.
+- Sources/credibility (ATC-20, USGS ShakeMap, URM literature) and limits/disclaimer.
 
-Seismic metrics mainly **amplify** observed damage and add caution; they only force Red in extreme combinations, to avoid false "evacuate" calls on visibly-undamaged buildings.
+Delete the 9-byte `public/evaluaya-algorithm-spec.pdf`.
 
-```text
-MMI:        VI–VII  -> caution      VIII+ -> strong caution (red if any structural "yes")
-PGA:        >=0.25g -> caution      >=0.50g -> strong caution
-Spectral:   high demand at building period -> caution; +vulnerable structure -> red
-Soft soil:  vs30<360 -> caution + amplification note; vs30<180 -> reinforce liquefaction
-Combos:     (MMI VIII+ or PGA>=0.5g) AND (URM / any structural "yes") -> red
-```
+### 2. Methodology page button (`src/routes/metodologia.tsx`)
+- Single button that **follows the current UI language**: `href` resolves to `/evaluaya-spec-es.pdf` when `lang === "es"`, else `/evaluaya-spec-en.pdf`.
+- Open the PDF reliably on mobile: keep `target="_blank" rel="noopener noreferrer"` and **drop the `download` attribute** (forced downloads of cross-served files are the flaky part on mobile Safari/Chrome; opening in a new tab lets the built-in viewer handle it). The label stays "Descargar/Download" via existing `methodology.specDownload`.
+- Confirm the rest of the page copy already reflects the ShakeMap logic (the `methodology.seismicBody`, `methodology.yellow.spectral`, and `methodology.yellow.soil` keys already do; minor wording tweaks only if needed for consistency).
 
-## Build steps
+### 3. Per-assessment result PDF (`src/lib/pdf.ts`)
+Add a **"Seismic context / Contexto sísmico"** section to the downloadable result PDF, rendered in `record.language` (ES or EN), using the seismic fields already on `record.property`:
+- MMI (with Roman numeral), PGA (g), PGV (cm/s), site soil class, and period-matched spectral demand — only the values that are present.
+- Reuse existing i18n keys (`result.seismicContext`, `result.pga`, `result.pgv` if present, `result.spectralDemand`, `result.soil`, soil-class labels). Add any missing PDF-specific keys in both ES and EN.
 
-### 1. Extract the HDF into a compact multi-layer grid (one-off)
-Python script reads `arrays/imts/GREATER_OF_TWO_HORIZONTAL/{MMI,PGA,PGV,SA(0.3),SA(0.6),SA(1.0),SA(3.0)}/mean` and `arrays/vs30`, converts the ln-unit IMTs to physical units (PGA/SA → g via `exp`, PGV → cm/s), downsamples ~3× (≈0.05°/~5 km) to keep the JSON ~1–2 MB, and writes a `SeismicGrid` JSON. Output seeded into the `seismic_events` row for event `us6000t7zp` as the single active event (replacing the MMI-only grid).
-
-### 2. Extend the seismic types & lookup (`src/lib/shakemap.ts`)
-- Generalize `MmiGrid` to `SeismicGrid` (shared axes + `layers: Record<LayerKey, (number|null)[]>`).
-- Add `seismicAt(grid, lat, lng)` → `{ mmi, roman, pga_g, pgv_cms, sa: {0.3,0.6,1.0,3.0}, vs30 }` reusing the existing bilinear interpolation, plus helpers `buildingPeriod(floors)`, `spectralDemandAt(grid, lat, lng, floors)`, and `soilClass(vs30)`.
-- Keep `intensityAt` as a thin wrapper for backward compatibility.
-
-### 3. Lookup server function (`src/lib/shakemap.functions.ts`)
-`getSeismicIntensity` returns the full enriched object (MMI + PGA + PGV + period-matched SA + soil class) instead of MMI only. The full grid still never leaves the server.
-
-### 4. Property capture (`src/lib/assessment-types.ts`, `src/routes/assess/property.tsx`)
-Add optional fields to `PropertyInfo`: `pga`, `pgv`, `vs30`, `soilClass`, `spectralDemand`, `buildingPeriod`. GPS auto-detection already runs here; populate these from the enriched lookup alongside the existing MMI fields. No new user input required.
-
-### 5. Deterministic rules (`src/lib/safety-rules.ts`)
-Replace the single `intensity` rule with the graduated rule set above (new i18n keys `rule.pga.*`, `rule.spectral.*`, `rule.softsoil.*`, graduated `rule.intensity.*`). Pass the new property fields + `floors` into `evaluateSafetyRules`. Findings surface in plain Spanish/English.
-
-### 6. AI context (`src/lib/assessment.functions.ts`)
-Extend the property zod schema and `buildPrompt` to include PGA (%g), PGV, the building's estimated period and the spectral demand at that period, and soil class — with short decision-guidance lines. `SYSTEM_PROMPT` gets a sentence on interpreting demand vs. building height.
-
-### 7. Result display (`src/routes/a/$publicId.tsx`)
-Compact "Contexto sísmico / Seismic context" block: shaking (PGA %g + MMI), soil class, and demand at the building's height.
-
-### 8. Docs (methodology + validation)
-Update `src/routes/metodologia.tsx` and regenerate the Spanish/English validation PDFs so every new threshold maps 1:1 to the code for the SME.
+### 4. Verification
+- Run the generator, confirm both PDFs are valid (non-trivial byte size, open correctly), and render each page to images for a visual QA pass (layout, no clipped/overlapping text, accents render correctly in Spanish).
+- Generate a sample result PDF in both languages to confirm the new seismic section renders.
+- Confirm the methodology button points to the right file per language.
 
 ## Technical notes
-- HDF IMTs are natural-log; convert during extraction so stored/displayed values are physical units.
-- Grid stays server-side; only the per-point result is returned.
-- `seismic_events.grid` already holds JSON — schema unchanged, just a richer payload (well within jsonb limits after downsampling).
-- USGS multi-metric live refresh for *future* quakes is intentionally out of scope (per your choice); `setActiveShakemapEvent` keeps working for MMI and can be extended later.
+- The spec PDFs are static assets in `public/`, generated by a Python script (reportlab) at author time — not at runtime in the Worker. The result PDF stays client-side via the existing `jsPDF` flow in `src/lib/pdf.ts`.
+- No backend/schema changes. No new runtime dependencies in the app bundle.
