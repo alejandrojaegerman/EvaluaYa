@@ -42,7 +42,7 @@ export const Route = createFileRoute("/metodologia")({
 });
 
 function MethodologyPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const redItems = [
     t("methodology.red.urm"),
