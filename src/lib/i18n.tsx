@@ -1213,6 +1213,11 @@ const en: Dict = {
   "map.reports": "reports",
   "map.unspecifiedMunicipality": "Municipality not specified",
   "map.unspecifiedLocation": "Location not specified",
+  "map.interactiveHint": "Zoom in for municipality-level detail. Tap an area to see its data.",
+  "map.viewZone": "View zone",
+  "map.mapLoading": "Loading map…",
+  "map.mapUnavailable": "The interactive map isn't available here. Showing a simplified view.",
+  "map.atState": "Located at state level",
 
   "map.lastUpdated": "Updated",
   "map.empty": "Not enough assessments yet to show the map.",
