@@ -458,11 +458,9 @@ function MapPage() {
             <ul className="mt-3 space-y-2">
               {topAreas.map((a) => {
                 const level = dominantRisk(a);
-                return (
-                  <li
-                    key={a.key}
-                    className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm"
-                  >
+                const linkable = a.stateName && getEstado(a.stateName);
+                const inner = (
+                  <>
                     <span
                       className="size-3 shrink-0 rounded-full"
                       style={{ backgroundColor: rgb(level) }}
@@ -484,6 +482,29 @@ function MapPage() {
                       <span style={{ color: rgb("yellow") }}>{a.yellow}</span>
                       <span style={{ color: rgb("green") }}>{a.green}</span>
                     </div>
+                    {linkable && (
+                      <ChevronRight
+                        className="size-4 shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                    )}
+                  </>
+                );
+                return (
+                  <li key={a.key}>
+                    {linkable ? (
+                      <Link
+                        to="/zona/$estado"
+                        params={{ estado: estadoSlug(a.stateName!) }}
+                        className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm transition-colors hover:bg-accent/40"
+                      >
+                        {inner}
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm">
+                        {inner}
+                      </div>
+                    )}
                   </li>
                 );
               })}
