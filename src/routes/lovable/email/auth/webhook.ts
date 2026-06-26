@@ -12,12 +12,12 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirma tu correo · EvalúaYa',
-  invite: 'Te invitaron a EvalúaYa',
-  magiclink: 'Tu enlace de acceso · EvalúaYa',
-  recovery: 'Restablece tu acceso · EvalúaYa',
-  email_change: 'Confirma tu nuevo correo · EvalúaYa',
-  reauthentication: 'Tu código de verificación · EvalúaYa',
+  signup: 'Confirm your email',
+  invite: "You've been invited",
+  magiclink: 'Your login link',
+  recovery: 'Reset your password',
+  email_change: 'Confirm your new email',
+  reauthentication: 'Your verification code',
 }
 
 // Template mapping
@@ -31,7 +31,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "EvalúaYa"
+const SITE_NAME = "tremor-check"
 const SENDER_DOMAIN = "notify.evaluaya.app"
 const ROOT_DOMAIN = "evaluaya.app"
 const FROM_DOMAIN = "evaluaya.app"
