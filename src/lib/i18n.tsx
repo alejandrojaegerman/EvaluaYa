@@ -1224,6 +1224,14 @@ const en: Dict = {
   "admin.linkCopied": "Link copied",
   "admin.notifyWhatsapp": "Notify via WhatsApp",
   "admin.noEmail": "No email",
+  "admin.resendEmail": "Resend link by email",
+  "admin.resent": "Link resent by email.",
+  "admin.resendFailed": "Couldn't resend the email.",
+  "admin.rotateLink": "Generate new link",
+  "admin.rotateConfirm":
+    "This invalidates the volunteer's previous link and creates a new one. Continue?",
+  "admin.rotated": "New link generated.",
+  "admin.rotateFailed": "Couldn't generate the link.",
   "admin.none": "No records.",
 
   // Panel — matching enhancements
