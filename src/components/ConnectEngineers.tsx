@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   BadgeCheck,
   ShieldQuestion,
+  Building2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
