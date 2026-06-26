@@ -445,6 +445,35 @@ export const getAssessment = createServerFn({ method: "GET" })
       answers.find((a) => a.id === item.id),
     ).filter(Boolean) as AssessmentRecord["answers"];
 
+    // Anonymized "other reports from this building" context (counts only).
+    let building: AssessmentRecord["building"] = null;
+    const buildingName = (row.building_name as string | null) ?? null;
+    const buildingKey = (row.building_key as string | null) ?? null;
+    if (buildingName && buildingKey) {
+      let peers = { total: 0, green: 0, yellow: 0, red: 0 };
+      try {
+        const { data: peerRows } = await supabaseAdmin.rpc("get_building_peers", {
+          _state: (row.state as string | null) ?? "",
+          _municipality: (row.municipality as string | null) ?? "",
+          _building_key: buildingKey,
+        });
+        const pr = Array.isArray(peerRows) ? peerRows[0] : peerRows;
+        if (pr) {
+          peers = {
+            total: pr.total ?? 0,
+            green: pr.green ?? 0,
+            yellow: pr.yellow ?? 0,
+            red: pr.red ?? 0,
+          };
+        }
+      } catch (e) {
+        console.error("[getAssessment] building peers failed", e);
+      }
+      // Exclude this report itself from the "others" count.
+      const others = Math.max(0, peers.total - 1);
+      building = { name: buildingName, others, peers };
+    }
+
     return {
       publicId: row.public_id,
       language: (row.language as "es" | "en") ?? "es",
@@ -454,5 +483,7 @@ export const getAssessment = createServerFn({ method: "GET" })
       riskLevel: (row.risk_level as RiskLevel) ?? "yellow",
       createdAt: row.created_at,
       photoUrls,
+      building,
     };
   });
+
