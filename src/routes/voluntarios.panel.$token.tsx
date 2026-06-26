@@ -43,6 +43,7 @@ function PanelPage() {
   const close = useServerFn(closeHelpRequest);
 
   const [panel, setPanel] = useState<EngineerPanel | null>(null);
+  const [expired, setExpired] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
 
@@ -50,7 +51,13 @@ function PanelPage() {
     setLoading(true);
     try {
       const res = await fetchPanel({ data: { token } });
-      setPanel(res);
+      if (res && "expired" in res) {
+        setExpired(true);
+        setPanel(null);
+      } else {
+        setExpired(false);
+        setPanel(res);
+      }
     } catch {
       setPanel(null);
     } finally {
