@@ -20,6 +20,7 @@ import {
 import { getDeviceId } from "@/lib/device-id";
 import { getHistory } from "@/lib/history";
 import { useLang } from "@/lib/i18n";
+import { formatDate } from "@/lib/datetime";
 
 export const Route = createFileRoute("/mis-reportes")({
   head: () => ({
