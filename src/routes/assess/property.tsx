@@ -26,7 +26,12 @@ import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
 import { cn } from "@/lib/utils";
-import { ESTADO_NAMES, nearestEstado } from "@/lib/venezuela";
+import {
+  ESTADO_NAMES,
+  getEstado,
+  getEstadoBySlug,
+  nearestEstado,
+} from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
   validateSearch: (search: Record<string, unknown>): { estado?: string } => {
