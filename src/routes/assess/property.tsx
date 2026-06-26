@@ -297,6 +297,17 @@ function PropertyStep() {
                   {t("property.intensityHigh")}
                 </p>
               )}
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground tabular-nums">
+                {intensity.pga != null && (
+                  <span>PGA {(intensity.pga * 100).toFixed(0)}%g</span>
+                )}
+                {intensity.pgv != null && (
+                  <span>PGV {intensity.pgv.toFixed(0)} cm/s</span>
+                )}
+                {intensity.soilClass && (
+                  <span>{t(`soil.${intensity.soilClass}`)}</span>
+                )}
+              </div>
             </div>
           </div>
         )}
