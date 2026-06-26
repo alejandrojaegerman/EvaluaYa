@@ -157,9 +157,9 @@ def content_es(s):
         "Las reglas de seguridad (Capa 1) solo pueden subir el nivel hacia Rojo: nunca "
         "hacen un resultado menos severo de lo que sugirió la IA.", s["body"]))
     f.append(Paragraph(
-        "Orden: se leen los datos del sismo en la ubicación (ShakeMap) → las fotos y "
-        "respuestas van a la IA para una decisión Verde/Amarillo/Rojo → se aplican las "
-        "reglas deterministas → se combinan tomando la peor.", s["body"]))
+        "Orden: se leen los datos del sismo en la ubicación (ShakeMap) -> las fotos y "
+        "respuestas van a la IA para una decisión Verde/Amarillo/Rojo -> se aplican las "
+        "reglas deterministas -> se combinan tomando la peor.", s["body"]))
     f.append(Paragraph("fuente: assessment.functions.ts — finalRisk = maxRisk(ai, rules)", s["src"]))
 
     f.append(Paragraph("Capa 1 — Reglas de seguridad deterministas", s["h2"]))
@@ -168,7 +168,7 @@ def content_es(s):
         "grupo es verdadera, el resultado se fuerza a Rojo. Si alguna del segundo grupo "
         "es verdadera (y no se activó ninguna regla Roja), se fuerza a al menos Amarillo.",
         s["body"]))
-    f.append(two_col_table(s, ["Condición → " + R, "Por qué"], [
+    f.append(two_col_table(s, ["Condición -> " + R, "Por qué"], [
         ("Sistema estructural = mampostería no reforzada (URM).",
          "No tiene refuerzo de acero; falla súbita tras sismo fuerte."),
         ("SÍ a señales de licuefacción del suelo.",
@@ -181,7 +181,7 @@ def content_es(s):
          "MMI ≥ 8 o PGA ≥ 0.50g junto con daño visible = combinación crítica."),
     ]))
     f.append(Spacer(1, 8))
-    f.append(two_col_table(s, ["Condición → ≥ " + Y, "Por qué"], [
+    f.append(two_col_table(s, ["Condición -> ≥ " + Y, "Por qué"], [
         ("Sacudida moderada: MMI ≥ 6 <b>o</b> PGA ≥ 0.25g.",
          "Sacudida apreciable; revisar con más cuidado aunque no se vea daño."),
         ("Sacudida severa: MMI ≥ 8 <b>o</b> PGA ≥ 0.50g.",
@@ -210,13 +210,13 @@ def content_es(s):
         ("PGA — aceleración pico (g)", "Sacudida instantánea máxima; umbrales 0.25g y 0.50g."),
         ("PGV — velocidad pico (cm/s)", "Energía de la sacudida; contexto para la IA."),
         ("SA(0.3 / 0.6 / 1.0 / 3.0 s)", "Aceleración espectral por período: la demanda según altura."),
-        ("vs30 → clase de suelo", "Roca / rígido / blando / muy blando (amplificación, licuefacción)."),
+        ("vs30 -> clase de suelo", "Roca / rígido / blando / muy blando (amplificación, licuefacción)."),
     ]))
     f.append(Spacer(1, 8))
     f.append(Paragraph(
         "<b>Demanda según altura.</b> Estimamos el período natural del edificio con "
         "T ≈ 0.1 × número de pisos y elegimos la banda espectral más cercana "
-        "(≤0.45s→SA0.3; ≤0.8s→SA0.6; ≤2.0s→SA1.0; si no→SA3.0). El valor de esa banda "
+        "(≤0.45s->SA0.3; ≤0.8s->SA0.6; ≤2.0s->SA1.0; si no->SA3.0). El valor de esa banda "
         "es la sacudida que realmente sintió una edificación de esa altura, y alimenta "
         "tanto la regla de demanda espectral (≥0.40g) como el contexto de la IA.", s["body"]))
     f.append(Paragraph(
@@ -247,7 +247,7 @@ def content_es(s):
 
     f.append(Paragraph("Cómo se combina — ejemplos", s["h2"]))
     f.append(three_col_table(s, ["La IA dice", "¿Regla activa?", "Resultado final"], [
-        ("Verde", "URM → fuerza Rojo", R),
+        ("Verde", "URM -> fuerza Rojo", R),
         ("Amarillo", "Licuefacción = SÍ", R),
         ("Verde", "PGA 0.55g + grieta = SÍ", R),
         ("Verde", "9 pisos", Y),
@@ -285,8 +285,8 @@ def content_en(s):
         "The safety rules (Layer 1) can only raise the level toward Red — they never make "
         "a result less severe than the AI suggested.", s["body"]))
     f.append(Paragraph(
-        "Order: read the earthquake data at the location (ShakeMap) → photos and answers "
-        "go to the AI for a Green/Yellow/Red call → apply the deterministic rules → "
+        "Order: read the earthquake data at the location (ShakeMap) -> photos and answers "
+        "go to the AI for a Green/Yellow/Red call -> apply the deterministic rules -> "
         "combine by taking the worse of the two.", s["body"]))
     f.append(Paragraph("source: assessment.functions.ts — finalRisk = maxRisk(ai, rules)", s["src"]))
 
@@ -295,7 +295,7 @@ def content_en(s):
         "Same inputs, same result, no AI. If any condition in the first group is true, "
         "the result is forced to Red. If any condition in the second group is true (and "
         "no Red rule fired), the result is forced to at least Yellow.", s["body"]))
-    f.append(two_col_table(s, ["Condition → " + R, "Why"], [
+    f.append(two_col_table(s, ["Condition -> " + R, "Why"], [
         ("Structural system = unreinforced masonry (URM).",
          "No steel reinforcement; sudden failure after strong shaking."),
         ("YES to ground-liquefaction signs.",
@@ -308,7 +308,7 @@ def content_en(s):
          "MMI ≥ 8 or PGA ≥ 0.50g together with visible damage = critical combo."),
     ]))
     f.append(Spacer(1, 8))
-    f.append(two_col_table(s, ["Condition → ≥ " + Y, "Why"], [
+    f.append(two_col_table(s, ["Condition -> ≥ " + Y, "Why"], [
         ("Moderate shaking: MMI ≥ 6 <b>or</b> PGA ≥ 0.25g.",
          "Appreciable shaking; inspect more carefully even with no visible damage."),
         ("Severe shaking: MMI ≥ 8 <b>or</b> PGA ≥ 0.50g.",
@@ -336,13 +336,13 @@ def content_en(s):
         ("PGA — peak acceleration (g)", "Max instantaneous shaking; thresholds 0.25g and 0.50g."),
         ("PGV — peak velocity (cm/s)", "Shaking energy; context for the AI."),
         ("SA(0.3 / 0.6 / 1.0 / 3.0 s)", "Spectral acceleration by period: demand by height."),
-        ("vs30 → soil class", "Rock / stiff / soft / very soft (amplification, liquefaction)."),
+        ("vs30 -> soil class", "Rock / stiff / soft / very soft (amplification, liquefaction)."),
     ]))
     f.append(Spacer(1, 8))
     f.append(Paragraph(
         "<b>Demand by height.</b> We estimate the building's natural period as "
         "T ≈ 0.1 × number of floors and pick the nearest spectral band "
-        "(≤0.45s→SA0.3; ≤0.8s→SA0.6; ≤2.0s→SA1.0; else→SA3.0). That band's value is the "
+        "(≤0.45s->SA0.3; ≤0.8s->SA0.6; ≤2.0s->SA1.0; else->SA3.0). That band's value is the "
         "shaking a building of that height actually experienced, and it feeds both the "
         "spectral-demand rule (≥0.40g) and the AI context.", s["body"]))
     f.append(Paragraph(
@@ -372,7 +372,7 @@ def content_en(s):
 
     f.append(Paragraph("How it combines — examples", s["h2"]))
     f.append(three_col_table(s, ["AI says", "Rule fired?", "Final result"], [
-        ("Green", "URM → forces Red", R),
+        ("Green", "URM -> forces Red", R),
         ("Yellow", "Liquefaction = YES", R),
         ("Green", "PGA 0.55g + crack = YES", R),
         ("Green", "9 floors", Y),
