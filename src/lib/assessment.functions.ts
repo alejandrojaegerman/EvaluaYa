@@ -4,6 +4,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { extractBuilding } from "./building";
 import {
   CHECKLIST_ITEMS,
   type AiResult,
