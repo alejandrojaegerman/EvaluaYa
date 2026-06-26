@@ -210,6 +210,26 @@ function AdminPage() {
                     <Copy className="size-4" />
                     {t("admin.copyLink")}
                   </Button>
+                  {e.email && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={busy}
+                      onClick={() => resendEmail(e)}
+                    >
+                      <Mail className="size-4" />
+                      {t("admin.resendEmail")}
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busy}
+                    onClick={() => rotateLink(e)}
+                  >
+                    <RotateCcw className="size-4" />
+                    {t("admin.rotateLink")}
+                  </Button>
                 </>
               )}
               <Button
