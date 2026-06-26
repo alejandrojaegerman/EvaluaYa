@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
+import { RiskGauge } from "@/components/RiskGauge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
