@@ -88,9 +88,18 @@ function PropertyStep() {
       if (p.floors) setFloors(p.floors);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
+        const sa: SeismicReading["sa"] = {};
+        if (p.spectralBand && typeof p.spectralDemand === "number") {
+          sa[p.spectralBand] = p.spectralDemand;
+        }
         setIntensity({
           mmi: p.seismicIntensity,
           roman: p.seismicIntensityRoman ?? "",
+          pga: typeof p.pga === "number" ? p.pga : null,
+          pgv: typeof p.pgv === "number" ? p.pgv : null,
+          sa,
+          vs30: typeof p.vs30 === "number" ? p.vs30 : null,
+          soilClass: p.soilClass ?? null,
         });
       }
     });
