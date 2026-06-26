@@ -89,6 +89,9 @@ type DisplayArea = {
   muniKnown: boolean;
   /** Resolved estado name when known, for linking to its regional page. */
   stateName: string | null;
+  /** exact values to filter the risk-factor drill-down by */
+  paramState: string;
+  paramMunicipality: string | null;
   total: number;
   green: number;
   yellow: number;
