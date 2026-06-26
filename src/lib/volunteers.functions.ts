@@ -372,6 +372,48 @@ function tokenExpired(row: { token_expires_at?: string | null }): boolean {
   );
 }
 
+/** Access links live for 90 days; rotation/approval refreshes this. */
+const TOKEN_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+function tokenExpiryFromNow(): string {
+  return new Date(Date.now() + TOKEN_TTL_MS).toISOString();
+}
+
+/**
+ * Best-effort send of the "you're validated, here's your panel link" email.
+ * Returns true when the email was enqueued. No-op (returns false) when the
+ * volunteer has no email on file.
+ */
+async function sendAccessEmail(params: {
+  email?: string | null;
+  name?: string | null;
+  states: string[];
+  token: string;
+  idempotencyKey: string;
+}): Promise<boolean> {
+  const email = params.email?.trim();
+  if (!email) return false;
+  try {
+    const { sendSystemEmail } = await import("./notify-email.server");
+    const stateNames = (params.states ?? [])
+      .map((s: string) => ESTADO_NAMES.find((n) => n === s) ?? s)
+      .join(", ");
+    const res = await sendSystemEmail({
+      templateName: "volunteer-approved",
+      recipientEmail: email,
+      idempotencyKey: params.idempotencyKey,
+      templateData: {
+        name: params.name ?? "",
+        states: stateNames,
+        panelUrl: `https://evaluaya.app/voluntarios/panel/${params.token}`,
+      },
+    });
+    return res.ok;
+  } catch (e) {
+    console.error("[volunteers] sendAccessEmail failed", e);
+    return false;
+  }
+}
+
 export const getEngineerPanel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => tokenSchema.parse(data))
   .handler(async ({ data }): Promise<EngineerPanelResult> => {
