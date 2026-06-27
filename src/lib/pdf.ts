@@ -232,3 +232,35 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
 
   doc.save(`evaluaya-${record.publicId}.pdf`);
 }
+
+type LoadedImage = { dataUrl: string; format: "JPEG" | "PNG"; w: number; h: number };
+
+/**
+ * Fetch a signed photo URL and decode it client-side into a data URL plus
+ * intrinsic dimensions so jsPDF can embed it. Returns null on any failure so
+ * the PDF always generates even if a photo can't be loaded.
+ */
+async function loadImage(url: string): Promise<LoadedImage | null> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    const format: "JPEG" | "PNG" = blob.type === "image/png" ? "PNG" : "JPEG";
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result as string);
+      fr.onerror = () => reject(new Error("read failed"));
+      fr.readAsDataURL(blob);
+    });
+    const dims = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve({ w: im.naturalWidth, h: im.naturalHeight });
+      im.onerror = () => reject(new Error("decode failed"));
+      im.src = dataUrl;
+    });
+    if (!dims.w || !dims.h) return null;
+    return { dataUrl, format, w: dims.w, h: dims.h };
+  } catch {
+    return null;
+  }
+}
