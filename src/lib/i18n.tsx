@@ -1732,6 +1732,16 @@ const en: Dict = {
   "account.emptyReports":
     "You don't have any saved reports in this account yet. Once you save a report, it will appear here.",
   "account.signOut": "Sign out",
+  "account.claimToast": "Report saved to your account.",
+  "dash.accounts": "Saved accounts",
+  "dash.accountsHint":
+    "People who saved their reports with their email (optional, passwordless account).",
+  "dash.totalAccounts": "Accounts",
+  "dash.accountsWithReports": "With reports",
+  "dash.accountsNoReports": "No reports yet",
+  "dash.recentSignups": "Recent signups",
+  "dash.noAccounts": "No saved accounts yet.",
+  "dash.neverSignedIn": "Never",
 };
 
 
