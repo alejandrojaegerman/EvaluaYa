@@ -22,6 +22,7 @@ import { useLang } from "@/lib/i18n";
 import { computeProvisional, type ProvisionalResult } from "@/lib/provisional";
 import { enqueueOutbox } from "@/lib/outbox-store";
 import { syncOutboxItem } from "@/lib/outbox-sync";
+import { trackStep } from "@/lib/track";
 
 export const Route = createFileRoute("/assess/analyze")({
   component: AnalyzeStep,
