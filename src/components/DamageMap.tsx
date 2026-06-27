@@ -148,9 +148,11 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
       const riskLabel =
         b.dominant === "red"
           ? t("map.high")
-          : b.dominant === "yellow"
-            ? t("map.moderate")
-            : t("map.low");
+          : b.dominant === "orange"
+            ? t("map.urgent")
+            : b.dominant === "yellow"
+              ? t("map.moderate")
+              : t("map.low");
 
       const html = `
         <div style="font-family:system-ui,sans-serif;min-width:160px;line-height:1.4">
