@@ -482,10 +482,10 @@ function MapPage() {
       {!loading && hasData && (
         <>
           {/* Headline counters */}
-          <section className="mt-6 grid grid-cols-2 gap-3">
+          <Reveal as="section" className="mt-6 grid grid-cols-2 gap-3">
             <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
               <p className="font-display text-2xl font-extrabold text-primary">
-                {totals!.total.toLocaleString()}
+                <CountUp value={totals!.total} />
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("map.totalAssessments")}
@@ -493,16 +493,47 @@ function MapPage() {
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
               <p className="font-display text-2xl font-extrabold text-primary">
-                {totals!.areas.toLocaleString()}
+                <CountUp value={totals!.areas} />
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("map.areasLabel")}
               </p>
             </div>
-          </section>
+          </Reveal>
+
+          {/* Severity spotlight — leads the story with urgency */}
+          <Reveal as="section" className="mt-4" delayMs={60}>
+            <SeveritySpotlight
+              total={totals!.total}
+              green={totals!.green}
+              yellow={totals!.yellow}
+              orange={totals!.orange}
+              red={totals!.red}
+              topAreaLabel={topAreas[0]?.title ?? null}
+            />
+          </Reveal>
+
+          {/* Trend over time */}
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+          >
+            <p className="text-sm font-semibold">{t("map.trendTitle")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("map.trendSubtitle")}
+            </p>
+            <div className="mt-3">
+              <TrendChart points={timeseries} />
+            </div>
+          </Reveal>
 
           {/* Risk distribution */}
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+          >
             <p className="text-sm font-semibold">{t("map.distribution")}</p>
             <div className="mt-3">
               <RiskGauge
@@ -513,7 +544,7 @@ function MapPage() {
                 label={t("map.totalAssessments")}
               />
             </div>
-          </section>
+          </Reveal>
 
           {/* Interactive map (Google Maps) with SVG bubble-map fallback */}
           <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
