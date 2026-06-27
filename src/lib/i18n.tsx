@@ -51,6 +51,12 @@ const es: Dict = {
   "property.subtitle": "Esta información ayuda a interpretar los hallazgos.",
   "property.address": "Dirección / sector",
   "property.addressPlaceholder": "Ej.: Av. Bolívar, sector La Candelaria",
+  "property.buildingName": "Nombre del edificio o torre",
+  "property.buildingNamePlaceholder": "Ej.: Torre Mara, Res. Doral Plaza",
+  "property.buildingNameHint":
+    "Opcional. Ayuda a agrupar reportes del mismo edificio en el mapa. No incluyas el número de apartamento.",
+  "property.behalfHint":
+    "¿No estás en el sitio? Un familiar o vecino puede hacer esta inspección por ti y compartirte el resultado.",
   "property.buildingType": "Tipo de edificación",
   "property.type.house": "Casa",
   "property.type.apartment": "Apartamento",
@@ -888,6 +894,12 @@ const en: Dict = {
   "property.subtitle": "This information helps interpret the findings.",
   "property.address": "Address / neighborhood",
   "property.addressPlaceholder": "e.g. Av. Bolívar, La Candelaria district",
+  "property.buildingName": "Building or tower name",
+  "property.buildingNamePlaceholder": "e.g. Torre Mara, Res. Doral Plaza",
+  "property.buildingNameHint":
+    "Optional. Helps group reports from the same building on the map. Don't include your apartment number.",
+  "property.behalfHint":
+    "Not on site? A relative or neighbor can run this inspection for you and share the result.",
   "property.buildingType": "Building type",
   "property.type.house": "House",
   "property.type.apartment": "Apartment",
