@@ -423,7 +423,7 @@ async function sendAccessEmail(params: {
       templateData: {
         name: params.name ?? "",
         states: stateNames,
-        panelUrl: `https://evaluaya.app/voluntarios/panel/${params.token}?utm_source=email&utm_medium=email&utm_campaign=volunteer_panel`,
+        panelUrl: engineerPanelUrl(params.token, "volunteer_panel"),
       },
     });
     return res.ok;
