@@ -25,7 +25,7 @@ test("resident completes a full assessment and reaches a result", async ({
   // Building type, then age. Floors defaults to 1, which is valid.
   await page.getByRole("button", { name: "Apartamento", exact: true }).click();
   await page
-    .getByRole("button", { name: "Después de 2000", exact: true })
+    .getByRole("button", { name: /Después de 2000/ })
     .click();
 
   // Continue to the checklist.
