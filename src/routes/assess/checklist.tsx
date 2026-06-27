@@ -432,6 +432,13 @@ function ChecklistCard({
         })}
       </div>
 
+      {value === "yes" && photos.length === 0 && (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-300/60 bg-amber-50 p-2.5 text-xs leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+          <Camera className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+          <span>{t("checklist.photoPromptYes")}</span>
+        </div>
+      )}
+
       {/* Photos */}
       <div className="mt-3">
         <input
