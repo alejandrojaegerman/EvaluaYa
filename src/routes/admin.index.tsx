@@ -349,6 +349,70 @@ function AdminDashboard() {
         </Card>
       )}
 
+      {/* Saved accounts (optional passwordless "Save my reports") */}
+      {accounts && (
+        <>
+          <SectionTitle icon={UserPlus} title={t("dash.accounts")} />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Stat
+              label={t("dash.totalAccounts")}
+              value={accounts.totalAccounts}
+            />
+            <Stat
+              label={t("dash.accountsWithReports")}
+              value={accounts.withReports}
+            />
+            <Stat
+              label={t("dash.accountsNoReports")}
+              value={accounts.withoutReports}
+              highlight={accounts.withoutReports > 0}
+            />
+          </div>
+          <Card>
+            <p className="text-xs text-muted-foreground">
+              {t("dash.accountsHint")}
+            </p>
+            {accounts.recent.length === 0 ? (
+              <p className="mt-3 text-sm text-muted-foreground">
+                {t("dash.noAccounts")}
+              </p>
+            ) : (
+              <>
+                <p className="mt-3 text-sm font-semibold">
+                  {t("dash.recentSignups")}
+                </p>
+                <ul className="mt-2 divide-y divide-border">
+                  {accounts.recent.map((acc, i) => (
+                    <li
+                      key={`${acc.email}-${i}`}
+                      className="flex items-center justify-between gap-3 py-2 text-sm"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">
+                          {acc.email}
+                        </span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {acc.createdAt ? formatDate(acc.createdAt, lang) : "—"}
+                        </span>
+                      </span>
+                      <span
+                        className={
+                          acc.reportCount > 0
+                            ? "shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary tabular-nums"
+                            : "shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground tabular-nums"
+                        }
+                      >
+                        {acc.reportCount} {t("dash.reportsWord")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </Card>
+        </>
+      )}
+
       {/* Buildings with multiple reports */}
       {clusters.length > 0 && (
         <>
