@@ -7,6 +7,8 @@ import {
   ImagePlus,
   ChevronDown,
   Plus,
+  Info,
+  HelpCircle,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
