@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 const RESULT_OG = {
   green: absoluteUrl("/og-result-green.jpg"),
   yellow: absoluteUrl("/og-result-yellow.jpg"),
+  orange: absoluteUrl("/og-result-orange.jpg"),
   red: absoluteUrl("/og-result-red.jpg"),
 } as const;
 
