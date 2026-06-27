@@ -340,6 +340,7 @@ export const adminGetBuildingClusters = createServerFn({ method: "POST" })
           total: r.total ?? 0,
           green: r.green ?? 0,
           yellow: r.yellow ?? 0,
+          orange: (r as { orange?: number }).orange ?? 0,
           red: r.red ?? 0,
           lastReport: r.last_report ?? null,
         }));
