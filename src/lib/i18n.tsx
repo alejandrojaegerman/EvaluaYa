@@ -259,6 +259,7 @@ const es: Dict = {
   "building.title": "Otras evaluaciones de este edificio",
   "building.subtitle": "Hay {count} evaluación(es) más de {name}.",
   "building.legend.red": "rojo",
+  "building.legend.orange": "naranja",
   "building.legend.yellow": "amarillo",
   "building.legend.green": "verde",
   "building.note":
