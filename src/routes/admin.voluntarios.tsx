@@ -1,13 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Lock, Mail, MessageCircle, RotateCcw, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Copy,
+  Lock,
+  Mail,
+  MessageCircle,
+  RotateCcw,
+  ShieldCheck,
+  User,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatDateTime } from "@/lib/datetime";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
 import { toWhatsappNumber } from "@/lib/phone";
@@ -20,7 +31,10 @@ import {
   adminListHelpRequests,
   type AdminEngineer,
   type AdminHelpRequest,
+  type AdminMatchingProgress,
 } from "@/lib/volunteers.functions";
+
+type RequestFilter = "all" | "open" | "claimed" | "stalled" | "resolved";
 
 export const Route = createFileRoute("/admin/voluntarios")({
   head: () => ({
