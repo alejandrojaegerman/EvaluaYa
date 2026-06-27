@@ -1039,6 +1039,7 @@ const en: Dict = {
   "building.title": "Other reports from this building",
   "building.subtitle": "There are {count} more evaluation(s) from {name}.",
   "building.legend.red": "red",
+  "building.legend.orange": "orange",
   "building.legend.yellow": "yellow",
   "building.legend.green": "green",
   "building.note":
