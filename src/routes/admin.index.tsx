@@ -117,6 +117,11 @@ function AdminDashboard() {
             if (c.ok) setClusters(c.clusters);
           })
           .catch(() => {});
+        getAccounts({ data: { adminSecret: secret } })
+          .then((acc) => {
+            if (acc.ok) setAccounts(acc.accounts);
+          })
+          .catch(() => {});
       } else {
         toast.error(t("admin.wrong"));
       }
