@@ -78,6 +78,8 @@ export function AppShell({
         {children}
       </main>
 
+      <Footer />
+
       {!hideBottomNav && <BottomNav />}
     </div>
   );
