@@ -176,6 +176,7 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
             <strong>${b.total}</strong> ${escapeHtml(t("map.reports"))}
             &nbsp;·&nbsp;
             <span style="color:${hex("red")}">${b.red}</span> /
+            <span style="color:${hex("orange")}">${b.orange}</span> /
             <span style="color:${hex("yellow")}">${b.yellow}</span> /
             <span style="color:${hex("green")}">${b.green}</span>
           </div>
