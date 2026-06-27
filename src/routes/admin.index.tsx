@@ -611,6 +611,129 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Funnel conversion card: shows how many unique devices reached each step of
+// the evaluation flow over the last 48h, the step-to-step retention, and flags
+// the biggest single drop-off so a flow regression is obvious at a glance.
+function FunnelCard({
+  metrics,
+  t,
+}: {
+  metrics: FunnelMetrics;
+  t: (key: string) => string;
+}) {
+  const counts = new Map<FunnelStep, number>(
+    metrics.steps.map((s) => [s.step, s.devices]),
+  );
+  const rows = FUNNEL_STEPS.map((step) => ({
+    step,
+    devices: counts.get(step) ?? 0,
+  }));
+  const max = Math.max(1, ...rows.map((r) => r.devices));
+
+  // Overall completion: result_reached / property_started.
+  const started =
+    rows.find((r) => r.step === "property_started")?.devices ?? 0;
+  const finished =
+    rows.find((r) => r.step === "result_reached")?.devices ?? 0;
+  const completion = started > 0 ? Math.round((finished / started) * 100) : 0;
+
+  // Find the worst step-to-step drop within the active flow (excludes home_cta,
+  // which is upstream of the flow and skews the first ratio).
+  const flow = rows.filter((r) => r.step !== "home_cta");
+  let worstStep: FunnelStep | null = null;
+  let worstRetention = 101;
+  for (let i = 1; i < flow.length; i++) {
+    const prev = flow[i - 1].devices;
+    const cur = flow[i].devices;
+    if (prev <= 0) continue;
+    const retention = Math.round((cur / prev) * 100);
+    if (retention < worstRetention) {
+      worstRetention = retention;
+      worstStep = flow[i].step;
+    }
+  }
+  const hasData = rows.some((r) => r.devices > 0);
+
+  return (
+    <Card>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold">{t("dash.funnel.title")}</p>
+        <span className="text-xs text-muted-foreground">
+          {t("dash.funnel.window")}
+        </span>
+      </div>
+
+      {!hasData ? (
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t("dash.funnel.empty")}
+        </p>
+      ) : (
+        <>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="font-display text-2xl font-extrabold tracking-tight">
+              {completion}%
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {t("dash.funnel.completion")}
+            </span>
+          </div>
+
+          <ul className="mt-4 space-y-2">
+            {rows.map((r, i) => {
+              const prev = i > 0 ? rows[i - 1].devices : null;
+              const retention =
+                prev && prev > 0
+                  ? Math.round((r.devices / prev) * 100)
+                  : null;
+              const isWorst = r.step === worstStep && r.devices > 0;
+              return (
+                <li key={r.step}>
+                  <div className="flex items-center justify-between gap-2 text-xs">
+                    <span className="font-medium">
+                      {t(`dash.funnel.step.${r.step}`)}
+                    </span>
+                    <span className="tabular-nums text-muted-foreground">
+                      {r.devices}
+                      {retention !== null && (
+                        <span
+                          className={
+                            isWorst
+                              ? "ml-1 font-semibold text-[hsl(var(--destructive))]"
+                              : "ml-1"
+                          }
+                        >
+                          ({retention}%)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${Math.round((r.devices / max) * 100)}%` }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          {worstStep && worstRetention < 60 && (
+            <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+              {t("dash.funnel.biggestDrop")}{" "}
+              <span className="font-semibold text-foreground">
+                {t(`dash.funnel.step.${worstStep}`)}
+              </span>{" "}
+              ({worstRetention}%)
+            </p>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
+
 function Stat({
   label,
   value,
