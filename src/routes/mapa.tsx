@@ -384,6 +384,7 @@ function MapPage() {
       const blob = await generateStatsCard({
         total: totals.total,
         red: totals.red,
+        orange: totals.orange,
         yellow: totals.yellow,
         green: totals.green,
         headline: t("map.cardHeadline"),
