@@ -1540,7 +1540,9 @@ const en: Dict = {
   "property.state": "State",
   "property.statePlaceholder": "Select",
   "property.municipality": "Municipality",
-  "property.municipalityPlaceholder": "e.g. Baruta",
+  "property.municipalityPlaceholder": "Select the municipality",
+  "property.municipalitySelectState": "Select the state first",
+  "property.municipalityUnsure": "Not sure",
   "property.locationHint":
     "We only use the area (state/municipality) for the community map. Your exact address is never shown.",
   "property.detecting": "Detecting your location…",
