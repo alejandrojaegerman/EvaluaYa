@@ -446,7 +446,7 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       const { data: rows, error } = await supabaseAdmin
         .from("help_requests")
         .select(
-          "id, public_id, assessment_public_id, state, municipality, risk_level, resident_whatsapp, note, status, claimed_by, created_at",
+          "id, public_id, assessment_public_id, state, municipality, risk_level, resident_whatsapp, note, status, claimed_by, created_at, progress_stage, engineer_note, progress_updated_at",
         )
         .in("status", ["open", "claimed"])
         .order("created_at", { ascending: false })
@@ -478,8 +478,38 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
         return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
 
+      // Fetch linked assessments so the engineer can validate the AI result.
+      const assessmentIds = Array.from(
+        new Set(
+          relevant
+            .map((r) => r.assessment_public_id)
+            .filter((id): id is string => !!id),
+        ),
+      );
+      const assessmentMap = new Map<
+        string,
+        {
+          risk_level: string | null;
+          prior_risk_level: string | null;
+          report_type: string | null;
+          engineer_verdict: string | null;
+        }
+      >();
+      if (assessmentIds.length > 0) {
+        const { data: aRows } = await supabaseAdmin
+          .from("assessments")
+          .select(
+            "public_id, risk_level, prior_risk_level, report_type, engineer_verdict",
+          )
+          .in("public_id", assessmentIds);
+        for (const a of aRows ?? []) assessmentMap.set(a.public_id, a);
+      }
+
       const requests: EngineerRequest[] = relevant.map((r) => {
         const mine = r.claimed_by === engineer.id;
+        const a = r.assessment_public_id
+          ? assessmentMap.get(r.assessment_public_id)
+          : undefined;
         return {
           id: r.id,
           publicId: r.public_id,
@@ -493,8 +523,19 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
           status: r.status as "open" | "claimed" | "closed",
           claimedByMe: mine,
           createdAt: r.created_at,
+          progressStage: (r.progress_stage as ProgressStage | null) ?? null,
+          engineerNote: r.engineer_note ?? null,
+          progressUpdatedAt: r.progress_updated_at ?? null,
+          aiRiskLevel: a ? ((a.risk_level as RiskLevel | null) ?? null) : null,
+          priorRiskLevel: a
+            ? ((a.prior_risk_level as RiskLevel | null) ?? null)
+            : null,
+          verified: a ? a.report_type === "professional" : false,
+          engineerVerdict:
+            (a?.engineer_verdict as "agree" | "adjust" | null) ?? null,
         };
       });
+
 
       return { engineer: mapEng(engineer), requests };
     } catch (e) {
