@@ -30,6 +30,7 @@ import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
 import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 import { trackStep } from "@/lib/track";
+import { SITE_URL } from "@/lib/site";
 import heroEngineer from "@/assets/hero-engineer.png";
 
 
@@ -37,13 +38,15 @@ import heroEngineer from "@/assets/hero-engineer.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "EvalúaYa — Evaluación estructural" },
+      { title: "EvalúaYa — Evaluación estructural tras un sismo" },
       {
         name: "description",
         content:
           "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal. Si lo necesitas, te conectamos con un ingeniero voluntario verificado.",
       },
+      { property: "og:url", content: SITE_URL },
     ],
+    links: [{ rel: "canonical", href: SITE_URL }],
   }),
   component: Index,
 });
