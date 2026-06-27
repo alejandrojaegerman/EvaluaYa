@@ -152,6 +152,7 @@ function MapPage() {
       cur.total += a.total;
       cur.green += a.green;
       cur.yellow += a.yellow;
+      cur.orange += a.orange;
       cur.red += a.red;
       byState.set(a.state, cur);
     }
