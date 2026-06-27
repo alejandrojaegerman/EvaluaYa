@@ -15,11 +15,14 @@ export function AppShell({
   children,
   className,
   hideBottomNav = false,
+  hideFooter = false,
   wide = false,
 }: {
   children: ReactNode;
   className?: string;
   hideBottomNav?: boolean;
+  /** Hide the site footer (e.g. during the evaluation flow to stay uncluttered). */
+  hideFooter?: boolean;
   /** Use the full desktop width (e.g. data room, admin) instead of the phone column. */
   wide?: boolean;
 }) {
