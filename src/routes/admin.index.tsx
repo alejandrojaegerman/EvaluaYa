@@ -523,10 +523,12 @@ function Stat({
 function MiniDots({
   green,
   yellow,
+  orange = 0,
   red,
 }: {
   green: number;
   yellow: number;
+  orange?: number;
   red: number;
 }) {
   return (
@@ -534,6 +536,11 @@ function MiniDots({
       {red > 0 && (
         <span className="rounded bg-risk-red-soft px-1.5 text-[11px] font-bold text-risk-red">
           {red}
+        </span>
+      )}
+      {orange > 0 && (
+        <span className="rounded bg-risk-orange-soft px-1.5 text-[11px] font-bold text-risk-orange">
+          {orange}
         </span>
       )}
       {yellow > 0 && (
