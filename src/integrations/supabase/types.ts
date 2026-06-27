@@ -573,6 +573,17 @@ export type Database = {
           yellow: number
         }[]
       }
+      get_damage_timeseries: {
+        Args: never
+        Returns: {
+          day: string
+          green: number
+          orange: number
+          red: number
+          total: number
+          yellow: number
+        }[]
+      }
       get_damage_totals: {
         Args: never
         Returns: {

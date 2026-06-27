@@ -581,6 +581,27 @@ const es: Dict = {
     "Datos abiertos y anónimos para autoridades, ONG y prensa.",
   "map.cardHeadline": "Daños estructurales reportados",
   "map.cardCta": "Evalúa tu vivienda gratis en EvalúaYa",
+  "map.storyIntro":
+    "Desplázate para ver la historia detrás de los datos: qué tan serios son los daños, cómo evolucionan y por qué.",
+  "map.severityTitle": "Qué tan serio es",
+  "map.severityNeedAttention": "necesitan atención urgente",
+  "map.severityCaption":
+    "Proporción de evaluaciones en nivel naranja o rojo: daños moderados a graves que requieren un ingeniero.",
+  "map.severityTopArea": "Zona más afectada",
+  "map.severityNone":
+    "Por ahora, la mayoría de las evaluaciones no muestran daños serios.",
+  "map.trendTitle": "Reportes en el tiempo",
+  "map.trendSubtitle":
+    "Evaluaciones por día (últimos 90 días), divididas por nivel de riesgo.",
+  "map.trendEmpty": "Aún no hay suficientes datos para mostrar la tendencia.",
+  "map.trendTotalReports": "reportes en el período",
+  "map.whyTitle": "Por qué se ven así los datos",
+  "map.whySubtitle":
+    "Los factores que más se repiten en las evaluaciones a nivel nacional: daños marcados, antigüedad y tipo de construcción, intensidad sísmica y reglas de seguridad activadas.",
+  "map.exportTitle": "Exporta y comparte",
+  "map.exportSubtitle":
+    "Lleva estos datos a un ingeniero, autoridad o medio de comunicación.",
+
 
   "result.shareWhatsapp": "Compartir por WhatsApp",
   "result.whatsappMessage":
@@ -1496,6 +1517,27 @@ const en: Dict = {
   "map.dataNote": "Open, anonymized data for authorities, NGOs and press.",
   "map.cardHeadline": "Structural damage reported",
   "map.cardCta": "Assess your home free at EvalúaYa",
+  "map.storyIntro":
+    "Scroll to see the story behind the data: how serious the damage is, how it's trending, and why.",
+  "map.severityTitle": "How serious it is",
+  "map.severityNeedAttention": "need urgent attention",
+  "map.severityCaption":
+    "Share of assessments at orange or red level: moderate-to-severe damage that needs an engineer.",
+  "map.severityTopArea": "Most affected area",
+  "map.severityNone":
+    "For now, most assessments show no serious damage.",
+  "map.trendTitle": "Reports over time",
+  "map.trendSubtitle":
+    "Assessments per day (last 90 days), split by risk level.",
+  "map.trendEmpty": "Not enough data yet to show the trend.",
+  "map.trendTotalReports": "reports in this period",
+  "map.whyTitle": "Why the data looks this way",
+  "map.whySubtitle":
+    "The factors that show up most across assessments nationwide: flagged damage, building age and type, seismic intensity, and triggered safety rules.",
+  "map.exportTitle": "Export and share",
+  "map.exportSubtitle":
+    "Take this data to an engineer, authority, or news outlet.",
+
 
   "result.shareWhatsapp": "Share on WhatsApp",
   "result.whatsappMessage":

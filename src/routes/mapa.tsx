@@ -11,11 +11,15 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { CountUp } from "@/components/CountUp";
 import { DamageMap, type MapBubble } from "@/components/DamageMap";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+import { Reveal } from "@/components/Reveal";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
+import { SeveritySpotlight } from "@/components/SeveritySpotlight";
 import { ShareApp } from "@/components/ShareApp";
+import { TrendChart } from "@/components/TrendChart";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
@@ -23,11 +27,13 @@ import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
 import { absoluteUrl } from "@/lib/site";
 import {
   getDamageAggregates,
+  getDamageTimeseries,
   getDamageTotals,
   getRiskFactors,
   type AreaAggregate,
   type DamageTotals,
   type RiskFactors,
+  type TimeseriesPoint,
 } from "@/lib/stats.functions";
 import {
   ESTADOS,
@@ -117,15 +123,24 @@ function MapPage() {
   const navigate = useNavigate();
   const [totals, setTotals] = useState<DamageTotals | null>(null);
   const [areas, setAreas] = useState<AreaAggregate[]>([]);
+  const [timeseries, setTimeseries] = useState<TimeseriesPoint[]>([]);
+  const [nationalFactors, setNationalFactors] = useState<RiskFactors | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    Promise.all([getDamageTotals(), getDamageAggregates()])
-      .then(([tot, ag]) => {
+    Promise.all([
+      getDamageTotals(),
+      getDamageAggregates(),
+      getDamageTimeseries(),
+    ])
+      .then(([tot, ag, ts]) => {
         if (!active) return;
         setTotals(tot);
         setAreas(ag);
+        setTimeseries(ts);
       })
       .catch(() => {})
       .finally(() => active && setLoading(false));
@@ -133,6 +148,21 @@ function MapPage() {
       active = false;
     };
   }, []);
+
+  // National "why behind the data" — loaded once, lazily, when the section is
+  // first revealed (keeps the initial map payload light).
+  const [whyVisible, setWhyVisible] = useState(false);
+  useEffect(() => {
+    if (!whyVisible || nationalFactors) return;
+    let active = true;
+    getRiskFactors({ data: {} })
+      .then((f) => active && setNationalFactors(f))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [whyVisible, nationalFactors]);
+
 
   // Aggregate per-estado for the bubble map.
   const stateBubbles = useMemo(() => {
@@ -424,6 +454,11 @@ function MapPage() {
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {t("map.subtitle")}
         </p>
+        {!loading && hasData && (
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground/80">
+            {t("map.storyIntro")}
+          </p>
+        )}
       </header>
 
       {loading && (
@@ -447,10 +482,10 @@ function MapPage() {
       {!loading && hasData && (
         <>
           {/* Headline counters */}
-          <section className="mt-6 grid grid-cols-2 gap-3">
+          <Reveal as="section" className="mt-6 grid grid-cols-2 gap-3">
             <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
               <p className="font-display text-2xl font-extrabold text-primary">
-                {totals!.total.toLocaleString()}
+                <CountUp value={totals!.total} />
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("map.totalAssessments")}
@@ -458,16 +493,47 @@ function MapPage() {
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
               <p className="font-display text-2xl font-extrabold text-primary">
-                {totals!.areas.toLocaleString()}
+                <CountUp value={totals!.areas} />
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("map.areasLabel")}
               </p>
             </div>
-          </section>
+          </Reveal>
+
+          {/* Severity spotlight — leads the story with urgency */}
+          <Reveal as="section" className="mt-4" delayMs={60}>
+            <SeveritySpotlight
+              total={totals!.total}
+              green={totals!.green}
+              yellow={totals!.yellow}
+              orange={totals!.orange}
+              red={totals!.red}
+              topAreaLabel={topAreas[0]?.title ?? null}
+            />
+          </Reveal>
+
+          {/* Trend over time */}
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+          >
+            <p className="text-sm font-semibold">{t("map.trendTitle")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("map.trendSubtitle")}
+            </p>
+            <div className="mt-3">
+              <TrendChart points={timeseries} />
+            </div>
+          </Reveal>
 
           {/* Risk distribution */}
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+          >
             <p className="text-sm font-semibold">{t("map.distribution")}</p>
             <div className="mt-3">
               <RiskGauge
@@ -478,10 +544,14 @@ function MapPage() {
                 label={t("map.totalAssessments")}
               />
             </div>
-          </section>
+          </Reveal>
 
-          {/* Interactive map (Google Maps) with SVG bubble-map fallback */}
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          {/* Interactive map (Leaflet) with SVG bubble-map fallback */}
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+          >
             <p className="text-sm font-semibold">{t("map.geoTitle")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {t("map.interactiveHint")}
@@ -591,12 +661,12 @@ function MapPage() {
                 {t("map.legendSelf")}
               </p>
             </div>
-          </section>
+          </Reveal>
 
 
 
           {/* Top areas list */}
-          <section className="mt-4">
+          <Reveal as="section" className="mt-4" delayMs={60}>
             <h2 className="font-display text-lg font-bold">{t("map.topAreas")}</h2>
             <ul className="mt-3 space-y-2">
               {topAreas.map((a) => {
@@ -677,10 +747,29 @@ function MapPage() {
                 );
               })}
             </ul>
-          </section>
+          </Reveal>
+
+          {/* National "why behind the data" — lazy-loaded on reveal */}
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+            onReveal={() => setWhyVisible(true)}
+          >
+            <h2 className="font-display text-lg font-bold">{t("map.whyTitle")}</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("map.whySubtitle")}
+            </p>
+            <div className="mt-3">
+              <RiskFactorsPanel
+                factors={nationalFactors}
+                loading={whyVisible && !nationalFactors}
+              />
+            </div>
+          </Reveal>
 
           {/* Share stats image — flywheel */}
-          <section className="mt-6">
+          <Reveal as="section" className="mt-6" delayMs={60}>
             <Button
               className="w-full"
               onClick={shareStats}
@@ -689,10 +778,10 @@ function MapPage() {
               <ImageDown className="size-4" />
               {cardBusy ? t("share.generating") : t("share.shareStats")}
             </Button>
-          </section>
+          </Reveal>
 
           {/* Open data download */}
-          <section className="mt-4">
+          <Reveal as="section" className="mt-4" delayMs={60}>
             <Button variant="outline" className="w-full" onClick={downloadCsv}>
               <Download className="size-4" />
               {t("map.download")}
@@ -700,7 +789,7 @@ function MapPage() {
             <p className="mt-2 text-center text-xs text-muted-foreground">
               {t("map.dataNote")}
             </p>
-          </section>
+          </Reveal>
 
         </>
       )}
