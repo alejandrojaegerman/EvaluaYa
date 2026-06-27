@@ -1,49 +1,52 @@
-# Data room polish: smart filters, cleaner bottom, desktop footer
+## Goal
 
-Three improvements to `/datos` plus an app-wide desktop footer.
+Keep self-evaluation as the clear hero everywhere, but make sure the app consistently communicates the secondary truth: **we recruit, validate, and connect volunteer engineers to residents who request help.** Today that story only lives on the result page and the volunteers page, so other surfaces feel silent or slightly contradictory. This adds a short, repeated supporting thread — qualitative copy only, no live numbers — across mobile and desktop.
 
-## 1. Filters show only options with records (for the active date range)
+## The consistent message (one phrasing, reused)
 
-Today the State dropdown lists every Venezuelan state and the Municipality dropdown lists every municipality in a state — even ones with zero reports. We'll restrict both to options that actually have reports within the currently selected date range (7 / 30 / 90 / all).
+A single three-beat idea used everywhere, lightly adapted per surface:
+- **Reclutamos** ingenieros voluntarios y organizaciones.
+- **Validamos** su experiencia antes de aprobarlos (insignia "verificado").
+- **Conectamos** a residentes que lo piden con un ingeniero de su zona.
 
-How it works:
-- The data room already fetches aggregated areas. We'll add a lightweight options fetch keyed only to the date range (not the state/municipality selection), so the dropdowns stay populated even after a state is chosen.
-- Specifically, when the range changes, fetch the range-scoped aggregates **without** a state/municipality filter and derive:
-  - the set of states that have at least one report, and
-  - per-state, the set of municipalities that have at least one report.
-- `DataRoomFilters` receives these as `availableStates` and `availableMunicipios` and renders only those entries (intersected with the known/named places so labels stay clean). Unknown/"Desconocido" entries are excluded from the dropdowns.
-- Edge cases: if a range has no data at all, the State dropdown shows only "Todos" and stays effectively empty; if a previously selected state/municipality no longer has records in the new range, the selection resets to "Todos" automatically so the user never lands on an empty view.
+Always framed as *optional support after your self-evaluation* — never as a replacement for it.
 
-## 2. Tidy the awkward bottom of the page
+## Surfaces to update
 
-On desktop the lower sections (`Exportar y compartir`, the institution lead form, the "Share app" card, and the final "Start assessment" CTA) currently stack at mixed widths (`md:max-w-xl`) directly under the full-width dashboard, which reads as misaligned and cramped.
+1. **Home (`src/routes/index.tsx`)**
+   - Add one compact secondary card below the existing "How it works" / Share section: "Después de tu evaluación, puedes pedir ayuda de un ingeniero voluntario verificado" with a quiet link to `/voluntarios` (and the existing request flow on the result page). No new CTA competing with the hero "Empezar".
+   - Tweak the home meta description to mention the engineer network in one clause.
 
-Changes (presentation only):
-- Group the closing sections into a consistent full-width container with even vertical rhythm.
-- Place the institution lead form and the share/CTA block side by side in a 2-column grid on large screens (single column on mobile), wrapped in a soft bordered "Para autoridades y medios / Comparte" band so the transition from data to call-to-action feels intentional.
-- Normalize spacing (consistent section gaps) and remove the inconsistent `md:max-w-xl` caps so everything aligns to the page grid.
-- No changes to data, copy semantics, or the dashboard charts above.
+2. **Methodology (`src/routes/metodologia.tsx`)**
+   - Add a short "Red de ingenieros" subsection explaining recruit → validate → connect, reinforcing credibility (validation is part of why results are trustworthy). Update its meta description with one clause.
 
-## 3. Shared desktop footer (all pages)
+3. **Map (`src/routes/mapa.tsx`) & Data room (`src/routes/datos.tsx`)**
+   - Add one short qualitative line near the existing engineer/CTA area: reports can connect residents to verified volunteer engineers in their area. Mobile shows the short line; desktop can show the slightly fuller sentence. No counts.
 
-Add a new `Footer` component rendered by `AppShell`, visible on desktop only (`hidden md:block`) so it never collides with the mobile bottom nav.
+4. **Result / Connect (`src/components/ConnectEngineers.tsx`)**
+   - Light copy alignment so the "verified / validated" language matches the rest of the app (it already connects — just harmonize wording with the new thread).
 
-Contents:
-- Brand lockup (shield icon + EvalúaYa) with the one-line tagline.
-- Grouped links reusing existing routes/i18n: Explorar (Inicio, Mapa, Sala de datos), Participar (Voluntarios, Evaluar), Recursos (Metodología, Ayuda, Enviar comentarios).
-- A bottom row with a short "datos anónimos / código abierto" note and the language toggle.
-- Bilingual via existing `useLang` keys; add a small number of new `footer.*` keys (e.g. section headings and tagline) to `src/lib/i18n.tsx` in both ES and EN.
+5. **Volunteers page (`src/routes/voluntarios.index.tsx`)**
+   - Add an intro strip stating the three pillars (recruit/validate/connect) so the page that owns this story states it explicitly and nothing elsewhere contradicts it.
 
-It mounts once in `AppShell` after `<main>` and before `<BottomNav>`, so every desktop page gets it automatically with no per-route edits.
+6. **Footer (`src/components/Footer.tsx`) + nav**
+   - Footer "Participar" column already links Voluntarios; add a one-line descriptor under it. No structural nav change — Voluntarios already appears in desktop `TopNav` and mobile "Más", so device coverage is intact.
+
+7. **Discovery surfaces**
+   - `public/llms.txt`: add a sentence noting EvalúaYa recruits, validates and connects volunteer engineers.
+
+## Copy / i18n
+
+All new strings added to `src/lib/i18n.tsx` in **ES (primary)** and **EN**, reusing a small shared key group (e.g. `engineers.recruit`, `engineers.validate`, `engineers.connect`, `engineers.tagline`, plus per-surface short/long variants) so wording stays identical across screens.
+
+## Out of scope
+
+- No live counts or new database queries (qualitative copy only, per your choice).
+- No change to the assessment flow, risk logic, or the primary self-eval CTA.
+- No new routes or nav restructure.
 
 ## Technical notes
 
-- `src/components/DataRoomFilters.tsx`: add optional `availableStates: string[]` and `availableMunicipios: Record<string, string[]>` props; filter the rendered `SelectItem`s against them; keep current behavior if props are absent.
-- `src/routes/datos.tsx`:
-  - add a `useEffect` (keyed on `filters.range`) that fetches range-scoped, unfiltered aggregates and computes the available states/municipios sets; pass them into `DataRoomFilters`.
-  - auto-reset `state`/`municipality` in `filters` when the new options no longer include the current selection.
-  - restructure the closing JSX (export / institution / share / CTA) into the aligned full-width layout described above.
-- `src/components/Footer.tsx`: new desktop-only footer component.
-- `src/components/AppShell.tsx`: render `<Footer />` (desktop only) below `<main>`.
-- `src/lib/i18n.tsx`: add `footer.*` ES/EN keys.
-- No database or server-function changes required (reuses existing aggregate fetches).
+- Pure frontend + i18n work: edits to the route/component files listed above and `src/lib/i18n.tsx`, plus `public/llms.txt`.
+- Responsive handling via existing Tailwind breakpoints (short line on mobile, fuller sentence on `md+`) so the thread reads well on every device.
+- Typecheck after edits; no migrations, no server changes.
