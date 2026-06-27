@@ -712,3 +712,17 @@ function MapPage() {
   );
 }
 
+function LegendRow({ color, label }: { color: string; label: string }) {
+  return (
+    <p className="flex items-start gap-1.5 text-muted-foreground">
+      <span
+        className="mt-0.5 size-3 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+        aria-hidden
+      />
+      <span>{label}</span>
+    </p>
+  );
+}
+
+
