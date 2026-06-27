@@ -1,27 +1,21 @@
-# Add the footer to mobile pages
+# Fix awkward mobile footer spacing
 
-Right now the site footer (brand, link columns, tagline, language toggle) only appears on desktop — it's hidden on mobile so it never overlaps the bottom navigation bar. This makes it visible on mobile too, everywhere **except** the evaluation flow, which we keep stripped down for fast completion.
+## Problem
+On mobile, vertical space stacks up around the footer:
+- `<main>` in `AppShell.tsx` has `pb-28` (112px bottom padding) — needed to clear the fixed BottomNav **only when there's no footer**.
+- The `Footer` adds `pt-10` (40px) on top of that.
 
-## What changes
+So when the footer is visible, content → footer has ~150px of empty gap, which looks disconnected/awkward. The footer's own `pb-28` (to clear the BottomNav) is correct and stays.
 
-**1. `src/components/Footer.tsx` — make it responsive (mobile + desktop)**
-- Remove the `hidden md:block` desktop-only restriction so it renders on mobile.
-- Stack the layout gracefully on small screens: brand block on top, link groups in a single column on phones, two columns on larger phones/tablets, and the existing 4-column layout on desktop.
-- Add extra bottom padding on mobile so the footer content clears the fixed bottom nav bar (and the phone's home-indicator safe area). No visual change on desktop.
+## Fix (presentation only)
+In `src/components/AppShell.tsx`, make the `<main>` bottom padding conditional:
+- When the footer is shown (`!hideFooter`): use a small bottom padding (e.g. `pb-4`) since the footer immediately follows and already handles BottomNav clearance.
+- When the footer is hidden (assessment flow): keep `pb-28` so content still clears the BottomNav.
 
-**2. `src/components/AppShell.tsx` — add a `hideFooter` option**
-- New optional `hideFooter` prop (defaults to showing the footer).
-- When set, the footer is not rendered — used by the evaluation flow.
+Optionally trim the footer's top padding on mobile (`pt-10` → `pt-8`) and its top margin (`mt-12` → `mt-8`) for a tighter, more intentional transition, keeping desktop values via `md:` variants.
 
-**3. Hide the footer in the evaluation flow only**
-Pass `hideFooter` on the three assessment-step pages so they stay uncluttered:
-- `src/routes/assess/property.tsx`
-- `src/routes/assess/checklist.tsx`
-- `src/routes/assess/analyze.tsx`
+No changes to layout structure, links, or business logic — purely spacing.
 
-## Result
-- Mobile pages like Home, Mapa, Voluntarios, Metodología, Ayuda, Feedback, Datos, Mis reportes get the footer (links + language toggle), improving navigation and trust.
-- The evaluation flow (property → checklist → analyze) stays minimal with no footer.
-- Desktop is unchanged.
-
-No logic, data, or copy changes — purely presentation.
+## Technical detail
+- File: `src/components/AppShell.tsx`, line ~76 — replace static `pb-28` with conditional padding based on `hideFooter`.
+- File: `src/components/Footer.tsx`, line ~43-44 — optionally adjust `mt-12`/`pt-10` with responsive variants; keep `pb-28 md:pb-10`.
