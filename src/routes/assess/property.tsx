@@ -198,15 +198,29 @@ function PropertyStep() {
 
 
 
+  // Changing the state invalidates any previously picked municipio.
+  function handleStateChange(next: string) {
+    setState(next);
+    setMunicipality("");
+    setMunicipalityUnsure(false);
+  }
+
+  const municipioOptions = municipiosFor(state);
+  // Required: either a real municipio is selected, or the resident chose "not sure".
+  const municipalitySatisfied = municipality.trim() !== "" || municipalityUnsure;
+
   const missing: string[] = [];
   if (state.trim() === "") missing.push(t("property.miss.state"));
+  if (state.trim() !== "" && !municipalitySatisfied)
+    missing.push(t("property.miss.municipality"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (age === null) missing.push(t("property.miss.age"));
   const valid =
     buildingType !== null &&
     age !== null &&
     floors >= 1 &&
-    state.trim() !== "";
+    state.trim() !== "" &&
+    municipalitySatisfied;
 
 
   async function handleContinue() {
