@@ -374,6 +374,12 @@ function AdminDashboard() {
                         style={{ width: `${(c.red / c.total) * 100}%` }}
                       />
                     )}
+                    {c.orange > 0 && (
+                      <div
+                        className="h-full bg-risk-orange"
+                        style={{ width: `${(c.orange / c.total) * 100}%` }}
+                      />
+                    )}
                     {c.yellow > 0 && (
                       <div
                         className="h-full bg-risk-yellow"
@@ -387,8 +393,11 @@ function AdminDashboard() {
                       />
                     )}
                   </div>
-                  <div className="mt-1.5 flex gap-3 text-xs text-muted-foreground">
+                  <div className="mt-1.5 flex flex-wrap gap-3 text-xs text-muted-foreground">
                     <span>{c.red} {t("building.legend.red")}</span>
+                    {c.orange > 0 && (
+                      <span>{c.orange} {t("building.legend.orange")}</span>
+                    )}
                     <span>{c.yellow} {t("building.legend.yellow")}</span>
                     <span>{c.green} {t("building.legend.green")}</span>
                   </div>
