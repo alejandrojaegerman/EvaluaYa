@@ -212,6 +212,55 @@ const es: Dict = {
   "checklist.newDamageTitle": "Reporta solo daños NUEVOS",
   "checklist.newDamageBody": "Responde pensando solo en daños que aparecieron con este sismo. Si una grieta ya existía antes, no la marques. Si no sabes si es nueva, elige \"No estoy seguro\".",
 
+  // Visual examples + glossary (accessibility)
+  "checklist.exampleAlt": "Ejemplo: cómo se ve el daño frente a una estructura sana",
+  "checklist.illoDamage": "Señal de daño",
+  "checklist.illoOk": "Se ve bien",
+  "checklist.glossaryHint": "Toca una palabra para ver qué significa:",
+
+  "glossary.cimientos.term": "Cimientos",
+  "glossary.cimientos.def":
+    "La base sobre la que se apoya toda la construcción, normalmente bajo el primer piso.",
+  "glossary.licuefaccion.term": "Licuefacción",
+  "glossary.licuefaccion.def":
+    "Cuando el suelo lleno de agua pierde firmeza con el sismo y se comporta como lodo: puede brotar agua o arena y las estructuras se hunden o inclinan.",
+  "glossary.grieta_diagonal.term": "Grieta diagonal",
+  "glossary.grieta_diagonal.def":
+    "Grieta inclinada, en forma de X o de escalera. Suele ser más seria que una grieta recta y fina porque indica esfuerzo en la estructura.",
+  "glossary.golpeteo.term": "Golpeteo",
+  "glossary.golpeteo.def":
+    "Cuando dos edificios vecinos chocan entre sí durante el sismo por estar muy juntos.",
+  "glossary.columna.term": "Columna",
+  "glossary.columna.def":
+    "Elemento vertical (normalmente de concreto) que sostiene el peso del edificio.",
+  "glossary.viga.term": "Viga",
+  "glossary.viga.def":
+    "Elemento horizontal que conecta las columnas y sostiene los pisos y el techo.",
+  "glossary.cabilla.term": "Cabilla",
+  "glossary.cabilla.def":
+    "Las barras de acero que van dentro del concreto para reforzarlo. Si quedan a la vista, el daño es serio.",
+  "glossary.pandeo.term": "Pandeo",
+  "glossary.pandeo.def":
+    "Cuando una superficie que debería estar recta se ve hundida, curvada o abombada.",
+  "glossary.rodapie.term": "Rodapié",
+  "glossary.rodapie.def":
+    "La moldura que une la pared con el piso. Un espacio nuevo ahí puede indicar movimiento.",
+  "glossary.breaker.term": "Breaker",
+  "glossary.breaker.def":
+    "El interruptor del tablero eléctrico que corta la corriente cuando hay una falla.",
+  "glossary.tomacorriente.term": "Tomacorriente",
+  "glossary.tomacorriente.def":
+    "El enchufe de la pared donde conectas los aparatos.",
+
+  // Property helper text (accessibility)
+  "property.buildingType.help": "¿Qué tipo de lugar estás evaluando?",
+  "property.floors.help": "Cuenta cuántos pisos tiene la edificación completa.",
+  "property.age.help": "Si no sabes el año exacto, elige lo más cercano.",
+  "property.age.pre1970.desc":
+    "Construcción antigua, anterior a las normas sísmicas modernas.",
+  "property.age.1970to2000.desc": "Construcción de finales del siglo pasado.",
+  "property.age.post2000.desc": "Construcción más reciente.",
+
 
 
   "rule.urm.finding":
@@ -1080,6 +1129,55 @@ const en: Dict = {
 
   "checklist.newDamageTitle": "Report only NEW damage",
   "checklist.newDamageBody": "Answer thinking only about damage that appeared with this earthquake. If a crack was already there before, don't mark it. If you're not sure whether it's new, choose \"Not sure\".",
+
+  // Visual examples + glossary (accessibility)
+  "checklist.exampleAlt": "Example: what damage looks like versus a healthy structure",
+  "checklist.illoDamage": "Sign of damage",
+  "checklist.illoOk": "Looks fine",
+  "checklist.glossaryHint": "Tap a word to see what it means:",
+
+  "glossary.cimientos.term": "Foundation",
+  "glossary.cimientos.def":
+    "The base the whole building rests on, usually below the first floor.",
+  "glossary.licuefaccion.term": "Liquefaction",
+  "glossary.licuefaccion.def":
+    "When water-saturated ground loses firmness during a quake and behaves like mud: water or sand can bubble up and structures sink or tilt.",
+  "glossary.grieta_diagonal.term": "Diagonal crack",
+  "glossary.grieta_diagonal.def":
+    "A slanted, X-shaped or stair-step crack. Usually more serious than a thin straight crack because it points to structural stress.",
+  "glossary.golpeteo.term": "Pounding",
+  "glossary.golpeteo.def":
+    "When two neighboring buildings collide during a quake because they sit too close together.",
+  "glossary.columna.term": "Column",
+  "glossary.columna.def":
+    "A vertical element (usually concrete) that carries the building's weight.",
+  "glossary.viga.term": "Beam",
+  "glossary.viga.def":
+    "A horizontal element that connects the columns and holds up floors and the roof.",
+  "glossary.cabilla.term": "Rebar",
+  "glossary.cabilla.def":
+    "The steel bars inside concrete that reinforce it. If they're exposed, the damage is serious.",
+  "glossary.pandeo.term": "Buckling",
+  "glossary.pandeo.def":
+    "When a surface that should be straight looks sunken, curved, or bulging.",
+  "glossary.rodapie.term": "Baseboard",
+  "glossary.rodapie.def":
+    "The trim where the wall meets the floor. A new gap there can mean movement.",
+  "glossary.breaker.term": "Breaker",
+  "glossary.breaker.def":
+    "The switch in the electrical panel that cuts power when there's a fault.",
+  "glossary.tomacorriente.term": "Outlet",
+  "glossary.tomacorriente.def":
+    "The wall socket where you plug in appliances.",
+
+  // Property helper text (accessibility)
+  "property.buildingType.help": "What kind of place are you assessing?",
+  "property.floors.help": "Count how many floors the whole building has.",
+  "property.age.help": "If you don't know the exact year, pick the closest one.",
+  "property.age.pre1970.desc":
+    "Older construction, before modern seismic codes.",
+  "property.age.1970to2000.desc": "Late last-century construction.",
+  "property.age.post2000.desc": "More recent construction.",
 
 
 
