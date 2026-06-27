@@ -363,7 +363,21 @@ function ChecklistCard({
             />
           </button>
           {showExample && (
-            <div className="mt-2 space-y-1.5 rounded-xl bg-muted/50 p-2.5 text-xs leading-relaxed">
+            <div className="mt-2 space-y-2.5 rounded-xl bg-muted/50 p-2.5 text-xs leading-relaxed">
+              <figure className="overflow-hidden rounded-lg border border-border bg-background">
+                <img
+                  src={CHECKLIST_ILLUSTRATIONS[id]}
+                  alt={t("checklist.exampleAlt")}
+                  loading="lazy"
+                  width={1024}
+                  height={512}
+                  className="h-auto w-full"
+                />
+                <figcaption className="flex items-center justify-between border-t border-border px-3 py-1.5 text-[11px] font-semibold">
+                  <span className="text-destructive">❌ {t("checklist.illoDamage")}</span>
+                  <span className="text-emerald-600">✅ {t("checklist.illoOk")}</span>
+                </figcaption>
+              </figure>
               <p className="flex gap-1.5">
                 <span aria-hidden>❌</span>
                 <span>
@@ -378,6 +392,18 @@ function ChecklistCard({
                   {t(`item.${id}.example.no`)}
                 </span>
               </p>
+              {CHECKLIST_GLOSSARY[id] && (
+                <div className="border-t border-border pt-2">
+                  <p className="text-[11px] text-muted-foreground">
+                    {t("checklist.glossaryHint")}
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {CHECKLIST_GLOSSARY[id]!.map((term) => (
+                      <GlossaryTerm key={term} term={term} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
