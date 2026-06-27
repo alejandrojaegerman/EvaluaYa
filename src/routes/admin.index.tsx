@@ -42,6 +42,10 @@ import {
   type BuildingCluster,
   type StateDrilldown,
 } from "@/lib/admin-analytics.functions";
+import {
+  adminGetAccounts,
+  type AdminAccounts,
+} from "@/lib/admin-accounts.functions";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
