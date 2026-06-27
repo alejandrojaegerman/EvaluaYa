@@ -14,10 +14,12 @@ test("resident completes a full assessment and reaches a result", async ({
   // ── Step 1: Property info ────────────────────────────────────────────
   await page.goto("/assess/property");
 
-  // Select estado (this also stops geolocation from overriding the choice).
-  await page.locator("#estado").selectOption("Miranda");
-  // Municipio dropdown enables once a state is chosen.
-  await expect(page.locator("#municipio")).toBeEnabled();
+  // Select estado. Retry until it "sticks" — the controlled <select> only keeps
+  // the value once React has hydrated, which can lag the initial SSR paint.
+  await expect(async () => {
+    await page.locator("#estado").selectOption("Miranda");
+    await expect(page.locator("#municipio")).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 20_000 });
   await page.locator("#municipio").selectOption("Baruta");
 
   // Building type, then age. Floors defaults to 1, which is valid.
