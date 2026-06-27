@@ -205,6 +205,18 @@ function ResultPage() {
         </p>
       )}
 
+      <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-xs leading-relaxed">
+        <Users className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+        <span>
+          <span className="font-semibold text-foreground">
+            {t("result.shareOwnerTitle")}
+          </span>{" "}
+          <span className="text-muted-foreground">
+            {t("result.shareOwnerBody")}
+          </span>
+        </span>
+      </div>
+
       {/* Findings */}
       {record.aiResult.findings.length > 0 && (
         <Section title={t("result.findings")}>
