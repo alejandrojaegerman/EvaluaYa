@@ -35,6 +35,9 @@ const es: Dict = {
   "home.howTitle": "Cómo funciona",
   "home.how1Title": "Datos de la propiedad",
   "home.how1Desc": "Registra el tipo de edificación, pisos y antigüedad.",
+  "home.behalfTitle": "¿Fuera del país o en un refugio?",
+  "home.behalfBody":
+    "No necesitas estar en el edificio. Un familiar o vecino puede hacer la inspección por ti y compartirte el resultado para decidir si es seguro regresar.",
   "home.how2Title": "Inspección guiada",
   "home.how2Desc": "Responde el cuestionario y sube una foto de cada área.",
   "home.how3Title": "Análisis con IA",
@@ -51,6 +54,12 @@ const es: Dict = {
   "property.subtitle": "Esta información ayuda a interpretar los hallazgos.",
   "property.address": "Dirección / sector",
   "property.addressPlaceholder": "Ej.: Av. Bolívar, sector La Candelaria",
+  "property.buildingName": "Nombre del edificio o torre",
+  "property.buildingNamePlaceholder": "Ej.: Torre Mara, Res. Doral Plaza",
+  "property.buildingNameHint":
+    "Opcional. Ayuda a agrupar reportes del mismo edificio en el mapa. No incluyas el número de apartamento.",
+  "property.behalfHint":
+    "¿No estás en el sitio? Un familiar o vecino puede hacer esta inspección por ti y compartirte el resultado.",
   "property.buildingType": "Tipo de edificación",
   "property.type.house": "Casa",
   "property.type.apartment": "Apartamento",
@@ -501,6 +510,10 @@ const es: Dict = {
   "map.legendYellow": "Amarillo: daños menores. Monitorea y atiende pronto.",
   "map.legendOrange": "Naranja: daños moderados a serios. Necesitas un ingeniero con urgencia.",
   "map.legendRed": "Rojo: daños graves. No entres; evacúa.",
+  "map.legendVerified": "Borde sólido = verificado por un ingeniero",
+  "map.legendSelf": "Borde punteado = autoevaluación de un residente",
+  "map.verified": "Verificado por ingeniero",
+  "map.selfReported": "Autoevaluación de residente",
   "map.topAreas": "Zonas con más reportes",
   "map.reports": "reportes",
   "map.unspecifiedMunicipality": "Municipio sin especificar",
@@ -531,6 +544,13 @@ const es: Dict = {
   "result.viewMap": "Ver mapa de daños de tu zona",
   "result.shareCard": "Compartir imagen de resultado",
   "result.cardFooter": "Autoevaluación estructural tras el sismo · No sustituye una inspección profesional",
+  "result.proBadge": "Evaluación verificada por ingeniero",
+  "result.proBadgeDesc":
+    "Este reporte fue realizado por un ingeniero voluntario, no es una autoevaluación.",
+  "result.residentBadge": "Autoevaluación de residente",
+  "result.shareOwnerTitle": "¿Es para otra persona?",
+  "result.shareOwnerBody":
+    "Comparte este resultado con el dueño o residente para que decida si es seguro regresar.",
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
@@ -738,6 +758,10 @@ const es: Dict = {
   "panel.title": "Panel de ingeniero voluntario",
   "panel.welcome": "Hola",
   "panel.coverage": "Cobertura",
+  "panel.proTitle": "Evaluación profesional",
+  "panel.proBody":
+    "Realiza una inspección certificada. Responderás las mismas preguntas y el reporte quedará marcado como verificado por ingeniero en el mapa.",
+  "panel.startPro": "Iniciar evaluación profesional",
   "panel.invalid": "Enlace no válido o no aprobado",
   "panel.invalidBody":
     "Este enlace no corresponde a un voluntario aprobado. Si crees que es un error, contáctanos.",
@@ -872,6 +896,9 @@ const en: Dict = {
   "home.howTitle": "How it works",
   "home.how1Title": "Property details",
   "home.how1Desc": "Record building type, floors and age.",
+  "home.behalfTitle": "Outside the country or in a shelter?",
+  "home.behalfBody":
+    "You don't have to be in the building. A relative or neighbor can run the inspection for you and share the result so you can decide whether it's safe to return.",
   "home.how2Title": "Guided inspection",
   "home.how2Desc": "Answer the questionnaire and add a photo for each area.",
   "home.how3Title": "AI analysis",
@@ -888,6 +915,12 @@ const en: Dict = {
   "property.subtitle": "This information helps interpret the findings.",
   "property.address": "Address / neighborhood",
   "property.addressPlaceholder": "e.g. Av. Bolívar, La Candelaria district",
+  "property.buildingName": "Building or tower name",
+  "property.buildingNamePlaceholder": "e.g. Torre Mara, Res. Doral Plaza",
+  "property.buildingNameHint":
+    "Optional. Helps group reports from the same building on the map. Don't include your apartment number.",
+  "property.behalfHint":
+    "Not on site? A relative or neighbor can run this inspection for you and share the result.",
   "property.buildingType": "Building type",
   "property.type.house": "House",
   "property.type.apartment": "Apartment",
@@ -1334,6 +1367,10 @@ const en: Dict = {
   "map.legendYellow": "Yellow: minor damage. Monitor and address soon.",
   "map.legendOrange": "Orange: moderate-to-serious damage. You urgently need an engineer.",
   "map.legendRed": "Red: severe damage. Do not enter; evacuate.",
+  "map.legendVerified": "Solid ring = verified by an engineer",
+  "map.legendSelf": "Dashed ring = resident self-assessment",
+  "map.verified": "Engineer-verified",
+  "map.selfReported": "Resident self-report",
   "map.topAreas": "Areas with most reports",
   "map.reports": "reports",
   "map.unspecifiedMunicipality": "Municipality not specified",
@@ -1363,6 +1400,13 @@ const en: Dict = {
   "result.viewMap": "View your area's damage map",
   "result.shareCard": "Share result image",
   "result.cardFooter": "Post-earthquake structural self-assessment · Not a substitute for a professional inspection",
+  "result.proBadge": "Engineer-verified evaluation",
+  "result.proBadgeDesc":
+    "This report was completed by a volunteer engineer — it is not a self-assessment.",
+  "result.residentBadge": "Resident self-assessment",
+  "result.shareOwnerTitle": "Is this for someone else?",
+  "result.shareOwnerBody":
+    "Share this result with the owner or resident so they can decide whether it's safe to return.",
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
@@ -1567,6 +1611,10 @@ const en: Dict = {
   "panel.title": "Volunteer engineer panel",
   "panel.welcome": "Hi",
   "panel.coverage": "Coverage",
+  "panel.proTitle": "Professional evaluation",
+  "panel.proBody":
+    "Run a certified inspection. You'll answer the same questions and the report will be marked as engineer-verified on the map.",
+  "panel.startPro": "Start professional evaluation",
   "panel.invalid": "Invalid or unapproved link",
   "panel.invalidBody":
     "This link doesn't match an approved volunteer. If you think this is a mistake, contact us.",

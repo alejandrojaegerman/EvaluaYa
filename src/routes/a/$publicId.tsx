@@ -14,6 +14,8 @@ import {
   Map as MapIcon,
   Users,
   Activity,
+  ShieldCheck,
+
 
 } from "lucide-react";
 import { useState } from "react";
@@ -179,6 +181,12 @@ function ResultPage() {
         <div className="flex justify-center">
           <RiskBadge level={record.riskLevel} />
         </div>
+        {record.reportType === "professional" && (
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+            <ShieldCheck className="size-3.5" aria-hidden />
+            {t("result.proBadge")}
+          </div>
+        )}
         <p className={cn("mt-4 font-display text-2xl font-extrabold", theme.text)}>
           {t(theme.actionKey)}
         </p>
@@ -196,6 +204,18 @@ function ResultPage() {
             .replace("{to}", t(`result.${record.riskLevel}.tag`))}
         </p>
       )}
+
+      <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-xs leading-relaxed">
+        <Users className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+        <span>
+          <span className="font-semibold text-foreground">
+            {t("result.shareOwnerTitle")}
+          </span>{" "}
+          <span className="text-muted-foreground">
+            {t("result.shareOwnerBody")}
+          </span>
+        </span>
+      </div>
 
       {/* Findings */}
       {record.aiResult.findings.length > 0 && (

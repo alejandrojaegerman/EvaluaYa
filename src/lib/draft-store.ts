@@ -12,6 +12,8 @@ export type AssessmentDraft = {
   property: Partial<PropertyInfo>;
   answers: DraftAnswer[];
   status?: DraftStatus;
+  /** Engineer panel access token — set when an engineer runs a certified eval. */
+  engineerToken?: string;
   updatedAt: number;
 };
 

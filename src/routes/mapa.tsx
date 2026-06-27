@@ -187,6 +187,7 @@ function MapPage() {
         yellow: number;
         orange: number;
         red: number;
+        verified: number;
       }
     >();
     for (const a of areas) {
@@ -206,12 +207,14 @@ function MapPage() {
           yellow: 0,
           orange: 0,
           red: 0,
+          verified: 0,
         };
       cur.total += a.total;
       cur.green += a.green;
       cur.yellow += a.yellow;
       cur.orange += a.orange;
       cur.red += a.red;
+      cur.verified += a.verified;
       grouped.set(key, cur);
     }
     return [...grouped.entries()]
@@ -228,6 +231,7 @@ function MapPage() {
         yellow: g.yellow,
         orange: g.orange,
         red: g.red,
+        verified: g.verified,
         dominant: dominantRisk(g),
       }))
       .sort((x, y) => y.total - x.total);
@@ -571,6 +575,20 @@ function MapPage() {
                 <span className="size-1.5 rounded-full bg-muted-foreground/60" aria-hidden />
                 <span className="size-3 rounded-full bg-muted-foreground/60" aria-hidden />
                 {t("map.legendSize")}
+              </p>
+              <p className="flex items-center gap-1.5 text-muted-foreground">
+                <span
+                  className="size-3 rounded-full border-2 border-primary"
+                  aria-hidden
+                />
+                {t("map.legendVerified")}
+              </p>
+              <p className="flex items-center gap-1.5 text-muted-foreground">
+                <span
+                  className="size-3 rounded-full border border-dashed border-muted-foreground/60"
+                  aria-hidden
+                />
+                {t("map.legendSelf")}
               </p>
             </div>
           </section>

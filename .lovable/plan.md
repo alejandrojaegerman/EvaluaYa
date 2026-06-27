@@ -1,45 +1,51 @@
-# Replace Google Maps with Leaflet + OpenStreetMap (no API key)
+# Closing Vero's remaining feedback (#3, #4, #5)
 
-## Why this fixes it
+Audit result: #1 (legend), #2 (✅/❌ visuals), #6 (Orange tier) and #7 (new-damage banner) are already live. Three gaps remain. Building smallest → largest.
 
-Google Maps fails on `evaluaya.app` because the only available key is the Lovable-managed one, restricted to `*.lovable.app`. Switching to **Leaflet** with **open raster tiles** removes API keys entirely — it renders on any domain (custom domain, preview, offline-cached) with zero credentials and no referrer restrictions. Leaflet is tiny (~40 KB), which also suits the app's low-bandwidth goal.
+## Phase 1 — #4 Optional building / tower name
 
-## Minimum-compromise approach
+Today the building name is only guessed from the address via regex (`src/lib/building.ts`), so most residents never contribute one and the community/building aggregation stays sparse. Add an explicit, optional input.
 
-`DamageMap.tsx` keeps the **exact same props** (`bubbles`, `onSelectState`, `fallback`) and the same visual behavior, so `mapa.tsx`, `zona.$estado.tsx`, and any other caller stay untouched. Only the rendering engine inside the component changes.
+- `src/lib/assessment-types.ts`: add `buildingName?: string` to `PropertyInfo`.
+- `src/routes/assess/property.tsx`: add an optional "Building / tower name" input under Address. Prefill it (once) from `extractBuilding(address)` when the user types an address, but let them edit/clear it. Helper text: *don't include your apartment number*. Save to draft.
+- `src/lib/assessment.functions.ts`: add `buildingName` to `analyzeSchema.property`. At insert, prefer the user-typed name over the inferred one; set `building_inferred = false` when the name came from the field, compute `building_key` from it.
+- i18n keys (ES/EN): `property.buildingName`, `property.buildingNamePlaceholder`, `property.buildingNameHint`.
 
-Feature parity mapping:
+No schema change — `building_name` / `building_key` / `building_inferred` columns already exist.
 
-```text
-Google Maps  ->  Leaflet
------------------------------------------------
-google.maps.Map        ->  L.map
-Circle (meters radius)  ->  L.circle (meters radius, same scaling)
-InfoWindow             ->  L.popup (same HTML card)
-fitBounds              ->  map.fitBounds(L.latLngBounds)
-circle "click"         ->  circle.on("click") -> open popup
-"View zone" button     ->  wired on popupopen event
-```
+## Phase 2 — #3 Onboarding: someone can inspect on your behalf
 
-Everything users see stays the same: colored bubbles sized by report count, the popup card with risk breakdown and "View zone →" link, auto-fit to Venezuela, zoom for municipality detail, and the existing color legend below the map.
+People in shelters or abroad need this most but the flow assumes you're standing in the building. Add framing + a clear share nudge.
 
-## Tiles
+- `src/routes/index.tsx`: add a short callout near the top CTA — *"Outside the country or in a shelter? A relative or neighbor can run this inspection for you and share the result."*
+- `src/routes/assess/property.tsx`: one-line hint at the top of step 1 reinforcing that you can inspect on behalf of an absent owner.
+- `src/routes/a/$publicId.tsx` (result): add a line above the existing WhatsApp/PDF share encouraging the user to send the result to the owner or an engineer.
+- i18n keys (ES/EN): `home.behalfTitle`, `home.behalfBody`, `property.behalfHint`, `result.shareWithOwner`.
 
-Use **CARTO "Positron" light** basemap (`light_all`) — clean, muted styling that fits the teal brand and keeps the colored bubbles readable. It's keyless and free for low-traffic civic use. Attribution (OpenStreetMap + CARTO) is shown in the map corner as required. (If you'd prefer the standard OpenStreetMap look, that's a one-line swap.)
+Presentation-only; reuses the existing share + PDF machinery.
 
-## Implementation steps
+## Phase 3 — #5 Resident vs. professional reports (via engineer panel link)
 
-1. Add `leaflet` (and its TypeScript types) as a dependency.
-2. Rewrite `DamageMap.tsx` to use Leaflet:
-   - Dynamically import Leaflet inside the effect (`await import("leaflet")`) so server-side rendering doesn't crash on `window`.
-   - Import Leaflet's CSS (safe at module top — CSS only).
-   - Build the map, tile layer, circles, and popups; preserve the radius scaling, popup HTML, language reactivity, and `fitBounds` cap.
-   - Keep the `loading` / `error` states and the `fallback` render path (now triggers only if tiles genuinely fail).
-3. Remove the Google Maps script loader and the `VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_*` reads from this component.
-4. Verify in preview, then re-publish so `evaluaya.app` shows the working map.
+`report_type` and `verified_by_engineer` columns exist but are unused (all 113 rows are `resident`). Wire engineer-certified reports through the existing private panel token and differentiate them on the map.
 
-## Notes
+**Submission path**
+- `src/routes/voluntarios.panel.$token.tsx`: add a "Start a professional evaluation" button that launches the normal assessment flow carrying the engineer token (passed via search param `?eng=<token>`, persisted into the draft so it survives the multi-step flow).
+- `src/lib/assessment.functions.ts`: add optional `engineerToken` to `analyzeSchema`. In the handler, look up `volunteer_engineers` by `access_token` (approved + non-expired) with `supabaseAdmin`. If valid → set `report_type = 'professional'` and `verified_by_engineer = engineer.id`; otherwise default `'resident'`. Never trust the flag without a valid token.
+- `getAssessment`: map `report_type` and `verified_by_engineer` into `AssessmentRecord`.
 
-- No backend, data, or routing changes — purely the map rendering layer.
-- The Google Maps connector can be disconnected later if nothing else uses it; leaving it connected does no harm.
-- i18n keys (`map.mapUnavailable`, `map.mapLoading`, etc.) are reused as-is.
+**Surfacing**
+- `src/routes/a/$publicId.tsx`: show a "Professional report · verified by engineer" badge when `report_type === 'professional'`.
+- `src/components/DamageMap.tsx`: the aggregates already return a `verified` count per area. Add a verified marker to bubbles that contain ≥1 professional report (e.g. a solid ring/✓ outline vs. the dashed/plain self-reported style), show "X verified by an engineer" in the popup, and add a legend row distinguishing verified vs. self-reported pins.
+- `src/routes/mapa.tsx`: thread the `verified` value into `mapBubbles` and the legend.
+- i18n keys (ES/EN): `result.professionalBadge`, `map.legendVerified`, `map.legendSelfReported`, `map.verifiedCount`, `panel.startProfessional`.
+
+No schema change — both columns already exist.
+
+## Technical notes
+- Engineer-token validation happens server-side in the analyze handler; the panel token is a UUID `access_token` already used by `getEngineerPanel`.
+- Pin differentiation is by aggregate (municipality/state) since pins are aggregated — a verified area gets a distinct outline, not a per-report pin.
+- All other changes are frontend/presentation plus the one server-function field addition.
+
+## Out of scope
+- An in-flow "I'm an engineer" self-toggle (you chose panel-link only).
+- Re-validating the AI risk model against local engineers (Vero's side-suggestion in #6) — separate effort.

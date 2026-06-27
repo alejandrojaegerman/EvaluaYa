@@ -9,6 +9,8 @@ import {
   LocateFixed,
   Activity,
   AlertTriangle,
+  ShieldCheck,
+  Users,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -34,12 +36,18 @@ import {
 } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
-  validateSearch: (search: Record<string, unknown>): { estado?: string } => {
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { estado?: string; eng?: string } => {
     const estado =
       typeof search.estado === "string" && search.estado.trim() !== ""
         ? search.estado.trim()
         : undefined;
-    return estado ? { estado } : {};
+    const eng =
+      typeof search.eng === "string" && search.eng.trim() !== ""
+        ? search.eng.trim()
+        : undefined;
+    return { ...(estado ? { estado } : {}), ...(eng ? { eng } : {}) };
   },
   component: PropertyStep,
 });
@@ -64,9 +72,10 @@ const STRUCTURAL_TYPES: StructuralType[] = [
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
-  const { estado: estadoParam } = Route.useSearch();
+  const { estado: estadoParam, eng: engParam } = Route.useSearch();
 
   const [address, setAddress] = useState("");
+  const [buildingName, setBuildingName] = useState("");
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
@@ -91,6 +100,7 @@ function PropertyStep() {
       if (!draft) return;
       const p = draft.property;
       if (p.address) setAddress(p.address);
+      if (p.buildingName) setBuildingName(p.buildingName);
       if (p.state) setState(p.state);
       if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
@@ -187,6 +197,7 @@ function PropertyStep() {
       language: lang,
       property: {
         address: address.trim(),
+        buildingName: buildingName.trim(),
         state: state.trim(),
         municipality: municipality.trim(),
         buildingType,
@@ -217,6 +228,7 @@ function PropertyStep() {
           : {}),
       },
       answers: existing?.answers ?? [],
+      ...(engParam ? { engineerToken: engParam } : {}),
       updatedAt: Date.now(),
     });
     navigate({ to: "/assess/checklist" });
@@ -227,6 +239,20 @@ function PropertyStep() {
       <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
 
       <p className="mt-3 text-sm text-muted-foreground">{t("property.effortHint")}</p>
+
+      {engParam ? (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
+          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          <p className="font-medium text-primary">{t("panel.proTitle")}</p>
+        </div>
+      ) : (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card p-3 text-sm">
+          <Users className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          <p className="text-muted-foreground">{t("property.behalfHint")}</p>
+        </div>
+      )}
+
+
 
 
       <div className="mt-6 space-y-7">
@@ -247,6 +273,29 @@ function PropertyStep() {
             autoComplete="street-address"
           />
         </div>
+
+        {/* Building / tower name — optional, powers community map clustering */}
+        <div>
+          <Label htmlFor="buildingName" className="text-sm font-semibold">
+            {t("property.buildingName")}{" "}
+            <span className="font-normal text-muted-foreground">
+              ({t("common.optional")})
+            </span>
+          </Label>
+          <Input
+            id="buildingName"
+            value={buildingName}
+            onChange={(e) => setBuildingName(e.target.value)}
+            placeholder={t("property.buildingNamePlaceholder")}
+            className="mt-2 h-12 rounded-xl bg-card"
+            maxLength={160}
+          />
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {t("property.buildingNameHint")}
+          </p>
+        </div>
+
+
 
         {/* Estado + Municipio (coarse location for the public map) */}
         <div className="grid grid-cols-2 gap-3">

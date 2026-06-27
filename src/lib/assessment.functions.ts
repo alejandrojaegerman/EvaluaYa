@@ -4,7 +4,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
-import { extractBuilding } from "./building";
+import { extractBuilding, buildingKey } from "./building";
 import {
   CHECKLIST_ITEMS,
   type AiResult,
@@ -49,6 +49,7 @@ const analyzeSchema = z.object({
     address: z.string().max(300).optional().default(""),
     state: z.string().max(120).optional().default(""),
     municipality: z.string().max(120).optional().default(""),
+    buildingName: z.string().max(160).optional().default(""),
     buildingType: z.enum(["house", "apartment", "commercial"]),
     structuralType: z
       .enum(["URM", "CMF", "CIW", "PCF", "RML", "unknown"])
@@ -67,6 +68,8 @@ const analyzeSchema = z.object({
     spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
   answers: z.array(answerSchema).min(1).max(13),
+  /** Engineer panel access token — when valid, the report is certified. */
+  engineerToken: z.string().uuid().optional(),
 });
 
 type AnalyzeInput = z.infer<typeof analyzeSchema>;
@@ -289,9 +292,15 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     }
 
 
-    // Detect a building / house name from the free-text address so we can
+    // Prefer the building / tower name the user typed explicitly; otherwise
+    // fall back to detecting one from the free-text address so we can still
     // recognize multiple evaluations of the same building.
-    const building = extractBuilding(data.property.address);
+    const typedBuildingName = data.property.buildingName?.trim();
+    const building = typedBuildingName
+      ? { name: typedBuildingName, key: buildingKey(typedBuildingName) }
+      : extractBuilding(data.property.address);
+    // Inferred only when we derived it from the address rather than the field.
+    const buildingInferred = !typedBuildingName && !!building;
 
     // Look up prior analyzed reports from this same building (anonymized
     // counts only) to give the AI neighbor-damage context.
@@ -374,6 +383,25 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     };
     aiResult = mergedResult;
 
+    // Certify the report when a valid, approved, non-expired engineer panel
+    // token is supplied. Never trust the flag without a server-side check.
+    let reportType: "resident" | "professional" = "resident";
+    let verifiedByEngineer: string | null = null;
+    if (data.engineerToken) {
+      const { data: eng } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("id, status, token_expires_at")
+        .eq("access_token", data.engineerToken)
+        .maybeSingle();
+      const notExpired =
+        !eng?.token_expires_at ||
+        new Date(eng.token_expires_at).getTime() > Date.now();
+      if (eng && eng.status === "approved" && notExpired) {
+        reportType = "professional";
+        verifiedByEngineer = eng.id as string;
+      }
+    }
+
     const { error: insertError } = await supabaseAdmin.from("assessments").insert({
       public_id: publicId,
       device_id: data.deviceId?.trim() || null,
@@ -383,7 +411,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       municipality: data.property.municipality?.trim() || null,
       building_name: building?.name ?? null,
       building_key: building?.key ?? null,
-      building_inferred: building ? true : false,
+      building_inferred: buildingInferred,
+      report_type: reportType,
+      verified_by_engineer: verifiedByEngineer,
       answers: storedAnswers,
       ai_result: aiResult,
       risk_level: finalRisk,
@@ -485,6 +515,8 @@ export const getAssessment = createServerFn({ method: "GET" })
       aiResult: row.ai_result as AiResult,
       riskLevel: (row.risk_level as RiskLevel) ?? "yellow",
       priorRiskLevel: (row.prior_risk_level as RiskLevel | null) ?? null,
+      reportType:
+        (row.report_type as "resident" | "professional" | null) ?? "resident",
       createdAt: row.created_at,
       photoUrls,
       building,
