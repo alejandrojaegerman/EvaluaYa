@@ -170,6 +170,41 @@ const es: Dict = {
   "item.stairs.area": "Escaleras",
   "item.stairs.q": "¿Hay escaleras agrietadas o separadas de los muros?",
 
+  "checklist.exampleToggle": "¿Cómo se ve?",
+  "checklist.exampleYes": "Sí (señal de daño)",
+  "checklist.exampleNo": "No (se ve bien)",
+  "item.foundation.example.yes": "La base tiene grietas nuevas, se ve hundida o el piso quedó disparejo.",
+  "item.foundation.example.no": "La base sigue pareja y sin grietas nuevas.",
+  "item.liquefaction.example.yes": "Brotó agua o arena, hay charcos donde no había, o el terreno se hundió o inclinó.",
+  "item.liquefaction.example.no": "El suelo alrededor sigue firme y seco, igual que antes.",
+  "item.exterior_walls.example.yes": "Grietas en diagonal (en forma de X o escalera) o la pared se separó del edificio de al lado.",
+  "item.exterior_walls.example.no": "Las paredes de afuera siguen rectas y pegadas, sin grietas nuevas.",
+  "item.pounding.example.yes": "Tu edificio chocó con el vecino: hay marcas, golpes o material caído entre ambos.",
+  "item.pounding.example.no": "Hay separación normal con el edificio vecino, sin señales de choque.",
+  "item.interior_walls.example.yes": "Grietas por las que cabe un lápiz o una moneda de canto (más de 1 cm).",
+  "item.interior_walls.example.no": "Solo líneas finas, como un cabello, o ninguna grieta nueva.",
+  "item.flooring.example.yes": "El piso se levantó, baldosas saltadas o se abrió un espacio junto al rodapié.",
+  "item.flooring.example.no": "El piso sigue plano y firme al pisar.",
+  "item.plumbing.example.yes": "Hay fugas, escuchas agua donde no debería, o hueles gas.",
+  "item.plumbing.example.no": "No hay fugas, ni ruido de agua, ni olor a gas.",
+  "item.electrical.example.yes": "Breakers que se disparan, tomas quemados o cables sueltos a la vista.",
+  "item.electrical.example.no": "La electricidad funciona normal, sin cables expuestos.",
+  "item.fixtures.example.yes": "Lámparas colgando torcidas o cajas eléctricas separadas de la pared.",
+  "item.fixtures.example.no": "Lámparas y accesorios siguen firmes y derechos.",
+  "item.columns_beams.example.yes": "El concreto se descascaró y se ve la cabilla (acero) por dentro.",
+  "item.columns_beams.example.no": "Columnas y vigas lisas, sin concreto caído ni acero a la vista.",
+  "item.doors_windows.example.yes": "Una puerta o ventana que antes abría ahora se traba o no cierra.",
+  "item.doors_windows.example.no": "Puertas y ventanas abren y cierran como siempre.",
+  "item.roof.example.yes": "El techo se ve hundido, pandeado o se cayó una parte.",
+  "item.roof.example.no": "El techo sigue parejo, sin hundimientos nuevos.",
+  "item.stairs.example.yes": "La escalera tiene grietas o se separó de la pared.",
+  "item.stairs.example.no": "La escalera sigue firme y pegada a la pared.",
+
+  "checklist.newDamageTitle": "Reporta solo daños NUEVOS",
+  "checklist.newDamageBody": "Responde pensando solo en daños que aparecieron con este sismo. Si una grieta ya existía antes, no la marques. Si no sabes si es nueva, elige \"No estoy seguro\".",
+
+
+
   "rule.urm.finding":
     "Edificación de mampostería sin refuerzo: muy vulnerable tras un sismo fuerte.",
   "rule.urm.step":
