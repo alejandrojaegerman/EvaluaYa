@@ -1,47 +1,41 @@
-# Device-focused experience + Data Room
+# Device-aware navigation cleanup
 
-Today the whole app is locked to a phone-width column (`max-w-screen-sm` in `AppShell`) with a resident bottom nav, and `/mapa` is one long scroll of charts that's heavy on phones and wasted on desktop. This splits the experience by device without touching the assessment flow or its logic.
+Make the nav adapt to the visitor and the device: stop showing "Mis reportes" as a dead end when there's nothing to show, point mobile visitors toward starting an evaluation instead, and surface the higher-value pages directly on desktop.
 
-## 1. Mobile = residents + evaluation
+## 1. Detect whether the visitor has reports
 
-- **Bottom nav stays resident-first:** Inicio, Mapa, Mis reportes, Más. Add a compact "Datos" link inside the "Más" sheet (it opens the reduced data room).
-- **Simplify `/mapa` on mobile** to: title, the two headline counters (total assessments / areas), the interactive map with its legend, the start-assessment CTA, and a single "Ver datos completos" link to `/datos`. The heavy sections (trend chart, distribution gauge, severity spotlight, top-areas table, national "why" drill-down, CSV export, institution form) move to the data room.
-- The evaluation flow, its screens, and triage logic are untouched.
+A small client-only hook (`src/hooks/use-has-reports.ts`) returns a boolean that is `true` when **either**:
+- this device has at least one entry in local history (`getHistory()`), **or**
+- there is an active account session (`supabase.auth.getSession()` / `onAuthStateChange`).
 
-## 2. Desktop = institutional / analyst use
+To avoid SSR hydration mismatches, it starts `false` on the server and first paint, then resolves on mount and updates live on sign-in/sign-out. This mirrors the existing client-only patterns already used in `index.tsx` and `use-claim-on-signin.ts`.
 
-- **`AppShell` gains a wide mode** so non-resident pages can use the full width with a centered max width (about `max-w-6xl`) instead of the phone column. `/mapa`, `/`, and assessment screens keep the narrow column; `/datos` and `/admin` use wide mode.
-- **Desktop top nav bar** (visible at `md+`, bottom nav hidden at `md+`): logo, Inicio, Mapa, Datos, Mis reportes, plus a "Más" dropdown (Voluntarios, Metodología, Ayuda, Feedback) and the language/online controls. Mobile keeps the existing bottom nav (hidden on desktop). Both live in the shell so every page gets the right chrome automatically.
+## 2. Mobile bottom nav (`BottomNav.tsx`)
 
-## 3. New `/datos` Data Room
+Four tabs, last slot is conditional:
+- **Has reports:** Inicio · Mapa · **Mis reportes** · Más (current behavior)
+- **No reports:** Inicio · Mapa · **Evaluar** · Más
 
-A single route that renders reduced on mobile and robust on desktop.
+The "Evaluar" tab links straight to the assessment start (`/assess/property`) with a clear icon (e.g. `ClipboardCheck`) — the most direct path to a completed evaluation. Inside the "Más" sheet, the "Mis reportes" entry is added only when the visitor has reports, so it's reachable but never a dead end.
 
-**Mobile (reduced):** headline totals, risk distribution gauge, a short top-areas list, and a note that the full data room is best on a larger screen, plus CSV export and the institution lead form.
+## 3. Desktop top nav (`TopNav.tsx`)
 
-**Desktop (robust dashboard):**
-- **Filter bar** across the top: estado dropdown, municipio dropdown (depends on estado), risk-level toggle, and a **date range** (presets: 7/30/90 days + custom). Filters drive every panel below.
-- **Two-column layout:** large interactive map on the left; a charts panel on the right with the trend chart, risk distribution gauge, and severity spotlight.
-- **Below:** the top-areas table with the inline "why" drill-down (`RiskFactorsPanel`), the national risk-factors panel, CSV export (respects active filters), share-stats image, and the institution lead form.
+- Promote **Voluntarios** and **Metodología** out of the "Más" dropdown into the main inline nav row.
+- Show **Mis reportes** in the main row only when the visitor has reports; otherwise it's hidden entirely.
+- The "Más" dropdown keeps the remaining secondary items (Ayuda, Feedback), plus Mis reportes only when relevant.
 
-All existing components are reused (`DamageMap`, `TrendChart`, `RiskGauge`, `SeveritySpotlight`, `RiskFactorsPanel`, `InstitutionLeadForm`, `ShareApp`) — just rearranged into a responsive dashboard grid.
+Resulting desktop main row:
+- No reports: Inicio · Mapa · Datos · Voluntarios · Metodología · Más(Ayuda, Feedback)
+- Has reports: Inicio · Mapa · Datos · Voluntarios · Metodología · Mis reportes · Más(Ayuda, Feedback)
 
-## 4. Backend (filters + date range)
+## 4. New i18n key
 
-The current aggregates RPC has no date dimension and the timeseries RPC has no location dimension, so filters need filterable reads:
-- A migration adds date-range + location params to the read path (a new `get_damage_room(_state, _municipality, _from, _to)` RPC, or optional params on the existing aggregate/timeseries RPCs) returning the same anonymized counts — never addresses, photos, or report ids.
-- New server function(s) in `stats.functions.ts` (e.g. `getDataRoom`) wrap it, keeping the service-role brokering pattern and Eastern-time day bucketing already in place.
+Add `nav.evaluate` ("Evaluar" / "Evaluate") in both ES and EN blocks of `src/lib/i18n.tsx` for the mobile fallback tab.
 
 ## Technical notes
 
-- `src/components/AppShell.tsx`: add `wide?: boolean`; render desktop `TopNav` (new) and keep `BottomNav` mobile-only via `md:hidden` / `hidden md:flex`.
-- New `src/components/TopNav.tsx`; `BottomNav.tsx` adds the Datos entry in the sheet.
-- New `src/routes/datos.tsx` with its own `head()` metadata (title, description, og) and a `/datos` OG image reuse of the map card.
-- New `src/components/DataRoomFilters.tsx` for the desktop filter bar (estado/municipio from `src/lib/venezuela.ts`).
-- `src/routes/mapa.tsx`: trim to the mobile-simple set; add the "Ver datos completos" link.
-- `src/lib/stats.functions.ts` + one migration for filterable RPCs.
-- `src/lib/i18n.tsx`: add ES/EN keys for nav "Datos", data-room headings, filter labels, date presets, and the "best on desktop" note.
-- Add `/datos` to `src/routes/sitemap[.]xml.ts`.
-- Also quietly fix the `/mapa` hydration warning from the institution form (browser-extension attribute mismatch) by guarding that input subtree.
-
-No changes to the assessment flow, triage rules, or stored data shape.
+- New file: `src/hooks/use-has-reports.ts` — client-only boolean hook (history + session), subscribes to `supabase.auth.onAuthStateChange`, cleans up on unmount.
+- `src/components/BottomNav.tsx`: use the hook; swap the 3rd tab between the Mis reportes link and the Evaluar link (`to="/assess/property"`); conditionally render the Mis reportes row in the sheet.
+- `src/components/TopNav.tsx`: add Voluntarios + Metodología inline links; gate the Mis reportes link on the hook; trim the dropdown accordingly.
+- No backend, assessment-flow, or triage changes. No route additions (links target existing routes).
+- The `/datos` and `/feedback` hydration warnings in the console come from a browser password-manager extension (Dashlane) injecting attributes into form inputs, not from app code; out of scope here.
