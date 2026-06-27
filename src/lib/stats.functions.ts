@@ -56,7 +56,9 @@ export const getDamageAggregates = createServerFn({ method: "GET" }).handler(
         total: r.total ?? 0,
         green: r.green ?? 0,
         yellow: r.yellow ?? 0,
+        orange: r.orange ?? 0,
         red: r.red ?? 0,
+        verified: r.verified ?? 0,
         lastReport: r.last_report ?? null,
       }));
     } catch (e) {
