@@ -6,6 +6,7 @@ import {
   municipiosFor,
   nearestMunicipio,
   nearestEstado,
+  resolveMunicipio,
 } from "@/lib/venezuela";
 
 describe("municipio dataset integrity", () => {
