@@ -78,6 +78,11 @@ export type PropertyInfo = {
   /** Coarse location only — estado / municipio. Drives the public map. */
   state?: string;
   municipality?: string;
+  /**
+   * Optional building / tower name (never the apartment number). Lets multiple
+   * evaluations of the same structure be grouped in the community map.
+   */
+  buildingName?: string;
   buildingType: BuildingType;
   /** structural lateral system (drives deterministic safety rules) */
   structuralType?: StructuralType;
@@ -138,6 +143,8 @@ export type AssessmentRecord = {
   riskLevel: RiskLevel;
   /** Original risk level before the 4-level retroactive reclassification, if changed. */
   priorRiskLevel?: RiskLevel | null;
+  /** "resident" (self-reported) or "professional" (engineer-certified). */
+  reportType?: "resident" | "professional";
   createdAt: string;
   /** signed urls per item id; may contain multiple photos per item */
   photoUrls: Record<string, string[]>;
