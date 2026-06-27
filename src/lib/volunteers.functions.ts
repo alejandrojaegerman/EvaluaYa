@@ -641,7 +641,7 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
       const engineer = await loadEngineerByToken(data.token);
       if (!engineer || tokenExpired(engineer)) return { ok: false };
 
-      const patch: Record<string, unknown> = {
+      const patch: TablesUpdate<"help_requests"> = {
         progress_stage: data.stage,
         progress_updated_at: new Date().toISOString(),
       };
