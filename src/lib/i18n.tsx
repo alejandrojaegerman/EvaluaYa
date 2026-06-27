@@ -944,6 +944,40 @@ const es: Dict = {
   "panel.ageWaiting": "Esperando",
   "panel.ageDays": "d",
 
+  // Panel — progress tracking
+  "panel.progressTitle": "Progreso",
+  "panel.stage.claimed": "Asignada",
+  "panel.stage.contacted": "Contacté al residente",
+  "panel.stage.visited": "Visité / inspeccioné",
+  "panel.stage.resolved": "Resuelta",
+  "panel.markContacted": "Marcar: contacté",
+  "panel.markVisited": "Marcar: visité",
+  "panel.markResolved": "Marcar: resuelta",
+  "panel.progressNote": "Nota de progreso (opcional)",
+  "panel.progressNotePlaceholder": "Ej.: Acordé visita para el sábado.",
+  "panel.progressSaved": "Progreso actualizado.",
+  "panel.lastUpdate": "Última actualización",
+  "panel.currentStage": "Etapa actual",
+
+  // Panel — validate the AI evaluation
+  "panel.validateTitle": "Validar la evaluación de la app",
+  "panel.validateBody":
+    "Compara el resultado de la IA con tu criterio profesional. Tu verdicto marca el reporte como verificado en todas las superficies.",
+  "panel.aiSaid": "La IA indicó",
+  "panel.agree": "Estoy de acuerdo",
+  "panel.adjust": "Ajustar nivel",
+  "panel.pickLevel": "Tu nivel profesional",
+  "panel.verdictNote": "Notas profesionales (opcional)",
+  "panel.verdictNotePlaceholder": "Ej.: Grietas no estructurales; uso seguro con reparaciones menores.",
+  "panel.submitVerdict": "Guardar verdicto",
+  "panel.verdictSaved": "Verdicto guardado. Reporte verificado.",
+  "panel.verifiedByYou": "Verificado por ti",
+  "panel.verifiedAgree": "Confirmaste el nivel de la IA",
+  "panel.verifiedAdjust": "Ajustaste el nivel",
+  "panel.cancel": "Cancelar",
+  "panel.noReportToValidate": "Esta solicitud no tiene una evaluación vinculada.",
+
+
   // Admin dashboard
   "dash.title": "Panel de administración",
   "dash.subtitle": "Métricas de evaluaciones, voluntarios y conexiones.",
