@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ESTADO_NAMES } from "./venezuela";
 import { toWhatsappNumber } from "./phone";
 import type { RiskLevel } from "./assessment-types";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 
 // ---------------------------------------------------------------------------
 // Public DTOs (safe to ship to the browser)
