@@ -563,7 +563,9 @@ const es: Dict = {
   "property.state": "Estado",
   "property.statePlaceholder": "Selecciona",
   "property.municipality": "Municipio",
-  "property.municipalityPlaceholder": "Ej.: Baruta",
+  "property.municipalityPlaceholder": "Selecciona el municipio",
+  "property.municipalitySelectState": "Primero selecciona el estado",
+  "property.municipalityUnsure": "No estoy seguro",
   "property.locationHint":
     "Solo usamos la zona (estado/municipio) para el mapa comunitario. Nunca mostramos tu dirección exacta.",
   "property.detecting": "Detectando tu ubicación…",
