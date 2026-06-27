@@ -118,13 +118,17 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
 
     for (const b of bubbles) {
       const color = hex(b.dominant);
+      const hasVerified = (b.verified ?? 0) > 0;
       // radius in meters; scaled by share of the max, with a sane floor/ceiling
       const radius = 8000 + (b.total / maxTotal) * 55000;
       const circle = leaflet.circle([b.lat, b.lng], {
         radius,
         color,
         opacity: 0.9,
-        weight: 1.5,
+        // Areas with at least one engineer-verified report get a bolder solid
+        // ring; self-reported-only areas use a thinner dashed ring.
+        weight: hasVerified ? 3 : 1.5,
+        dashArray: hasVerified ? undefined : "4 3",
         fillColor: color,
         fillOpacity: 0.45,
       });
