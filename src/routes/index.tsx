@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal.",
+          "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal. Si lo necesitas, te conectamos con un ingeniero voluntario verificado.",
       },
     ],
   }),
