@@ -33,6 +33,16 @@ export function registerServiceWorker() {
     return;
   }
 
+  // When a new service worker takes control (autoUpdate -> skipWaiting +
+  // clientsClaim), reload once so installed PWAs pick up the fresh bundle
+  // instead of serving a stale cached build.
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => {
       /* registration failed — app still works online */
