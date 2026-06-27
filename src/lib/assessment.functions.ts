@@ -292,9 +292,15 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     }
 
 
-    // Detect a building / house name from the free-text address so we can
+    // Prefer the building / tower name the user typed explicitly; otherwise
+    // fall back to detecting one from the free-text address so we can still
     // recognize multiple evaluations of the same building.
-    const building = extractBuilding(data.property.address);
+    const typedBuildingName = data.property.buildingName?.trim();
+    const building = typedBuildingName
+      ? { name: typedBuildingName, key: buildingKey(typedBuildingName) }
+      : extractBuilding(data.property.address);
+    // Inferred only when we derived it from the address rather than the field.
+    const buildingInferred = !typedBuildingName && !!building;
 
     // Look up prior analyzed reports from this same building (anonymized
     // counts only) to give the AI neighbor-damage context.
