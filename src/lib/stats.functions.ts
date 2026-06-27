@@ -7,7 +7,10 @@ export type AreaAggregate = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
+  /** number of professional (engineer-verified) reports in this area */
+  verified: number;
   lastReport: string | null;
 };
 
@@ -15,7 +18,9 @@ export type DamageTotals = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
+  verified: number;
   areas: number;
 };
 
@@ -23,7 +28,9 @@ const EMPTY_TOTALS: DamageTotals = {
   total: 0,
   green: 0,
   yellow: 0,
+  orange: 0,
   red: 0,
+  verified: 0,
   areas: 0,
 };
 
