@@ -7,7 +7,10 @@ export type AreaAggregate = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
+  /** number of professional (engineer-verified) reports in this area */
+  verified: number;
   lastReport: string | null;
 };
 
@@ -15,7 +18,9 @@ export type DamageTotals = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
+  verified: number;
   areas: number;
 };
 
@@ -23,7 +28,9 @@ const EMPTY_TOTALS: DamageTotals = {
   total: 0,
   green: 0,
   yellow: 0,
+  orange: 0,
   red: 0,
+  verified: 0,
   areas: 0,
 };
 
@@ -49,7 +56,9 @@ export const getDamageAggregates = createServerFn({ method: "GET" }).handler(
         total: r.total ?? 0,
         green: r.green ?? 0,
         yellow: r.yellow ?? 0,
+        orange: r.orange ?? 0,
         red: r.red ?? 0,
+        verified: r.verified ?? 0,
         lastReport: r.last_report ?? null,
       }));
     } catch (e) {
@@ -64,7 +73,9 @@ export type StateStats = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
+  verified: number;
   municipios: number;
   lastReport: string | null;
 };
@@ -83,7 +94,9 @@ export const getStateStats = createServerFn({ method: "GET" })
       total: 0,
       green: 0,
       yellow: 0,
+      orange: 0,
       red: 0,
+      verified: 0,
       municipios: 0,
       lastReport: null,
     };
@@ -108,7 +121,9 @@ export const getStateStats = createServerFn({ method: "GET" })
           acc.total += r.total ?? 0;
           acc.green += r.green ?? 0;
           acc.yellow += r.yellow ?? 0;
+          acc.orange += r.orange ?? 0;
           acc.red += r.red ?? 0;
+          acc.verified += r.verified ?? 0;
           const muni = (r.municipality ?? "").trim();
           if (muni && muni.toLowerCase() !== "desconocido") municipios.add(muni);
           if (r.last_report && (!lastReport || r.last_report > lastReport)) {
@@ -116,7 +131,7 @@ export const getStateStats = createServerFn({ method: "GET" })
           }
           return acc;
         },
-        { total: 0, green: 0, yellow: 0, red: 0 },
+        { total: 0, green: 0, yellow: 0, orange: 0, red: 0, verified: 0 },
       );
       return {
         state: data.state,
@@ -147,7 +162,9 @@ export const getDamageTotals = createServerFn({ method: "GET" }).handler(
         total: r.total ?? 0,
         green: r.green ?? 0,
         yellow: r.yellow ?? 0,
+        orange: r.orange ?? 0,
         red: r.red ?? 0,
+        verified: r.verified ?? 0,
         areas: r.areas ?? 0,
       };
     } catch (e) {

@@ -1,65 +1,76 @@
-# Deduce building names & group same-building reports
+# EvalúaYa — Feedback round (#1, #2, #3, #6, #5, #7, #8)
 
-Many addresses already embed a building/house name — `edificio uracoa`, `Res.Doral Plaza`, `C.R. Bosques del Neveri`, `Qta. ...` — while plenty are just neighborhoods with none. We'll extract a building name where one exists, store a normalized key, and use it so two evaluations of the same building are recognized — in the resident's result, the AI triage, and the admin views.
+Built in phases by priority. Everything bilingual (ES primary / EN secondary).
 
-## How a building is identified
+## Phase 1 — Quick UX wins (#1, #2, #3, #7)
 
-A building match = same **estado + municipio + normalized building key**. We never group on address text alone (too messy) and never across municipios. Records with no detectable building name simply have no key and are never grouped.
+### #1 Map legend + per-pin meaning
+- Add a permanent **legend** under the map in `mapa.tsx` and `zona.$estado.tsx`: one row per color with its meaning (🟢 Seguro / entrar · 🟡 Precaución, monitorea · 🟠 Necesitas un ingeniero pronto · 🔴 No entrar, evacúa).
+- Repeat the color meaning inside each pin's info window in `DamageMap.tsx` (the dominant color gets a plain-language label, not just counts).
 
-## 1. Extraction logic (parser + AI fallback)
+### #2 Plain language + visual ✅/❌ examples
+- Rewrite the technical checklist wording in `i18n.tsx` to everyday Spanish (e.g. "cimientos" → "la base del edificio (lo que toca el suelo)"; "grietas diagonales respecto a edificios vecinos" → "el muro se está separando del edificio de al lado").
+- Add an expandable **"Ver ejemplo / See example"** under each core structural question in `checklist.tsx` showing a side-by-side ✅ (sin daño) vs ❌ (con daño) illustration so the user can match what they see. Generate a compact set of labeled example images for the 7 core items (foundation, exterior walls, interior walls, columns/beams, doors/windows, roof, stairs).
 
-New file `src/lib/building.ts`:
-- `extractBuilding(address)` — deterministic parser. Recognizes Venezuelan markers: `Edificio/Edif/Ed.`, `Residencias/Res./Resd.`, `Conjunto Residencial/C.R./Cjto`, `Torre`, `Quinta/Qta.`, `Bloque`, `Urb.`-named buildings, etc. Returns `{ name, key } | null`.
-- `buildingKey(name)` — accent-stripped, lowercase, punctuation-collapsed key for grouping (reuses the same normalization style as `venezuela.ts`).
-- Pure, offline, no cost — runs at assessment time for every new record.
+### #3 Onboarding: someone can inspect on your behalf
+- Add an onboarding note on `assess/property.tsx` (and the home CTA) clarifying: *you don't have to be the one inside — a relative or neighbor can do the inspection for you, and you can share the result from anywhere (a shelter, or outside the country).*
+- Reinforce sharing affordance already present on the result page.
 
-AI fallback is used only where the parser finds nothing, during the backfill (below) — it's the accuracy boost without adding latency/credits to every live analysis.
+### #7 New damage vs. pre-existing damage
+- Add a clear instruction at the start of the checklist: *only report NEW damage caused by the earthquake.*
+- Add a third framing to the existing Yes/No/Unsure: keep the answers, but add a per-item helper "¿No sabes si es nuevo? Marca 'No estoy seguro'" so uncertainty is captured instead of contaminating "Sí".
 
-## 2. Database
+## Phase 2 — Fourth risk level: Orange 🟠 (#6)
 
-Migration adds to `public.assessments`:
-- `building_name text` (display) and `building_key text` (grouping)
-- `building_inferred boolean default false` (idempotency guard for backfill, mirrors `geo_inferred`)
-- index on `(state, municipality, building_key)`
+Split the overly broad yellow bucket into **🟡 Amarillo (monitorea, atiende X/Y/Z)** and **🟠 Naranja (necesitas un ingeniero urgente)** as a real fourth level: 🟢 → 🟡 → 🟠 → 🔴.
 
-New `SECURITY DEFINER` RPCs (search_path pinned, mirroring existing ones):
-- `get_building_peers(_state, _municipality, _building_key)` → anonymized counts only: total + green/yellow/red breakdown + last_report. **No addresses, ids, or photos.**
-- `get_admin_building_clusters(_state default null)` → buildings with 2+ reports: name, municipio, counts by risk, last report — admin-only via existing service-role broker.
+- AI triage prompt gains an explicit `orange` definition (moderate-to-serious damage that needs a professional inspection soon, but not obvious imminent collapse). Safety-rule severity ordering becomes green→yellow→orange→red; the strongest "force red" rules stay red, while several current "force red" or "high caution" cases land on orange.
+- Recalibrate thresholds so a clean home (your Miami example) lands green, light cosmetic issues land yellow, and "get an engineer" cases land orange — reducing the yellow pile-up.
+- New orange theme color, badge, gauge segment, map color, OG result image, and PDF color.
+- All map/admin aggregates and drill-downs gain an orange count alongside green/yellow/red.
 
-## 3. Auto-extract on new assessments
+## Phase 3 — Resident vs. professional reports (#5)
 
-In `analyzeAssessment` (`src/lib/assessment.functions.ts`): run `extractBuilding(property.address)` before insert and persist `building_name` / `building_key`.
+Two report types, with **professional = an already-approved volunteer engineer** (reusing the existing approval + access-token system).
 
-## 4. AI analysis context
+- Each assessment is tagged `resident` (default) or `professional`, and professional reports store which approved engineer verified them.
+- From the engineer's private panel (`voluntarios.panel.$token.tsx`), an approved engineer can **create/verify a professional assessment**: same checklist questions plus their own professional risk call and notes. Their risk level is authoritative (not overridden by AI).
+- On the **map and admin**, verified professional pins are visually distinguished from self-reports (e.g. a check-ring marker + "Verificado por ingeniero" label), and counts can be split resident vs. verified.
+- Result page shows a "Verificado por un ingeniero voluntario" badge when applicable.
 
-Before the triage call, look up `get_building_peers` for the new record's building. If prior analyzed reports exist, add one line to the prompt (e.g. *"N previous evaluations from this same building: X red / Y yellow / Z green"*) so the model weighs neighbor damage. Purely additive context; deterministic safety rules unchanged.
+## Phase 4 — Distribution to shelters (#8)
 
-## 5. Resident result card
+The people who most need this (in a shelter, low digital context) won't find it alone → reach shelter coordinators directly.
 
-New `SameBuildingCard.tsx` shown on `/a/$publicId` only when a building key resolved **and** peer count > 0:
-- "Otras N evaluaciones de este edificio" with a small red/yellow/green breakdown
-- Plain-language note: structural problems often affect a whole building; encourage comparing with neighbors / sharing with the building's administration
-- Bilingual via `i18n.tsx`
-- Fed by a public server fn wrapping `get_building_peers` (counts only — keeps the privacy posture you set: building grouping stays on the owner's result + admin, never the public map).
+- Add a lightweight **"Coordinadores de refugio / Para refugios"** page with: a printable one-page poster (QR to the app + 4-step plain instructions), a pre-filled WhatsApp message a coordinator can forward, and a short pitch for orgs to help residents on-site.
+- Surface it from the "Más" nav and the community/invite section.
 
-## 6. Admin
+---
 
-Add a "Buildings with multiple reports" panel to `/admin` (and the zona drill-down) using `get_admin_building_clusters`: building name, municipio, report count, risk mix. Helps spot a single structure generating several red flags.
+## Technical details
 
-## 7. Backfill existing records
+**Risk model (Phase 2) — `orange` touches:**
+- `src/lib/assessment-types.ts`: `RiskLevel = "green" | "yellow" | "orange" | "red"`.
+- `src/lib/risk.ts`: add `orange` to `RISK_THEME`, `RISK_HEX`, and `isRiskLevel`.
+- `src/lib/safety-rules.ts`: `ORDER = ["green","yellow","orange","red"]`; add `fireOrange`; reassign rules (e.g. spalling+rebar, >7 floors + damage, severe shaking w/o collapse) to orange.
+- `src/lib/assessment.functions.ts`: extend `SYSTEM_PROMPT` levels + JSON validation to accept `orange`.
+- `src/styles.css`: `--risk-orange[-foreground|-soft]` tokens (light + dark) and `--color-risk-orange*` mappings.
+- Components: `RiskBadge.tsx`, `RiskGauge.tsx`, `DamageMap.tsx`, `mapa.tsx` (`RiskKey`, `dominantRisk`), `zona.$estado.tsx`, `pdf.ts`.
+- New OG image `public/og-result-orange.jpg` + map result lookup.
 
-New `scripts/backfill-buildings.ts` (mirrors `scripts/backfill-geo.ts`):
-- DRY-RUN by default; `--apply` to write
-- Only rows with `building_inferred = false`; only fills empty `building_key`; sets `building_inferred = true` when it fills something (idempotent, re-runnable)
-- Parser first; for rows where the parser finds nothing, batch the addresses to the AI gateway (same pattern as geo backfill) to propose a building name, accepted only when clearly a named structure
-- Prints a plan first so you can review before applying
+**DB migration (Phases 2 & 3):**
+- `assessments`: add `report_type text NOT NULL DEFAULT 'resident'`, `verified_by_engineer uuid NULL` (references `volunteer_engineers.id`), `engineer_notes text NULL`. `risk_level` stays free text (no CHECK to alter); app + RPCs handle `orange`.
+- Update RPCs to add an `orange int` column and (where useful) resident/professional split: `get_damage_aggregates`, `get_damage_totals`, `get_admin_assessment_stats`, `get_admin_top_states`, `get_admin_assessment_timeseries`, `get_risk_factors`, `get_building_peers`, `get_admin_building_clusters`, `get_admin_state_reports`. Re-pin `search_path` and keep current grants/security-definer hardening.
+- New RPC/server fn for an approved engineer (validated by `access_token`) to insert a `professional` assessment and to verify/attach to an existing one.
 
-## Technical notes
-- New table columns get GRANTs in the same migration; RPCs are `SECURITY DEFINER` with `set search_path = ''`/`'public'` consistent with existing functions, and execute is not granted to anon (brokered through the service role like the other stats RPCs).
-- Resident peer counts and admin clusters expose **aggregates only** — no addresses, report ids, or photos — preserving the existing "no re-identification" stance.
-- No change to the public map or `/zona` SEO surfaces.
+**Stats/types:** extend `DamageTotals`, `AreaAggregate`, `RiskFactors` in `stats.functions.ts` and admin analytics types with `orange` (+ professional counts).
 
-## Files
-- **New:** `src/lib/building.ts`, `src/components/SameBuildingCard.tsx`, `scripts/backfill-buildings.ts`
-- **Edited:** `src/lib/assessment.functions.ts` (extract + peer context), `src/lib/assessment-types.ts` (add `buildingName` to `PropertyInfo`/record), `src/lib/stats.functions.ts` (peer + cluster server fns), `src/routes/a/$publicId.tsx`, `src/routes/admin.index.tsx`, `src/routes/zona.$estado.tsx`, `src/lib/i18n.tsx`
-- **Migration:** columns + index + two RPCs
+**Assets:** generate ✅/❌ example images for the 7 core checklist items (Phase 1 #2) and the shelter poster QR art (Phase 4).
+
+**i18n:** new strings for legend, plain-language questions + examples, onboarding "alguien puede hacerlo por ti", new-damage instruction, the orange level (tag/action/findings), professional/verified labels, and the shelter page.
+
+### Suggested build order
+1. Phase 1 (no schema changes) — fastest visible impact.
+2. Phase 2 migration + orange wiring.
+3. Phase 3 migration + engineer panel pro flow + map differentiation.
+4. Phase 4 shelter kit.

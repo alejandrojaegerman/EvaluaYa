@@ -173,23 +173,24 @@ const SYSTEM_PROMPT = `You are a structural engineer performing rapid post-earth
 You receive a property description, the resident's yes/no/unsure answers to a structural checklist, and photos of damaged areas.
 
 Assess the OVERALL risk and choose exactly one level:
-- "green": No significant structural damage observed. The building appears safe to occupy.
-- "yellow": Possible or moderate structural damage. Restricted/limited use; entry only for short, essential tasks.
+- "green": No significant NEW structural damage. The building appears safe to occupy.
+- "yellow": Light / cosmetic damage (e.g. thin plaster cracks, minor non-structural cracks). Habitable, but the resident should monitor and address the specific items noted.
+- "orange": Moderate-to-serious structural damage that needs a professional engineer's inspection SOON, but no obvious sign of imminent collapse (e.g. wide structural cracks, a single column/beam with spalling+exposed rebar, doors/windows jammed by frame distortion, stairs cracked). Limit use to short essential entries until an engineer evaluates it.
 - "red": Serious structural damage or signs of potential collapse. Unsafe to occupy; evacuate immediately.
 
 Decision guidance:
-- "yes" to foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation/collapse, or stairs separating from walls strongly suggests yellow or red.
-- "yes" to ground liquefaction signs, building-to-building pounding, or severe plumbing/gas damage are critical life-safety hazards (treat as red).
-- Damaged flooring, electrical panels/wiring, or hanging fixtures suggest at least yellow.
-- Exposed rebar + spalling on columns/beams, or roof collapse, should push toward red.
-- Ground-motion context (from USGS ShakeMap): higher MMI / PGA means this location was shaken harder, so weigh reported damage more heavily. The spectral acceleration at the building's own period is the demand a building of THAT height actually felt — high values there (≥0.4g) make even partial damage reports more concerning. Soft/very-soft soil sites amplify shaking and are more prone to liquefaction and settlement. Treat strong shaking together with any reported structural damage as a serious (red) combination. Ground motion alone, with no observed damage, should not by itself force red.
+- Reserve "yellow" for genuinely minor/cosmetic issues — do NOT use it as a catch-all. If real structural elements (foundation, columns/beams, load-bearing walls, stairs, roof) are affected but collapse is not imminent, choose "orange" so the resident knows to get an engineer urgently.
+- "yes" to foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation, or stairs separating from walls suggests orange or red.
+- "yes" to ground liquefaction signs, building-to-building pounding, severe plumbing/gas damage, or roof collapse are critical life-safety hazards (treat as red).
+- Damaged flooring, electrical panels/wiring, or hanging fixtures alone suggest yellow.
+- Ground-motion context (from USGS ShakeMap): higher MMI / PGA means this location was shaken harder, so weigh reported damage more heavily. The spectral acceleration at the building's own period is the demand a building of THAT height actually felt — high values there (≥0.4g) make even partial damage reports more concerning. Soft/very-soft soil sites amplify shaking and are more prone to liquefaction and settlement. Treat strong shaking together with any reported structural damage as a serious (red) combination. Ground motion alone, with no observed damage, should not by itself force red or orange.
 - Use the photos to confirm or downgrade severity. Be conservative: when life-safety is uncertain, do not choose green.
 
 Write for a frightened, non-technical resident: short, calm, plain language. Avoid jargon. Always remind them this is preliminary and a licensed engineer or Civil Protection must confirm.
 
 Return ONLY a valid JSON object, no markdown, with this exact shape:
 {
-  "risk_level": "green" | "yellow" | "red",
+  "risk_level": "green" | "yellow" | "orange" | "red",
   "summary": "2-3 sentence plain-language overall assessment",
   "findings": ["short finding", "short finding"],
   "next_steps": ["clear actionable step", "clear actionable step"]
@@ -205,7 +206,8 @@ function parseAiJson(text: string): AiResult | null {
   try {
     const parsed = JSON.parse(cleaned.slice(start, end + 1));
     const risk = parsed.risk_level;
-    if (risk !== "green" && risk !== "yellow" && risk !== "red") return null;
+    if (risk !== "green" && risk !== "yellow" && risk !== "orange" && risk !== "red")
+      return null;
     return {
       risk_level: risk,
       summary: String(parsed.summary ?? ""),
@@ -305,9 +307,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
         if (row && (row.total ?? 0) > 0) {
           peerContext =
             `Context: ${row.total} previous evaluation(s) from this same building ` +
-            `("${building.name}") — ${row.red ?? 0} red / ${row.yellow ?? 0} yellow / ` +
-            `${row.green ?? 0} green. Structural damage often affects a whole building, ` +
-            `so weigh shared/neighbor findings accordingly.`;
+            `("${building.name}") — ${row.red ?? 0} red / ${row.orange ?? 0} orange / ` +
+            `${row.yellow ?? 0} yellow / ${row.green ?? 0} green. Structural damage often ` +
+            `affects a whole building, so weigh shared/neighbor findings accordingly.`;
         }
       } catch (e) {
         console.error("[analyze] building peers lookup failed", e);

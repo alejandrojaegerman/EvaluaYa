@@ -52,7 +52,7 @@ export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
-function rgb(level: "red" | "yellow" | "green"): string {
+function rgb(level: "red" | "orange" | "yellow" | "green"): string {
   const [r, g, b] = RISK_HEX[level];
   return `rgb(${r}, ${g}, ${b})`;
 }
@@ -196,7 +196,7 @@ function AdminDashboard() {
       <Card>
         <p className="text-sm font-semibold">{t("dash.distribution")}</p>
         <div className="mt-3">
-          <RiskGauge green={a.green} yellow={a.yellow} red={a.red} />
+          <RiskGauge green={a.green} yellow={a.yellow} orange={a.orange} red={a.red} />
         </div>
       </Card>
 
@@ -267,7 +267,7 @@ function AdminDashboard() {
                       <span className="truncate">{s.state}</span>
                     </span>
                     <span className="flex items-center gap-2">
-                      <MiniDots green={s.green} yellow={s.yellow} red={s.red} />
+                      <MiniDots green={s.green} yellow={s.yellow} orange={s.orange} red={s.red} />
                       <span className="w-8 text-right font-semibold tabular-nums">
                         {s.total}
                       </span>
@@ -374,6 +374,12 @@ function AdminDashboard() {
                         style={{ width: `${(c.red / c.total) * 100}%` }}
                       />
                     )}
+                    {c.orange > 0 && (
+                      <div
+                        className="h-full bg-risk-orange"
+                        style={{ width: `${(c.orange / c.total) * 100}%` }}
+                      />
+                    )}
                     {c.yellow > 0 && (
                       <div
                         className="h-full bg-risk-yellow"
@@ -387,8 +393,11 @@ function AdminDashboard() {
                       />
                     )}
                   </div>
-                  <div className="mt-1.5 flex gap-3 text-xs text-muted-foreground">
+                  <div className="mt-1.5 flex flex-wrap gap-3 text-xs text-muted-foreground">
                     <span>{c.red} {t("building.legend.red")}</span>
+                    {c.orange > 0 && (
+                      <span>{c.orange} {t("building.legend.orange")}</span>
+                    )}
                     <span>{c.yellow} {t("building.legend.yellow")}</span>
                     <span>{c.green} {t("building.legend.green")}</span>
                   </div>
@@ -523,10 +532,12 @@ function Stat({
 function MiniDots({
   green,
   yellow,
+  orange = 0,
   red,
 }: {
   green: number;
   yellow: number;
+  orange?: number;
   red: number;
 }) {
   return (
@@ -534,6 +545,11 @@ function MiniDots({
       {red > 0 && (
         <span className="rounded bg-risk-red-soft px-1.5 text-[11px] font-bold text-risk-red">
           {red}
+        </span>
+      )}
+      {orange > 0 && (
+        <span className="rounded bg-risk-orange-soft px-1.5 text-[11px] font-bold text-risk-orange">
+          {orange}
         </span>
       )}
       {yellow > 0 && (

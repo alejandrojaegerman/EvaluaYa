@@ -120,6 +120,7 @@ export async function generateResultCard(input: ResultCardInput): Promise<Blob> 
 export type StatsCardInput = {
   total: number;
   red: number;
+  orange: number;
   yellow: number;
   green: number;
   headline: string;
@@ -156,9 +157,13 @@ export async function generateStatsCard(input: StatsCardInput): Promise<Blob> {
   const barY = 560;
   const barW = W - 192;
   const barH = 56;
-  const sum = Math.max(1, input.red + input.yellow + input.green);
+  const sum = Math.max(
+    1,
+    input.red + input.orange + input.yellow + input.green,
+  );
   const segs: Array<[RiskLevel, number]> = [
     ["red", input.red],
+    ["orange", input.orange],
     ["yellow", input.yellow],
     ["green", input.green],
   ];
@@ -175,11 +180,12 @@ export async function generateStatsCard(input: StatsCardInput): Promise<Blob> {
   ctx.restore();
 
   // Legend
-  ctx.font = "700 38px 'Inter', system-ui, sans-serif";
+  ctx.font = "700 32px 'Inter', system-ui, sans-serif";
   ctx.textAlign = "center";
-  const cellW = barW / 3;
+  const cellW = barW / 4;
   const legend: Array<[RiskLevel, number]> = [
     ["red", input.red],
+    ["orange", input.orange],
     ["yellow", input.yellow],
     ["green", input.green],
   ];

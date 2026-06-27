@@ -47,16 +47,19 @@ export type Database = {
           building_name: string | null
           created_at: string
           device_id: string | null
+          engineer_notes: string | null
           geo_inferred: boolean
           id: string
           language: string
           municipality: string | null
           property: Json
           public_id: string
+          report_type: string
           risk_level: string | null
           state: string | null
           status: string
           user_id: string | null
+          verified_by_engineer: string | null
         }
         Insert: {
           ai_result?: Json | null
@@ -66,16 +69,19 @@ export type Database = {
           building_name?: string | null
           created_at?: string
           device_id?: string | null
+          engineer_notes?: string | null
           geo_inferred?: boolean
           id?: string
           language?: string
           municipality?: string | null
           property?: Json
           public_id: string
+          report_type?: string
           risk_level?: string | null
           state?: string | null
           status?: string
           user_id?: string | null
+          verified_by_engineer?: string | null
         }
         Update: {
           ai_result?: Json | null
@@ -85,18 +91,29 @@ export type Database = {
           building_name?: string | null
           created_at?: string
           device_id?: string | null
+          engineer_notes?: string | null
           geo_inferred?: boolean
           id?: string
           language?: string
           municipality?: string | null
           property?: Json
           public_id?: string
+          report_type?: string
           risk_level?: string | null
           state?: string | null
           status?: string
           user_id?: string | null
+          verified_by_engineer?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "assessments_verified_by_engineer_fkey"
+            columns: ["verified_by_engineer"]
+            isOneToOne: false
+            referencedRelation: "volunteer_engineers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_send_log: {
         Row: {
@@ -422,6 +439,7 @@ export type Database = {
           analyzed: number
           drafts: number
           green: number
+          orange: number
           red: number
           total: number
           yellow: number
@@ -432,6 +450,7 @@ export type Database = {
         Returns: {
           day: string
           green: number
+          orange: number
           red: number
           total: number
           yellow: number
@@ -445,6 +464,7 @@ export type Database = {
           green: number
           last_report: string
           municipality: string
+          orange: number
           red: number
           state: string
           total: number
@@ -484,6 +504,7 @@ export type Database = {
           flagged_count: number
           municipality: string
           public_id: string
+          report_type: string
           risk_level: string
           seismic_intensity: number
           structural_type: string
@@ -493,6 +514,7 @@ export type Database = {
         Args: never
         Returns: {
           green: number
+          orange: number
           red: number
           state: string
           total: number
@@ -528,6 +550,7 @@ export type Database = {
         Returns: {
           green: number
           last_report: string
+          orange: number
           red: number
           total: number
           yellow: number
@@ -539,9 +562,11 @@ export type Database = {
           green: number
           last_report: string
           municipality: string
+          orange: number
           red: number
           state: string
           total: number
+          verified: number
           yellow: number
         }[]
       }
@@ -550,8 +575,10 @@ export type Database = {
         Returns: {
           areas: number
           green: number
+          orange: number
           red: number
           total: number
+          verified: number
           yellow: number
         }[]
       }
@@ -570,6 +597,7 @@ export type Database = {
           factor_group: string
           factor_key: string
           green: number
+          orange: number
           red: number
           total: number
           yellow: number

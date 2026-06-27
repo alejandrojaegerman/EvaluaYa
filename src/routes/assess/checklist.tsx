@@ -7,6 +7,8 @@ import {
   ImagePlus,
   ChevronDown,
   Plus,
+  Info,
+  HelpCircle,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -206,6 +208,20 @@ function ChecklistStep() {
 
       </div>
 
+      {/* Report NEW damage only (feedback #7) */}
+      <div className="mt-4 flex gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 p-3.5 dark:border-amber-500/30 dark:bg-amber-500/10">
+        <Info className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+        <div>
+          <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+            {t("checklist.newDamageTitle")}
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-amber-800/90 dark:text-amber-200/80">
+            {t("checklist.newDamageBody")}
+          </p>
+        </div>
+      </div>
+
+
       {/* Structural checks (required) */}
       <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
         {t("checklist.sectionStructure")}
@@ -297,6 +313,7 @@ function ChecklistCard({
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
+  const [showExample, setShowExample] = useState(false);
   const canAddMore = photos.length < MAX_PHOTOS_PER_ITEM;
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -327,8 +344,42 @@ function ChecklistCard({
           <p className="mt-0.5 text-sm font-medium leading-snug">
             {t(`item.${id}.q`)}
           </p>
+          <button
+            type="button"
+            onClick={() => setShowExample((s) => !s)}
+            aria-expanded={showExample}
+            className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary"
+          >
+            <HelpCircle className="size-3.5" />
+            {t("checklist.exampleToggle")}
+            <ChevronDown
+              className={cn(
+                "size-3.5 transition-transform",
+                showExample && "rotate-180",
+              )}
+            />
+          </button>
+          {showExample && (
+            <div className="mt-2 space-y-1.5 rounded-xl bg-muted/50 p-2.5 text-xs leading-relaxed">
+              <p className="flex gap-1.5">
+                <span aria-hidden>❌</span>
+                <span>
+                  <span className="font-semibold">{t("checklist.exampleYes")}:</span>{" "}
+                  {t(`item.${id}.example.yes`)}
+                </span>
+              </p>
+              <p className="flex gap-1.5">
+                <span aria-hidden>✅</span>
+                <span>
+                  <span className="font-semibold">{t("checklist.exampleNo")}:</span>{" "}
+                  {t(`item.${id}.example.no`)}
+                </span>
+              </p>
+            </div>
+          )}
         </div>
       </div>
+
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {ANSWER_OPTIONS.map((opt) => {

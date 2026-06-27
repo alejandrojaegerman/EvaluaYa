@@ -191,6 +191,7 @@ function ZonaPage() {
                 <RiskGauge
                   green={stats.green}
                   yellow={stats.yellow}
+                  orange={stats.orange}
                   red={stats.red}
                   label={t("zona.totalReports")}
                 />

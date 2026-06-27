@@ -66,10 +66,16 @@ export const Route = createFileRoute("/mapa")({
 });
 
 
-type RiskKey = "red" | "yellow" | "green";
+type RiskKey = "red" | "orange" | "yellow" | "green";
 
-function dominantRisk(a: { green: number; yellow: number; red: number }): RiskKey {
-  if (a.red >= a.yellow && a.red >= a.green) return "red";
+function dominantRisk(a: {
+  green: number;
+  yellow: number;
+  orange: number;
+  red: number;
+}): RiskKey {
+  if (a.red >= a.orange && a.red >= a.yellow && a.red >= a.green) return "red";
+  if (a.orange >= a.yellow && a.orange >= a.green) return "orange";
   if (a.yellow >= a.green) return "yellow";
   return "green";
 }
@@ -98,6 +104,7 @@ type DisplayArea = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
 };
 
@@ -131,7 +138,7 @@ function MapPage() {
   const stateBubbles = useMemo(() => {
     const byState = new Map<
       string,
-      { total: number; green: number; yellow: number; red: number }
+      { total: number; green: number; yellow: number; orange: number; red: number }
     >();
     for (const a of areas) {
       if (!a.state) continue;
@@ -139,11 +146,13 @@ function MapPage() {
         total: 0,
         green: 0,
         yellow: 0,
+        orange: 0,
         red: 0,
       };
       cur.total += a.total;
       cur.green += a.green;
       cur.yellow += a.yellow;
+      cur.orange += a.orange;
       cur.red += a.red;
       byState.set(a.state, cur);
     }
@@ -176,6 +185,7 @@ function MapPage() {
         total: number;
         green: number;
         yellow: number;
+        orange: number;
         red: number;
       }
     >();
@@ -194,11 +204,13 @@ function MapPage() {
           total: 0,
           green: 0,
           yellow: 0,
+          orange: 0,
           red: 0,
         };
       cur.total += a.total;
       cur.green += a.green;
       cur.yellow += a.yellow;
+      cur.orange += a.orange;
       cur.red += a.red;
       grouped.set(key, cur);
     }
@@ -214,6 +226,7 @@ function MapPage() {
         total: g.total,
         green: g.green,
         yellow: g.yellow,
+        orange: g.orange,
         red: g.red,
         dominant: dominantRisk(g),
       }))
@@ -228,6 +241,7 @@ function MapPage() {
       total: 0,
       green: 0,
       yellow: 0,
+      orange: 0,
       red: 0,
       lastReport: null as string | null,
     };
@@ -240,6 +254,7 @@ function MapPage() {
         unspecified.total += a.total;
         unspecified.green += a.green;
         unspecified.yellow += a.yellow;
+        unspecified.orange += a.orange;
         unspecified.red += a.red;
         continue;
       }
@@ -255,6 +270,7 @@ function MapPage() {
         total: a.total,
         green: a.green,
         yellow: a.yellow,
+        orange: a.orange,
         red: a.red,
       });
     }
@@ -279,6 +295,7 @@ function MapPage() {
         total: unspecified.total,
         green: unspecified.green,
         yellow: unspecified.yellow,
+        orange: unspecified.orange,
         red: unspecified.red,
       });
     }
@@ -327,7 +344,9 @@ function MapPage() {
       "total",
       "green",
       "yellow",
+      "orange",
       "red",
+      "verified",
       "last_report",
     ];
     const rows = areas.map((a) =>
@@ -337,7 +356,9 @@ function MapPage() {
         a.total,
         a.green,
         a.yellow,
+        a.orange,
         a.red,
+        a.verified,
         a.lastReport ?? "",
       ]
         .map((v) => `"${String(v).replace(/"/g, '""')}"`)
@@ -363,6 +384,7 @@ function MapPage() {
       const blob = await generateStatsCard({
         total: totals.total,
         red: totals.red,
+        orange: totals.orange,
         yellow: totals.yellow,
         green: totals.green,
         headline: t("map.cardHeadline"),
@@ -447,6 +469,7 @@ function MapPage() {
               <RiskGauge
                 green={totals!.green}
                 yellow={totals!.yellow}
+                orange={totals!.orange}
                 red={totals!.red}
                 label={t("map.totalAssessments")}
               />
@@ -537,21 +560,21 @@ function MapPage() {
                 }
               />
             </div>
-            {/* legend */}
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1.5">
+            {/* legend — one line per color with its meaning (feedback #1) */}
+            <div className="mt-3 space-y-1.5 rounded-xl bg-muted/40 p-3 text-[11px]">
+              <p className="font-semibold text-foreground">{t("map.legendTitle")}</p>
+              <LegendRow color={rgb("green")} label={t("map.legendGreen")} />
+              <LegendRow color={rgb("yellow")} label={t("map.legendYellow")} />
+              <LegendRow color={rgb("orange")} label={t("map.legendOrange")} />
+              <LegendRow color={rgb("red")} label={t("map.legendRed")} />
+              <p className="flex items-center gap-1.5 pt-1 text-muted-foreground">
                 <span className="size-1.5 rounded-full bg-muted-foreground/60" aria-hidden />
                 <span className="size-3 rounded-full bg-muted-foreground/60" aria-hidden />
                 {t("map.legendSize")}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("red") }} aria-hidden />
-                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("yellow") }} aria-hidden />
-                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("green") }} aria-hidden />
-                {t("map.legendRisk")}
-              </span>
+              </p>
             </div>
           </section>
+
 
 
           {/* Top areas list */}
@@ -581,6 +604,7 @@ function MapPage() {
 
                     <div className="flex shrink-0 items-center gap-1.5 text-[11px] font-semibold">
                       <span style={{ color: rgb("red") }}>{a.red}</span>
+                      <span style={{ color: rgb("orange") }}>{a.orange}</span>
                       <span style={{ color: rgb("yellow") }}>{a.yellow}</span>
                       <span style={{ color: rgb("green") }}>{a.green}</span>
                     </div>
@@ -687,4 +711,18 @@ function MapPage() {
     </AppShell>
   );
 }
+
+function LegendRow({ color, label }: { color: string; label: string }) {
+  return (
+    <p className="flex items-start gap-1.5 text-muted-foreground">
+      <span
+        className="mt-0.5 size-3 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+        aria-hidden
+      />
+      <span>{label}</span>
+    </p>
+  );
+}
+
 

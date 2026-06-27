@@ -18,6 +18,7 @@ export type AdminAnalytics = {
     total: number;
     green: number;
     yellow: number;
+    orange: number;
     red: number;
     analyzed: number;
     drafts: number;
@@ -28,6 +29,7 @@ export type AdminAnalytics = {
     total: number;
     green: number;
     yellow: number;
+    orange: number;
     red: number;
   }>;
   topStates: Array<{
@@ -35,6 +37,7 @@ export type AdminAnalytics = {
     total: number;
     green: number;
     yellow: number;
+    orange: number;
     red: number;
   }>;
   volunteers: {
@@ -62,6 +65,7 @@ const EMPTY: AdminAnalytics = {
     total: 0,
     green: 0,
     yellow: 0,
+    orange: 0,
     red: 0,
     analyzed: 0,
     drafts: 0,
@@ -147,6 +151,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
             total: assessTotal,
             green: a?.green ?? 0,
             yellow: a?.yellow ?? 0,
+            orange: a?.orange ?? 0,
             red: a?.red ?? 0,
             analyzed,
             drafts: a?.drafts ?? 0,
@@ -157,6 +162,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
             total: r.total ?? 0,
             green: r.green ?? 0,
             yellow: r.yellow ?? 0,
+            orange: r.orange ?? 0,
             red: r.red ?? 0,
           })),
           topStates: (aTop.data ?? []).map((r) => ({
@@ -164,6 +170,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
             total: r.total ?? 0,
             green: r.green ?? 0,
             yellow: r.yellow ?? 0,
+            orange: r.orange ?? 0,
             red: r.red ?? 0,
           })),
           volunteers: {
@@ -211,7 +218,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
 export type StateReport = {
   publicId: string;
   createdAt: string;
-  riskLevel: "green" | "yellow" | "red";
+  riskLevel: "green" | "yellow" | "orange" | "red";
   municipality: string;
   buildingType: string | null;
   age: string | null;
@@ -269,7 +276,7 @@ export const adminGetStateDrilldown = createServerFn({ method: "POST" })
         const reports: StateReport[] = (reportsRes.data ?? []).map((r) => ({
           publicId: r.public_id,
           createdAt: String(r.created_at),
-          riskLevel: (r.risk_level ?? "green") as "green" | "yellow" | "red",
+          riskLevel: (r.risk_level ?? "green") as "green" | "yellow" | "orange" | "red",
           municipality: r.municipality ?? "Desconocido",
           buildingType: r.building_type ?? null,
           age: r.age ?? null,
@@ -299,6 +306,7 @@ export type BuildingCluster = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
   lastReport: string | null;
 };
@@ -332,6 +340,7 @@ export const adminGetBuildingClusters = createServerFn({ method: "POST" })
           total: r.total ?? 0,
           green: r.green ?? 0,
           yellow: r.yellow ?? 0,
+          orange: (r as { orange?: number }).orange ?? 0,
           red: r.red ?? 0,
           lastReport: r.last_report ?? null,
         }));

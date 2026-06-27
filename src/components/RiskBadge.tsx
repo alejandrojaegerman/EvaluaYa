@@ -1,4 +1,4 @@
-import { ShieldCheck, AlertTriangle, OctagonAlert } from "lucide-react";
+import { ShieldCheck, AlertTriangle, OctagonAlert, TriangleAlert } from "lucide-react";
 
 import type { RiskLevel } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const ICONS = {
   green: ShieldCheck,
   yellow: AlertTriangle,
+  orange: TriangleAlert,
   red: OctagonAlert,
 } as const;
 

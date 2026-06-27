@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 
-export type RiskKey = "red" | "yellow" | "green";
+export type RiskKey = "red" | "orange" | "yellow" | "green";
 
 export type MapBubble = {
   /** stable id */
@@ -22,6 +22,7 @@ export type MapBubble = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
   dominant: RiskKey;
 };
@@ -147,9 +148,11 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
       const riskLabel =
         b.dominant === "red"
           ? t("map.high")
-          : b.dominant === "yellow"
-            ? t("map.moderate")
-            : t("map.low");
+          : b.dominant === "orange"
+            ? t("map.urgent")
+            : b.dominant === "yellow"
+              ? t("map.moderate")
+              : t("map.low");
 
       const html = `
         <div style="font-family:system-ui,sans-serif;min-width:160px;line-height:1.4">
@@ -173,6 +176,7 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
             <strong>${b.total}</strong> ${escapeHtml(t("map.reports"))}
             &nbsp;·&nbsp;
             <span style="color:${hex("red")}">${b.red}</span> /
+            <span style="color:${hex("orange")}">${b.orange}</span> /
             <span style="color:${hex("yellow")}">${b.yellow}</span> /
             <span style="color:${hex("green")}">${b.green}</span>
           </div>

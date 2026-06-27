@@ -48,6 +48,9 @@
   --color-risk-yellow: var(--risk-yellow);
   --color-risk-yellow-foreground: var(--risk-yellow-foreground);
   --color-risk-yellow-soft: var(--risk-yellow-soft);
+  --color-risk-orange: var(--risk-orange);
+  --color-risk-orange-foreground: var(--risk-orange-foreground);
+  --color-risk-orange-soft: var(--risk-orange-soft);
   --color-risk-red: var(--risk-red);
   --color-risk-red-foreground: var(--risk-red-foreground);
   --color-risk-red-soft: var(--risk-red-soft);
@@ -101,6 +104,10 @@
   --risk-yellow-foreground: oklch(0.3 0.07 70);
   --risk-yellow-soft: oklch(0.96 0.07 85);
 
+  --risk-orange: oklch(0.68 0.18 47);
+  --risk-orange-foreground: oklch(0.99 0.01 50);
+  --risk-orange-soft: oklch(0.95 0.06 55);
+
   --risk-red: oklch(0.57 0.21 27);
   --risk-red-foreground: oklch(0.99 0.01 30);
   --risk-red-soft: oklch(0.95 0.05 25);
@@ -150,6 +157,10 @@
   --risk-yellow: oklch(0.82 0.16 80);
   --risk-yellow-foreground: oklch(0.25 0.06 70);
   --risk-yellow-soft: oklch(0.36 0.07 80);
+
+  --risk-orange: oklch(0.72 0.18 47);
+  --risk-orange-foreground: oklch(0.16 0.04 50);
+  --risk-orange-soft: oklch(0.36 0.08 50);
 
   --risk-red: oklch(0.64 0.2 27);
   --risk-red-foreground: oklch(0.15 0.03 30);
