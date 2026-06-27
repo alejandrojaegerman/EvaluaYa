@@ -218,7 +218,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
 export type StateReport = {
   publicId: string;
   createdAt: string;
-  riskLevel: "green" | "yellow" | "red";
+  riskLevel: "green" | "yellow" | "orange" | "red";
   municipality: string;
   buildingType: string | null;
   age: string | null;
