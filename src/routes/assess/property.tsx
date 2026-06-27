@@ -226,6 +226,7 @@ function PropertyStep() {
           : {}),
       },
       answers: existing?.answers ?? [],
+      ...(engParam ? { engineerToken: engParam } : {}),
       updatedAt: Date.now(),
     });
     navigate({ to: "/assess/checklist" });
