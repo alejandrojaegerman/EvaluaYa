@@ -256,7 +256,7 @@ function AnalyzeStep() {
   }
 
   return (
-    <AppShell>
+    <AppShell hideFooter>
       <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
         {phase === "provisional" && provisional ? (
           <ProvisionalState result={provisional} online={online} />
