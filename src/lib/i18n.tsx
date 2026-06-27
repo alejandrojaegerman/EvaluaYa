@@ -563,7 +563,9 @@ const es: Dict = {
   "property.state": "Estado",
   "property.statePlaceholder": "Selecciona",
   "property.municipality": "Municipio",
-  "property.municipalityPlaceholder": "Ej.: Baruta",
+  "property.municipalityPlaceholder": "Selecciona el municipio",
+  "property.municipalitySelectState": "Primero selecciona el estado",
+  "property.municipalityUnsure": "No estoy seguro",
   "property.locationHint":
     "Solo usamos la zona (estado/municipio) para el mapa comunitario. Nunca mostramos tu dirección exacta.",
   "property.detecting": "Detectando tu ubicación…",
@@ -573,6 +575,7 @@ const es: Dict = {
   "property.effortHint": "Solo toma unos minutos. Las fotos son opcionales.",
   "property.missingPrefix": "Para continuar, falta:",
   "property.miss.state": "estado",
+  "property.miss.municipality": "municipio",
   "property.miss.type": "tipo de edificio",
   "property.miss.age": "antigüedad",
 
@@ -1537,7 +1540,9 @@ const en: Dict = {
   "property.state": "State",
   "property.statePlaceholder": "Select",
   "property.municipality": "Municipality",
-  "property.municipalityPlaceholder": "e.g. Baruta",
+  "property.municipalityPlaceholder": "Select the municipality",
+  "property.municipalitySelectState": "Select the state first",
+  "property.municipalityUnsure": "Not sure",
   "property.locationHint":
     "We only use the area (state/municipality) for the community map. Your exact address is never shown.",
   "property.detecting": "Detecting your location…",
@@ -1547,6 +1552,7 @@ const en: Dict = {
   "property.effortHint": "It only takes a few minutes. Photos are optional.",
   "property.missingPrefix": "To continue, you still need:",
   "property.miss.state": "state",
+  "property.miss.municipality": "municipality",
   "property.miss.type": "building type",
   "property.miss.age": "age",
 

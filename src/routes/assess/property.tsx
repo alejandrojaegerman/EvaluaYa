@@ -32,7 +32,9 @@ import {
   ESTADO_NAMES,
   getEstado,
   getEstadoBySlug,
+  municipiosFor,
   nearestEstado,
+  nearestMunicipio,
 } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
@@ -69,6 +71,9 @@ const STRUCTURAL_TYPES: StructuralType[] = [
   "unknown",
 ];
 
+// Sentinel select value for the "I'm not sure" municipio option.
+const UNSURE_MUNICIPIO = "__unsure__";
+
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
@@ -78,6 +83,9 @@ function PropertyStep() {
   const [buildingName, setBuildingName] = useState("");
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
+  // Resident explicitly chose "I'm not sure" — satisfies the required field
+  // while keeping the stored municipality empty (rolls up to state level).
+  const [municipalityUnsure, setMunicipalityUnsure] = useState(false);
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
   const [structuralType, setStructuralType] =
     useState<StructuralType>("unknown");
@@ -104,7 +112,10 @@ function PropertyStep() {
       if (p.buildingName) setBuildingName(p.buildingName);
       if (p.address || p.buildingName) setDetailsOpen(true);
       if (p.state) setState(p.state);
-      if (p.municipality) setMunicipality(p.municipality);
+      // Only restore the municipio when it's a valid option for the saved state.
+      if (p.municipality && municipiosFor(p.state).includes(p.municipality)) {
+        setMunicipality(p.municipality);
+      }
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.structuralType) {
         setStructuralType(p.structuralType);
@@ -148,6 +159,12 @@ function PropertyStep() {
           const est = nearestEstado(latitude, longitude);
           if (est) {
             setState((cur) => (cur.trim() === "" ? est.name : cur));
+            // Best-effort: also snap to the nearest municipio in that state.
+            const mun = nearestMunicipio(latitude, longitude, est.name);
+            if (mun) {
+              setMunicipality((cur) => (cur.trim() === "" ? mun : cur));
+              setMunicipalityUnsure(false);
+            }
             setGeoStatus("detected");
           } else {
             setGeoStatus("failed");
@@ -181,15 +198,29 @@ function PropertyStep() {
 
 
 
+  // Changing the state invalidates any previously picked municipio.
+  function handleStateChange(next: string) {
+    setState(next);
+    setMunicipality("");
+    setMunicipalityUnsure(false);
+  }
+
+  const municipioOptions = municipiosFor(state);
+  // Required: either a real municipio is selected, or the resident chose "not sure".
+  const municipalitySatisfied = municipality.trim() !== "" || municipalityUnsure;
+
   const missing: string[] = [];
   if (state.trim() === "") missing.push(t("property.miss.state"));
+  if (state.trim() !== "" && !municipalitySatisfied)
+    missing.push(t("property.miss.municipality"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (age === null) missing.push(t("property.miss.age"));
   const valid =
     buildingType !== null &&
     age !== null &&
     floors >= 1 &&
-    state.trim() !== "";
+    state.trim() !== "" &&
+    municipalitySatisfied;
 
 
   async function handleContinue() {
@@ -274,7 +305,7 @@ function PropertyStep() {
               <select
                 id="estado"
                 value={state}
-                onChange={(e) => setState(e.target.value)}
+                onChange={(e) => handleStateChange(e.target.value)}
                 className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="">{t("property.statePlaceholder")}</option>
@@ -288,20 +319,43 @@ function PropertyStep() {
             <div>
               <Label htmlFor="municipio" className="text-sm font-semibold">
                 {t("property.municipality")}{" "}
-                <span className="font-normal text-muted-foreground">
-                  ({t("common.optional")})
-                </span>
+                <span className="font-normal text-destructive">*</span>
               </Label>
-              <Input
+              <select
                 id="municipio"
-                value={municipality}
-                onChange={(e) => setMunicipality(e.target.value)}
-                placeholder={t("property.municipalityPlaceholder")}
-                className="mt-2 h-12 rounded-xl bg-card"
-                maxLength={120}
-              />
+                value={municipalityUnsure ? UNSURE_MUNICIPIO : municipality}
+                disabled={state.trim() === ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === UNSURE_MUNICIPIO) {
+                    setMunicipality("");
+                    setMunicipalityUnsure(true);
+                  } else {
+                    setMunicipality(v);
+                    setMunicipalityUnsure(false);
+                  }
+                }}
+                className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="">
+                  {state.trim() === ""
+                    ? t("property.municipalitySelectState")
+                    : t("property.municipalityPlaceholder")}
+                </option>
+                {municipioOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+                {state.trim() !== "" && (
+                  <option value={UNSURE_MUNICIPIO}>
+                    {t("property.municipalityUnsure")}
+                  </option>
+                )}
+              </select>
             </div>
           </div>
+
 
           {geoStatus !== "idle" && (
             <p
