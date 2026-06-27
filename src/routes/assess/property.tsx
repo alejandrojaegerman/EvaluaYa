@@ -80,6 +80,9 @@ function PropertyStep() {
   const [buildingName, setBuildingName] = useState("");
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
+  // Resident explicitly chose "I'm not sure" — satisfies the required field
+  // while keeping the stored municipality empty (rolls up to state level).
+  const [municipalityUnsure, setMunicipalityUnsure] = useState(false);
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
   const [structuralType, setStructuralType] =
     useState<StructuralType>("unknown");
