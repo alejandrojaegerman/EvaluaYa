@@ -398,6 +398,9 @@ function PropertyStep() {
         {/* Building type */}
         <div>
           <p className="text-sm font-semibold">{t("property.buildingType")}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {t("property.buildingType.help")}
+          </p>
           <div className="mt-2 grid grid-cols-3 gap-2">
             {BUILDING_TYPES.map(({ id, icon: Icon }) => {
               const selected = buildingType === id;
