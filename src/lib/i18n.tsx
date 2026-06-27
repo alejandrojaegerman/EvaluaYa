@@ -870,6 +870,16 @@ const es: Dict = {
   "account.emptyReports":
     "Aún no tienes reportes guardados en esta cuenta. Cuando guardes un reporte, aparecerá aquí.",
   "account.signOut": "Cerrar sesión",
+  "account.claimToast": "Reporte guardado en tu cuenta.",
+  "dash.accounts": "Cuentas guardadas",
+  "dash.accountsHint":
+    "Personas que guardaron sus reportes con su correo (cuenta opcional, sin contraseña).",
+  "dash.totalAccounts": "Cuentas",
+  "dash.accountsWithReports": "Con reportes",
+  "dash.accountsNoReports": "Sin reportes aún",
+  "dash.recentSignups": "Registros recientes",
+  "dash.noAccounts": "Aún no hay cuentas guardadas.",
+  "dash.neverSignedIn": "Nunca",
 };
 
 
