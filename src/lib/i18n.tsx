@@ -1470,6 +1470,16 @@ const en: Dict = {
   "nav.data": "Data",
   "nav.dataDesc": "Map and open data for authorities and media",
 
+  "footer.tagline":
+    "Post-earthquake structural damage self-assessment. Free, no sign-up.",
+  "footer.explore": "Explore",
+  "footer.participate": "Get involved",
+  "footer.resources": "Resources",
+  "footer.note":
+    "Anonymized, open data · Community-built open-source project",
+  "footer.evaluate": "Evaluate",
+
+
   "data.title": "Data room",
   "data.subtitle":
     "Explore structural damage reported across Venezuela. Anonymous, open data — built for authorities, media and response teams.",
