@@ -48,6 +48,9 @@
   --color-risk-yellow: var(--risk-yellow);
   --color-risk-yellow-foreground: var(--risk-yellow-foreground);
   --color-risk-yellow-soft: var(--risk-yellow-soft);
+  --color-risk-orange: var(--risk-orange);
+  --color-risk-orange-foreground: var(--risk-orange-foreground);
+  --color-risk-orange-soft: var(--risk-orange-soft);
   --color-risk-red: var(--risk-red);
   --color-risk-red-foreground: var(--risk-red-foreground);
   --color-risk-red-soft: var(--risk-red-soft);
