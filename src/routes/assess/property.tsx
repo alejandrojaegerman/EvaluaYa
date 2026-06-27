@@ -305,7 +305,7 @@ function PropertyStep() {
               <select
                 id="estado"
                 value={state}
-                onChange={(e) => setState(e.target.value)}
+                onChange={(e) => handleStateChange(e.target.value)}
                 className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="">{t("property.statePlaceholder")}</option>
@@ -319,20 +319,43 @@ function PropertyStep() {
             <div>
               <Label htmlFor="municipio" className="text-sm font-semibold">
                 {t("property.municipality")}{" "}
-                <span className="font-normal text-muted-foreground">
-                  ({t("common.optional")})
-                </span>
+                <span className="font-normal text-destructive">*</span>
               </Label>
-              <Input
+              <select
                 id="municipio"
-                value={municipality}
-                onChange={(e) => setMunicipality(e.target.value)}
-                placeholder={t("property.municipalityPlaceholder")}
-                className="mt-2 h-12 rounded-xl bg-card"
-                maxLength={120}
-              />
+                value={municipalityUnsure ? UNSURE_MUNICIPIO : municipality}
+                disabled={state.trim() === ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === UNSURE_MUNICIPIO) {
+                    setMunicipality("");
+                    setMunicipalityUnsure(true);
+                  } else {
+                    setMunicipality(v);
+                    setMunicipalityUnsure(false);
+                  }
+                }}
+                className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="">
+                  {state.trim() === ""
+                    ? t("property.municipalitySelectState")
+                    : t("property.municipalityPlaceholder")}
+                </option>
+                {municipioOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+                {state.trim() !== "" && (
+                  <option value={UNSURE_MUNICIPIO}>
+                    {t("property.municipalityUnsure")}
+                  </option>
+                )}
+              </select>
             </div>
           </div>
+
 
           {geoStatus !== "idle" && (
             <p
