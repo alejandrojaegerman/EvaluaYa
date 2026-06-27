@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal.",
+          "Una guía paso a paso para revisar daños estructurales después de un terremoto. Sin registro. Funciona con poca señal.",
       },
       { name: "author", content: "EvalúaYa" },
       {
