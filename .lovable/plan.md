@@ -1,22 +1,25 @@
 ## Goal
-Remove all "fuera del país / outside the country" (diaspora) framing across the app and refocus copy on people most affected on the ground in Venezuela right now. Keep the genuinely useful "someone can inspect on your behalf" capability — but reframe it around in-country realities (can't safely enter the building, staying in a shelter, a relative or neighbor nearby helping), not being abroad.
+Add a heart ❤️ and Venezuelan flag 🇻🇪 emoji tastefully in a few subtle, high-meaning spots — a quiet "made with love for Venezuela" signal — without sprinkling them everywhere or cluttering the UI.
 
-## Where the language lives
-All of it is UI copy in `src/lib/i18n.tsx` (both the Spanish `es` block and the English `en` block). No logic or backend changes needed.
+## Where (3 subtle placements)
+All copy-only edits in `src/lib/i18n.tsx` (both `es` and `en` blocks). No component/logic changes.
 
-| Key | Current (problematic) | Reframe |
-|-----|----------------------|---------|
-| `home.behalfTitle` (ES) | "¿Fuera del país o en un refugio?" | "¿No puedes entrar al edificio?" |
-| `home.behalfTitle` (EN) | "Outside the country or in a shelter?" | "Can't safely enter the building?" |
-| `home.behalfBody` (ES) | "...para decidir si es seguro regresar." (frames user as away) | "No tienes que estar dentro. Un familiar o vecino puede hacer la inspección y compartirte el resultado para decidir si es seguro entrar." |
-| `home.behalfBody` (EN) | "...so you can decide whether it's safe to return." | "You don't have to be inside. A relative or neighbor can run the inspection and share the result so you can decide whether it's safe to enter." |
-| `property.behalfHint` (ES/EN) | "¿No estás en el sitio?..." / "Not on site?..." | Keep the helper idea, swap "regresar/return" → "entrar/enter"; no country reference (already clean, light wording polish only). |
-| `result.shareOwnerTitle` / `result.shareOwnerBody` (ES/EN) | "...decida si es seguro regresar / safe to return." | Change "regresar/return" → "entrar/enter" so it reads for someone nearby, not returning from afar. |
+1. **Footer note** (`footer.note`) — the most fitting "signature" spot, shown site-wide.
+   - ES: `"Datos anónimos y abiertos · Proyecto comunitario de código abierto · Hecho con ❤️ para Venezuela 🇻🇪"`
+   - EN: `"Anonymized, open data · Community-built open-source project · Made with ❤️ for Venezuela 🇻🇪"`
 
-## Approach
-- Edit only the affected string values in the `es` and `en` translation maps in `src/lib/i18n.tsx`. Keys stay identical, so every consumer (`src/routes/index.tsx`, `src/routes/assess/property.tsx`, result page) picks up the new copy with no component edits.
-- Wording principle: speak to a resident who is here and affected — displaced to a shelter, unable to enter a damaged building, or relying on a nearby relative/neighbor — never someone abroad or "returning to the country."
-- Leave `public/llms.txt` as-is (it has no diaspora language) unless you'd like the summary reviewed too.
+2. **Share message** (`share.message`) — adds warmth when people forward the app via WhatsApp.
+   - ES: append ` 🇻🇪` to the end of the message line.
+   - EN: append ` 🇻🇪` to the end of the message line.
+
+3. **Share section body** (`share.body`) — gentle heart on the community ask.
+   - ES: end with ` ❤️`
+   - EN: end with ` ❤️`
+
+## Principles
+- Only these three spots — keep it rare so it stays special, not spammy.
+- One emoji per spot (footer carries both as the signature line); no emoji in the hero CTA, headings, or nav.
+- Emojis appended to existing strings; keys and consumers unchanged.
 
 ## Out of scope
-No changes to the on-behalf feature behavior, sharing flow, or data model — copy only.
+No changes to logos, icons, the app name, or any component code — text strings only.

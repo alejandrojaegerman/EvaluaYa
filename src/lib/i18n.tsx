@@ -457,7 +457,7 @@ const es: Dict = {
   "footer.participate": "Participar",
   "footer.resources": "Recursos",
   "footer.note":
-    "Datos anónimos y abiertos · Proyecto comunitario de código abierto",
+    "Datos anónimos y abiertos · Proyecto comunitario de código abierto · Hecho con ❤️ para Venezuela 🇻🇪",
   "footer.evaluate": "Evaluar",
 
 
@@ -718,12 +718,12 @@ const es: Dict = {
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
-    "Compártelo con tu familia y vecinos. Mientras más personas evalúan sus viviendas, mejor entendemos los daños de cada zona.",
+    "Compártelo con tu familia y vecinos. Mientras más personas evalúan sus viviendas, mejor entendemos los daños de cada zona. ❤️",
   "share.whatsapp": "Compartir por WhatsApp",
   "share.copy": "Copiar enlace",
   "share.copied": "¡Enlace copiado!",
   "share.message":
-    "Evalúa los daños de tu vivienda tras el sismo con EvalúaYa — gratis, sin registro y funciona con poca señal:",
+    "Evalúa los daños de tu vivienda tras el sismo con EvalúaYa — gratis, sin registro y funciona con poca señal: 🇻🇪",
   "share.generating": "Generando imagen…",
   "share.imageSaved": "Imagen guardada. Compártela donde quieras.",
   "share.shareStats": "Compartir estadísticas",
@@ -1561,7 +1561,7 @@ const en: Dict = {
   "footer.participate": "Get involved",
   "footer.resources": "Resources",
   "footer.note":
-    "Anonymized, open data · Community-built open-source project",
+    "Anonymized, open data · Community-built open-source project · Made with ❤️ for Venezuela 🇻🇪",
   "footer.evaluate": "Evaluate",
 
 
@@ -1822,12 +1822,12 @@ const en: Dict = {
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
-    "Share it with your family and neighbors. The more people assess their homes, the better we understand each area's damage.",
+    "Share it with your family and neighbors. The more people assess their homes, the better we understand each area's damage. ❤️",
   "share.whatsapp": "Share on WhatsApp",
   "share.copy": "Copy link",
   "share.copied": "Link copied!",
   "share.message":
-    "Assess your home's earthquake damage with EvalúaYa — free, no sign-up, works on low signal:",
+    "Assess your home's earthquake damage with EvalúaYa — free, no sign-up, works on low signal: 🇻🇪",
   "share.generating": "Generating image…",
   "share.imageSaved": "Image saved. Share it anywhere.",
   "share.shareStats": "Share stats",
