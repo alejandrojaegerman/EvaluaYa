@@ -70,9 +70,10 @@ const STRUCTURAL_TYPES: StructuralType[] = [
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
-  const { estado: estadoParam } = Route.useSearch();
+  const { estado: estadoParam, eng: engParam } = Route.useSearch();
 
   const [address, setAddress] = useState("");
+  const [buildingName, setBuildingName] = useState("");
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [buildingType, setBuildingType] = useState<BuildingType | null>(null);
