@@ -25,6 +25,17 @@ export const Route = createFileRoute("/metodologia")({
     const title = "Cómo funciona — Metodología y credibilidad | EvalúaYa";
     const description =
       "Cómo EvalúaYa calcula el resultado: reglas de seguridad tipo ATC-20, intensidad sísmica USGS ShakeMap y análisis con IA. Fuentes, límites y privacidad.";
+    const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: title,
+      description,
+      inLanguage: "es",
+      url: absoluteUrl("/metodologia"),
+      mainEntityOfPage: absoluteUrl("/metodologia"),
+      author: { "@type": "Organization", name: "EvalúaYa" },
+      publisher: { "@type": "Organization", name: "EvalúaYa" },
+    };
     return {
       meta: [
         { title },
@@ -38,6 +49,12 @@ export const Route = createFileRoute("/metodologia")({
         { name: "twitter:description", content: description },
       ],
       links: [{ rel: "canonical", href: absoluteUrl("/metodologia") }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(articleSchema),
+        },
+      ],
     };
   },
   component: MethodologyPage,
