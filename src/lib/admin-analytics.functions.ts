@@ -276,7 +276,7 @@ export const adminGetStateDrilldown = createServerFn({ method: "POST" })
         const reports: StateReport[] = (reportsRes.data ?? []).map((r) => ({
           publicId: r.public_id,
           createdAt: String(r.created_at),
-          riskLevel: (r.risk_level ?? "green") as "green" | "yellow" | "red",
+          riskLevel: (r.risk_level ?? "green") as "green" | "yellow" | "orange" | "red",
           municipality: r.municipality ?? "Desconocido",
           buildingType: r.building_type ?? null,
           age: r.age ?? null,
