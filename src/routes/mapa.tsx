@@ -66,10 +66,16 @@ export const Route = createFileRoute("/mapa")({
 });
 
 
-type RiskKey = "red" | "yellow" | "green";
+type RiskKey = "red" | "orange" | "yellow" | "green";
 
-function dominantRisk(a: { green: number; yellow: number; red: number }): RiskKey {
-  if (a.red >= a.yellow && a.red >= a.green) return "red";
+function dominantRisk(a: {
+  green: number;
+  yellow: number;
+  orange: number;
+  red: number;
+}): RiskKey {
+  if (a.red >= a.orange && a.red >= a.yellow && a.red >= a.green) return "red";
+  if (a.orange >= a.yellow && a.orange >= a.green) return "orange";
   if (a.yellow >= a.green) return "yellow";
   return "green";
 }
