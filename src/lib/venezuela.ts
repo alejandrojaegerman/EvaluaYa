@@ -175,7 +175,10 @@ export const MUNICIPIOS: Municipio[] = [
   { state: "Miranda", name: "El Hatillo", lat: 10.42, lng: -66.82 },
   { state: "Miranda", name: "Plaza", lat: 10.32, lng: -66.61 }, // Guarenas
   { state: "Miranda", name: "Cristóbal Rojas", lat: 10.3, lng: -66.78 }, // Charallave
-  { state: "Distrito Capital", name: "Sucre", lat: 10.52, lng: -66.93 }, // Catia/Sucre parish
+  // NOTE: Distrito Capital officially has only one municipio, "Libertador".
+  // "Sucre" (and Catia, El Paraíso, etc.) in Caracas are *parroquias* of
+  // Libertador, not municipios — so they have no separate centroid here and
+  // are folded into Libertador via MUNICIPIO_ALIASES_BY_STATE below.
   { state: "La Guaira", name: "Vargas", lat: 10.6, lng: -66.93 },
   // --- Other major cities / capitals ---
   { state: "Zulia", name: "Maracaibo", lat: 10.65, lng: -71.64 },
