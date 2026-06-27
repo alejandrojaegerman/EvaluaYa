@@ -666,7 +666,7 @@ function MapPage() {
 
 
           {/* Top areas list */}
-          <section className="mt-4">
+          <Reveal as="section" className="mt-4" delayMs={60}>
             <h2 className="font-display text-lg font-bold">{t("map.topAreas")}</h2>
             <ul className="mt-3 space-y-2">
               {topAreas.map((a) => {
