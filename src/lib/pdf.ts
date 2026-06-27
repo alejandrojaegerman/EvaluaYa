@@ -9,7 +9,7 @@ import { RISK_HEX } from "./risk";
  * Generate a one-page PDF summary of an assessment and trigger a download.
  * Runs entirely client-side so it works without re-contacting the server.
  */
-export function downloadAssessmentPdf(record: AssessmentRecord) {
+export async function downloadAssessmentPdf(record: AssessmentRecord) {
   const lang = record.language as Lang;
   const t = (k: string) => translate(lang, k);
 
@@ -150,6 +150,72 @@ export function downloadAssessmentPdf(record: AssessmentRecord) {
     const lines = doc.splitTextToSize(`•  ${area}: ${ans}`, contentW - 6);
     doc.text(lines, margin + 4, y);
     addSpace(lines.length * 14 + 2);
+  }
+
+  // Photos — embedded so the downloadable PDF is self-contained evidence the
+  // resident can hand to an engineer or authority.
+  const photoItems: { area: string; url: string }[] = [];
+  for (const a of record.answers) {
+    const urls = record.photoUrls[a.id];
+    if (urls && urls.length) {
+      for (const url of urls) {
+        photoItems.push({ area: t(`item.${a.id}.area`), url });
+      }
+    }
+  }
+
+  if (photoItems.length) {
+    const pageH = doc.internal.pageSize.getHeight();
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageH - 64) {
+        doc.addPage();
+        y = margin;
+      }
+    };
+    ensureSpace(40);
+    heading(t("pdf.photos"));
+
+    const gap = 12;
+    const cellW = (contentW - gap) / 2;
+    const imgH = 96;
+    const rowH = imgH + 18 + gap;
+    let col = 0;
+    let rowTop = y;
+
+    for (const item of photoItems) {
+      const img = await loadImage(item.url);
+      if (!img) continue;
+      if (col === 0) {
+        ensureSpace(rowH);
+        rowTop = y;
+      }
+      const x = margin + col * (cellW + gap);
+      const scale = Math.min(cellW / img.w, imgH / img.h);
+      const dw = img.w * scale;
+      const dh = img.h * scale;
+      const dx = x + (cellW - dw) / 2;
+      const dy = rowTop + (imgH - dh) / 2;
+      let drawn = true;
+      try {
+        doc.addImage(img.dataUrl, img.format, dx, dy, dw, dh);
+      } catch {
+        drawn = false;
+      }
+      if (!drawn) continue;
+      doc.setFontSize(9);
+      doc.setTextColor(90, 100, 110);
+      const cap = doc.splitTextToSize(item.area, cellW);
+      doc.text(cap[0], x, rowTop + imgH + 11);
+      col += 1;
+      if (col === 2) {
+        col = 0;
+        y = rowTop + rowH;
+      }
+    }
+    if (col === 1) {
+      y = rowTop + rowH;
+    }
+    addSpace(4);
   }
 
   // Footer
