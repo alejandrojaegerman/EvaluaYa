@@ -73,7 +73,9 @@ export type StateStats = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
+  verified: number;
   municipios: number;
   lastReport: string | null;
 };
