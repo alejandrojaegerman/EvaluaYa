@@ -661,7 +661,7 @@ function MapPage() {
                 {t("map.legendSelf")}
               </p>
             </div>
-          </section>
+          </Reveal>
 
 
 
