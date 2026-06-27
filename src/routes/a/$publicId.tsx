@@ -18,7 +18,7 @@ import {
 
 
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
@@ -34,6 +34,7 @@ import { downloadAssessmentPdf } from "@/lib/pdf";
 import { RISK_THEME } from "@/lib/risk";
 import { generateResultCard, shareImageBlob } from "@/lib/share-card";
 import { absoluteUrl, withUtm } from "@/lib/site";
+import { trackStep } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
 const RESULT_OG = {
