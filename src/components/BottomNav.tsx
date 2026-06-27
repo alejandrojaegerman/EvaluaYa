@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
+  BarChart3,
   BookOpen,
   FolderOpen,
   HandHeart,
@@ -13,6 +14,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useState } from "react";
+
 
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
@@ -35,7 +37,7 @@ export function BottomNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 backdrop-blur-md print:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 backdrop-blur-md md:hidden print:hidden">
       <div className="mx-auto flex w-full max-w-screen-sm items-stretch px-2 pb-[env(safe-area-inset-bottom)]">
         <Link
           to="/"
@@ -80,6 +82,24 @@ export function BottomNav() {
 
             <div className="mt-4 grid gap-1">
               <SheetClose asChild>
+                <Link
+                  to="/datos"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <BarChart3 className="size-4.5" aria-hidden />
+                  </span>
+                  <span className="flex-1">
+                    {t("nav.data")}
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {t("nav.dataDesc")}
+                    </span>
+                  </span>
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+
                 <Link
                   to="/voluntarios"
                   className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"

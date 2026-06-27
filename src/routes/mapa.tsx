@@ -502,7 +502,7 @@ function MapPage() {
           </Reveal>
 
           {/* Severity spotlight — leads the story with urgency */}
-          <Reveal as="section" className="mt-4" delayMs={60}>
+          <Reveal as="section" className="mt-4 hidden md:block" delayMs={60}>
             <SeveritySpotlight
               total={totals!.total}
               green={totals!.green}
@@ -516,7 +516,7 @@ function MapPage() {
           {/* Trend over time */}
           <Reveal
             as="section"
-            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            className="mt-4 hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:block"
             delayMs={60}
           >
             <p className="text-sm font-semibold">{t("map.trendTitle")}</p>
@@ -531,7 +531,7 @@ function MapPage() {
           {/* Risk distribution */}
           <Reveal
             as="section"
-            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            className="mt-4 hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:block"
             delayMs={60}
           >
             <p className="text-sm font-semibold">{t("map.distribution")}</p>
@@ -663,10 +663,22 @@ function MapPage() {
             </div>
           </Reveal>
 
-
+          {/* Mobile-only nudge to the full desktop data room */}
+          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm md:hidden">
+            <p className="text-sm font-semibold">{t("mapa.seeFullData")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("mapa.seeFullDataDesc")}
+            </p>
+            <Button asChild variant="outline" size="sm" className="mt-3 w-full">
+              <Link to="/datos">
+                {t("data.openMap")}
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </section>
 
           {/* Top areas list */}
-          <Reveal as="section" className="mt-4" delayMs={60}>
+          <Reveal as="section" className="mt-4 hidden md:block" delayMs={60}>
             <h2 className="font-display text-lg font-bold">{t("map.topAreas")}</h2>
             <ul className="mt-3 space-y-2">
               {topAreas.map((a) => {
@@ -752,7 +764,7 @@ function MapPage() {
           {/* National "why behind the data" — lazy-loaded on reveal */}
           <Reveal
             as="section"
-            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            className="mt-4 hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:block"
             delayMs={60}
             onReveal={() => setWhyVisible(true)}
           >
@@ -769,7 +781,7 @@ function MapPage() {
           </Reveal>
 
           {/* Share stats image — flywheel */}
-          <Reveal as="section" className="mt-6" delayMs={60}>
+          <Reveal as="section" className="mt-6 hidden md:block" delayMs={60}>
             <Button
               className="w-full"
               onClick={shareStats}
@@ -781,7 +793,7 @@ function MapPage() {
           </Reveal>
 
           {/* Open data download */}
-          <Reveal as="section" className="mt-4" delayMs={60}>
+          <Reveal as="section" className="mt-4 hidden md:block" delayMs={60}>
             <Button variant="outline" className="w-full" onClick={downloadCsv}>
               <Download className="size-4" />
               {t("map.download")}

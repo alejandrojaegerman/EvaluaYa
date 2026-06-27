@@ -1,48 +1,47 @@
-# Optimize completion, data quality & help requests
+# Device-focused experience + Data Room
 
-Goal: get more Venezuelan visitors through the existing 3-step assessment, collect better data, generate more help requests, and put photos into the downloadable report — **without changing the flow or the assessment/AI/safety logic**. All work stays in presentation, copy, and the client-side PDF generator.
+Today the whole app is locked to a phone-width column (`max-w-screen-sm` in `AppShell`) with a resident bottom nav, and `/mapa` is one long scroll of charts that's heavy on phones and wasted on desktop. This splits the experience by device without touching the assessment flow or its logic.
 
-## 1. Property screen — reduce visual load (biggest drop-off)
+## 1. Mobile = residents + evaluation
 
-The property step currently shows ~8 stacked fields at full weight, which feels heavy on mobile (86% of traffic). Same fields, same data, lighter presentation:
+- **Bottom nav stays resident-first:** Inicio, Mapa, Mis reportes, Más. Add a compact "Datos" link inside the "Más" sheet (it opens the reduced data room).
+- **Simplify `/mapa` on mobile** to: title, the two headline counters (total assessments / areas), the interactive map with its legend, the start-assessment CTA, and a single "Ver datos completos" link to `/datos`. The heavy sections (trend chart, distribution gauge, severity spotlight, top-areas table, national "why" drill-down, CSV export, institution form) move to the data room.
+- The evaluation flow, its screens, and triage logic are untouched.
 
-- Group the page into clear blocks: **Location** (state*, municipality, address) and **Building** (type, floors, age), with the structural-system selector collapsed as it already is.
-- Move the two optional free-text fields (address, building name) into a single collapsible "Add more detail (optional)" disclosure so the required path is visually shorter. They stay editable and saved exactly as today.
-- Tighten spacing (the form uses `space-y-7`; reduce to a calmer rhythm) and make the one required field (Estado) visually obvious so people know what's actually needed.
-- Keep the geo auto-detect, ShakeMap intensity card, and all existing behavior intact.
+## 2. Desktop = institutional / analyst use
 
-## 2. Data-quality nudges (no new required fields, no flow change)
+- **`AppShell` gains a wide mode** so non-resident pages can use the full width with a centered max width (about `max-w-6xl`) instead of the phone column. `/mapa`, `/`, and assessment screens keep the narrow column; `/datos` and `/admin` use wide mode.
+- **Desktop top nav bar** (visible at `md+`, bottom nav hidden at `md+`): logo, Inicio, Mapa, Datos, Mis reportes, plus a "Más" dropdown (Voluntarios, Metodología, Ayuda, Feedback) and the language/online controls. Mobile keeps the existing bottom nav (hidden on desktop). Both live in the shell so every page gets the right chrome automatically.
 
-- **Building name nudge**: inside the optional-detail disclosure, a one-line hint explaining that the tower/building name lets neighbors' reports group together (improves same-building clustering). Wording only — field stays optional.
-- **Location nudge**: a soft helper line under municipality/address explaining it powers the public damage map, encouraging (not forcing) entry.
-- **Photo-on-"Yes" nudge (checklist)**: when a structural item is answered **Yes** (damage present) and has no photo yet, show a gentle inline prompt on that card ("A photo helps an engineer understand this") with the existing camera/gallery buttons. Purely a prompt; photos remain optional and submission is never blocked.
+## 3. New `/datos` Data Room
 
-## 3. Help requests — make the engineer card more prominent (Yellow/Orange/Red)
+A single route that renders reduced on mobile and robust on desktop.
 
-Keep current eligibility (Green excluded). Increase conversions on the existing `ConnectEngineers` card:
+**Mobile (reduced):** headline totals, risk distribution gauge, a short top-areas list, and a note that the full data room is best on a larger screen, plus CSV export and the institution lead form.
 
-- Move the "request a callback / contact an engineer" card higher on the result page, directly under the risk hero + findings, before the seismic/photos/inspection detail sections.
-- Stronger headline and a clear single primary action; keep the two-tap WhatsApp consent flow and the callback form unchanged.
-- Add a short reassurance line ("Free, volunteer engineers — no cost") to lower hesitation.
-- No backend/logic changes to `submitHelpRequest` or eligibility rules.
+**Desktop (robust dashboard):**
+- **Filter bar** across the top: estado dropdown, municipio dropdown (depends on estado), risk-level toggle, and a **date range** (presets: 7/30/90 days + custom). Filters drive every panel below.
+- **Two-column layout:** large interactive map on the left; a charts panel on the right with the trend chart, risk distribution gauge, and severity spotlight.
+- **Below:** the top-areas table with the inline "why" drill-down (`RiskFactorsPanel`), the national risk-factors panel, CSV export (respects active filters), share-stats image, and the institution lead form.
 
-## 4. Photos in the downloadable PDF
+All existing components are reused (`DamageMap`, `TrendChart`, `RiskGauge`, `SeveritySpotlight`, `RiskFactorsPanel`, `InstitutionLeadForm`, `ShareApp`) — just rearranged into a responsive dashboard grid.
 
-Today photos appear on the web result page but not in `downloadAssessmentPdf`. Add a photo section so the PDF a user shows an engineer/authority is complete:
+## 4. Backend (filters + date range)
 
-- After the inspection answers, add a **"Photos / Fotos"** section that embeds the assessment photos (from `record.photoUrls`), labeled by checklist item area.
-- Lay them out as a compact grid of thumbnails, adding pages as needed (`doc.addPage()` with page-break handling) so it never overflows.
-- Fetch each signed URL, draw via `doc.addImage`; skip any image that fails to load so the PDF always generates. Keep everything client-side (jsPDF) as it is now.
-
-## 5. Copy / i18n
-
-Add the new ES (primary) + EN strings for the nudges, reassurance line, collapsible label, and PDF "Photos" heading in `src/lib/i18n.tsx`.
-
----
+The current aggregates RPC has no date dimension and the timeseries RPC has no location dimension, so filters need filterable reads:
+- A migration adds date-range + location params to the read path (a new `get_damage_room(_state, _municipality, _from, _to)` RPC, or optional params on the existing aggregate/timeseries RPCs) returning the same anonymized counts — never addresses, photos, or report ids.
+- New server function(s) in `stats.functions.ts` (e.g. `getDataRoom`) wrap it, keeping the service-role brokering pattern and Eastern-time day bucketing already in place.
 
 ## Technical notes
 
-- **Files touched**: `src/routes/assess/property.tsx` (grouping + collapsible optional detail), `src/routes/assess/checklist.tsx` (photo-on-Yes prompt), `src/components/ConnectEngineers.tsx` + `src/routes/a/$publicId.tsx` (reorder/emphasis), `src/lib/pdf.ts` (photo embedding), `src/lib/i18n.tsx` (strings).
-- **No changes** to: draft schema, `assessment.functions.ts`, `analyzeAssessment`, safety rules, ShakeMap logic, DB schema, or the 3-step navigation.
-- PDF images: jsPDF `addImage` needs raster data; fetch each signed URL to a data URL client-side before drawing, with a try/catch per image and automatic page breaks.
-- The Dashlane-extension hydration warning on `/mapa` is environmental (browser extension), not addressed here.
+- `src/components/AppShell.tsx`: add `wide?: boolean`; render desktop `TopNav` (new) and keep `BottomNav` mobile-only via `md:hidden` / `hidden md:flex`.
+- New `src/components/TopNav.tsx`; `BottomNav.tsx` adds the Datos entry in the sheet.
+- New `src/routes/datos.tsx` with its own `head()` metadata (title, description, og) and a `/datos` OG image reuse of the map card.
+- New `src/components/DataRoomFilters.tsx` for the desktop filter bar (estado/municipio from `src/lib/venezuela.ts`).
+- `src/routes/mapa.tsx`: trim to the mobile-simple set; add the "Ver datos completos" link.
+- `src/lib/stats.functions.ts` + one migration for filterable RPCs.
+- `src/lib/i18n.tsx`: add ES/EN keys for nav "Datos", data-room headings, filter labels, date presets, and the "best on desktop" note.
+- Add `/datos` to `src/routes/sitemap[.]xml.ts`.
+- Also quietly fix the `/mapa` hydration warning from the institution form (browser-extension attribute mismatch) by guarding that input subtree.
+
+No changes to the assessment flow, triage rules, or stored data shape.

@@ -321,6 +321,120 @@ export const getRiskFactors = createServerFn({ method: "GET" })
     }
   });
 
+// ---------------------------------------------------------------------------
+// Data Room — filterable reads (state / municipality / date range). Anonymized
+// counts only, brokered through the service role. Powers the desktop dashboard.
+// ---------------------------------------------------------------------------
+
+const dataRoomFilterSchema = z.object({
+  state: z.string().trim().min(1).max(120).optional(),
+  municipality: z.string().trim().min(1).max(120).optional(),
+  /** inclusive ISO date (YYYY-MM-DD) in Eastern time */
+  from: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  to: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+export type DataRoom = {
+  totals: DamageTotals;
+  areas: AreaAggregate[];
+  timeseries: TimeseriesPoint[];
+};
+
+/** One round-trip for the data room: filtered totals + areas + trend. */
+export const getDataRoom = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => dataRoomFilterSchema.parse(data ?? {}))
+  .handler(async ({ data }): Promise<DataRoom> => {
+    const empty: DataRoom = { totals: EMPTY_TOTALS, areas: [], timeseries: [] };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const args = {
+        _state: data.state ?? undefined,
+        _municipality: data.municipality ?? undefined,
+        _from: data.from ?? undefined,
+        _to: data.to ?? undefined,
+      };
+      const [totalsRes, areasRes, tsRes] = await Promise.all([
+        supabaseAdmin.rpc("get_damage_totals_filtered", args),
+        supabaseAdmin.rpc("get_damage_aggregates_filtered", args),
+        supabaseAdmin.rpc("get_damage_timeseries_filtered", args),
+      ]);
+
+      const totals: DamageTotals =
+        totalsRes.error || !totalsRes.data?.[0]
+          ? EMPTY_TOTALS
+          : {
+              total: totalsRes.data[0].total ?? 0,
+              green: totalsRes.data[0].green ?? 0,
+              yellow: totalsRes.data[0].yellow ?? 0,
+              orange: totalsRes.data[0].orange ?? 0,
+              red: totalsRes.data[0].red ?? 0,
+              verified: totalsRes.data[0].verified ?? 0,
+              areas: totalsRes.data[0].areas ?? 0,
+            };
+
+      const areas: AreaAggregate[] = areasRes.error
+        ? []
+        : (areasRes.data ?? []).map((r) => ({
+            state: r.state,
+            municipality: r.municipality,
+            total: r.total ?? 0,
+            green: r.green ?? 0,
+            yellow: r.yellow ?? 0,
+            orange: r.orange ?? 0,
+            red: r.red ?? 0,
+            verified: r.verified ?? 0,
+            lastReport: r.last_report ?? null,
+          }));
+
+      const timeseries: TimeseriesPoint[] = tsRes.error
+        ? []
+        : (tsRes.data ?? []).map((r) => ({
+            day: typeof r.day === "string" ? r.day : String(r.day),
+            total: r.total ?? 0,
+            green: r.green ?? 0,
+            yellow: r.yellow ?? 0,
+            orange: r.orange ?? 0,
+            red: r.red ?? 0,
+          }));
+
+      return { totals, areas, timeseries };
+    } catch (e) {
+      console.error("[stats] getDataRoom failed", e);
+      return empty;
+    }
+  });
+
+/** Filtered risk-factor drill-down ("why"), date-range aware. */
+export const getRiskFactorsFiltered = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => dataRoomFilterSchema.parse(data ?? {}))
+  .handler(async ({ data }): Promise<RiskFactors> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } = await supabaseAdmin.rpc(
+        "get_risk_factors_filtered",
+        {
+          _state: data.state ?? undefined,
+          _municipality: data.municipality ?? undefined,
+          _from: data.from ?? undefined,
+          _to: data.to ?? undefined,
+        },
+      );
+      if (error || !rows) {
+        if (error) console.error("[stats] getRiskFactorsFiltered", error);
+        return EMPTY_RISK_FACTORS;
+      }
+      return groupRiskFactorRows(rows);
+    } catch (e) {
+      console.error("[stats] getRiskFactorsFiltered failed", e);
+      return EMPTY_RISK_FACTORS;
+    }
+  });
+
+
 const leadSchema = z.object({
   organization: z.string().trim().min(1).max(200),
   contactName: z.string().trim().max(200).optional().default(""),

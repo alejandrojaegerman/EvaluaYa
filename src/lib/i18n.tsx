@@ -424,6 +424,35 @@ const es: Dict = {
   "nav.language": "Idioma",
   "nav.help": "Ayuda",
   "nav.feedback": "Enviar comentarios",
+  "nav.data": "Datos",
+  "nav.dataDesc": "Mapa y datos abiertos para autoridades y medios",
+
+  "data.title": "Sala de datos",
+  "data.subtitle":
+    "Explora los daños estructurales reportados en Venezuela. Datos anónimos y abiertos, ideales para autoridades, medios y equipos de respuesta.",
+  "data.mobileNote":
+    "Estás viendo un resumen. Abre la sala de datos en una computadora para filtros, mapa ampliado y análisis completo.",
+  "data.openMap": "Ver mapa completo",
+  "data.filters": "Filtros",
+  "data.filterState": "Estado",
+  "data.filterMunicipality": "Municipio",
+  "data.filterAll": "Todos",
+  "data.filterRange": "Período",
+  "data.range7": "7 días",
+  "data.range30": "30 días",
+  "data.range90": "90 días",
+  "data.rangeAll": "Todo",
+  "data.clearFilters": "Limpiar filtros",
+  "data.activeScope": "Mostrando",
+  "data.scopeNational": "todo el país",
+  "data.chartsTitle": "Indicadores",
+  "data.mapTitle": "Mapa interactivo",
+  "data.noResults": "No hay datos para estos filtros.",
+  "data.export": "Exportar y compartir",
+  "mapa.seeFullData": "Ver datos completos",
+  "mapa.seeFullDataDesc":
+    "Filtros, tendencias y análisis por zona en la sala de datos.",
+
 
   "feedback.title": "Enviar comentarios",
   "feedback.subtitle":
@@ -1367,6 +1396,35 @@ const en: Dict = {
   "nav.language": "Language",
   "nav.help": "Help",
   "nav.feedback": "Send feedback",
+  "nav.data": "Data",
+  "nav.dataDesc": "Map and open data for authorities and media",
+
+  "data.title": "Data room",
+  "data.subtitle":
+    "Explore structural damage reported across Venezuela. Anonymous, open data — built for authorities, media and response teams.",
+  "data.mobileNote":
+    "You're viewing a summary. Open the data room on a larger screen for filters, an expanded map and full analysis.",
+  "data.openMap": "View full map",
+  "data.filters": "Filters",
+  "data.filterState": "State",
+  "data.filterMunicipality": "Municipality",
+  "data.filterAll": "All",
+  "data.filterRange": "Period",
+  "data.range7": "7 days",
+  "data.range30": "30 days",
+  "data.range90": "90 days",
+  "data.rangeAll": "All time",
+  "data.clearFilters": "Clear filters",
+  "data.activeScope": "Showing",
+  "data.scopeNational": "the whole country",
+  "data.chartsTitle": "Indicators",
+  "data.mapTitle": "Interactive map",
+  "data.noResults": "No data for these filters.",
+  "data.export": "Export & share",
+  "mapa.seeFullData": "View full data",
+  "mapa.seeFullDataDesc":
+    "Filters, trends and by-area analysis in the data room.",
+
 
   "feedback.title": "Send feedback",
   "feedback.subtitle":
