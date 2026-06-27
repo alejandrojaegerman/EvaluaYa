@@ -1130,6 +1130,55 @@ const en: Dict = {
   "checklist.newDamageTitle": "Report only NEW damage",
   "checklist.newDamageBody": "Answer thinking only about damage that appeared with this earthquake. If a crack was already there before, don't mark it. If you're not sure whether it's new, choose \"Not sure\".",
 
+  // Visual examples + glossary (accessibility)
+  "checklist.exampleAlt": "Example: what damage looks like versus a healthy structure",
+  "checklist.illoDamage": "Sign of damage",
+  "checklist.illoOk": "Looks fine",
+  "checklist.glossaryHint": "Tap a word to see what it means:",
+
+  "glossary.cimientos.term": "Foundation",
+  "glossary.cimientos.def":
+    "The base the whole building rests on, usually below the first floor.",
+  "glossary.licuefaccion.term": "Liquefaction",
+  "glossary.licuefaccion.def":
+    "When water-saturated ground loses firmness during a quake and behaves like mud: water or sand can bubble up and structures sink or tilt.",
+  "glossary.grieta_diagonal.term": "Diagonal crack",
+  "glossary.grieta_diagonal.def":
+    "A slanted, X-shaped or stair-step crack. Usually more serious than a thin straight crack because it points to structural stress.",
+  "glossary.golpeteo.term": "Pounding",
+  "glossary.golpeteo.def":
+    "When two neighboring buildings collide during a quake because they sit too close together.",
+  "glossary.columna.term": "Column",
+  "glossary.columna.def":
+    "A vertical element (usually concrete) that carries the building's weight.",
+  "glossary.viga.term": "Beam",
+  "glossary.viga.def":
+    "A horizontal element that connects the columns and holds up floors and the roof.",
+  "glossary.cabilla.term": "Rebar",
+  "glossary.cabilla.def":
+    "The steel bars inside concrete that reinforce it. If they're exposed, the damage is serious.",
+  "glossary.pandeo.term": "Buckling",
+  "glossary.pandeo.def":
+    "When a surface that should be straight looks sunken, curved, or bulging.",
+  "glossary.rodapie.term": "Baseboard",
+  "glossary.rodapie.def":
+    "The trim where the wall meets the floor. A new gap there can mean movement.",
+  "glossary.breaker.term": "Breaker",
+  "glossary.breaker.def":
+    "The switch in the electrical panel that cuts power when there's a fault.",
+  "glossary.tomacorriente.term": "Outlet",
+  "glossary.tomacorriente.def":
+    "The wall socket where you plug in appliances.",
+
+  // Property helper text (accessibility)
+  "property.buildingType.help": "What kind of place are you assessing?",
+  "property.floors.help": "Count how many floors the whole building has.",
+  "property.age.help": "If you don't know the exact year, pick the closest one.",
+  "property.age.pre1970.desc":
+    "Older construction, before modern seismic codes.",
+  "property.age.1970to2000.desc": "Late last-century construction.",
+  "property.age.post2000.desc": "More recent construction.",
+
 
 
   "rule.urm.finding":
