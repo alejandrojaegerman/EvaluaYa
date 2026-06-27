@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
   BookOpen,
+  ClipboardCheck,
   FolderOpen,
   HandHeart,
   Home,
@@ -16,6 +17,7 @@ import {
 import { useState } from "react";
 
 
+import { useHasReports } from "@/hooks/use-has-reports";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
