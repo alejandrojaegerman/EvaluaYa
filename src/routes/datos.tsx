@@ -423,7 +423,11 @@ function DataRoomPage() {
       const outcome = await shareImageBlob(blob, {
         filename: "evaluaya-datos.png",
         title: "EvalúaYa",
-        text: `${t("share.message")} ${absoluteUrl("/datos")}`,
+        text: `${t("share.message")} ${withUtm("/datos", {
+          source: "image",
+          medium: "share",
+          campaign: "data",
+        })}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {
