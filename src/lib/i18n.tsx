@@ -944,6 +944,40 @@ const es: Dict = {
   "panel.ageWaiting": "Esperando",
   "panel.ageDays": "d",
 
+  // Panel — progress tracking
+  "panel.progressTitle": "Progreso",
+  "panel.stage.claimed": "Asignada",
+  "panel.stage.contacted": "Contacté al residente",
+  "panel.stage.visited": "Visité / inspeccioné",
+  "panel.stage.resolved": "Resuelta",
+  "panel.markContacted": "Marcar: contacté",
+  "panel.markVisited": "Marcar: visité",
+  "panel.markResolved": "Marcar: resuelta",
+  "panel.progressNote": "Nota de progreso (opcional)",
+  "panel.progressNotePlaceholder": "Ej.: Acordé visita para el sábado.",
+  "panel.progressSaved": "Progreso actualizado.",
+  "panel.lastUpdate": "Última actualización",
+  "panel.currentStage": "Etapa actual",
+
+  // Panel — validate the AI evaluation
+  "panel.validateTitle": "Validar la evaluación de la app",
+  "panel.validateBody":
+    "Compara el resultado de la IA con tu criterio profesional. Tu verdicto marca el reporte como verificado en todas las superficies.",
+  "panel.aiSaid": "La IA indicó",
+  "panel.agree": "Estoy de acuerdo",
+  "panel.adjust": "Ajustar nivel",
+  "panel.pickLevel": "Tu nivel profesional",
+  "panel.verdictNote": "Notas profesionales (opcional)",
+  "panel.verdictNotePlaceholder": "Ej.: Grietas no estructurales; uso seguro con reparaciones menores.",
+  "panel.submitVerdict": "Guardar verdicto",
+  "panel.verdictSaved": "Verdicto guardado. Reporte verificado.",
+  "panel.verifiedByYou": "Verificado por ti",
+  "panel.verifiedAgree": "Confirmaste el nivel de la IA",
+  "panel.verifiedAdjust": "Ajustaste el nivel",
+  "panel.cancel": "Cancelar",
+  "panel.noReportToValidate": "Esta solicitud no tiene una evaluación vinculada.",
+
+
   // Admin dashboard
   "dash.title": "Panel de administración",
   "dash.subtitle": "Métricas de evaluaciones, voluntarios y conexiones.",
@@ -1937,6 +1971,40 @@ const en: Dict = {
   "panel.ageNew": "New",
   "panel.ageWaiting": "Waiting",
   "panel.ageDays": "d",
+
+  // Panel — progress tracking
+  "panel.progressTitle": "Progress",
+  "panel.stage.claimed": "Assigned",
+  "panel.stage.contacted": "Contacted resident",
+  "panel.stage.visited": "Visited / inspected",
+  "panel.stage.resolved": "Resolved",
+  "panel.markContacted": "Mark: contacted",
+  "panel.markVisited": "Mark: visited",
+  "panel.markResolved": "Mark: resolved",
+  "panel.progressNote": "Progress note (optional)",
+  "panel.progressNotePlaceholder": "E.g.: Scheduled a visit for Saturday.",
+  "panel.progressSaved": "Progress updated.",
+  "panel.lastUpdate": "Last update",
+  "panel.currentStage": "Current stage",
+
+  // Panel — validate the AI evaluation
+  "panel.validateTitle": "Validate the app's assessment",
+  "panel.validateBody":
+    "Compare the AI result with your professional judgment. Your verdict marks the report as verified across all surfaces.",
+  "panel.aiSaid": "The AI rated this",
+  "panel.agree": "I agree",
+  "panel.adjust": "Adjust level",
+  "panel.pickLevel": "Your professional level",
+  "panel.verdictNote": "Professional notes (optional)",
+  "panel.verdictNotePlaceholder": "E.g.: Non-structural cracks; safe to use with minor repairs.",
+  "panel.submitVerdict": "Save verdict",
+  "panel.verdictSaved": "Verdict saved. Report verified.",
+  "panel.verifiedByYou": "Verified by you",
+  "panel.verifiedAgree": "You confirmed the AI level",
+  "panel.verifiedAdjust": "You adjusted the level",
+  "panel.cancel": "Cancel",
+  "panel.noReportToValidate": "This request has no linked assessment.",
+
 
   // Admin dashboard
   "dash.title": "Admin dashboard",

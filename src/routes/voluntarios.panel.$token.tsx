@@ -2,31 +2,29 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   HardHat,
-  MessageCircle,
-  CheckCircle2,
-  ExternalLink,
-  RotateCcw,
-  MapPin,
   AlertCircle,
   ShieldCheck,
   ArrowRight,
+  RotateCcw,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
-import { RiskBadge } from "@/components/RiskBadge";
+import { EngineerRequestCard } from "@/components/EngineerRequestCard";
 import { Button } from "@/components/ui/button";
+import type { RiskLevel } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
-import { formatDateTime } from "@/lib/datetime";
-import { absoluteUrl } from "@/lib/site";
 import { toWhatsappNumber } from "@/lib/phone";
 import {
   getEngineerPanel,
   claimHelpRequest,
-  closeHelpRequest,
+  updateRequestProgress,
+  submitEngineerVerdict,
   type EngineerPanel,
+  type ProgressStage,
 } from "@/lib/volunteers.functions";
+
 
 export const Route = createFileRoute("/voluntarios/panel/$token")({
   head: () => ({
@@ -40,10 +38,11 @@ export const Route = createFileRoute("/voluntarios/panel/$token")({
 
 function PanelPage() {
   const { token } = Route.useParams();
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const fetchPanel = useServerFn(getEngineerPanel);
   const claim = useServerFn(claimHelpRequest);
-  const close = useServerFn(closeHelpRequest);
+  const progress = useServerFn(updateRequestProgress);
+  const verdict = useServerFn(submitEngineerVerdict);
 
   const [panel, setPanel] = useState<EngineerPanel | null>(null);
   const [expired, setExpired] = useState(false);
@@ -83,12 +82,37 @@ function PanelPage() {
     }
   }
 
-  async function onClose(id: string) {
+  async function onProgress(id: string, stage: ProgressStage, note: string) {
+    if (stage === "claimed") return;
     setActingId(id);
     try {
-      const res = await close({ data: { token, requestId: id } });
-      if (res.ok) await load();
-      else toast.error(t("result.genericError"));
+      const res = await progress({
+        data: { token, requestId: id, stage, note },
+      });
+      if (res.ok) {
+        toast.success(t("panel.progressSaved"));
+        await load();
+      } else toast.error(t("result.genericError"));
+    } finally {
+      setActingId(null);
+    }
+  }
+
+  async function onVerdict(
+    id: string,
+    v: "agree" | "adjust",
+    level: RiskLevel | undefined,
+    notes: string,
+  ) {
+    setActingId(id);
+    try {
+      const res = await verdict({
+        data: { token, requestId: id, verdict: v, level, notes },
+      });
+      if (res.ok) {
+        toast.success(t("panel.verdictSaved"));
+        await load();
+      } else toast.error(t("result.genericError"));
     } finally {
       setActingId(null);
     }
@@ -103,6 +127,7 @@ function PanelPage() {
       "noopener,noreferrer",
     );
   }
+
 
   function ageLabel(createdAt: string): string {
     const ms = Date.now() - new Date(createdAt).getTime();
@@ -221,99 +246,20 @@ function PanelPage() {
       ) : (
         <ul className="mt-3 space-y-3">
           {panel.requests.map((r) => (
-            <li
+            <EngineerRequestCard
               key={r.id}
-              className="rounded-2xl border border-border bg-card p-4 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <MapPin
-                      className="size-4 shrink-0 text-muted-foreground"
-                      aria-hidden
-                    />
-                    <span className="truncate">
-                      {r.municipality
-                        ? `${r.municipality}${r.state ? `, ${r.state}` : ""}`
-                        : r.state || t("panel.noLocation")}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {formatDateTime(r.createdAt, lang)}
-                  </p>
-                  {r.status === "open" && ageLabel(r.createdAt) && (
-                    <p className="mt-0.5 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
-                      {ageLabel(r.createdAt)}
-                    </p>
-                  )}
-                </div>
-                {r.riskLevel && <RiskBadge level={r.riskLevel} />}
-              </div>
-
-              {r.note && (
-                <p className="mt-2 rounded-lg bg-muted/60 p-2 text-sm">
-                  {r.note}
-                </p>
-              )}
-
-              {r.claimedByMe && (
-                <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-risk-green">
-                  <CheckCircle2 className="size-4" aria-hidden />
-                  {t("panel.claimed")}
-                </p>
-              )}
-
-              <div className="mt-3 grid gap-2">
-                {r.status === "open" && (
-                  <Button
-                    variant="outline"
-                    onClick={() => onClaim(r.id)}
-                    disabled={actingId === r.id}
-                  >
-                    <CheckCircle2 className="size-4" />
-                    {t("panel.claim")}
-                  </Button>
-                )}
-                {r.residentWhatsapp ? (
-                  <Button
-                    onClick={() => contactResident(r.residentWhatsapp!)}
-                    className="bg-[#25D366] text-white hover:bg-[#1ebe5a]"
-                  >
-                    <MessageCircle className="size-4" />
-                    {t("panel.contactResident")}
-                  </Button>
-                ) : (
-                  <p className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
-                    {t("panel.contactLocked")}
-                  </p>
-                )}
-                {r.assessmentPublicId && (
-                  <Button asChild variant="ghost" size="sm">
-                    <a
-                      href={absoluteUrl(`/a/${r.assessmentPublicId}`)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="size-4" />
-                      {t("panel.viewReport")}
-                    </a>
-                  </Button>
-                )}
-                {r.claimedByMe && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onClose(r.id)}
-                    disabled={actingId === r.id}
-                  >
-                    {t("panel.close")}
-                  </Button>
-                )}
-              </div>
-            </li>
+              r={r}
+              acting={actingId === r.id}
+              onClaim={onClaim}
+              onContact={contactResident}
+              onProgress={onProgress}
+              onVerdict={onVerdict}
+              ageLabel={ageLabel}
+            />
           ))}
         </ul>
       )}
     </AppShell>
   );
 }
+
