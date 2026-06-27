@@ -52,7 +52,7 @@ export async function runEngineerDigest(): Promise<{
         engineerName: row.name ?? "",
         openCount: row.open_count,
         items,
-        panelUrl: panelUrl(row.access_token),
+        panelUrl: engineerPanelUrl(row.access_token, "help_digest"),
       },
     });
     if (res.ok) sent += 1;
