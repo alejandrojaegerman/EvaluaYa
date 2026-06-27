@@ -670,7 +670,7 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
 // Validate / compare the AI evaluation on the linked assessment
 // ---------------------------------------------------------------------------
 
-const verdictSchema = z
+export const verdictSchema = z
   .object({
     token: z.string().trim().uuid(),
     requestId: z.string().trim().uuid(),
