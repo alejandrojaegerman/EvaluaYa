@@ -133,6 +133,60 @@ function DataRoomPage() {
   const [timeseries, setTimeseries] = useState<TimeseriesPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Available filter options for the active date range (independent of the
+  // currently selected state/municipality) so dropdowns only show places that
+  // actually have reports.
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
+  const [availableMunicipios, setAvailableMunicipios] = useState<
+    Record<string, string[]>
+  >({});
+
+  useEffect(() => {
+    let active = true;
+    const { from, to } = rangeToDates(filters.range);
+    getDataRoom({ data: { from, to } })
+      .then((res) => {
+        if (!active) return;
+        const stateSet = new Set<string>();
+        const muniMap: Record<string, Set<string>> = {};
+        for (const a of res.areas) {
+          if (isUnspecified(a.state)) continue;
+          stateSet.add(a.state);
+          if (!isUnspecified(a.municipality)) {
+            (muniMap[a.state] ??= new Set()).add(a.municipality);
+          }
+        }
+        setAvailableStates([...stateSet]);
+        setAvailableMunicipios(
+          Object.fromEntries(
+            Object.entries(muniMap).map(([s, set]) => [s, [...set]]),
+          ),
+        );
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [filters.range]);
+
+  // Drop a selected state/municipality that no longer has records in the range.
+  useEffect(() => {
+    setFilters((prev) => {
+      let next = prev;
+      if (prev.state && !availableStates.includes(prev.state)) {
+        next = { ...next, state: null, municipality: null };
+      } else if (
+        prev.municipality &&
+        prev.state &&
+        !(availableMunicipios[prev.state] ?? []).includes(prev.municipality)
+      ) {
+        next = { ...next, municipality: null };
+      }
+      return next === prev ? prev : next;
+    });
+  }, [availableStates, availableMunicipios]);
+
+
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -598,7 +652,12 @@ function DataRoomPage() {
 
       {/* Desktop filter bar */}
       <div className="mt-5 hidden md:block">
-        <DataRoomFilters filters={filters} onChange={setFilters} />
+        <DataRoomFilters
+          filters={filters}
+          onChange={setFilters}
+          availableStates={availableStates}
+          availableMunicipios={availableMunicipios}
+        />
         <p className="mt-2 text-xs text-muted-foreground">
           {t("data.activeScope")}: <span className="font-semibold">{scopeLabel}</span>
         </p>
@@ -755,20 +814,19 @@ function DataRoomPage() {
         </>
       )}
 
-      {/* Institution lead capture */}
-      <section className="mt-8 md:max-w-xl">
+      {/* Closing band: institutions on one side, share + CTA on the other */}
+      <section className="mt-10 grid gap-4 lg:grid-cols-2 lg:items-start">
         <InstitutionLeadForm />
-      </section>
 
-      <ShareApp className="mt-6 md:max-w-xl" />
-
-      <section className="mt-6 md:max-w-xl">
-        <Button asChild size="lg" className="w-full">
-          <Link to="/assess/property">
-            {t("map.startCta")}
-            <ArrowRight className="size-5" />
-          </Link>
-        </Button>
+        <div className="flex flex-col gap-4">
+          <ShareApp />
+          <Button asChild size="lg" className="w-full">
+            <Link to="/assess/property">
+              {t("map.startCta")}
+              <ArrowRight className="size-5" />
+            </Link>
+          </Button>
+        </div>
       </section>
     </AppShell>
   );

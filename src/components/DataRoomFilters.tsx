@@ -51,18 +51,36 @@ const ALL = "__all__";
 export function DataRoomFilters({
   filters,
   onChange,
+  availableStates,
+  availableMunicipios,
 }: {
   filters: DataFilters;
   onChange: (next: DataFilters) => void;
+  /** States that have at least one report in the active range. When omitted, all states show. */
+  availableStates?: string[];
+  /** Per-state municipalities that have reports in the active range. */
+  availableMunicipios?: Record<string, string[]>;
 }) {
   const { t } = useLang();
 
+  const states = useMemo(() => {
+    if (!availableStates) return ESTADO_NAMES;
+    const allowed = new Set(availableStates);
+    return ESTADO_NAMES.filter((name) => allowed.has(name));
+  }, [availableStates]);
+
   const municipios = useMemo(() => {
     if (!filters.state) return [];
+    if (availableMunicipios) {
+      return [...(availableMunicipios[filters.state] ?? [])].sort((a, b) =>
+        a.localeCompare(b),
+      );
+    }
     return MUNICIPIOS.filter((m) => m.state === filters.state)
       .map((m) => m.name)
       .sort((a, b) => a.localeCompare(b));
-  }, [filters.state]);
+  }, [filters.state, availableMunicipios]);
+
 
   const ranges: RangeKey[] = ["7", "30", "90", "all"];
   const rangeLabel: Record<RangeKey, string> = {
@@ -100,7 +118,7 @@ export function DataRoomFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>{t("data.filterAll")}</SelectItem>
-              {ESTADO_NAMES.map((name) => (
+              {states.map((name) => (
                 <SelectItem key={name} value={name}>
                   {name}
                 </SelectItem>

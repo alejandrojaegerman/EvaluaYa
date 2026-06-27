@@ -428,6 +428,16 @@ const es: Dict = {
   "nav.data": "Datos",
   "nav.dataDesc": "Mapa y datos abiertos para autoridades y medios",
 
+  "footer.tagline":
+    "Autoevaluación de daños estructurales tras un sismo. Gratis y sin registro.",
+  "footer.explore": "Explorar",
+  "footer.participate": "Participar",
+  "footer.resources": "Recursos",
+  "footer.note":
+    "Datos anónimos y abiertos · Proyecto comunitario de código abierto",
+  "footer.evaluate": "Evaluar",
+
+
   "data.title": "Sala de datos",
   "data.subtitle":
     "Explora los daños estructurales reportados en Venezuela. Datos anónimos y abiertos, ideales para autoridades, medios y equipos de respuesta.",
@@ -1459,6 +1469,16 @@ const en: Dict = {
   "nav.feedback": "Send feedback",
   "nav.data": "Data",
   "nav.dataDesc": "Map and open data for authorities and media",
+
+  "footer.tagline":
+    "Post-earthquake structural damage self-assessment. Free, no sign-up.",
+  "footer.explore": "Explore",
+  "footer.participate": "Get involved",
+  "footer.resources": "Resources",
+  "footer.note":
+    "Anonymized, open data · Community-built open-source project",
+  "footer.evaluate": "Evaluate",
+
 
   "data.title": "Data room",
   "data.subtitle":
