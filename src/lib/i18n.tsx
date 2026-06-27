@@ -51,7 +51,7 @@ const es: Dict = {
   "engineers.tagline":
     "Después de tu evaluación, puedes pedir ayuda de un ingeniero voluntario verificado, sin costo.",
   "engineers.homeBody":
-    "Primero haces tu autoevaluación. Si lo necesitas, te conectamos con un ingeniero voluntario verificado de tu zona.",
+    "Primero haces tu autoevaluación. Si lo necesitas, te conectamos con un ingeniero voluntario verificado.",
   "engineers.recruit": "Reclutamos",
   "engineers.recruitDesc":
     "Convocamos a ingenieros voluntarios y organizaciones en todo el país.",
@@ -60,14 +60,14 @@ const es: Dict = {
     "Revisamos su experiencia antes de aprobarlos y marcarlos como verificados.",
   "engineers.connect": "Conectamos",
   "engineers.connectDesc":
-    "Enlazamos a quienes lo piden con un ingeniero de su zona, sin costo.",
+    "Enlazamos a quienes lo piden con un ingeniero voluntario verificado, sin costo.",
   "engineers.learnMore": "Conoce la red de ingenieros",
   "engineers.mapNote":
-    "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado de su zona.",
+    "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado.",
   "engineers.footerDesc": "Reclutamos, validamos y conectamos ingenieros.",
   "engineers.methodologyTitle": "Red de ingenieros voluntarios",
   "engineers.methodologyBody":
-    "La autoevaluación es el primer paso. Además, reclutamos y validamos a ingenieros voluntarios y organizaciones, y conectamos a los residentes que lo solicitan con un profesional verificado de su zona para confirmar o ajustar el resultado.",
+    "La autoevaluación es el primer paso. Además, reclutamos y validamos a ingenieros voluntarios y organizaciones, y conectamos a los residentes que lo solicitan con un profesional verificado para confirmar o ajustar el resultado.",
 
   "disclaimer.title": "Aviso importante",
   "disclaimer.body":
@@ -850,7 +850,7 @@ const es: Dict = {
   "connect.subtitleYellow":
     "Un ingeniero voluntario puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
   "connect.reassure": "Ingenieros voluntarios verificados — sin costo.",
-  "connect.directTitle": "Ingenieros disponibles en tu zona",
+  "connect.directTitle": "Ingenieros voluntarios verificados disponibles",
   "connect.coversYourState": "Cubre tu estado",
   "connect.whatsappEngineer": "Escribir por WhatsApp",
   "connect.revealConsent":
@@ -860,7 +860,7 @@ const es: Dict = {
   "connect.orgBadge": "Organización",
   "connect.noneTitle": "Aún estamos sumando ingenieros en tu estado",
   "connect.noneBody":
-    "Deja tu número y un ingeniero voluntario te contactará en cuanto haya cobertura en tu zona.",
+    "Deja tu número y un ingeniero voluntario te contactará en cuanto haya disponibilidad.",
   "connect.requestTitle": "Pedir que me contacten",
   "connect.requestBody":
     "¿Prefieres que un ingeniero te escriba? Deja tu WhatsApp y compartiremos tu reporte solo con ingenieros aprobados de tu estado.",

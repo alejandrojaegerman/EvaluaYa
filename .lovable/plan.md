@@ -1,25 +1,32 @@
 ## Goal
-Add a heart ❤️ and Venezuelan flag 🇻🇪 emoji tastefully in a few subtle, high-meaning spots — a quiet "made with love for Venezuela" signal — without sprinkling them everywhere or cluttering the UI.
+Stop promising residents an engineer "de su zona / in your area." The only promise we can keep today is that engineers are **verified** (matching may be remote in some cases). Reword resident-facing copy to lead with "verified" and drop the geographic-locality promise — without introducing copy that conflicts with the possibility of remote help.
 
-## Where (3 subtle placements)
-All copy-only edits in `src/lib/i18n.tsx` (both `es` and `en` blocks). No component/logic changes.
+## Scope: resident-facing copy only
+All edits are string values in `src/lib/i18n.tsx` (ES + EN) plus one line in `public/llms.txt`. No component/logic changes.
 
-1. **Footer note** (`footer.note`) — the most fitting "signature" spot, shown site-wide.
-   - ES: `"Datos anónimos y abiertos · Proyecto comunitario de código abierto · Hecho con ❤️ para Venezuela 🇻🇪"`
-   - EN: `"Anonymized, open data · Community-built open-source project · Made with ❤️ for Venezuela 🇻🇪"`
+### Spanish (`es`)
+- `engineers.homeBody` (line 54): drop "de tu zona" → "…te conectamos con un ingeniero voluntario verificado."
+- `engineers.connectDesc` (63): "…con un ingeniero de su zona, sin costo." → "…con un ingeniero voluntario verificado, sin costo."
+- `engineers.mapNote` (66): drop "de su zona" → "…pedir apoyo de un ingeniero voluntario verificado."
+- `engineers.methodologyBody` (70): drop "de su zona" → "…con un profesional verificado para confirmar o ajustar el resultado."
+- `connect.directTitle` (853): "Ingenieros disponibles en tu zona" → "Ingenieros voluntarios verificados disponibles"
+- `connect.noneBody` (863): "…en cuanto haya cobertura en tu zona." → "…en cuanto haya disponibilidad."
 
-2. **Share message** (`share.message`) — adds warmth when people forward the app via WhatsApp.
-   - ES: append ` 🇻🇪` to the end of the message line.
-   - EN: append ` 🇻🇪` to the end of the message line.
+### English (`en`)
+- `engineers.homeBody` (1163): drop "in your area"
+- `engineers.connectDesc` (1172): "…with an engineer in their area, at no cost." → "…with a verified volunteer engineer, at no cost."
+- `engineers.mapNote` (1175): drop "in their area"
+- `engineers.methodologyBody` (1179): drop "in their area"
+- `connect.directTitle` (1956): "Engineers available in your area" → "Verified volunteer engineers available"
+- `connect.noneBody` (1966): "…as soon as there's coverage in your area." → "…as soon as one is available."
 
-3. **Share section body** (`share.body`) — gentle heart on the community ask.
-   - ES: end with ` ❤️`
-   - EN: end with ` ❤️`
+### llms.txt
+- Line 5: "un profesional verificado de su zona" → "un profesional verificado".
 
-## Principles
-- Only these three spots — keep it rare so it stays special, not spammy.
-- One emoji per spot (footer carries both as the signature line); no emoji in the hero CTA, headings, or nav.
-- Emojis appended to existing strings; keys and consumers unchanged.
+## Intentionally left unchanged
+- `connect.coversYourState` ("Cubre tu estado" / "Covers your state") — this is a factual badge derived from the states an engineer actually selected as coverage, not a locality promise; not in conflict.
+- `result.viewMap` ("…mapa de daños de tu zona") — about the damage map, not engineer matching.
+- Engineer-facing operational copy (volunteer signup steps, panel empty state, digest/notification emails referencing "tu zona") — internal to engineers, based on their own declared coverage states; describes how they receive requests, not a resident promise. No conflict, so left as-is to keep scope tight.
 
 ## Out of scope
-No changes to logos, icons, the app name, or any component code — text strings only.
+No data model, matching logic, or component changes — copy only.
