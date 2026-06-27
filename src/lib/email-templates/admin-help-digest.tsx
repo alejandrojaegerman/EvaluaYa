@@ -59,8 +59,7 @@ const Email = ({
     <Html lang="es" dir="ltr">
       <Head />
       <Preview>
-        Resumen de solicitudes: {stalledCount} estancadas, {openCount} abiertas —
-        EvalúaYa
+        {`Resumen de solicitudes: ${stalledCount} estancadas, ${openCount} abiertas — EvalúaYa`}
       </Preview>
       <Body style={main}>
         <Container style={container}>
