@@ -100,6 +100,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal.",
       },
       { name: "author", content: "EvalúaYa" },
+      {
+        name: "google-site-verification",
+        content: "GYltZcbZubp1_VvBzVKReeTzmCiYbSFHaI2ePDWZuV4",
+      },
       { name: "theme-color", content: "#0f3443" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "EvalúaYa" },
