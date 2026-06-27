@@ -46,6 +46,12 @@ import {
   adminGetAccounts,
   type AdminAccounts,
 } from "@/lib/admin-accounts.functions";
+import {
+  getFunnelMetrics,
+  FUNNEL_STEPS,
+  type FunnelMetrics,
+  type FunnelStep,
+} from "@/lib/funnel.functions";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -68,12 +74,14 @@ function AdminDashboard() {
   const getDrilldown = useServerFn(adminGetStateDrilldown);
   const getClusters = useServerFn(adminGetBuildingClusters);
   const getAccounts = useServerFn(adminGetAccounts);
+  const getFunnel = useServerFn(getFunnelMetrics);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState<AdminAnalytics | null>(null);
   const [clusters, setClusters] = useState<BuildingCluster[]>([]);
+  const [funnel, setFunnel] = useState<FunnelMetrics | null>(null);
   const [accounts, setAccounts] = useState<AdminAccounts | null>(null);
 
   // Per-state "why" drill-down.
