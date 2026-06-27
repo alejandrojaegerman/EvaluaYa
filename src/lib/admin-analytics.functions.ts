@@ -65,6 +65,7 @@ const EMPTY: AdminAnalytics = {
     total: 0,
     green: 0,
     yellow: 0,
+    orange: 0,
     red: 0,
     analyzed: 0,
     drafts: 0,
