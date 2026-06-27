@@ -71,6 +71,9 @@ const STRUCTURAL_TYPES: StructuralType[] = [
   "unknown",
 ];
 
+// Sentinel select value for the "I'm not sure" municipio option.
+const UNSURE_MUNICIPIO = "__unsure__";
+
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
