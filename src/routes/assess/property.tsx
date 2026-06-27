@@ -238,6 +238,20 @@ function PropertyStep() {
 
       <p className="mt-3 text-sm text-muted-foreground">{t("property.effortHint")}</p>
 
+      {engParam ? (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
+          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          <p className="font-medium text-primary">{t("panel.proTitle")}</p>
+        </div>
+      ) : (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card p-3 text-sm">
+          <Users className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          <p className="text-muted-foreground">{t("property.behalfHint")}</p>
+        </div>
+      )}
+
+
+
 
       <div className="mt-6 space-y-7">
         {/* Address */}
