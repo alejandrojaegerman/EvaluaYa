@@ -620,8 +620,129 @@ export const closeHelpRequest = createServerFn({ method: "POST" })
   });
 
 // ---------------------------------------------------------------------------
-// Admin (gated by VOLUNTEER_ADMIN_SECRET)
+// Report progress on a claimed request
 // ---------------------------------------------------------------------------
+
+const progressSchema = z.object({
+  token: z.string().trim().uuid(),
+  requestId: z.string().trim().uuid(),
+  stage: z.enum(["contacted", "visited", "resolved"]),
+  note: z.string().trim().max(600).optional().default(""),
+});
+
+export const updateRequestProgress = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => progressSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const engineer = await loadEngineerByToken(data.token);
+      if (!engineer || tokenExpired(engineer)) return { ok: false };
+
+      const patch: Record<string, unknown> = {
+        progress_stage: data.stage,
+        progress_updated_at: new Date().toISOString(),
+      };
+      if (data.note) patch.engineer_note = data.note;
+      // Resolving a request also closes it for matching/visibility.
+      if (data.stage === "resolved") patch.status = "closed";
+
+      const { error } = await supabaseAdmin
+        .from("help_requests")
+        .update(patch)
+        .eq("id", data.requestId)
+        .eq("claimed_by", engineer.id);
+      if (error) {
+        console.error("[volunteers] updateRequestProgress", error);
+        return { ok: false };
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] updateRequestProgress failed", e);
+      return { ok: false };
+    }
+  });
+
+// ---------------------------------------------------------------------------
+// Validate / compare the AI evaluation on the linked assessment
+// ---------------------------------------------------------------------------
+
+const verdictSchema = z
+  .object({
+    token: z.string().trim().uuid(),
+    requestId: z.string().trim().uuid(),
+    verdict: z.enum(["agree", "adjust"]),
+    level: z.enum(["green", "yellow", "orange", "red"]).optional(),
+    notes: z.string().trim().max(1000).optional().default(""),
+  })
+  .refine((d) => d.verdict !== "adjust" || !!d.level, {
+    message: "level_required",
+    path: ["level"],
+  });
+
+export const submitEngineerVerdict = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => verdictSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean; reason?: string }> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const engineer = await loadEngineerByToken(data.token);
+      if (!engineer || tokenExpired(engineer)) return { ok: false };
+
+      // Resolve the assessment linked to this request, in the engineer's area.
+      const { data: req } = await supabaseAdmin
+        .from("help_requests")
+        .select("assessment_public_id, state")
+        .eq("id", data.requestId)
+        .maybeSingle();
+      if (!req || !req.assessment_public_id) {
+        return { ok: false, reason: "no_assessment" };
+      }
+      const states = engineer.states ?? [];
+      const inArea =
+        !req.state || req.state.trim() === "" || states.includes(req.state);
+      if (!inArea) return { ok: false, reason: "out_of_area" };
+
+      const { data: assessment } = await supabaseAdmin
+        .from("assessments")
+        .select("id, risk_level, prior_risk_level")
+        .eq("public_id", req.assessment_public_id)
+        .maybeSingle();
+      if (!assessment) return { ok: false, reason: "no_assessment" };
+
+      const patch: Record<string, unknown> = {
+        report_type: "professional",
+        verified_by_engineer: engineer.id,
+        engineer_notes: data.notes || null,
+        engineer_verdict: data.verdict,
+        engineer_verified_at: new Date().toISOString(),
+      };
+      if (data.verdict === "adjust" && data.level) {
+        // Preserve the original AI level the first time we override it.
+        if (!assessment.prior_risk_level) {
+          patch.prior_risk_level = assessment.risk_level;
+        }
+        patch.risk_level = data.level;
+      }
+
+      const { error } = await supabaseAdmin
+        .from("assessments")
+        .update(patch)
+        .eq("id", assessment.id);
+      if (error) {
+        console.error("[volunteers] submitEngineerVerdict", error);
+        return { ok: false };
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] submitEngineerVerdict failed", e);
+      return { ok: false };
+    }
+  });
+
+
 
 const adminListSchema = z.object({
   adminSecret: z.string().min(1).max(256),
