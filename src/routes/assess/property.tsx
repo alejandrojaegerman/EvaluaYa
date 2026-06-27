@@ -34,12 +34,18 @@ import {
 } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
-  validateSearch: (search: Record<string, unknown>): { estado?: string } => {
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { estado?: string; eng?: string } => {
     const estado =
       typeof search.estado === "string" && search.estado.trim() !== ""
         ? search.estado.trim()
         : undefined;
-    return estado ? { estado } : {};
+    const eng =
+      typeof search.eng === "string" && search.eng.trim() !== ""
+        ? search.eng.trim()
+        : undefined;
+    return { ...(estado ? { estado } : {}), ...(eng ? { eng } : {}) };
   },
   component: PropertyStep,
 });
