@@ -123,15 +123,24 @@ function MapPage() {
   const navigate = useNavigate();
   const [totals, setTotals] = useState<DamageTotals | null>(null);
   const [areas, setAreas] = useState<AreaAggregate[]>([]);
+  const [timeseries, setTimeseries] = useState<TimeseriesPoint[]>([]);
+  const [nationalFactors, setNationalFactors] = useState<RiskFactors | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    Promise.all([getDamageTotals(), getDamageAggregates()])
-      .then(([tot, ag]) => {
+    Promise.all([
+      getDamageTotals(),
+      getDamageAggregates(),
+      getDamageTimeseries(),
+    ])
+      .then(([tot, ag, ts]) => {
         if (!active) return;
         setTotals(tot);
         setAreas(ag);
+        setTimeseries(ts);
       })
       .catch(() => {})
       .finally(() => active && setLoading(false));
@@ -139,6 +148,21 @@ function MapPage() {
       active = false;
     };
   }, []);
+
+  // National "why behind the data" — loaded once, lazily, when the section is
+  // first revealed (keeps the initial map payload light).
+  const [whyVisible, setWhyVisible] = useState(false);
+  useEffect(() => {
+    if (!whyVisible || nationalFactors) return;
+    let active = true;
+    getRiskFactors({ data: {} })
+      .then((f) => active && setNationalFactors(f))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [whyVisible, nationalFactors]);
+
 
   // Aggregate per-estado for the bubble map.
   const stateBubbles = useMemo(() => {
