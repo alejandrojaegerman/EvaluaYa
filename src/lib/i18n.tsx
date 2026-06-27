@@ -487,6 +487,7 @@ const es: Dict = {
   "map.totalAssessments": "Evaluaciones",
   "map.areasLabel": "Zonas",
   "map.high": "Riesgo alto",
+  "map.urgent": "Riesgo serio",
   "map.moderate": "Riesgo moderado",
   "map.low": "Riesgo bajo",
   "map.distribution": "Distribución de riesgo",
