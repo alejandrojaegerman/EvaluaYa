@@ -25,6 +25,8 @@ export type MapBubble = {
   yellow: number;
   orange: number;
   red: number;
+  /** number of engineer-verified (professional) reports in this area */
+  verified?: number;
   dominant: RiskKey;
 };
 
