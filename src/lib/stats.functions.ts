@@ -94,7 +94,9 @@ export const getStateStats = createServerFn({ method: "GET" })
       total: 0,
       green: 0,
       yellow: 0,
+      orange: 0,
       red: 0,
+      verified: 0,
       municipios: 0,
       lastReport: null,
     };
