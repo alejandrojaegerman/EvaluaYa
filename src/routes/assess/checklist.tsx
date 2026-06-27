@@ -206,6 +206,20 @@ function ChecklistStep() {
 
       </div>
 
+      {/* Report NEW damage only (feedback #7) */}
+      <div className="mt-4 flex gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 p-3.5 dark:border-amber-500/30 dark:bg-amber-500/10">
+        <Info className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+        <div>
+          <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+            {t("checklist.newDamageTitle")}
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-amber-800/90 dark:text-amber-200/80">
+            {t("checklist.newDamageBody")}
+          </p>
+        </div>
+      </div>
+
+
       {/* Structural checks (required) */}
       <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
         {t("checklist.sectionStructure")}
