@@ -307,9 +307,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
         if (row && (row.total ?? 0) > 0) {
           peerContext =
             `Context: ${row.total} previous evaluation(s) from this same building ` +
-            `("${building.name}") — ${row.red ?? 0} red / ${row.yellow ?? 0} yellow / ` +
-            `${row.green ?? 0} green. Structural damage often affects a whole building, ` +
-            `so weigh shared/neighbor findings accordingly.`;
+            `("${building.name}") — ${row.red ?? 0} red / ${row.orange ?? 0} orange / ` +
+            `${row.yellow ?? 0} yellow / ${row.green ?? 0} green. Structural damage often ` +
+            `affects a whole building, so weigh shared/neighbor findings accordingly.`;
         }
       } catch (e) {
         console.error("[analyze] building peers lookup failed", e);
