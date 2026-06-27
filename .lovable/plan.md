@@ -1,65 +1,49 @@
-## Goal
+# Test the latest volunteer features
 
-Give approved volunteer engineers a real working queue: see open requests (exists), get notified of new ones (exists + add a daily digest), **report progress** through stages, and **validate/compare the app's AI evaluation** with their own professional verdict — reflected everywhere public.
+Goal: prove the new volunteer workflow works end-to-end — progress stepper, professional verdict, and the daily digest — with both committed automated tests and a one-time live check against current data.
 
-## 1. Database changes
+## Scope (what we're testing)
+- Engineer panel (`/voluntarios/panel/$token`) + `EngineerRequestCard`
+- `claimHelpRequest` → `updateRequestProgress` (contacted → visited → resolved, resolved also closes)
+- `submitEngineerVerdict` (agree; adjust + level override → patches assessment to `professional`/verified, preserves `prior_risk_level`)
+- Daily digest: `get_engineer_digest` RPC → `/lovable/cron/engineer-digest` route → `help-request-digest` email enqueue
 
-**`help_requests`** — add progress tracking (status stays `open`/`claimed`/`closed` for matching/visibility):
-- `progress_stage text` — `claimed` → `contacted` → `visited` → `resolved` (default null)
-- `engineer_note text` — latest note the engineer leaves on the request
-- `progress_updated_at timestamptz`
+## Part 1 — Automated tests (committed to repo)
 
-**`assessments`** — extend the existing engineer-verification fields (`verified_by_engineer`, `engineer_notes`, `prior_risk_level` already exist):
-- `engineer_verdict text` — `agree` | `adjust`
-- `engineer_verified_at timestamptz`
+### A. Unit tests — `tests/unit/volunteers.test.ts`
+Pure-logic coverage of the Zod schemas and helpers (no DB), validating the rules in `volunteers.functions.ts`:
+- `progressSchema`: rejects bad stage / over-long note; accepts the three stages.
+- `verdictSchema`: `adjust` without `level` fails with `level_required`; `agree` passes without a level.
+- Digest panel-URL builder: asserts the `utm_source/medium/campaign=email/email/help_digest` params are appended.
+  (Extract the tiny `panelUrl` helper from `engineer-digest.server.ts` into a pure exported function so it can be imported without pulling server-only deps, or duplicate the assertion against the same logic.)
 
-No RLS/policy changes: all writes go through the service-role server functions, and `help_requests` stays non-public-readable.
+### B. E2E — `tests/e2e/volunteer-panel.spec.ts`
+A self-contained Playwright spec that seeds and tears down its own data so it never depends on live records:
+- **Setup** (`tests/e2e/fixtures/volunteer-seed.ts`): using `@supabase/supabase-js` with `SUPABASE_SERVICE_ROLE_KEY`, insert one approved engineer (known `access_token`, future `token_expires_at`, a known state) + one analyzed assessment in that state + one open help request linked to it. Return the token.
+- **Flow** drives the real UI:
+  1. Open `/voluntarios/panel/<token>` → request list renders.
+  2. Claim the request → stepper shows `claimed`.
+  3. Advance progress: contacted → visited → resolved; assert stepper + that resolved removes it from open list.
+  4. On a second seeded claimed request, submit verdict "adjust" to a different level + note → assert success toast.
+- **Assertions** (DB read-back via service role): `help_requests.progress_stage='resolved'`, `status='closed'`; linked `assessments.report_type='professional'`, `engineer_verdict`, `engineer_verified_at` set, `prior_risk_level` preserved, `risk_level` overridden.
+- **Teardown**: delete the seeded rows by id.
 
-**New RPC `get_engineer_digest()`** (SECURITY DEFINER, `search_path=public`): returns each approved engineer with an email + valid access token, plus the count and a short list of still-**open** requests in their covered states. Used by the digest job.
+These run with the existing `playwright.config.ts` (localhost:8080) and `vitest` setup.
 
-## 2. Report progress (engineer panel)
+## Part 2 — Live interactive check (one-time, no files committed)
+Run now against current data (1 approved engineer w/ token, 2 open + 3 claimed requests):
+- Headless Playwright: query the real engineer token (service role), open the panel, screenshot the list, exercise one progress step on a claimed request, and capture the verdict UI. Report final URL + screenshots.
+- Digest endpoint: `POST /lovable/cron/engineer-digest` with the service-role bearer; expect `{ ok, sent, total }`. Cross-check `get_engineer_digest()` output and confirm a `help-request-digest` row appears in `email_send_log` (pending→sent).
+- Report what passed and any gaps.
 
-New server fn `updateRequestProgress({ token, requestId, stage, note? })` in `volunteers.functions.ts`:
-- Verifies the token's engineer claimed the request.
-- Sets `progress_stage`, `engineer_note`, `progress_updated_at`; when `stage = resolved`, also sets `status = closed` (replaces the bare `closeHelpRequest`, which stays as a thin wrapper for compatibility).
-
-Panel UI (`voluntarios.panel.$token.tsx`):
-- On a claimed request, replace the single "Close" button with a compact stage stepper — **Contacted → Visited → Resolved** — plus an optional note field.
-- Show the current stage as a badge and the last note/update time.
-
-## 3. Validate / compare the AI evaluation
-
-New server fn `submitEngineerVerdict({ token, requestId, verdict, level?, notes? })`:
-- Loads the assessment via the request's `assessment_public_id`; requires an approved engineer covering the area.
-- `verdict = agree`: keep the AI `risk_level`; mark verified.
-- `verdict = adjust`: move current `risk_level` into `prior_risk_level` (if not already set), set `risk_level` to the engineer's `level`.
-- Both: set `report_type = professional`, `verified_by_engineer`, `engineer_notes = notes`, `engineer_verdict`, `engineer_verified_at`.
-
-Because the public map/Data Room RPCs key off `risk_level` and `report_type`, this makes the verified level + "verified" counts show up **everywhere public automatically** (map, Data Room, the resident's shareable report and PDF, with the existing `ShieldCheck` verified badge).
-
-Panel UI per claimed request — a "Validar la evaluación de la app / Validate the app's assessment" block:
-- Shows the AI risk level, with **"Estoy de acuerdo" (Agree)** and **"Ajustar nivel" (Adjust)** → level picker (green/yellow/orange/red) + notes.
-- After submit, shows the verified state ("AI dijo X · verificado por ti como Y").
-- Keeps the existing **full professional evaluation** link as the "optional full eval" path (prefilled with the assessment when available).
-
-The `EngineerRequest` DTO + `getEngineerPanel` query gain: `progressStage`, `engineerNote`, `progressUpdatedAt`, and the linked assessment's `aiRiskLevel` / `engineerRiskLevel` / `verified` so the panel can render progress and verdict state.
-
-## 4. Notifications — keep instant, add daily digest
-
-Instant per-request emails already fire in `submitHelpRequest`; left as-is.
-
-Add a once-daily summary of still-open requests in each engineer's area:
-- New email template `help-request-digest.tsx` (brand-consistent, Spanish-first) + register it in `email-templates/registry.ts`; sent via the existing `sendSystemEmail` helper.
-- New public cron route `src/routes/api/public/hooks/engineer-digest.ts` (POST, `apikey` auth): reads `get_engineer_digest()`, sends one digest per engineer who has ≥1 open request (skips empties), each linking to their panel with UTM tags.
-- Schedule with pg_cron (via the insert tool, not a migration) once daily at ~8am ET.
+> Note: the live check mutates one real claimed request's progress stage. I'll pick a claimed (not open) request and revert the `progress_stage` afterward so map/admin data is unchanged.
 
 ## Technical notes
+- Service-role seeding/readback in tests uses `process.env.SUPABASE_SERVICE_ROLE_KEY` + `SUPABASE_URL` (available in the sandbox); never hardcoded.
+- E2E seed data uses an obvious sentinel (e.g. name `__TEST__ Digest Engineer`, address marker) for safe cleanup.
+- No app/runtime code changes expected unless a test surfaces a real bug; the only possible refactor is exporting the `panelUrl` helper for unit testing.
 
-- New server fns follow the existing token-gated, service-role pattern; no auth middleware.
-- Digest matching reuses state coverage (same logic as `get_engineers_to_notify`); idempotency key per engineer per day so retries don't double-send.
-- `prior_risk_level` lets every surface show "AI said X → engineer confirmed/changed to Y" instead of silently overwriting.
-
-## Verification
-
-- Unit: verdict logic (agree keeps level, adjust swaps + records prior) and progress transitions in `tests/unit`.
-- Manual: claim a request → step through Contacted/Visited/Resolved; submit an "adjust" verdict and confirm the resident report, map, and Data Room show the verified level + badge; trigger the digest route and confirm a matching engineer receives a summary.
+## Deliverables
+- `tests/unit/volunteers.test.ts`
+- `tests/e2e/volunteer-panel.spec.ts` + `tests/e2e/fixtures/volunteer-seed.ts`
+- Live check results (screenshots + endpoint/email confirmation) reported in chat.

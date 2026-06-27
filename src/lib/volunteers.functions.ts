@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { ESTADO_NAMES } from "./venezuela";
+import { engineerPanelUrl } from "./volunteer-links";
 import { toWhatsappNumber } from "./phone";
 import type { RiskLevel } from "./assessment-types";
 import type { TablesUpdate } from "@/integrations/supabase/types";
@@ -422,7 +423,7 @@ async function sendAccessEmail(params: {
       templateData: {
         name: params.name ?? "",
         states: stateNames,
-        panelUrl: `https://evaluaya.app/voluntarios/panel/${params.token}?utm_source=email&utm_medium=email&utm_campaign=volunteer_panel`,
+        panelUrl: engineerPanelUrl(params.token, "volunteer_panel"),
       },
     });
     return res.ok;
@@ -624,7 +625,7 @@ export const closeHelpRequest = createServerFn({ method: "POST" })
 // Report progress on a claimed request
 // ---------------------------------------------------------------------------
 
-const progressSchema = z.object({
+export const progressSchema = z.object({
   token: z.string().trim().uuid(),
   requestId: z.string().trim().uuid(),
   stage: z.enum(["contacted", "visited", "resolved"]),
@@ -669,7 +670,7 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
 // Validate / compare the AI evaluation on the linked assessment
 // ---------------------------------------------------------------------------
 
-const verdictSchema = z
+export const verdictSchema = z
   .object({
     token: z.string().trim().uuid(),
     requestId: z.string().trim().uuid(),
