@@ -990,6 +990,41 @@ const en: Dict = {
   "item.stairs.area": "Stairs",
   "item.stairs.q": "Are the stairs cracked or separated from the walls?",
 
+  "checklist.exampleToggle": "What does it look like?",
+  "checklist.exampleYes": "Yes (sign of damage)",
+  "checklist.exampleNo": "No (looks fine)",
+  "item.foundation.example.yes": "The base has new cracks, looks sunken, or the floor is now uneven.",
+  "item.foundation.example.no": "The base is still level with no new cracks.",
+  "item.liquefaction.example.yes": "Water or sand bubbled up, there's pooling where there wasn't, or the ground sank or tilted.",
+  "item.liquefaction.example.no": "The surrounding ground is still firm and dry, same as before.",
+  "item.exterior_walls.example.yes": "Diagonal cracks (X or stair-step shape) or the wall pulled away from the building next door.",
+  "item.exterior_walls.example.no": "Outside walls are still straight and connected, with no new cracks.",
+  "item.pounding.example.yes": "Your building hit the neighbor: there are scuff marks, dents, or fallen material between them.",
+  "item.pounding.example.no": "Normal gap with the neighboring building, no signs of collision.",
+  "item.interior_walls.example.yes": "Cracks wide enough to fit a pencil or a coin on edge (more than 1 cm).",
+  "item.interior_walls.example.no": "Only hairline lines, or no new cracks at all.",
+  "item.flooring.example.yes": "The floor lifted, tiles popped up, or a gap opened next to the baseboard.",
+  "item.flooring.example.no": "The floor is still flat and firm underfoot.",
+  "item.plumbing.example.yes": "There are leaks, you hear water where there shouldn't be, or you smell gas.",
+  "item.plumbing.example.no": "No leaks, no running-water sound, no gas smell.",
+  "item.electrical.example.yes": "Breakers keep tripping, outlets are burnt, or loose wires are exposed.",
+  "item.electrical.example.no": "Electricity works normally, with no exposed wires.",
+  "item.fixtures.example.yes": "Light fixtures hang crooked or junction boxes pulled away from the wall.",
+  "item.fixtures.example.no": "Fixtures and fittings are still firm and straight.",
+  "item.columns_beams.example.yes": "Concrete chipped off and you can see the rebar (steel) inside.",
+  "item.columns_beams.example.no": "Columns and beams are smooth, with no fallen concrete or visible steel.",
+  "item.doors_windows.example.yes": "A door or window that used to open now jams or won't close.",
+  "item.doors_windows.example.no": "Doors and windows open and close like always.",
+  "item.roof.example.yes": "The roof looks sunken, warped, or part of it fell.",
+  "item.roof.example.no": "The roof is still even, with no new sagging.",
+  "item.stairs.example.yes": "The stairs are cracked or separated from the wall.",
+  "item.stairs.example.no": "The stairs are still firm and attached to the wall.",
+
+  "checklist.newDamageTitle": "Report only NEW damage",
+  "checklist.newDamageBody": "Answer thinking only about damage that appeared with this earthquake. If a crack was already there before, don't mark it. If you're not sure whether it's new, choose \"Not sure\".",
+
+
+
   "rule.urm.finding":
     "Unreinforced masonry building: highly vulnerable after strong shaking.",
   "rule.urm.step":
