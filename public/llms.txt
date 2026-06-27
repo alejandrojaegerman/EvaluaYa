@@ -2,7 +2,7 @@
 
 > EvalúaYa es una aplicación web gratuita y bilingüe (español/inglés) para la autoevaluación de daños estructurales después de un sismo en Venezuela. Guía a residentes paso a paso, genera un nivel de riesgo (verde/amarillo/naranja/rojo) con recomendaciones, y conecta con ingenieros voluntarios.
 
-EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o local tras un terremoto mediante una lista de inspección sencilla con fotos opcionales. Las evaluaciones se analizan para entregar un nivel de riesgo y pasos a seguir (quedarse, limitar el uso o evacuar). No requiere registro y funciona en conexiones lentas.
+EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o local tras un terremoto mediante una lista de inspección sencilla con fotos opcionales. Las evaluaciones se analizan para entregar un nivel de riesgo y pasos a seguir (quedarse, limitar el uso o evacuar). No requiere registro y funciona en conexiones lentas. La autoevaluación es lo principal; además, EvalúaYa recluta y valida a ingenieros voluntarios y organizaciones, y conecta a los residentes que lo solicitan con un profesional verificado de su zona, sin costo.
 
 ## Pages
 
