@@ -11,11 +11,15 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { CountUp } from "@/components/CountUp";
 import { DamageMap, type MapBubble } from "@/components/DamageMap";
 import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+import { Reveal } from "@/components/Reveal";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
+import { SeveritySpotlight } from "@/components/SeveritySpotlight";
 import { ShareApp } from "@/components/ShareApp";
+import { TrendChart } from "@/components/TrendChart";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
@@ -23,11 +27,13 @@ import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
 import { absoluteUrl } from "@/lib/site";
 import {
   getDamageAggregates,
+  getDamageTimeseries,
   getDamageTotals,
   getRiskFactors,
   type AreaAggregate,
   type DamageTotals,
   type RiskFactors,
+  type TimeseriesPoint,
 } from "@/lib/stats.functions";
 import {
   ESTADOS,
