@@ -503,6 +503,39 @@ export type Database = {
           state: string
         }[]
       }
+      get_admin_help_requests: {
+        Args: { _limit?: number }
+        Returns: {
+          ai_risk_level: string
+          assessment_public_id: string
+          claimed_at: string
+          created_at: string
+          engineer_name: string
+          engineer_note: string
+          engineer_verdict: string
+          id: string
+          municipality: string
+          note: string
+          prior_risk_level: string
+          progress_stage: string
+          progress_updated_at: string
+          report_type: string
+          risk_level: string
+          stalled: boolean
+          state: string
+          status: string
+        }[]
+      }
+      get_admin_matching_progress: {
+        Args: never
+        Returns: {
+          claimed_only: number
+          contacted: number
+          resolved: number
+          stalled: number
+          visited: number
+        }[]
+      }
       get_admin_matching_stats: {
         Args: never
         Returns: {
