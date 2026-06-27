@@ -12,16 +12,21 @@ export function Reveal({
   className,
   delayMs = 0,
   as: Tag = "div",
+  onReveal,
 }: {
   children: ReactNode;
   className?: string;
   /** small stagger between sibling sections */
   delayMs?: number;
   as?: "div" | "section";
+  /** fired once when the element first enters the viewport */
+  onReveal?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const onRevealRef = useRef(onReveal);
+  onRevealRef.current = onReveal;
 
   useEffect(() => {
     const prefersReduced =
