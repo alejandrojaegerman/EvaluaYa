@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, withUtm } from "@/lib/site";
 import {
   getDataRoom,
   getRiskFactorsFiltered,
