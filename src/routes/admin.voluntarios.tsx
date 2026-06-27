@@ -144,6 +144,21 @@ function AdminPage() {
     }
   }
 
+  const filteredRequests = useMemo(() => {
+    switch (reqFilter) {
+      case "open":
+        return requests.filter((r) => r.status === "open");
+      case "claimed":
+        return requests.filter((r) => r.status === "claimed");
+      case "stalled":
+        return requests.filter((r) => r.stalled);
+      case "resolved":
+        return requests.filter((r) => r.progressStage === "resolved");
+      default:
+        return requests;
+    }
+  }, [requests, reqFilter]);
+
   if (!unlocked) {
     return (
       <AppShell>
