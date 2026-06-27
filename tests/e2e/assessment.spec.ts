@@ -36,6 +36,7 @@ test("resident completes a full assessment and reaches a result", async ({
 
   // Answer "No" on every required structural item (7 cards visible initially).
   const noButtons = page.getByRole("button", { name: "No", exact: true });
+  await expect(noButtons.first()).toBeVisible({ timeout: 15_000 });
   const count = await noButtons.count();
   expect(count).toBeGreaterThanOrEqual(7);
   for (let i = 0; i < count; i++) {
