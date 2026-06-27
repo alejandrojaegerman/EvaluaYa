@@ -1396,6 +1396,35 @@ const en: Dict = {
   "nav.language": "Language",
   "nav.help": "Help",
   "nav.feedback": "Send feedback",
+  "nav.data": "Data",
+  "nav.dataDesc": "Map and open data for authorities and media",
+
+  "data.title": "Data room",
+  "data.subtitle":
+    "Explore structural damage reported across Venezuela. Anonymous, open data — built for authorities, media and response teams.",
+  "data.mobileNote":
+    "You're viewing a summary. Open the data room on a larger screen for filters, an expanded map and full analysis.",
+  "data.openMap": "View full map",
+  "data.filters": "Filters",
+  "data.filterState": "State",
+  "data.filterMunicipality": "Municipality",
+  "data.filterAll": "All",
+  "data.filterRange": "Period",
+  "data.range7": "7 days",
+  "data.range30": "30 days",
+  "data.range90": "90 days",
+  "data.rangeAll": "All time",
+  "data.clearFilters": "Clear filters",
+  "data.activeScope": "Showing",
+  "data.scopeNational": "the whole country",
+  "data.chartsTitle": "Indicators",
+  "data.mapTitle": "Interactive map",
+  "data.noResults": "No data for these filters.",
+  "data.export": "Export & share",
+  "mapa.seeFullData": "View full data",
+  "mapa.seeFullDataDesc":
+    "Filters, trends and by-area analysis in the data room.",
+
 
   "feedback.title": "Send feedback",
   "feedback.subtitle":
