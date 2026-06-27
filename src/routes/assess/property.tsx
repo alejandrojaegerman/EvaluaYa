@@ -159,6 +159,12 @@ function PropertyStep() {
           const est = nearestEstado(latitude, longitude);
           if (est) {
             setState((cur) => (cur.trim() === "" ? est.name : cur));
+            // Best-effort: also snap to the nearest municipio in that state.
+            const mun = nearestMunicipio(latitude, longitude, est.name);
+            if (mun) {
+              setMunicipality((cur) => (cur.trim() === "" ? mun : cur));
+              setMunicipalityUnsure(false);
+            }
             setGeoStatus("detected");
           } else {
             setGeoStatus("failed");
