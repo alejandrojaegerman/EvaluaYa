@@ -1,51 +1,54 @@
-# Closing Vero's remaining feedback (#3, #4, #5)
+# Lightweight Accounts: Close the Claim Gap, Add Visibility, Smooth Onboarding
 
-Audit result: #1 (legend), #2 (✅/❌ visuals), #6 (Orange tier) and #7 (new-damage banner) are already live. Three gaps remain. Building smallest → largest.
+Three goals: (1) make saved reports actually attach to accounts reliably, (2) give the admin a small view of who signed up and whether it's working, (3) reduce friction/confusion in the save flow.
 
-## Phase 1 — #4 Optional building / tower name
+## Background (what's broken today)
+- Accounts are created only via the passwordless "Save my reports" card (`signInWithOtp`).
+- Emails send fine (5 confirmation/magic-link emails logged), but **0 reports are linked to any account**.
+- The auto-claim (`claimAssessments`) runs **only when the user is sitting on `/mis-reportes`**. If the email link redirects them anywhere else, or they never open that page, their reports are never linked — even though the account exists.
 
-Today the building name is only guessed from the address via regex (`src/lib/building.ts`), so most residents never contribute one and the community/building aggregation stays sparse. Add an explicit, optional input.
+## Part 1 — Fix the claim gap (core)
 
-- `src/lib/assessment-types.ts`: add `buildingName?: string` to `PropertyInfo`.
-- `src/routes/assess/property.tsx`: add an optional "Building / tower name" input under Address. Prefill it (once) from `extractBuilding(address)` when the user types an address, but let them edit/clear it. Helper text: *don't include your apartment number*. Save to draft.
-- `src/lib/assessment.functions.ts`: add `buildingName` to `analyzeSchema.property`. At insert, prefer the user-typed name over the inferred one; set `building_inferred = false` when the name came from the field, compute `building_key` from it.
-- i18n keys (ES/EN): `property.buildingName`, `property.buildingNamePlaceholder`, `property.buildingNameHint`.
+**1a. App-wide auto-claim on sign-in.**
+Add a tiny `useClaimOnSignIn` hook (or fold into the existing root `onAuthStateChange`) so that on any `SIGNED_IN` / existing-session event, on any route, the app calls `claimAssessments({ deviceId: getDeviceId(), publicIds: getHistory()... })`. This guarantees linking the moment the user authenticates, regardless of where the email link lands them. Guard it to run once per session.
 
-No schema change — `building_name` / `building_key` / `building_inferred` columns already exist.
+**1b. Capture the device id from the URL anywhere.**
+The magic link carries `?d=<deviceId>`. Read it on whatever route the user lands on (not just `/mis-reportes`) and feed it into the claim call, so cross-device sign-ins still link the original device's reports.
 
-## Phase 2 — #3 Onboarding: someone can inspect on your behalf
+**1c. Claim the current report from the result page.**
+On `/a/$publicId`, when the user signs in via the inline card, immediately claim that specific `publicId` too, so the report they're looking at is saved without needing to visit `/mis-reportes`.
 
-People in shelters or abroad need this most but the flow assumes you're standing in the building. Add framing + a clear share nudge.
+**1d. Verify auth redirect allowlist.**
+Confirm the Auth redirect/Site URLs include `https://evaluaya.app/mis-reportes` and the `www` variant so the email link returns into the app. (With 1a in place, linking no longer depends on the exact landing route, but a correct redirect still gives the best UX.)
 
-- `src/routes/index.tsx`: add a short callout near the top CTA — *"Outside the country or in a shelter? A relative or neighbor can run this inspection for you and share the result."*
-- `src/routes/assess/property.tsx`: one-line hint at the top of step 1 reinforcing that you can inspect on behalf of an absent owner.
-- `src/routes/a/$publicId.tsx` (result): add a line above the existing WhatsApp/PDF share encouraging the user to send the result to the owner or an engineer.
-- i18n keys (ES/EN): `home.behalfTitle`, `home.behalfBody`, `property.behalfHint`, `result.shareWithOwner`.
+## Part 2 — Light admin view of signups
 
-Presentation-only; reuses the existing share + PDF machinery.
+Add an "Accounts / Saved reports" card to the existing `/admin` dashboard (same `VOLUNTEER_ADMIN_SECRET` gate as current admin analytics).
 
-## Phase 3 — #5 Resident vs. professional reports (via engineer panel link)
+New admin server function (loads `supabaseAdmin` inside the handler, `adminOk()` secret check, mirrors `admin-analytics.functions.ts`):
+- Total accounts (via `auth.admin.listUsers`).
+- Accounts with at least one linked report vs. accounts with zero (the conversion/gap metric).
+- Recent signups: email, created date (ET), last sign-in, and count of linked reports.
 
-`report_type` and `verified_by_engineer` columns exist but are unused (all 113 rows are `resident`). Wire engineer-certified reports through the existing private panel token and differentiate them on the map.
+This lets the admin see at a glance whether saving is working and follow up with anyone stuck.
 
-**Submission path**
-- `src/routes/voluntarios.panel.$token.tsx`: add a "Start a professional evaluation" button that launches the normal assessment flow carrying the engineer token (passed via search param `?eng=<token>`, persisted into the draft so it survives the multi-step flow).
-- `src/lib/assessment.functions.ts`: add optional `engineerToken` to `analyzeSchema`. In the handler, look up `volunteer_engineers` by `access_token` (approved + non-expired) with `supabaseAdmin`. If valid → set `report_type = 'professional'` and `verified_by_engineer = engineer.id`; otherwise default `'resident'`. Never trust the flag without a valid token.
-- `getAssessment`: map `report_type` and `verified_by_engineer` into `AssessmentRecord`.
+## Part 3 — Smoother save flow / less confusion
 
-**Surfacing**
-- `src/routes/a/$publicId.tsx`: show a "Professional report · verified by engineer" badge when `report_type === 'professional'`.
-- `src/components/DamageMap.tsx`: the aggregates already return a `verified` count per area. Add a verified marker to bubbles that contain ≥1 professional report (e.g. a solid ring/✓ outline vs. the dashed/plain self-reported style), show "X verified by an engineer" in the popup, and add a legend row distinguishing verified vs. self-reported pins.
-- `src/routes/mapa.tsx`: thread the `verified` value into `mapBubbles` and the legend.
-- i18n keys (ES/EN): `result.professionalBadge`, `map.legendVerified`, `map.legendSelfReported`, `map.verifiedCount`, `panel.startProfessional`.
-
-No schema change — both columns already exist.
+In `SaveReportsCard` and `/mis-reportes` copy (bilingual, ES primary):
+- State plainly it's passwordless: "one email, no password, no spam."
+- On the "check your email" state, advise opening the link **on this device** for instant access, and that it simply opens their saved reports.
+- After a successful sign-in/claim, show a brief confirmation ("Report saved to your account").
+- Keep it visually unobtrusive on the result page so it doesn't add drop-off — a single compact card, not a blocking step.
 
 ## Technical notes
-- Engineer-token validation happens server-side in the analyze handler; the panel token is a UUID `access_token` already used by `getEngineerPanel`.
-- Pin differentiation is by aggregate (municipality/state) since pins are aggregated — a verified area gets a distinct outline, not a per-report pin.
-- All other changes are frontend/presentation plus the one server-function field addition.
+- Files: `src/components/SaveReportsCard.tsx`, `src/routes/mis-reportes.tsx`, `src/routes/a/$publicId.tsx`, `src/lib/account.functions.ts` (claim already uses service-role + only fills null `user_id`, safe), new hook (e.g. `src/lib/use-claim-on-signin.ts`) wired in `src/routes/__root.tsx`, new `src/lib/admin-accounts.functions.ts`, and the `/admin` index card. New i18n keys in `src/lib/i18n.tsx`.
+- RLS/grants verified: `authenticated` can read own rows (`user_id = auth.uid()`); claim runs with service role and never reassigns an already-claimed report.
+- No schema changes required.
 
-## Out of scope
-- An in-flow "I'm an engineer" self-toggle (you chose panel-link only).
-- Re-validating the AI risk model against local engineers (Vero's side-suggestion in #6) — separate effort.
+```text
+Email link clicked ──> user authenticated (any route)
+                         │
+                         ├─ root onAuthStateChange ─> claimAssessments(deviceId + history)
+                         │                              └─ links all unclaimed device/report rows
+                         └─ /a/:id card sign-in ─────> also claims the current report
+```
