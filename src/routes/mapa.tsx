@@ -781,7 +781,7 @@ function MapPage() {
           </Reveal>
 
           {/* Share stats image — flywheel */}
-          <Reveal as="section" className="mt-6" delayMs={60}>
+          <Reveal as="section" className="mt-6 hidden md:block" delayMs={60}>
             <Button
               className="w-full"
               onClick={shareStats}
