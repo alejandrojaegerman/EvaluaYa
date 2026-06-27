@@ -61,14 +61,25 @@ export function BottomNav() {
           <span>{t("nav.map")}</span>
         </Link>
 
-        <Link
-          to="/mis-reportes"
-          className={tabClass}
-          activeProps={{ "data-status": "active" }}
-        >
-          <FolderOpen className="size-5" aria-hidden />
-          <span>{t("nav.reports")}</span>
-        </Link>
+        {hasReports ? (
+          <Link
+            to="/mis-reportes"
+            className={tabClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <FolderOpen className="size-5" aria-hidden />
+            <span>{t("nav.reports")}</span>
+          </Link>
+        ) : (
+          <Link
+            to="/assess/property"
+            className={tabClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <ClipboardCheck className="size-5" aria-hidden />
+            <span>{t("nav.evaluate")}</span>
+          </Link>
+        )}
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger className={cn(tabClass, "cursor-pointer")}>
