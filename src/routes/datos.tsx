@@ -814,20 +814,19 @@ function DataRoomPage() {
         </>
       )}
 
-      {/* Institution lead capture */}
-      <section className="mt-8 md:max-w-xl">
+      {/* Closing band: institutions on one side, share + CTA on the other */}
+      <section className="mt-10 grid gap-4 lg:grid-cols-2 lg:items-start">
         <InstitutionLeadForm />
-      </section>
 
-      <ShareApp className="mt-6 md:max-w-xl" />
-
-      <section className="mt-6 md:max-w-xl">
-        <Button asChild size="lg" className="w-full">
-          <Link to="/assess/property">
-            {t("map.startCta")}
-            <ArrowRight className="size-5" />
-          </Link>
-        </Button>
+        <div className="flex flex-col gap-4">
+          <ShareApp />
+          <Button asChild size="lg" className="w-full">
+            <Link to="/assess/property">
+              {t("map.startCta")}
+              <ArrowRight className="size-5" />
+            </Link>
+          </Button>
+        </div>
       </section>
     </AppShell>
   );
