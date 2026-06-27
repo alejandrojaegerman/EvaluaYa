@@ -1,32 +1,32 @@
+# Hide engineer directory — residents only file a request
+
 ## Goal
-Stop promising residents an engineer "de su zona / in your area." The only promise we can keep today is that engineers are **verified** (matching may be remote in some cases). Reword resident-facing copy to lead with "verified" and drop the geographic-locality promise — without introducing copy that conflicts with the possibility of remote help.
+On the analysis result page, residents should **not** see a list of volunteer engineers or be able to WhatsApp them directly. They should only be able to **submit a help request**, with the message **pre-filled from their own AI analysis** so it's one tap to send. Engineers continue to get notified and **claim** open requests from their private panels — exactly the current claim flow, unchanged.
 
-## Scope: resident-facing copy only
-All edits are string values in `src/lib/i18n.tsx` (ES + EN) plus one line in `public/llms.txt`. No component/logic changes.
+## What changes for the user
+- The "verified engineers available" list with green WhatsApp buttons disappears from the result page.
+- A single, clear "Request a verified engineer" card remains, with the message box already filled in from the analysis (risk level + key findings). The resident can edit it, adds their WhatsApp, and sends.
+- After sending: same confirmation as today ("an engineer will contact you soon").
+- Engineers see no change on their side — new requests still arrive by email/digest and are claimed from their dashboard.
 
-### Spanish (`es`)
-- `engineers.homeBody` (line 54): drop "de tu zona" → "…te conectamos con un ingeniero voluntario verificado."
-- `engineers.connectDesc` (63): "…con un ingeniero de su zona, sin costo." → "…con un ingeniero voluntario verificado, sin costo."
-- `engineers.mapNote` (66): drop "de su zona" → "…pedir apoyo de un ingeniero voluntario verificado."
-- `engineers.methodologyBody` (70): drop "de su zona" → "…con un profesional verificado para confirmar o ajustar el resultado."
-- `connect.directTitle` (853): "Ingenieros disponibles en tu zona" → "Ingenieros voluntarios verificados disponibles"
-- `connect.noneBody` (863): "…en cuanto haya cobertura en tu zona." → "…en cuanto haya disponibilidad."
+## Implementation
 
-### English (`en`)
-- `engineers.homeBody` (1163): drop "in your area"
-- `engineers.connectDesc` (1172): "…with an engineer in their area, at no cost." → "…with a verified volunteer engineer, at no cost."
-- `engineers.mapNote` (1175): drop "in their area"
-- `engineers.methodologyBody` (1179): drop "in their area"
-- `connect.directTitle` (1956): "Engineers available in your area" → "Verified volunteer engineers available"
-- `connect.noneBody` (1966): "…as soon as there's coverage in your area." → "…as soon as one is available."
+### 1. `src/components/ConnectEngineers.tsx`
+- Remove the engineer directory entirely: the `fetchEngineers`/`useEffect` load, the `engineers` state, the `hasEngineers` rendering block, and the `contactEngineer` / `revealEngineerContact` two-tap WhatsApp logic (`confirmingId`, `revealingId`).
+- Drop the `getApprovedEngineersForState` and `revealEngineerContact` imports/usage from this component.
+- Always render the request form (no more `hasEngineers` branching for title/body copy — use the single request-oriented copy).
+- Pre-fill the `note` field on mount from the existing AI result (`record.aiResult`): a short resident-voice message combining risk level + the top 2–3 `findings` (e.g. "Mi evaluación salió en nivel ROJO. Hallazgos: grietas en columnas; …"). This reuses the analysis that already ran — no new AI call, instant, no extra credits. The field stays editable and capped at 600 chars.
 
-### llms.txt
-- Line 5: "un profesional verificado de su zona" → "un profesional verificado".
+### 2. Copy — `src/lib/i18n.tsx` (ES + EN)
+- Reframe `connect.title` / `connect.subtitleRed` / `connect.subtitleYellow` from "talk to an engineer" to "request a verified engineer will review your case and contact you."
+- Keep `connect.reassure`, the form labels, `requestCta`, `requestDone`, `privacy`, and `areEngineer`.
+- Retire now-unused directory keys (`directTitle`, `coversYourState`, `whatsappEngineer`, `revealConsent`, `revealing`, `revealError`, `orgBadge`, and the `noneTitle`/`noneBody` empty-state pair) — or leave them in place unused. Recommend removing to keep the file clean.
+- Add a prefill template string (e.g. `connect.notePrefill`) used to build the pre-filled message in both languages.
 
-## Intentionally left unchanged
-- `connect.coversYourState` ("Cubre tu estado" / "Covers your state") — this is a factual badge derived from the states an engineer actually selected as coverage, not a locality promise; not in conflict.
-- `result.viewMap` ("…mapa de daños de tu zona") — about the damage map, not engineer matching.
-- Engineer-facing operational copy (volunteer signup steps, panel empty state, digest/notification emails referencing "tu zona") — internal to engineers, based on their own declared coverage states; describes how they receive requests, not a resident promise. No conflict, so left as-is to keep scope tight.
+### 3. Server — no functional change required
+- `submitHelpRequest` already inserts the request as `open`, notifies covering engineers by email, and alerts the admin. This stays as-is, so the "engineers claim as they get notified" behavior is already satisfied.
+- `getApprovedEngineersForState` and `revealEngineerContact` server functions are left in place (still referenced by the engineer/admin side); they simply stop being called from the resident result page. No migration needed.
 
-## Out of scope
-No data model, matching logic, or component changes — copy only.
+## Notes / decisions
+- Pre-fill reuses the stored `aiResult` rather than making a fresh AI request, since the analysis output is already AI-generated and present on the record. If you'd prefer a freshly AI-composed message instead, that's a small add-on (a `createServerFn` calling Lovable AI), but it adds latency and credits for little gain.
+- No database or RLS changes.
