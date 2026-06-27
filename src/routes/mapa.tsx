@@ -827,6 +827,10 @@ function MapPage() {
             <ArrowRight className="size-5" />
           </Link>
         </Button>
+        <p className="mt-3 flex items-start justify-center gap-1.5 text-center text-xs text-muted-foreground">
+          <HardHat className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+          <span>{t("engineers.mapNote")}</span>
+        </p>
       </section>
 
       <p className="mt-4 text-center text-[11px] text-muted-foreground">
