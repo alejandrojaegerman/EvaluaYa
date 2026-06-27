@@ -187,6 +187,7 @@ function MapPage() {
         yellow: number;
         orange: number;
         red: number;
+        verified: number;
       }
     >();
     for (const a of areas) {
