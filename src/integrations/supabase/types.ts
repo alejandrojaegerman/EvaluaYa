@@ -573,8 +573,43 @@ export type Database = {
           yellow: number
         }[]
       }
+      get_damage_aggregates_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
+        Returns: {
+          green: number
+          last_report: string
+          municipality: string
+          orange: number
+          red: number
+          state: string
+          total: number
+          verified: number
+          yellow: number
+        }[]
+      }
       get_damage_timeseries: {
         Args: never
+        Returns: {
+          day: string
+          green: number
+          orange: number
+          red: number
+          total: number
+          yellow: number
+        }[]
+      }
+      get_damage_timeseries_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
         Returns: {
           day: string
           green: number
@@ -596,6 +631,23 @@ export type Database = {
           yellow: number
         }[]
       }
+      get_damage_totals_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
+        Returns: {
+          areas: number
+          green: number
+          orange: number
+          red: number
+          total: number
+          verified: number
+          yellow: number
+        }[]
+      }
       get_engineers_to_notify: {
         Args: { _state: string }
         Returns: {
@@ -607,6 +659,23 @@ export type Database = {
       }
       get_risk_factors: {
         Args: { _municipality?: string; _state?: string }
+        Returns: {
+          factor_group: string
+          factor_key: string
+          green: number
+          orange: number
+          red: number
+          total: number
+          yellow: number
+        }[]
+      }
+      get_risk_factors_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
         Returns: {
           factor_group: string
           factor_key: string
