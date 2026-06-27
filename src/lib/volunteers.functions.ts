@@ -88,6 +88,28 @@ export type AdminHelpRequest = {
   status: "open" | "claimed" | "closed";
   note: string | null;
   createdAt: string;
+  /** Real lifecycle the engineer reports (null = claimed baseline). */
+  progressStage: ProgressStage | null;
+  progressUpdatedAt: string | null;
+  claimedAt: string | null;
+  engineerName: string | null;
+  engineerNote: string | null;
+  /** Linked assessment review state. */
+  assessmentPublicId: string | null;
+  aiRiskLevel: RiskLevel | null;
+  priorRiskLevel: RiskLevel | null;
+  engineerVerdict: "agree" | "adjust" | null;
+  reportType: string | null;
+  /** Claimed >24h ago with no progress beyond "claimed". */
+  stalled: boolean;
+};
+
+export type AdminMatchingProgress = {
+  claimedOnly: number;
+  contacted: number;
+  visited: number;
+  resolved: number;
+  stalled: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -350,6 +372,27 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         }
       } catch (notifyErr) {
         console.error("[volunteers] request notification failed", notifyErr);
+      }
+
+      // Notify the site admin of every new help request (best-effort).
+      try {
+        const { sendSystemEmail } = await import("./notify-email.server");
+        const location =
+          [data.municipality, data.state].filter(Boolean).join(", ") || "—";
+        await sendSystemEmail({
+          templateName: "admin-help-new",
+          templateData: {
+            riskLevel: data.riskLevel ?? "",
+            location,
+            note: data.note || "",
+            adminUrl:
+              "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_new",
+          },
+        }).catch((err) =>
+          console.error("[volunteers] admin new-request notify failed", err),
+        );
+      } catch (notifyErr) {
+        console.error("[volunteers] admin new-request notify failed", notifyErr);
       }
 
       return { ok: true };
@@ -659,6 +702,36 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
         console.error("[volunteers] updateRequestProgress", error);
         return { ok: false };
       }
+
+      // Notify the site admin when a request is marked resolved (best-effort).
+      if (data.stage === "resolved") {
+        try {
+          const { data: row } = await supabaseAdmin
+            .from("help_requests")
+            .select("state, municipality, risk_level")
+            .eq("id", data.requestId)
+            .maybeSingle();
+          const { sendSystemEmail } = await import("./notify-email.server");
+          const location =
+            [row?.municipality, row?.state].filter(Boolean).join(", ") || "—";
+          await sendSystemEmail({
+            templateName: "admin-help-resolved",
+            templateData: {
+              engineerName: engineer.name ?? "",
+              riskLevel: row?.risk_level ?? "",
+              location,
+              note: data.note || "",
+              adminUrl:
+                "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_resolved",
+            },
+          }).catch((err) =>
+            console.error("[volunteers] admin resolved notify failed", err),
+          );
+        } catch (notifyErr) {
+          console.error("[volunteers] admin resolved notify failed", notifyErr);
+        }
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] updateRequestProgress failed", e);
@@ -937,20 +1010,23 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
   .handler(
     async ({
       data,
-    }): Promise<{ ok: boolean; requests: AdminHelpRequest[] }> => {
-      if (!adminOk(data.adminSecret)) return { ok: false, requests: [] };
+    }): Promise<{
+      ok: boolean;
+      requests: AdminHelpRequest[];
+      progress: AdminMatchingProgress | null;
+    }> => {
+      if (!adminOk(data.adminSecret))
+        return { ok: false, requests: [], progress: null };
       try {
         const { supabaseAdmin } = await import(
           "@/integrations/supabase/client.server"
         );
-        const { data: rows, error } = await supabaseAdmin
-          .from("help_requests")
-          .select(
-            "id, state, municipality, risk_level, status, note, created_at",
-          )
-          .order("created_at", { ascending: false })
-          .limit(300);
-        if (error || !rows) return { ok: true, requests: [] };
+        const [{ data: rows, error }, { data: prog }] = await Promise.all([
+          supabaseAdmin.rpc("get_admin_help_requests", { _limit: 300 }),
+          supabaseAdmin.rpc("get_admin_matching_progress"),
+        ]);
+        if (error || !rows) return { ok: true, requests: [], progress: null };
+        const p = Array.isArray(prog) ? prog[0] : null;
         return {
           ok: true,
           requests: rows.map((r) => ({
@@ -961,11 +1037,33 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
             status: r.status as AdminHelpRequest["status"],
             note: r.note,
             createdAt: r.created_at,
+            progressStage: (r.progress_stage as ProgressStage | null) ?? null,
+            progressUpdatedAt: r.progress_updated_at ?? null,
+            claimedAt: r.claimed_at ?? null,
+            engineerName: r.engineer_name ?? null,
+            engineerNote: r.engineer_note ?? null,
+            assessmentPublicId: r.assessment_public_id ?? null,
+            aiRiskLevel: (r.ai_risk_level as RiskLevel | null) ?? null,
+            priorRiskLevel: (r.prior_risk_level as RiskLevel | null) ?? null,
+            engineerVerdict:
+              (r.engineer_verdict as "agree" | "adjust" | null) ?? null,
+            reportType: r.report_type ?? null,
+            stalled: Boolean(r.stalled),
           })),
+          progress: p
+            ? {
+                claimedOnly: p.claimed_only ?? 0,
+                contacted: p.contacted ?? 0,
+                visited: p.visited ?? 0,
+                resolved: p.resolved ?? 0,
+                stalled: p.stalled ?? 0,
+              }
+            : null,
         };
       } catch (e) {
         console.error("[volunteers] adminListHelpRequests failed", e);
-        return { ok: false, requests: [] };
+        return { ok: false, requests: [], progress: null };
       }
     },
   );
+

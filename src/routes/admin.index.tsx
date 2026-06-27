@@ -519,6 +519,25 @@ function AdminDashboard() {
       </div>
 
       <Card>
+        <p className="text-sm font-semibold">{t("admin.matchingProgress")}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {t("dash.matchingProgressHint")}
+        </p>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
+          <Stat label={t("admin.stageClaimed")} value={m.progress.claimedOnly} />
+          <Stat label={t("admin.stageContacted")} value={m.progress.contacted} />
+          <Stat label={t("admin.stageVisited")} value={m.progress.visited} />
+          <Stat label={t("admin.stageResolved")} value={m.progress.resolved} />
+          <Stat
+            label={t("admin.stalled")}
+            value={m.progress.stalled}
+            highlight={m.progress.stalled > 0}
+          />
+        </div>
+      </Card>
+
+
+      <Card>
         <div className="flex items-center gap-2">
           <AlertTriangle
             className={

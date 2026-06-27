@@ -56,6 +56,14 @@ export type AdminAnalytics = {
     closed: number;
     claimRate: number; // (claimed + closed) / total, 0..1
     avgClaimHours: number | null;
+    /** Lifecycle breakdown the engineer actually reports. */
+    progress: {
+      claimedOnly: number;
+      contacted: number;
+      visited: number;
+      resolved: number;
+      stalled: number;
+    };
   };
   coverageGaps: Array<{ state: string; openRequests: number }>;
 };
@@ -89,6 +97,13 @@ const EMPTY: AdminAnalytics = {
     closed: 0,
     claimRate: 0,
     avgClaimHours: null,
+    progress: {
+      claimedOnly: 0,
+      contacted: 0,
+      visited: 0,
+      resolved: 0,
+      stalled: 0,
+    },
   },
   coverageGaps: [],
 };
@@ -127,6 +142,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
           cov,
           mStats,
           gaps,
+          mProgress,
         ] = await Promise.all([
           supabaseAdmin.rpc("get_admin_assessment_stats"),
           supabaseAdmin.rpc("get_admin_assessment_timeseries"),
@@ -135,11 +151,13 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
           supabaseAdmin.rpc("get_admin_engineer_coverage"),
           supabaseAdmin.rpc("get_admin_matching_stats"),
           supabaseAdmin.rpc("get_admin_coverage_gaps"),
+          supabaseAdmin.rpc("get_admin_matching_progress"),
         ]);
 
         const a = aStats.data?.[0];
         const v = vStats.data?.[0];
         const m = mStats.data?.[0];
+        const mp = mProgress.data?.[0];
 
         const assessTotal = a?.total ?? 0;
         const analyzed = a?.analyzed ?? 0;
@@ -195,6 +213,13 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
               m?.avg_claim_seconds != null
                 ? m.avg_claim_seconds / 3600
                 : null,
+            progress: {
+              claimedOnly: mp?.claimed_only ?? 0,
+              contacted: mp?.contacted ?? 0,
+              visited: mp?.visited ?? 0,
+              resolved: mp?.resolved ?? 0,
+              stalled: mp?.stalled ?? 0,
+            },
           },
           coverageGaps: (gaps.data ?? []).map((r) => ({
             state: r.state,

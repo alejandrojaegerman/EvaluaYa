@@ -30,6 +30,7 @@ import { Route as APublicIdRouteImport } from './routes/a/$publicId'
 import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LovableCronEngineerDigestRouteImport } from './routes/lovable/cron/engineer-digest'
+import { Route as LovableCronAdminHelpDigestRouteImport } from './routes/lovable/cron/admin-help-digest'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -142,6 +143,12 @@ const LovableCronEngineerDigestRoute =
     path: '/lovable/cron/engineer-digest',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableCronAdminHelpDigestRoute =
+  LovableCronAdminHelpDigestRouteImport.update({
+    id: '/lovable/cron/admin-help-digest',
+    path: '/lovable/cron/admin-help-digest',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -190,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
+  '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
   '/lovable/cron/engineer-digest': typeof LovableCronEngineerDigestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin': typeof AdminIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
+  '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
   '/lovable/cron/engineer-digest': typeof LovableCronEngineerDigestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
@@ -247,6 +256,7 @@ export interface FileRoutesById {
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
+  '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
   '/lovable/cron/engineer-digest': typeof LovableCronEngineerDigestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/zona/$estado'
     | '/admin/'
     | '/voluntarios/'
+    | '/lovable/cron/admin-help-digest'
     | '/lovable/cron/engineer-digest'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/zona/$estado'
     | '/admin'
     | '/voluntarios'
+    | '/lovable/cron/admin-help-digest'
     | '/lovable/cron/engineer-digest'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
@@ -333,6 +345,7 @@ export interface FileRouteTypes {
     | '/zona/$estado'
     | '/admin/'
     | '/voluntarios/'
+    | '/lovable/cron/admin-help-digest'
     | '/lovable/cron/engineer-digest'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
@@ -362,6 +375,7 @@ export interface RootRouteChildren {
   ZonaEstadoRoute: typeof ZonaEstadoRoute
   AdminIndexRoute: typeof AdminIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
+  LovableCronAdminHelpDigestRoute: typeof LovableCronAdminHelpDigestRoute
   LovableCronEngineerDigestRoute: typeof LovableCronEngineerDigestRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
@@ -521,6 +535,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableCronEngineerDigestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/cron/admin-help-digest': {
+      id: '/lovable/cron/admin-help-digest'
+      path: '/lovable/cron/admin-help-digest'
+      fullPath: '/lovable/cron/admin-help-digest'
+      preLoaderRoute: typeof LovableCronAdminHelpDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -578,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   ZonaEstadoRoute: ZonaEstadoRoute,
   AdminIndexRoute: AdminIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
+  LovableCronAdminHelpDigestRoute: LovableCronAdminHelpDigestRoute,
   LovableCronEngineerDigestRoute: LovableCronEngineerDigestRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,

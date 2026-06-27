@@ -22,6 +22,9 @@ import { template as helpRequestNotification } from './help-request-notification
 import { template as helpRequestDigest } from './help-request-digest'
 import { template as volunteerApproved } from './volunteer-approved'
 import { template as feedbackNotification } from './feedback-notification'
+import { template as adminHelpNew } from './admin-help-new'
+import { template as adminHelpResolved } from './admin-help-resolved'
+import { template as adminHelpDigest } from './admin-help-digest'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'volunteer-signup-notification': volunteerSignupNotification,
@@ -29,5 +32,8 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'help-request-digest': helpRequestDigest,
   'volunteer-approved': volunteerApproved,
   'feedback-notification': feedbackNotification,
+  'admin-help-new': adminHelpNew,
+  'admin-help-resolved': adminHelpResolved,
+  'admin-help-digest': adminHelpDigest,
 }
 
