@@ -118,7 +118,7 @@ export function DataRoomFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>{t("data.filterAll")}</SelectItem>
-              {ESTADO_NAMES.map((name) => (
+              {states.map((name) => (
                 <SelectItem key={name} value={name}>
                   {name}
                 </SelectItem>
