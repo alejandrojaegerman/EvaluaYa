@@ -35,6 +35,9 @@ const es: Dict = {
   "home.howTitle": "Cómo funciona",
   "home.how1Title": "Datos de la propiedad",
   "home.how1Desc": "Registra el tipo de edificación, pisos y antigüedad.",
+  "home.behalfTitle": "¿Fuera del país o en un refugio?",
+  "home.behalfBody":
+    "No necesitas estar en el edificio. Un familiar o vecino puede hacer la inspección por ti y compartirte el resultado para decidir si es seguro regresar.",
   "home.how2Title": "Inspección guiada",
   "home.how2Desc": "Responde el cuestionario y sube una foto de cada área.",
   "home.how3Title": "Análisis con IA",
