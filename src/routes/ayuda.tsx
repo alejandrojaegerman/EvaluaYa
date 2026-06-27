@@ -18,14 +18,37 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useLang } from "@/lib/i18n";
+import { translate, useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
+
+const FAQ_KEYS = [
+  "free",
+  "signup",
+  "offline",
+  "results",
+  "privacy",
+  "save",
+  "photos",
+  "official",
+] as const;
 
 export const Route = createFileRoute("/ayuda")({
   head: () => {
     const title = "Ayuda y preguntas frecuentes | EvalúaYa";
     const description =
       "Aprende a usar EvalúaYa paso a paso y resuelve dudas comunes: privacidad, uso sin conexión, qué significan los resultados y cómo guardar tus reportes.";
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQ_KEYS.map((key) => ({
+        "@type": "Question",
+        name: translate("es", `help.faq.${key}Q`),
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: translate("es", `help.faq.${key}A`),
+        },
+      })),
+    };
     return {
       meta: [
         { title },
@@ -37,6 +60,12 @@ export const Route = createFileRoute("/ayuda")({
         { name: "twitter:card", content: "summary" },
       ],
       links: [{ rel: "canonical", href: absoluteUrl("/ayuda") }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(faqSchema),
+        },
+      ],
     };
   },
   component: HelpPage,
