@@ -1,73 +1,36 @@
-# One consistent risk vocabulary + a data dictionary
+## Objetivo
 
-## The problem
-
-"Riesgo alto" currently means two different numbers:
+El nivel naranja debe llamarse siempre **"Riesgo serio"** (no "Riesgo moderado a serio"), para que la escala quede coherente con amarillo = "Riesgo moderado":
 
 ```text
-Data Room top card   →  red + orange  = 85   labeled "Riesgo alto"
-Distribution gauge   →  red only      = 27   labeled "Riesgo alto"
+🟢 Riesgo bajo      (verde)
+🟡 Riesgo moderado  (amarillo)
+🟠 Riesgo serio     (naranja)  ← cambia
+🔴 Riesgo alto      (rojo)
 ```
 
-Same words, different math. A secondary mismatch: orange is "Riesgo serio" on
-the map/gauge but "Riesgo moderado a serio" on result cards.
+## Cambios (solo etiquetas / i18n)
 
-## The canonical scale (one name per level, everywhere)
+Todas las superficies (tarjeta de resultado, mapa, gauge, tendencia, Data Room, PDF, imágenes para compartir) leen el nombre del nivel naranja desde dos claves de `src/lib/i18n.tsx`, así que el cambio se concentra ahí:
 
-```text
-🟢 green   Riesgo bajo                 (low)
-🟡 yellow  Riesgo moderado             (moderate)
-🟠 orange  Riesgo moderado a serio     (serious)   ← unified
-🔴 red     Riesgo alto                 (high)       ← red ONLY, always
-```
+1. **`result.orange.tag`** (usada por `src/lib/risk.ts` → tarjeta de resultado, PDF, share images)
+   - ES: "Riesgo moderado a serio" → **"Riesgo serio"**
+   - EN: "Moderate-to-serious risk" → **"Serious risk"**
 
-Plus one clearly-named **derived** metric:
+2. **`map.urgent`** (usada por mapa, `RiskGauge`, `TrendChart`, Data Room)
+   - ES: "Riesgo moderado a serio" → **"Riesgo serio"**
+   - EN: "Moderate-to-serious risk" → **"Serious risk"**
 
-```text
-🟠+🔴  Riesgo serio o alto             (orange + red combined = the 85)
-```
+3. **Ajustes de coherencia en los textos del diccionario de datos** (paréntesis que repiten el nombre del nivel):
+   - `data.dict.seriousOrHigh.def` (ES): "...nivel naranja (moderado a serio) y rojo (alto)..." → "...nivel naranja (serio) y rojo (alto)..."
+   - `data.dict.seriousOrHigh.def` (EN): "...orange (moderate-to-serious) and red (high)..." → "...orange (serious) and red (high)..."
 
-"Riesgo alto" will never again be used for the combined count.
+Se mantiene sin cambios:
+- **`map.seriousOrHigh`** = "Riesgo serio o alto" (métrica combinada naranja + rojo en el Data Room): sigue siendo correcta y ahora encaja mejor ("serio o alto").
+- Las **descripciones de severidad** ("Daños moderados a serios. Necesitas un ingeniero con urgencia") y el **prompt de la IA** quedan igual: describen el daño, no son el nombre de la etiqueta. La metodología (`methodology.orange.*`) tampoco cambia su explicación.
 
-## Changes
+## Verificación
 
-### 1. Fix the mislabeled Data Room card (`src/routes/datos.tsx`)
-The top card keeps its value (`red + orange`) but its label changes from
-`map.high` ("Riesgo alto") to a new `map.seriousOrHigh` ("Riesgo serio o alto").
-This is the single line causing the 85-vs-27 collision.
-
-### 2. Unify the orange label (`src/lib/i18n.tsx`)
-Update `map.urgent` so the gauge/map/trend match the result-card wording:
-- ES: "Riesgo serio" → "Riesgo moderado a serio"
-- EN: "Serious risk" → "Moderate-to-serious risk"
-
-This flows automatically into `RiskGauge`, `DamageMap`, `TrendChart`, and the
-`/mapa`, `/datos`, `/zona/$estado` pages (they all read the same key). No other
-edits needed for consistency — verified that `/mapa` headline only shows
-total + zones, so no stray "Riesgo alto" card lives there.
-
-### 3. Add the new combined-metric key (`src/lib/i18n.tsx`)
-- `map.seriousOrHigh` → ES "Riesgo serio o alto", EN "Serious or high risk"
-
-### 4. Data dictionary — collapsible on `/datos`, canonical on Metodología
-Best practice is one authoritative definition source that surfaces lightweight
-in-context. So:
-- Add a **collapsible "¿Cómo leer estos datos? / How to read this"** panel near
-  the bottom of `/datos` (above Export & share), using the existing
-  `Collapsible` UI primitive. It defines: the 4 risk levels, "Riesgo serio o
-  alto" (= orange + red), "Verificado por ingeniero", "Zonas", and what one
-  "Evaluación" represents (a single assessment, not a unique building).
-- End that panel with a link to **`/metodologia`** ("Ver metodología completa")
-  as the full canonical reference — it already documents the level escalation
-  rules, so it stays the source of truth.
-- Add the supporting i18n keys (`data.dict.*`) in ES + EN.
-
-## Technical notes
-
-- Only presentation/copy changes: i18n strings + `datos.tsx` JSX. No backend,
-  RPC, or risk-computation logic changes — the 85 and 27 numbers stay correct,
-  only their labels become unambiguous.
-- The collapsible reuses `@/components/ui/collapsible` (already in the project),
-  matching the existing card styling (`rounded-2xl border bg-card`).
-- Existing `result.orange.tag` ("Riesgo moderado a serio") is already the chosen
-  canonical orange name, so result cards and methodology need no change.
+- Confirmar que tarjeta de resultado, `/mapa`, `/datos`, gauge y tendencia muestran "Riesgo serio" para naranja en ES e inglés.
+- Revisar que no quede ningún "moderado a serio" como **nombre** de nivel (solo permitido en descripciones).
+- Correr los tests unitarios existentes (`tests/unit`) por si alguno fija el texto de la etiqueta.
