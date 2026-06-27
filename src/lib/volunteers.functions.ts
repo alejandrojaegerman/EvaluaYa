@@ -625,7 +625,7 @@ export const closeHelpRequest = createServerFn({ method: "POST" })
 // Report progress on a claimed request
 // ---------------------------------------------------------------------------
 
-const progressSchema = z.object({
+export const progressSchema = z.object({
   token: z.string().trim().uuid(),
   requestId: z.string().trim().uuid(),
   stage: z.enum(["contacted", "visited", "resolved"]),
