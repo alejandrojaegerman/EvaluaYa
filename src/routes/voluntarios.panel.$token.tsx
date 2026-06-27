@@ -183,6 +183,27 @@ function PanelPage() {
         )}
       </section>
 
+      {/* Run a certified professional evaluation */}
+      <section className="mt-5 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="size-5 shrink-0 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold">
+            {t("panel.proTitle")}
+          </h2>
+        </div>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          {t("panel.proBody")}
+        </p>
+        <Link
+          to="/assess/property"
+          search={{ eng: token }}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          {t("panel.startPro")}
+          <ArrowRight className="size-4" />
+        </Link>
+      </section>
+
       <div className="mt-5 flex items-center justify-between">
         <h2 className="font-display text-base font-bold">
           {t("panel.openRequests")} ({panel.requests.length})
