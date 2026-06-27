@@ -270,6 +270,7 @@ function MapPage() {
         total: a.total,
         green: a.green,
         yellow: a.yellow,
+        orange: a.orange,
         red: a.red,
       });
     }
