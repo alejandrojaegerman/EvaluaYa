@@ -68,6 +68,8 @@ const analyzeSchema = z.object({
     spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
   answers: z.array(answerSchema).min(1).max(13),
+  /** Engineer panel access token — when valid, the report is certified. */
+  engineerToken: z.string().uuid().optional(),
 });
 
 type AnalyzeInput = z.infer<typeof analyzeSchema>;
