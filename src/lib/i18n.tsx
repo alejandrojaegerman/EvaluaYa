@@ -348,7 +348,7 @@ const es: Dict = {
   "result.green.action": "Puedes permanecer",
   "result.yellow.tag": "Riesgo moderado",
   "result.yellow.action": "Monitorea y atiende",
-  "result.orange.tag": "Riesgo moderado a serio",
+  "result.orange.tag": "Riesgo serio",
   "result.orange.action": "Necesitas un ingeniero con urgencia",
   "result.red.tag": "Riesgo alto",
   "result.red.action": "Evacúa de inmediato",
@@ -466,7 +466,7 @@ const es: Dict = {
   "data.dict.high.def": "Daños graves. No entres; evacúa.",
   "data.dict.seriousOrHigh.term": "Riesgo serio o alto",
   "data.dict.seriousOrHigh.def":
-    "Suma de las evaluaciones en nivel naranja (moderado a serio) y rojo (alto): los casos que requieren un ingeniero. No es lo mismo que «Riesgo alto», que cuenta solo el nivel rojo.",
+    "Suma de las evaluaciones en nivel naranja (serio) y rojo (alto): los casos que requieren un ingeniero. No es lo mismo que «Riesgo alto», que cuenta solo el nivel rojo.",
   "data.dict.verified.term": "Verificado por ingeniero",
   "data.dict.verified.def":
     "Evaluaciones confirmadas por un ingeniero voluntario, no solo por el residente.",
@@ -606,7 +606,7 @@ const es: Dict = {
   "map.totalAssessments": "Evaluaciones",
   "map.areasLabel": "Zonas",
   "map.high": "Riesgo alto",
-  "map.urgent": "Riesgo moderado a serio",
+  "map.urgent": "Riesgo serio",
   "map.moderate": "Riesgo moderado",
   "map.low": "Riesgo bajo",
   "map.seriousOrHigh": "Riesgo serio o alto",
@@ -1346,7 +1346,7 @@ const en: Dict = {
   "result.green.action": "You may stay",
   "result.yellow.tag": "Moderate risk",
   "result.yellow.action": "Monitor and address",
-  "result.orange.tag": "Moderate-to-serious risk",
+  "result.orange.tag": "Serious risk",
   "result.orange.action": "You urgently need an engineer",
   "result.red.tag": "High risk",
   "result.red.action": "Evacuate immediately",
@@ -1464,7 +1464,7 @@ const en: Dict = {
   "data.dict.high.def": "Severe damage. Do not enter; evacuate.",
   "data.dict.seriousOrHigh.term": "Serious or high risk",
   "data.dict.seriousOrHigh.def":
-    "The sum of assessments at orange (moderate-to-serious) and red (high) level: the cases that need an engineer. It is not the same as “High risk”, which counts only the red level.",
+    "The sum of assessments at orange (serious) and red (high) level: the cases that need an engineer. It is not the same as “High risk”, which counts only the red level.",
   "data.dict.verified.term": "Engineer-verified",
   "data.dict.verified.def":
     "Assessments confirmed by a volunteer engineer, not just by the resident.",
@@ -1605,7 +1605,7 @@ const en: Dict = {
   "map.totalAssessments": "Assessments",
   "map.areasLabel": "Areas",
   "map.high": "High risk",
-  "map.urgent": "Moderate-to-serious risk",
+  "map.urgent": "Serious risk",
   "map.moderate": "Moderate risk",
   "map.low": "Low risk",
   "map.seriousOrHigh": "Serious or high risk",
