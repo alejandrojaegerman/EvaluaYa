@@ -48,6 +48,8 @@ export type Database = {
           created_at: string
           device_id: string | null
           engineer_notes: string | null
+          engineer_verdict: string | null
+          engineer_verified_at: string | null
           geo_inferred: boolean
           id: string
           language: string
@@ -71,6 +73,8 @@ export type Database = {
           created_at?: string
           device_id?: string | null
           engineer_notes?: string | null
+          engineer_verdict?: string | null
+          engineer_verified_at?: string | null
           geo_inferred?: boolean
           id?: string
           language?: string
@@ -94,6 +98,8 @@ export type Database = {
           created_at?: string
           device_id?: string | null
           engineer_notes?: string | null
+          engineer_verdict?: string | null
+          engineer_verified_at?: string | null
           geo_inferred?: boolean
           id?: string
           language?: string
@@ -238,9 +244,12 @@ export type Database = {
           claimed_at: string | null
           claimed_by: string | null
           created_at: string
+          engineer_note: string | null
           id: string
           municipality: string | null
           note: string | null
+          progress_stage: string | null
+          progress_updated_at: string | null
           public_id: string
           resident_whatsapp: string
           risk_level: string | null
@@ -253,9 +262,12 @@ export type Database = {
           claimed_at?: string | null
           claimed_by?: string | null
           created_at?: string
+          engineer_note?: string | null
           id?: string
           municipality?: string | null
           note?: string | null
+          progress_stage?: string | null
+          progress_updated_at?: string | null
           public_id?: string
           resident_whatsapp: string
           risk_level?: string | null
@@ -268,9 +280,12 @@ export type Database = {
           claimed_at?: string | null
           claimed_by?: string | null
           created_at?: string
+          engineer_note?: string | null
           id?: string
           municipality?: string | null
           note?: string | null
+          progress_stage?: string | null
+          progress_updated_at?: string | null
           public_id?: string
           resident_whatsapp?: string
           risk_level?: string | null
@@ -646,6 +661,17 @@ export type Database = {
           total: number
           verified: number
           yellow: number
+        }[]
+      }
+      get_engineer_digest: {
+        Args: never
+        Returns: {
+          access_token: string
+          email: string
+          engineer_id: string
+          name: string
+          open_count: number
+          sample: Json
         }[]
       }
       get_engineers_to_notify: {
