@@ -538,6 +538,9 @@ function PropertyStep() {
         {/* Age */}
         <div>
           <p className="text-sm font-semibold">{t("property.age")}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {t("property.age.help")}
+          </p>
           <div className="mt-2 space-y-2">
             {AGES.map((a) => {
               const selected = age === a;
@@ -548,16 +551,28 @@ function PropertyStep() {
                   onClick={() => setAge(a)}
                   aria-pressed={selected}
                   className={cn(
-                    "flex w-full items-center justify-between rounded-2xl border-2 px-4 py-3.5 text-left text-sm font-medium transition-colors",
+                    "flex w-full items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-colors",
                     selected
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border bg-card text-foreground hover:border-primary/40",
                   )}
                 >
-                  {t(`property.age.${a}`)}
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium">
+                      {t(`property.age.${a}`)}
+                    </span>
+                    <span
+                      className={cn(
+                        "mt-0.5 block text-xs",
+                        selected ? "text-primary/80" : "text-muted-foreground",
+                      )}
+                    >
+                      {t(`property.age.${a}.desc`)}
+                    </span>
+                  </span>
                   <span
                     className={cn(
-                      "size-4 rounded-full border-2",
+                      "size-4 shrink-0 rounded-full border-2",
                       selected ? "border-primary bg-primary" : "border-muted-foreground/40",
                     )}
                   />
