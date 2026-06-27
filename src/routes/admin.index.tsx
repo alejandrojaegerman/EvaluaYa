@@ -5,6 +5,7 @@ import {
   BarChart3,
   Building2,
   Users,
+  UserPlus,
   HandHeart,
   AlertTriangle,
   ArrowRight,
