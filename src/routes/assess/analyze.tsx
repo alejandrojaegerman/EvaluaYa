@@ -214,6 +214,7 @@ function AnalyzeStep() {
 
   // Load draft once.
   useEffect(() => {
+    trackStep("analyze_started");
     let active = true;
     loadDraft().then((d) => {
       if (!active) return;
