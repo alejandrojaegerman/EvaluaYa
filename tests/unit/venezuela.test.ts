@@ -6,6 +6,7 @@ import {
   municipiosFor,
   nearestMunicipio,
   nearestEstado,
+  resolveMunicipio,
 } from "@/lib/venezuela";
 
 describe("municipio dataset integrity", () => {
@@ -71,5 +72,31 @@ describe("nearestEstado", () => {
     const e = nearestEstado(10.5, -66.9);
     expect(e).toBeTruthy();
     expect(ESTADO_NAMES).toContain(e!.name);
+  });
+});
+
+describe("resolveMunicipio — Sucre disambiguation", () => {
+  it("folds Distrito Capital 'Sucre' (a parroquia) into Libertador", () => {
+    const r = resolveMunicipio("Distrito Capital", "Sucre");
+    expect(r?.name).toBe("Libertador");
+    expect(r?.level).toBe("municipio");
+    expect(r?.stateName).toBe("Distrito Capital");
+  });
+
+  it("handles the lowercase 'sucre' variant in Distrito Capital", () => {
+    expect(resolveMunicipio("Distrito Capital", "sucre")?.name).toBe(
+      "Libertador",
+    );
+  });
+
+  it("keeps Miranda 'Sucre' (Petare) as its own municipio", () => {
+    const r = resolveMunicipio("Miranda", "Sucre");
+    expect(r?.name).toBe("Sucre");
+    expect(r?.level).toBe("municipio");
+  });
+
+  it("does not remap other states' Sucre to Libertador", () => {
+    // Aragua has a legitimate Sucre municipio; it must not become Libertador.
+    expect(resolveMunicipio("Aragua", "Sucre")?.name).not.toBe("Libertador");
   });
 });
