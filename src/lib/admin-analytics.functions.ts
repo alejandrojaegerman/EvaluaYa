@@ -18,6 +18,7 @@ export type AdminAnalytics = {
     total: number;
     green: number;
     yellow: number;
+    orange: number;
     red: number;
     analyzed: number;
     drafts: number;
@@ -28,6 +29,7 @@ export type AdminAnalytics = {
     total: number;
     green: number;
     yellow: number;
+    orange: number;
     red: number;
   }>;
   topStates: Array<{
@@ -35,6 +37,7 @@ export type AdminAnalytics = {
     total: number;
     green: number;
     yellow: number;
+    orange: number;
     red: number;
   }>;
   volunteers: {
