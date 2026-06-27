@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   HardHat,
-  MapPin,
   AlertCircle,
   ShieldCheck,
   ArrowRight,
