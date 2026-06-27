@@ -52,7 +52,7 @@ export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
-function rgb(level: "red" | "yellow" | "green"): string {
+function rgb(level: "red" | "orange" | "yellow" | "green"): string {
   const [r, g, b] = RISK_HEX[level];
   return `rgb(${r}, ${g}, ${b})`;
 }
