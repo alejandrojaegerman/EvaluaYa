@@ -274,6 +274,29 @@ function PropertyStep() {
           />
         </div>
 
+        {/* Building / tower name — optional, powers community map clustering */}
+        <div>
+          <Label htmlFor="buildingName" className="text-sm font-semibold">
+            {t("property.buildingName")}{" "}
+            <span className="font-normal text-muted-foreground">
+              ({t("common.optional")})
+            </span>
+          </Label>
+          <Input
+            id="buildingName"
+            value={buildingName}
+            onChange={(e) => setBuildingName(e.target.value)}
+            placeholder={t("property.buildingNamePlaceholder")}
+            className="mt-2 h-12 rounded-xl bg-card"
+            maxLength={160}
+          />
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {t("property.buildingNameHint")}
+          </p>
+        </div>
+
+
+
         {/* Estado + Municipio (coarse location for the public map) */}
         <div className="grid grid-cols-2 gap-3">
           <div>
