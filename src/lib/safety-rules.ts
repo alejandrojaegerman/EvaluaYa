@@ -70,6 +70,11 @@ export function evaluateSafetyRules(
     findings.push(t(`rule.${key}.finding`));
     nextSteps.push(t(`rule.${key}.step`));
   };
+  const fireOrange = (key: string) => {
+    level = maxRisk(level, "orange");
+    findings.push(t(`rule.${key}.finding`));
+    nextSteps.push(t(`rule.${key}.step`));
+  };
   const fireCaution = (key: string) => {
     level = maxRisk(level, "yellow");
     findings.push(t(`rule.${key}.finding`));
@@ -92,26 +97,32 @@ export function evaluateSafetyRules(
     (id) => answerOf(id) === "yes",
   );
 
-  // --- Force RED: not safe to enter ---
-  if (property.structuralType === "URM") fireRed("urm");
+  // --- Force RED: not safe to enter (clear life-safety hazards) ---
   if (answerOf("liquefaction") === "yes") fireRed("liquefaction");
   if (answerOf("pounding") === "yes") fireRed("pounding");
   if (answerOf("plumbing") === "yes") fireRed("plumbing");
   // Strong shaking AND visible structural damage => life-safety red.
   if (severeShaking && anyStructuralYes) fireRed("combo_shaking");
+  // Unreinforced masonry that ALSO shows structural damage or was strongly
+  // shaken is unsafe to enter; URM on its own is escalated to orange below.
+  const urm = property.structuralType === "URM";
+  if (urm && (anyStructuralYes || moderateShaking)) fireRed("urm");
 
-  // --- Escalate to at least YELLOW: extra caution ---
-  // Graduated ground-shaking caution (data-driven, MMI + PGA).
-  if (severeShaking) fireCaution("intensity_severe");
-  else if (moderateShaking) fireCaution("intensity");
+  // --- Escalate to ORANGE: needs an engineer urgently (not imminent collapse) ---
+  // URM alone (no observed damage, no strong shaking) still warrants an
+  // urgent professional look given how brittle these buildings are.
+  if (urm && level !== "red") fireOrange("urm");
+  // Severe shaking at the site, on its own, pushes to orange (was yellow).
+  if (severeShaking) fireOrange("intensity_severe");
+  // High spectral demand AT THE BUILDING'S OWN PERIOD: this height was shaken
+  // hard. >=0.4g is strong for typical residential buildings.
+  if (typeof sd === "number" && sd >= 0.4) fireOrange("spectral");
+  // Very soft soils strongly amplify shaking / liquefaction risk.
+  if (soil === "very_soft") fireOrange("softsoil_severe");
 
-  // Spectral demand AT THE BUILDING'S OWN PERIOD: how hard this building height
-  // was shaken. >=0.4g is strong for typical residential buildings.
-  if (typeof sd === "number" && sd >= 0.4) fireCaution("spectral");
-
-  // Soft soils amplify shaking and raise liquefaction susceptibility.
-  if (soil === "very_soft") fireCaution("softsoil_severe");
-  else if (soil === "soft") fireCaution("softsoil");
+  // --- Escalate to at least YELLOW: monitor / extra caution ---
+  if (!severeShaking && moderateShaking) fireCaution("intensity");
+  if (soil === "soft") fireCaution("softsoil");
 
   if (typeof property.floors === "number" && property.floors > 7) {
     fireCaution("floors");
