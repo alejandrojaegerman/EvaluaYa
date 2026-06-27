@@ -515,6 +515,8 @@ export const getAssessment = createServerFn({ method: "GET" })
       aiResult: row.ai_result as AiResult,
       riskLevel: (row.risk_level as RiskLevel) ?? "yellow",
       priorRiskLevel: (row.prior_risk_level as RiskLevel | null) ?? null,
+      reportType:
+        (row.report_type as "resident" | "professional" | null) ?? "resident",
       createdAt: row.created_at,
       photoUrls,
       building,
