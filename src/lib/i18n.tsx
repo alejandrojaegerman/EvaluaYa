@@ -1116,6 +1116,29 @@ const en: Dict = {
   "home.recentEmpty": "You have not saved any assessments on this device yet.",
   "home.viewResult": "View result",
 
+  // Volunteer-engineer support thread (reused across surfaces).
+  "engineers.sectionTitle": "Volunteer engineer support",
+  "engineers.tagline":
+    "After your assessment, you can request help from a verified volunteer engineer, at no cost.",
+  "engineers.homeBody":
+    "You run your self-assessment first. If you need it, we connect you with a verified volunteer engineer in your area.",
+  "engineers.recruit": "We recruit",
+  "engineers.recruitDesc":
+    "We bring in volunteer engineers and organizations across the country.",
+  "engineers.validate": "We validate",
+  "engineers.validateDesc":
+    "We review their experience before approving them and marking them verified.",
+  "engineers.connect": "We connect",
+  "engineers.connectDesc":
+    "We link residents who ask with an engineer in their area, at no cost.",
+  "engineers.learnMore": "Meet the engineer network",
+  "engineers.mapNote":
+    "After an assessment, residents can request support from a verified volunteer engineer in their area.",
+  "engineers.footerDesc": "We recruit, validate and connect engineers.",
+  "engineers.methodologyTitle": "Volunteer engineer network",
+  "engineers.methodologyBody":
+    "Self-assessment is the first step. We also recruit and validate volunteer engineers and organizations, and connect residents who request it with a verified professional in their area to confirm or adjust the result.",
+
   "disclaimer.title": "Important notice",
   "disclaimer.body":
     "This tool gives preliminary guidance and is not a substitute for inspection by a licensed structural engineer or Civil Protection. If there is imminent danger, evacuate and call emergency services.",
