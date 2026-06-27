@@ -28,6 +28,8 @@ function buildSitemap(): string {
       changefreq: "monthly",
       priority: "0.7",
     },
+    { loc: absoluteUrl("/ayuda"), changefreq: "monthly", priority: "0.6" },
+    { loc: absoluteUrl("/feedback"), changefreq: "monthly", priority: "0.5" },
     // Regional landing pages — one per estado.
     ...ESTADOS.map((e) => ({
       loc: absoluteUrl(`/zona/${estadoSlug(e.name)}`),
