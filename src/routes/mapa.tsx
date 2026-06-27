@@ -4,6 +4,7 @@ import {
   ChevronDown,
   ChevronRight,
   Download,
+  HardHat,
   ImageDown,
   MapPin,
 } from "lucide-react";
