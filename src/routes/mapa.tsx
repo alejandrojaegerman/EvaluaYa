@@ -604,6 +604,7 @@ function MapPage() {
 
                     <div className="flex shrink-0 items-center gap-1.5 text-[11px] font-semibold">
                       <span style={{ color: rgb("red") }}>{a.red}</span>
+                      <span style={{ color: rgb("orange") }}>{a.orange}</span>
                       <span style={{ color: rgb("yellow") }}>{a.yellow}</span>
                       <span style={{ color: rgb("green") }}>{a.green}</span>
                     </div>
