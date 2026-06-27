@@ -24,7 +24,7 @@ export const Route = createFileRoute("/metodologia")({
   head: () => {
     const title = "Cómo funciona — Metodología y credibilidad | EvalúaYa";
     const description =
-      "Cómo EvalúaYa calcula el resultado: reglas de seguridad tipo ATC-20, intensidad sísmica USGS ShakeMap y análisis con IA. Fuentes, límites y privacidad.";
+      "Cómo EvalúaYa calcula el resultado: reglas de seguridad tipo ATC-20, intensidad sísmica USGS ShakeMap y análisis con IA. Además reclutamos, validamos y conectamos ingenieros voluntarios. Fuentes, límites y privacidad.";
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "Article",
@@ -226,6 +226,39 @@ function MethodologyPage() {
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {t("methodology.seismicBody")}
         </p>
+      </section>
+
+      {/* Volunteer engineer network — recruit → validate → connect */}
+      <section className="mt-8">
+        <div className="flex items-center gap-2">
+          <HardHat className="size-4 text-muted-foreground" aria-hidden />
+          <h2 className="font-display text-lg font-bold">
+            {t("engineers.methodologyTitle")}
+          </h2>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {t("engineers.methodologyBody")}
+        </p>
+        <ol className="mt-3 space-y-2">
+          {[
+            { n: 1, title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
+            { n: 2, title: t("engineers.validate"), desc: t("engineers.validateDesc") },
+            { n: 3, title: t("engineers.connect"), desc: t("engineers.connectDesc") },
+          ].map((step) => (
+            <li
+              key={step.n}
+              className="flex items-start gap-3 rounded-2xl border border-border bg-card p-3 text-sm shadow-sm"
+            >
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                {step.n}
+              </span>
+              <span>
+                <span className="font-semibold">{step.title}.</span>{" "}
+                <span className="text-muted-foreground">{step.desc}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* Sources */}

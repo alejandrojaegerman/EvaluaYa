@@ -46,6 +46,29 @@ const es: Dict = {
   "home.recentEmpty": "Aún no has guardado evaluaciones en este dispositivo.",
   "home.viewResult": "Ver resultado",
 
+  // Volunteer-engineer support thread (reused across surfaces).
+  "engineers.sectionTitle": "Apoyo de ingenieros voluntarios",
+  "engineers.tagline":
+    "Después de tu evaluación, puedes pedir ayuda de un ingeniero voluntario verificado, sin costo.",
+  "engineers.homeBody":
+    "Primero haces tu autoevaluación. Si lo necesitas, te conectamos con un ingeniero voluntario verificado de tu zona.",
+  "engineers.recruit": "Reclutamos",
+  "engineers.recruitDesc":
+    "Convocamos a ingenieros voluntarios y organizaciones en todo el país.",
+  "engineers.validate": "Validamos",
+  "engineers.validateDesc":
+    "Revisamos su experiencia antes de aprobarlos y marcarlos como verificados.",
+  "engineers.connect": "Conectamos",
+  "engineers.connectDesc":
+    "Enlazamos a quienes lo piden con un ingeniero de su zona, sin costo.",
+  "engineers.learnMore": "Conoce la red de ingenieros",
+  "engineers.mapNote":
+    "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado de su zona.",
+  "engineers.footerDesc": "Reclutamos, validamos y conectamos ingenieros.",
+  "engineers.methodologyTitle": "Red de ingenieros voluntarios",
+  "engineers.methodologyBody":
+    "La autoevaluación es el primer paso. Además, reclutamos y validamos a ingenieros voluntarios y organizaciones, y conectamos a los residentes que lo solicitan con un profesional verificado de su zona para confirmar o ajustar el resultado.",
+
   "disclaimer.title": "Aviso importante",
   "disclaimer.body":
     "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inminente, evacúa y llama a emergencias.",
@@ -1092,6 +1115,29 @@ const en: Dict = {
   "home.recentTitle": "Recent assessments",
   "home.recentEmpty": "You have not saved any assessments on this device yet.",
   "home.viewResult": "View result",
+
+  // Volunteer-engineer support thread (reused across surfaces).
+  "engineers.sectionTitle": "Volunteer engineer support",
+  "engineers.tagline":
+    "After your assessment, you can request help from a verified volunteer engineer, at no cost.",
+  "engineers.homeBody":
+    "You run your self-assessment first. If you need it, we connect you with a verified volunteer engineer in your area.",
+  "engineers.recruit": "We recruit",
+  "engineers.recruitDesc":
+    "We bring in volunteer engineers and organizations across the country.",
+  "engineers.validate": "We validate",
+  "engineers.validateDesc":
+    "We review their experience before approving them and marking them verified.",
+  "engineers.connect": "We connect",
+  "engineers.connectDesc":
+    "We link residents who ask with an engineer in their area, at no cost.",
+  "engineers.learnMore": "Meet the engineer network",
+  "engineers.mapNote":
+    "After an assessment, residents can request support from a verified volunteer engineer in their area.",
+  "engineers.footerDesc": "We recruit, validate and connect engineers.",
+  "engineers.methodologyTitle": "Volunteer engineer network",
+  "engineers.methodologyBody":
+    "Self-assessment is the first step. We also recruit and validate volunteer engineers and organizations, and connect residents who request it with a verified professional in their area to confirm or adjust the result.",
 
   "disclaimer.title": "Important notice",
   "disclaimer.body":

@@ -10,6 +10,7 @@ export function Footer() {
 
   const columns: Array<{
     heading: string;
+    note?: string;
     links: Array<{ to: string; label: string }>;
   }> = [
     {
@@ -22,6 +23,7 @@ export function Footer() {
     },
     {
       heading: t("footer.participate"),
+      note: t("engineers.footerDesc"),
       links: [
         { to: "/voluntarios", label: t("nav.volunteers") },
         { to: "/assess/property", label: t("footer.evaluate") },
@@ -62,6 +64,11 @@ export function Footer() {
               <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {col.heading}
               </h2>
+              {col.note && (
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {col.note}
+                </p>
+              )}
               <ul className="mt-3 space-y-2">
                 {col.links.map((link) => (
                   <li key={link.to}>

@@ -14,6 +14,7 @@ import {
   UserX,
   EyeOff,
   Users,
+  HardHat,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal.",
+          "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal. Si lo necesitas, te conectamos con un ingeniero voluntario verificado.",
       },
     ],
   }),
@@ -253,6 +254,31 @@ function Index() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Volunteer engineer support — secondary thread, never competes with the
+          hero self-assessment CTA. */}
+      <section className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <div className="flex items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+            <HardHat className="size-5" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold leading-tight">
+              {t("engineers.sectionTitle")}
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("engineers.homeBody")}
+            </p>
+            <Link
+              to="/voluntarios"
+              className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            >
+              {t("engineers.learnMore")}
+              <ChevronRight className="size-3.5" aria-hidden />
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Spread the word — flywheel */}

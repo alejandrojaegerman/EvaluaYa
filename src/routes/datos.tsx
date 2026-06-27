@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ChevronRight,
   Download,
+  HardHat,
   ImageDown,
   Map as MapIcon,
   MapPin,
@@ -826,6 +827,10 @@ function DataRoomPage() {
               <ArrowRight className="size-5" />
             </Link>
           </Button>
+          <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+            <HardHat className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+            <span>{t("engineers.mapNote")}</span>
+          </p>
         </div>
       </section>
     </AppShell>
