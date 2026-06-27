@@ -213,6 +213,13 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
               m?.avg_claim_seconds != null
                 ? m.avg_claim_seconds / 3600
                 : null,
+            progress: {
+              claimedOnly: mp?.claimed_only ?? 0,
+              contacted: mp?.contacted ?? 0,
+              visited: mp?.visited ?? 0,
+              resolved: mp?.resolved ?? 0,
+              stalled: mp?.stalled ?? 0,
+            },
           },
           coverageGaps: (gaps.data ?? []).map((r) => ({
             state: r.state,
