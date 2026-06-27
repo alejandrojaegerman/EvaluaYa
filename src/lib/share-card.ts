@@ -120,6 +120,7 @@ export async function generateResultCard(input: ResultCardInput): Promise<Blob> 
 export type StatsCardInput = {
   total: number;
   red: number;
+  orange: number;
   yellow: number;
   green: number;
   headline: string;
