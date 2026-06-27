@@ -881,6 +881,9 @@ const en: Dict = {
   "home.howTitle": "How it works",
   "home.how1Title": "Property details",
   "home.how1Desc": "Record building type, floors and age.",
+  "home.behalfTitle": "Outside the country or in a shelter?",
+  "home.behalfBody":
+    "You don't have to be in the building. A relative or neighbor can run the inspection for you and share the result so you can decide whether it's safe to return.",
   "home.how2Title": "Guided inspection",
   "home.how2Desc": "Answer the questionnaire and add a photo for each area.",
   "home.how3Title": "AI analysis",
