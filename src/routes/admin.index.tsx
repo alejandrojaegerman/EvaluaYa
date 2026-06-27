@@ -267,7 +267,7 @@ function AdminDashboard() {
                       <span className="truncate">{s.state}</span>
                     </span>
                     <span className="flex items-center gap-2">
-                      <MiniDots green={s.green} yellow={s.yellow} red={s.red} />
+                      <MiniDots green={s.green} yellow={s.yellow} orange={s.orange} red={s.red} />
                       <span className="w-8 text-right font-semibold tabular-nums">
                         {s.total}
                       </span>
