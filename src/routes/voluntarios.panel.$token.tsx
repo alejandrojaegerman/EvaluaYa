@@ -38,10 +38,11 @@ export const Route = createFileRoute("/voluntarios/panel/$token")({
 
 function PanelPage() {
   const { token } = Route.useParams();
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const fetchPanel = useServerFn(getEngineerPanel);
   const claim = useServerFn(claimHelpRequest);
-  const close = useServerFn(closeHelpRequest);
+  const progress = useServerFn(updateRequestProgress);
+  const verdict = useServerFn(submitEngineerVerdict);
 
   const [panel, setPanel] = useState<EngineerPanel | null>(null);
   const [expired, setExpired] = useState(false);
@@ -81,12 +82,37 @@ function PanelPage() {
     }
   }
 
-  async function onClose(id: string) {
+  async function onProgress(id: string, stage: ProgressStage, note: string) {
+    if (stage === "claimed") return;
     setActingId(id);
     try {
-      const res = await close({ data: { token, requestId: id } });
-      if (res.ok) await load();
-      else toast.error(t("result.genericError"));
+      const res = await progress({
+        data: { token, requestId: id, stage, note },
+      });
+      if (res.ok) {
+        toast.success(t("panel.progressSaved"));
+        await load();
+      } else toast.error(t("result.genericError"));
+    } finally {
+      setActingId(null);
+    }
+  }
+
+  async function onVerdict(
+    id: string,
+    v: "agree" | "adjust",
+    level: RiskLevel | undefined,
+    notes: string,
+  ) {
+    setActingId(id);
+    try {
+      const res = await verdict({
+        data: { token, requestId: id, verdict: v, level, notes },
+      });
+      if (res.ok) {
+        toast.success(t("panel.verdictSaved"));
+        await load();
+      } else toast.error(t("result.genericError"));
     } finally {
       setActingId(null);
     }
@@ -101,6 +127,7 @@ function PanelPage() {
       "noopener,noreferrer",
     );
   }
+
 
   function ageLabel(createdAt: string): string {
     const ms = Date.now() - new Date(createdAt).getTime();
