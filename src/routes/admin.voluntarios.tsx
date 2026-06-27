@@ -364,6 +364,171 @@ function Empty({ t }: { t: (k: string) => string }) {
   return <p className="text-sm text-muted-foreground">{t("admin.none")}</p>;
 }
 
+function Stat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone?: "green" | "red";
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-background p-3 text-center">
+      <p
+        className={cn(
+          "font-display text-2xl font-extrabold leading-none",
+          tone === "green"
+            ? "text-risk-green"
+            : tone === "red"
+              ? "text-risk-red"
+              : "text-foreground",
+        )}
+      >
+        {value}
+      </p>
+      <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+const STAGE_ORDER = ["claimed", "contacted", "visited", "resolved"] as const;
+
+function HelpRequestCard({
+  r,
+  t,
+}: {
+  r: AdminHelpRequest;
+  t: (key: string) => string;
+}) {
+  const stage = r.progressStage ?? (r.status === "open" ? null : "claimed");
+  const stageIndex = stage ? STAGE_ORDER.indexOf(stage as never) : -1;
+  const location =
+    [r.municipality, r.state].filter(Boolean).join(", ") || "—";
+
+  const statusLabel =
+    r.status === "open"
+      ? t("admin.statusOpen")
+      : r.status === "closed"
+        ? t("admin.statusClosed")
+        : t("admin.statusClaimed");
+
+  return (
+    <div
+      className={cn(
+        "rounded-xl border bg-background p-3",
+        r.stalled ? "border-risk-red/40 bg-risk-red-soft/30" : "border-border",
+      )}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="font-semibold">{location}</p>
+        <div className="flex items-center gap-2">
+          {r.riskLevel && (
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+                r.riskLevel === "red"
+                  ? "bg-risk-red-soft text-risk-red"
+                  : r.riskLevel === "orange"
+                    ? "bg-risk-orange-soft text-risk-orange"
+                    : r.riskLevel === "yellow"
+                      ? "bg-risk-yellow-soft text-risk-yellow"
+                      : "bg-risk-green-soft text-risk-green",
+              )}
+            >
+              {r.riskLevel}
+            </span>
+          )}
+          <span className="text-xs text-muted-foreground">{statusLabel}</span>
+          {r.stalled && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-risk-red-soft px-2 py-0.5 text-[10px] font-bold uppercase text-risk-red">
+              <AlertTriangle className="size-3" aria-hidden />
+              {t("admin.stalled")}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Lifecycle stepper */}
+      {r.status !== "open" && (
+        <div className="mt-3 flex items-center gap-1">
+          {STAGE_ORDER.map((s, i) => {
+            const done = stageIndex >= i;
+            return (
+              <div key={s} className="flex flex-1 flex-col items-center gap-1">
+                <div
+                  className={cn(
+                    "h-1.5 w-full rounded-full",
+                    done ? "bg-primary" : "bg-muted",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "text-[9px] uppercase tracking-wide",
+                    done ? "text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  {t(
+                    s === "claimed"
+                      ? "admin.stageClaimed"
+                      : s === "contacted"
+                        ? "admin.stageContacted"
+                        : s === "visited"
+                          ? "admin.stageVisited"
+                          : "admin.stageResolved",
+                  )}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="mt-3 grid gap-1 text-xs text-muted-foreground">
+        <p className="flex items-center gap-1">
+          <User className="size-3" aria-hidden />
+          {t("admin.reqClaimedBy")}:{" "}
+          <span className="font-medium text-foreground">
+            {r.engineerName || t("admin.reqUnclaimed")}
+          </span>
+        </p>
+        {r.claimedAt && (
+          <p>
+            {t("admin.reqClaimedAt")}: {formatDateTime(r.claimedAt)}
+          </p>
+        )}
+        {r.progressUpdatedAt && (
+          <p>
+            {t("admin.reqUpdatedAt")}: {formatDateTime(r.progressUpdatedAt)}
+          </p>
+        )}
+        {r.engineerVerdict && (
+          <p className="flex items-center gap-1 text-foreground">
+            <CheckCircle2 className="size-3 text-risk-green" aria-hidden />
+            {r.engineerVerdict === "agree"
+              ? t("admin.reqVerdictAgree")
+              : t("admin.reqVerdictAdjust")}
+            {r.priorRiskLevel && r.engineerVerdict === "adjust"
+              ? ` (${r.priorRiskLevel} → ${r.riskLevel})`
+              : ""}
+          </p>
+        )}
+        {r.note && (
+          <p className="italic">
+            {t("admin.reqResidentNote")}: {r.note}
+          </p>
+        )}
+        {r.engineerNote && (
+          <p className="italic text-foreground">
+            {t("admin.reqEngineerNote")}: {r.engineerNote}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 function EngineerCard({
   e,
   t,
