@@ -181,6 +181,12 @@ function ResultPage() {
         <div className="flex justify-center">
           <RiskBadge level={record.riskLevel} />
         </div>
+        {record.reportType === "professional" && (
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+            <ShieldCheck className="size-3.5" aria-hidden />
+            {t("result.proBadge")}
+          </div>
+        )}
         <p className={cn("mt-4 font-display text-2xl font-extrabold", theme.text)}>
           {t(theme.actionKey)}
         </p>
