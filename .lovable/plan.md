@@ -1,29 +1,45 @@
-# Fix "map.urgent" still showing
+# Replace Google Maps with Leaflet + OpenStreetMap (no API key)
 
-## What's actually going on
+## Why this fixes it
 
-The raw `map.urgent` label is **already fixed in the code**:
-- `src/lib/i18n.tsx` defines `"map.urgent": "Riesgo serio"` (ES) and `"Serious risk"` (EN).
-- `src/components/RiskGauge.tsx` renders `t("map.urgent")`, which resolves correctly.
+Google Maps fails on `evaluaya.app` because the only available key is the Lovable-managed one, restricted to `*.lovable.app`. Switching to **Leaflet** with **open raster tiles** removes API keys entirely — it renders on any domain (custom domain, preview, offline-cached) with zero credentials and no referrer restrictions. Leaflet is tiny (~40 KB), which also suits the app's low-bandwidth goal.
 
-The reason you still see it:
-1. The **published app at evaluaya.app is many versions behind** — it still shows the old 3-level risk scale (no orange tier at all). The `map.urgent` fix, the orange tier, and other recent work were never published.
-2. Your **preview/phone is serving a cached bundle** from an older build (orange tier present, i18n fix missing), so it shows the raw key.
+## Minimum-compromise approach
 
-This is a deploy + cache problem, not a code bug.
+`DamageMap.tsx` keeps the **exact same props** (`bubbles`, `onSelectState`, `fallback`) and the same visual behavior, so `mapa.tsx`, `zona.$estado.tsx`, and any other caller stay untouched. Only the rendering engine inside the component changes.
 
-## Plan
+Feature parity mapping:
 
-1. **Republish the app** so evaluaya.app serves the current code — this pushes the `map.urgent` fix and brings production in line with the 4-level scale (Green / Yellow / Orange / Red) and all other recent features.
+```text
+Google Maps  ->  Leaflet
+-----------------------------------------------
+google.maps.Map        ->  L.map
+Circle (meters radius)  ->  L.circle (meters radius, same scaling)
+InfoWindow             ->  L.popup (same HTML card)
+fitBounds              ->  map.fitBounds(L.latLngBounds)
+circle "click"         ->  circle.on("click") -> open popup
+"View zone" button     ->  wired on popupopen event
+```
 
-2. **Verify the live render** after publishing: load `evaluaya.app/mapa` and confirm the gauge legend reads "Riesgo serio" (ES) / "Serious risk" (EN) — not `map.urgent` — and that all four tiers appear.
+Everything users see stays the same: colored bubbles sized by report count, the popup card with risk breakdown and "View zone →" link, auto-fit to Venezuela, zoom for municipality detail, and the existing color legend below the map.
 
-3. **Bust stale PWA cache for returning visitors.** The service worker uses `autoUpdate` with `NetworkFirst` for pages, so HTML refreshes, but cached older asset bundles can linger on installed PWAs. To make the update reliable, add a lightweight "new version available — tap to refresh" prompt (or a one-time forced `skipWaiting` + reload on activation) so users like the volunteer who reported this get the new bundle without manually clearing cache.
+## Tiles
 
-4. **On your device right now:** use the preview refresh button (or pull-to-refresh / reinstall the PWA) to drop the cached bundle and load the current build.
+Use **CARTO "Positron" light** basemap (`light_all`) — clean, muted styling that fits the teal brand and keeps the colored bubbles readable. It's keyless and free for low-traffic civic use. Attribution (OpenStreetMap + CARTO) is shown in the map corner as required. (If you'd prefer the standard OpenStreetMap look, that's a one-line swap.)
 
-## Technical notes
+## Implementation steps
 
-- No dictionary or component changes are needed for `map.urgent`; the keys and lookup (`translate`, `i18n.tsx` line ~1683) are correct.
-- Step 3 touches `src/lib/pwa.ts` / `vite.config.ts` PWA config only — a small update-flow enhancement, no business logic.
-- Recommend a quick parity re-scan of `t("...")` calls vs the dictionary before publishing, to confirm no other raw keys ship to production.
+1. Add `leaflet` (and its TypeScript types) as a dependency.
+2. Rewrite `DamageMap.tsx` to use Leaflet:
+   - Dynamically import Leaflet inside the effect (`await import("leaflet")`) so server-side rendering doesn't crash on `window`.
+   - Import Leaflet's CSS (safe at module top — CSS only).
+   - Build the map, tile layer, circles, and popups; preserve the radius scaling, popup HTML, language reactivity, and `fitBounds` cap.
+   - Keep the `loading` / `error` states and the `fallback` render path (now triggers only if tiles genuinely fail).
+3. Remove the Google Maps script loader and the `VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_*` reads from this component.
+4. Verify in preview, then re-publish so `evaluaya.app` shows the working map.
+
+## Notes
+
+- No backend, data, or routing changes — purely the map rendering layer.
+- The Google Maps connector can be disconnected later if nothing else uses it; leaving it connected does no harm.
+- i18n keys (`map.mapUnavailable`, `map.mapLoading`, etc.) are reused as-is.
