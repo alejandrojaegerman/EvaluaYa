@@ -54,7 +54,7 @@ const Email = ({
     <Html lang="es" dir="ltr">
       <Head />
       <Preview>
-        {openCount} solicitud(es) de ayuda abierta(s) en tu zona — EvalúaYa
+        {`${openCount} solicitud(es) de ayuda abierta(s) en tu zona — EvalúaYa`}
       </Preview>
       <Body style={main}>
         <Container style={container}>
