@@ -1936,27 +1936,16 @@ const en: Dict = {
   // ----- Volunteer engineers (EN) -----
   "nav.volunteers": "Volunteer engineers",
 
-  "connect.title": "Talk to a volunteer engineer",
+  "connect.title": "Request a volunteer engineer",
   "connect.subtitleRed":
-    "Your result is RED. A volunteer engineer can guide you on next steps. Free and no obligation.",
+    "Your result is RED. Send your case and a verified volunteer engineer will review it and contact you. Free and no obligation.",
   "connect.subtitleYellow":
-    "A volunteer engineer can help you interpret these findings. Free and no obligation.",
+    "Send your case and a verified volunteer engineer can help you interpret these findings. Free and no obligation.",
   "connect.reassure": "Verified volunteer engineers — no cost.",
-  "connect.directTitle": "Verified volunteer engineers available",
-  "connect.coversYourState": "Covers your state",
-  "connect.whatsappEngineer": "Message on WhatsApp",
-  "connect.revealConsent":
-    "By continuing you'll share your contact with this volunteer on WhatsApp.",
-  "connect.revealing": "Opening…",
-  "connect.revealError": "Couldn't open the contact. Please try again.",
-  "connect.orgBadge": "Organization",
-  "connect.noneTitle": "We're still adding engineers in your state",
-  "connect.noneBody":
-    "Leave your number and a volunteer engineer will reach out as soon as one is available.",
-  "connect.requestTitle": "Request a callback",
+  "connect.requestTitle": "Request a verified engineer",
   "connect.requestBody":
-    "Prefer an engineer to message you? Leave your WhatsApp and we'll share your report only with approved engineers in your state.",
-  "connect.requestCta": "Request contact",
+    "Leave your WhatsApp and we'll share your report with approved volunteer engineers. One of them will take your case and reach out.",
+  "connect.requestCta": "Send request",
   "connect.requestSending": "Sending…",
   "connect.requestDone": "Done! An engineer will contact you soon.",
   "connect.requestError": "Could not send. Please try again.",
@@ -1964,13 +1953,12 @@ const en: Dict = {
   "connect.whatsappPlaceholder": "e.g. 0414 123 4567",
   "connect.whatsappHint":
     "Include your area code. If you're in Venezuela you can use your local number (e.g. 0414…); we add the country code (+58) automatically.",
-  "connect.noteOptional": "Message (optional)",
+  "connect.noteOptional": "Message (you can edit it)",
   "connect.notePlaceholder": "e.g. Large cracks in the living room.",
+  "connect.notePrefill": "My assessment came out as {risk}. Findings: {findings}.",
   "connect.privacy":
-    "Your number is only shared with approved volunteer engineers in your state. It's never published.",
+    "Your number is only shared with approved volunteer engineers. It's never published.",
   "connect.areEngineer": "Are you an engineer? Join as a volunteer",
-  "connect.waMessage":
-    "Hi, I completed an EvalúaYa assessment and my result needs guidance. Here's my report:",
 
   "vol.title": "Volunteer engineers",
   "vol.subtitle":
