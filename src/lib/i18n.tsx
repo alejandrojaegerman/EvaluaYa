@@ -1059,6 +1059,8 @@ const es: Dict = {
   "dash.individuals": "individuales",
   "dash.coverage": "Cobertura por estado",
   "dash.matching": "Conexiones",
+  "dash.matchingProgressHint":
+    "Lo que el ingeniero(a) reporta tras reclamar una solicitud.",
   "dash.requests": "Solicitudes",
   "dash.open": "Abiertas",
   "dash.openShort": "abiertas",
