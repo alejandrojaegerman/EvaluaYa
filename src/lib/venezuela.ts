@@ -274,7 +274,8 @@ export function resolveMunicipio(
 
   if (municipality && municipality.trim()) {
     const raw = normKey(municipality);
-    const canonical = MUNICIPIO_ALIASES[raw] ?? municipality.trim();
+    const stateAlias = MUNICIPIO_ALIASES_BY_STATE[est.name]?.[raw];
+    const canonical = stateAlias ?? MUNICIPIO_ALIASES[raw] ?? municipality.trim();
     const hit =
       MUNICIPIO_INDEX.get(`${normKey(est.name)}|${normKey(canonical)}`) ??
       MUNICIPIO_INDEX.get(`${normKey(est.name)}|${raw}`);
