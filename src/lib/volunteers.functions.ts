@@ -959,20 +959,23 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
   .handler(
     async ({
       data,
-    }): Promise<{ ok: boolean; requests: AdminHelpRequest[] }> => {
-      if (!adminOk(data.adminSecret)) return { ok: false, requests: [] };
+    }): Promise<{
+      ok: boolean;
+      requests: AdminHelpRequest[];
+      progress: AdminMatchingProgress | null;
+    }> => {
+      if (!adminOk(data.adminSecret))
+        return { ok: false, requests: [], progress: null };
       try {
         const { supabaseAdmin } = await import(
           "@/integrations/supabase/client.server"
         );
-        const { data: rows, error } = await supabaseAdmin
-          .from("help_requests")
-          .select(
-            "id, state, municipality, risk_level, status, note, created_at",
-          )
-          .order("created_at", { ascending: false })
-          .limit(300);
-        if (error || !rows) return { ok: true, requests: [] };
+        const [{ data: rows, error }, { data: prog }] = await Promise.all([
+          supabaseAdmin.rpc("get_admin_help_requests", { _limit: 300 }),
+          supabaseAdmin.rpc("get_admin_matching_progress"),
+        ]);
+        if (error || !rows) return { ok: true, requests: [], progress: null };
+        const p = Array.isArray(prog) ? prog[0] : null;
         return {
           ok: true,
           requests: rows.map((r) => ({
@@ -983,11 +986,33 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
             status: r.status as AdminHelpRequest["status"],
             note: r.note,
             createdAt: r.created_at,
+            progressStage: (r.progress_stage as ProgressStage | null) ?? null,
+            progressUpdatedAt: r.progress_updated_at ?? null,
+            claimedAt: r.claimed_at ?? null,
+            engineerName: r.engineer_name ?? null,
+            engineerNote: r.engineer_note ?? null,
+            assessmentPublicId: r.assessment_public_id ?? null,
+            aiRiskLevel: (r.ai_risk_level as RiskLevel | null) ?? null,
+            priorRiskLevel: (r.prior_risk_level as RiskLevel | null) ?? null,
+            engineerVerdict:
+              (r.engineer_verdict as "agree" | "adjust" | null) ?? null,
+            reportType: r.report_type ?? null,
+            stalled: Boolean(r.stalled),
           })),
+          progress: p
+            ? {
+                claimedOnly: p.claimed_only ?? 0,
+                contacted: p.contacted ?? 0,
+                visited: p.visited ?? 0,
+                resolved: p.resolved ?? 0,
+                stalled: p.stalled ?? 0,
+              }
+            : null,
         };
       } catch (e) {
         console.error("[volunteers] adminListHelpRequests failed", e);
-        return { ok: false, requests: [] };
+        return { ok: false, requests: [], progress: null };
       }
     },
   );
+
