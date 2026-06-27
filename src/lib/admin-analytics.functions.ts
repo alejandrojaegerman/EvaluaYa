@@ -97,6 +97,13 @@ const EMPTY: AdminAnalytics = {
     closed: 0,
     claimRate: 0,
     avgClaimHours: null,
+    progress: {
+      claimedOnly: 0,
+      contacted: 0,
+      visited: 0,
+      resolved: 0,
+      stalled: 0,
+    },
   },
   coverageGaps: [],
 };
