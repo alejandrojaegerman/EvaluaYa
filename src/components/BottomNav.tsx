@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
+  BarChart3,
   BookOpen,
   FolderOpen,
   HandHeart,
@@ -13,6 +14,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useState } from "react";
+
 
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
