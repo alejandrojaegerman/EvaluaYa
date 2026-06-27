@@ -424,6 +424,35 @@ const es: Dict = {
   "nav.language": "Idioma",
   "nav.help": "Ayuda",
   "nav.feedback": "Enviar comentarios",
+  "nav.data": "Datos",
+  "nav.dataDesc": "Mapa y datos abiertos para autoridades y medios",
+
+  "data.title": "Sala de datos",
+  "data.subtitle":
+    "Explora los daños estructurales reportados en Venezuela. Datos anónimos y abiertos, ideales para autoridades, medios y equipos de respuesta.",
+  "data.mobileNote":
+    "Estás viendo un resumen. Abre la sala de datos en una computadora para filtros, mapa ampliado y análisis completo.",
+  "data.openMap": "Ver mapa completo",
+  "data.filters": "Filtros",
+  "data.filterState": "Estado",
+  "data.filterMunicipality": "Municipio",
+  "data.filterAll": "Todos",
+  "data.filterRange": "Período",
+  "data.range7": "7 días",
+  "data.range30": "30 días",
+  "data.range90": "90 días",
+  "data.rangeAll": "Todo",
+  "data.clearFilters": "Limpiar filtros",
+  "data.activeScope": "Mostrando",
+  "data.scopeNational": "todo el país",
+  "data.chartsTitle": "Indicadores",
+  "data.mapTitle": "Mapa interactivo",
+  "data.noResults": "No hay datos para estos filtros.",
+  "data.export": "Exportar y compartir",
+  "mapa.seeFullData": "Ver datos completos",
+  "mapa.seeFullDataDesc":
+    "Filtros, tendencias y análisis por zona en la sala de datos.",
+
 
   "feedback.title": "Enviar comentarios",
   "feedback.subtitle":
