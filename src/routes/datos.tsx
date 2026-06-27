@@ -652,7 +652,12 @@ function DataRoomPage() {
 
       {/* Desktop filter bar */}
       <div className="mt-5 hidden md:block">
-        <DataRoomFilters filters={filters} onChange={setFilters} />
+        <DataRoomFilters
+          filters={filters}
+          onChange={setFilters}
+          availableStates={availableStates}
+          availableMunicipios={availableMunicipios}
+        />
         <p className="mt-2 text-xs text-muted-foreground">
           {t("data.activeScope")}: <span className="font-semibold">{scopeLabel}</span>
         </p>
