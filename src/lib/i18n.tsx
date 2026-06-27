@@ -849,7 +849,7 @@ const es: Dict = {
   "account.saveBody":
     "¿Quieres volver a ver este reporte más adelante o desde otro teléfono? Recibe un enlace por correo para guardarlo. Sin contraseña.",
   "account.saveHint":
-    "Solo usamos tu correo para enviarte el enlace de acceso. No es obligatorio.",
+    "Solo usamos tu correo para enviarte el enlace de acceso. Sin contraseña ni spam. No es obligatorio.",
   "account.emailLabel": "Correo electrónico",
   "account.emailPlaceholder": "tucorreo@ejemplo.com",
   "account.sendLink": "Enviar enlace",
