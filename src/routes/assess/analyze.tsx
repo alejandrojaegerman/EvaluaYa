@@ -136,6 +136,9 @@ function AnalyzeStep() {
                   ? [a.photoDataUrl]
                   : [],
           })),
+          ...(draft.engineerToken
+            ? { engineerToken: draft.engineerToken }
+            : {}),
         },
       });
 
