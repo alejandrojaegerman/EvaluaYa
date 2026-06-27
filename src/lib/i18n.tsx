@@ -1171,6 +1171,7 @@ const en: Dict = {
   "result.disclaimerShort":
     "Preliminary guidance. Confirm with a structural engineer or Civil Protection.",
   "result.notFound": "This assessment could not be found.",
+  "result.genericError": "Something went wrong. Please try again.",
   "result.goHome": "Go home",
   "result.assessedOn": "Assessed on",
 
