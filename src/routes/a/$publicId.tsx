@@ -106,7 +106,11 @@ function ResultPage() {
   const [cardBusy, setCardBusy] = useState(false);
 
   async function handleShare() {
-    const url = absoluteUrl(`/a/${record!.publicId}`);
+    const url = withUtm(`/a/${record!.publicId}`, {
+      source: "native",
+      medium: "share",
+      campaign: "result",
+    });
     const shareData = {
       title: "EvalúaYa",
       text: t(`result.${record!.riskLevel}.tag`),
@@ -125,7 +129,13 @@ function ResultPage() {
 
   async function copyLink() {
     try {
-      await navigator.clipboard.writeText(absoluteUrl(`/a/${record!.publicId}`));
+      await navigator.clipboard.writeText(
+        withUtm(`/a/${record!.publicId}`, {
+          source: "copy",
+          medium: "share",
+          campaign: "result",
+        }),
+      );
       toast.success(t("result.copied"));
     } catch {
       toast.error(t("result.genericError"));
@@ -133,7 +143,11 @@ function ResultPage() {
   }
 
   function shareWhatsApp() {
-    const url = absoluteUrl(`/a/${record!.publicId}`);
+    const url = withUtm(`/a/${record!.publicId}`, {
+      source: "whatsapp",
+      medium: "share",
+      campaign: "result",
+    });
     const text = `${t("result.whatsappMessage")} ${url}`;
     window.open(
       `https://wa.me/?text=${encodeURIComponent(text)}`,
@@ -146,18 +160,25 @@ function ResultPage() {
     if (cardBusy) return;
     setCardBusy(true);
     try {
-      const reportUrl = absoluteUrl(`/a/${record!.publicId}`);
+      // The URL drawn on the card stays clean/short; the tappable link in the
+      // accompanying share text carries the UTM attribution.
+      const cardUrl = absoluteUrl(`/a/${record!.publicId}`);
+      const linkUrl = withUtm(`/a/${record!.publicId}`, {
+        source: "image",
+        medium: "share",
+        campaign: "result",
+      });
       const blob = await generateResultCard({
         riskLevel: record!.riskLevel,
         tag: t(`result.${record!.riskLevel}.tag`),
         action: t(`result.${record!.riskLevel}.action`),
-        url: reportUrl,
+        url: cardUrl,
         footer: t("result.cardFooter"),
       });
       const outcome = await shareImageBlob(blob, {
         filename: `evaluaya-${record!.publicId}.png`,
         title: "EvalúaYa",
-        text: `${t("result.whatsappMessage")} ${reportUrl}`,
+        text: `${t("result.whatsappMessage")} ${linkUrl}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {
