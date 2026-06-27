@@ -85,6 +85,8 @@ function Index() {
           aria-hidden
           width={816}
           height={816}
+          fetchPriority="high"
+          decoding="async"
           className="pointer-events-none absolute -right-6 -top-2 hidden h-44 w-44 select-none opacity-90 sm:block"
         />
         <div className="relative sm:max-w-[72%]">
