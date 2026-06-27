@@ -185,6 +185,7 @@ function MapPage() {
         total: number;
         green: number;
         yellow: number;
+        orange: number;
         red: number;
       }
     >();
@@ -203,11 +204,13 @@ function MapPage() {
           total: 0,
           green: 0,
           yellow: 0,
+          orange: 0,
           red: 0,
         };
       cur.total += a.total;
       cur.green += a.green;
       cur.yellow += a.yellow;
+      cur.orange += a.orange;
       cur.red += a.red;
       grouped.set(key, cur);
     }
