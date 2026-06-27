@@ -226,6 +226,7 @@ function MapPage() {
         total: g.total,
         green: g.green,
         yellow: g.yellow,
+        orange: g.orange,
         red: g.red,
         dominant: dominantRisk(g),
       }))
