@@ -1,76 +1,51 @@
-# EvalúaYa — Feedback round (#1, #2, #3, #6, #5, #7, #8)
+# Make the 4-level risk scale retroactive + everywhere
 
-Built in phases by priority. Everything bilingual (ES primary / EN secondary).
+Today the 🟢🟡🟠🔴 scale exists in code but **0 of 111 saved reports use Orange** — 13 are green, 24 red, 74 yellow (the old catch-all). Several screens also still speak the old 3-level language. This plan reclassifies the existing records and makes every surface 4-level aware.
 
-## Phase 1 — Quick UX wins (#1, #2, #3, #7)
+## Part A — Reclassify the 111 existing records (Hybrid)
 
-### #1 Map legend + per-pin meaning
-- Add a permanent **legend** under the map in `mapa.tsx` and `zona.$estado.tsx`: one row per color with its meaning (🟢 Seguro / entrar · 🟡 Precaución, monitorea · 🟠 Necesitas un ingeniero pronto · 🔴 No entrar, evacúa).
-- Repeat the color meaning inside each pin's info window in `DamageMap.tsx` (the dominant color gets a plain-language label, not just counts).
+A one-time, admin-only backfill run in two passes. It is **monotonic**: a report's level can go up (e.g. yellow→orange) but is never silently downgraded (an existing 🔴 stays 🔴), because downgrading a life-safety placard on an already-shared report is unsafe.
 
-### #2 Plain language + visual ✅/❌ examples
-- Rewrite the technical checklist wording in `i18n.tsx` to everyday Spanish (e.g. "cimientos" → "la base del edificio (lo que toca el suelo)"; "grietas diagonales respecto a edificios vecinos" → "el muro se está separando del edificio de al lado").
-- Add an expandable **"Ver ejemplo / See example"** under each core structural question in `checklist.tsx` showing a side-by-side ✅ (sin daño) vs ❌ (con daño) illustration so the user can match what they see. Generate a compact set of labeled example images for the 7 core items (foundation, exterior walls, interior walls, columns/beams, doors/windows, roof, stairs).
+**Pass 1 — Deterministic (all 111, free, instant)**
+For every analyzed record, recompute the updated safety rules against its saved property + answers, then:
+- `newLevel = mostSevere(oldStoredLevel, newRuleLevel)` — picks up cases the new rules now call Orange (e.g. unreinforced masonry on its own, severe shaking, high spectral demand, very-soft soil).
+- Structural-damage heuristic mirroring the AI rule: if a record is still Yellow but any core structural item (foundation, walls, columns/beams, doors/windows, roof, stairs) was answered "yes", bump it to Orange — these are exactly the "a real structural element is affected" cases.
+- When a record is bumped, append a short localized note to its summary ("Updated to Orange under the new 4-level scale — reported structural items need an engineer's inspection") so the wording matches the new badge.
 
-### #3 Onboarding: someone can inspect on your behalf
-- Add an onboarding note on `assess/property.tsx` (and the home CTA) clarifying: *you don't have to be the one inside — a relative or neighbor can do the inspection for you, and you can share the result from anywhere (a shelter, or outside the country).*
-- Reinforce sharing affordance already present on the result page.
+**Pass 2 — AI re-analysis (borderline only)**
+Records that are *still* Yellow after Pass 1 **and have at least one saved photo** get re-sent to the AI under the current 4-level prompt (saved answers + stored photos pulled from private storage). Their `ai_result` (summary/findings/next steps) and level are fully regenerated, then clamped monotonically against the old level. This is the accuracy boost where it matters, while keeping AI spend small.
 
-### #7 New damage vs. pre-existing damage
-- Add a clear instruction at the start of the checklist: *only report NEW damage caused by the earthquake.*
-- Add a third framing to the existing Yes/No/Unsure: keep the answers, but add a per-item helper "¿No sabes si es nuevo? Marca 'No estoy seguro'" so uncertainty is captured instead of contaminating "Sí".
+**Safety / auditability**
+- Add a nullable `prior_risk_level` column to `assessments` so each change is reversible and we can later show "previously Yellow".
+- The backfill is an admin-gated server function (reusing an existing admin secret) and is idempotent (records already carrying `prior_risk_level` are skipped), so it can be re-run safely.
+- I'll report the before/after distribution after it runs.
 
-## Phase 2 — Fourth risk level: Orange 🟠 (#6)
+## Part B — Close every remaining 3-level content gap
 
-Split the overly broad yellow bucket into **🟡 Amarillo (monitorea, atiende X/Y/Z)** and **🟠 Naranja (necesitas un ingeniero urgente)** as a real fourth level: 🟢 → 🟡 → 🟠 → 🔴.
+Audited the codebase; these still ignore Orange and will be updated:
 
-- AI triage prompt gains an explicit `orange` definition (moderate-to-serious damage that needs a professional inspection soon, but not obvious imminent collapse). Safety-rule severity ordering becomes green→yellow→orange→red; the strongest "force red" rules stay red, while several current "force red" or "high caution" cases land on orange.
-- Recalibrate thresholds so a clean home (your Miami example) lands green, light cosmetic issues land yellow, and "get an engineer" cases land orange — reducing the yellow pile-up.
-- New orange theme color, badge, gauge segment, map color, OG result image, and PDF color.
-- All map/admin aggregates and drill-downs gain an orange count alongside green/yellow/red.
+- **Methodology page** (`metodologia.tsx` + i18n) — add an Orange section and move the rules that now produce Orange (URM-alone, severe shaking, high spectral demand, soft soil) into it, so the public "how it works" page matches the engine.
+- **Risk-factor bars** (`RiskFactorsPanel.tsx`) — add the Orange segment/count (the data already includes it).
+- **Same-building card** (`SameBuildingCard.tsx`, its `building.peers` type, and the peers mapping in `assessment.functions.ts`) — surface the Orange peer count that the database already returns but the app currently drops.
+- **Engineer / help-request flow** (`volunteers.functions.ts`) — add Orange to the submission schema and to the severity sort order (so Orange ranks between Red and Yellow in the engineer panel).
+- **Notification email** (`help-request-notification.tsx`) — add the Orange label + color.
+- **Offline provisional result** (`provisional.ts`) — a single structural-damage "yes" now yields Orange (not Yellow), matching the online logic so offline and online agree.
+- **Orange share/OG image** — generate `public/og-result-orange.jpg` (only green/yellow/red exist today) and confirm it's wired into the result page's OG lookup and the share card.
 
-## Phase 3 — Resident vs. professional reports (#5)
+Already verified as 4-level-complete (no change needed): `RiskBadge`, `RiskGauge`, `DamageMap` legend, `risk.ts`, `pdf.ts`, `share-card.ts`, the map/zona legends, and the admin/stats RPCs.
 
-Two report types, with **professional = an already-approved volunteer engineer** (reusing the existing approval + access-token system).
-
-- Each assessment is tagged `resident` (default) or `professional`, and professional reports store which approved engineer verified them.
-- From the engineer's private panel (`voluntarios.panel.$token.tsx`), an approved engineer can **create/verify a professional assessment**: same checklist questions plus their own professional risk call and notes. Their risk level is authoritative (not overridden by AI).
-- On the **map and admin**, verified professional pins are visually distinguished from self-reports (e.g. a check-ring marker + "Verificado por ingeniero" label), and counts can be split resident vs. verified.
-- Result page shows a "Verificado por un ingeniero voluntario" badge when applicable.
-
-## Phase 4 — Distribution to shelters (#8)
-
-The people who most need this (in a shelter, low digital context) won't find it alone → reach shelter coordinators directly.
-
-- Add a lightweight **"Coordinadores de refugio / Para refugios"** page with: a printable one-page poster (QR to the app + 4-step plain instructions), a pre-filled WhatsApp message a coordinator can forward, and a short pitch for orgs to help residents on-site.
-- Surface it from the "Más" nav and the community/invite section.
-
----
+All new copy is added in Spanish (primary) and English (secondary).
 
 ## Technical details
 
-**Risk model (Phase 2) — `orange` touches:**
-- `src/lib/assessment-types.ts`: `RiskLevel = "green" | "yellow" | "orange" | "red"`.
-- `src/lib/risk.ts`: add `orange` to `RISK_THEME`, `RISK_HEX`, and `isRiskLevel`.
-- `src/lib/safety-rules.ts`: `ORDER = ["green","yellow","orange","red"]`; add `fireOrange`; reassign rules (e.g. spalling+rebar, >7 floors + damage, severe shaking w/o collapse) to orange.
-- `src/lib/assessment.functions.ts`: extend `SYSTEM_PROMPT` levels + JSON validation to accept `orange`.
-- `src/styles.css`: `--risk-orange[-foreground|-soft]` tokens (light + dark) and `--color-risk-orange*` mappings.
-- Components: `RiskBadge.tsx`, `RiskGauge.tsx`, `DamageMap.tsx`, `mapa.tsx` (`RiskKey`, `dominantRisk`), `zona.$estado.tsx`, `pdf.ts`.
-- New OG image `public/og-result-orange.jpg` + map result lookup.
+- **Migration:** `ALTER TABLE public.assessments ADD COLUMN prior_risk_level text;` (keep existing grants/RLS).
+- **Backfill server fn** (`src/lib/admin-reclassify.functions.ts`, admin-secret gated): loads analyzed rows via `supabaseAdmin`, runs Pass 1 in-process using `evaluateSafetyRules` + `maxRisk`, runs Pass 2 only for still-yellow rows with photoPaths (download from `assessment-photos`, base64, call the gateway with the existing `SYSTEM_PROMPT`), writes `risk_level`, `ai_result`, and `prior_risk_level`. Reuses helpers already in `assessment.functions.ts`/`safety-rules.ts`.
+- No public RPC needs new columns — `get_*` aggregates already return `orange`; once records carry `risk_level='orange'`, the map/admin charts populate automatically.
+- `building.peers` type gains `orange: number`; mapping and `SameBuildingCard` segments/legend updated to 4 colors.
+- New i18n keys: `methodology.orange.*`, `building.legend.orange`, and the reclassification summary note.
 
-**DB migration (Phases 2 & 3):**
-- `assessments`: add `report_type text NOT NULL DEFAULT 'resident'`, `verified_by_engineer uuid NULL` (references `volunteer_engineers.id`), `engineer_notes text NULL`. `risk_level` stays free text (no CHECK to alter); app + RPCs handle `orange`.
-- Update RPCs to add an `orange int` column and (where useful) resident/professional split: `get_damage_aggregates`, `get_damage_totals`, `get_admin_assessment_stats`, `get_admin_top_states`, `get_admin_assessment_timeseries`, `get_risk_factors`, `get_building_peers`, `get_admin_building_clusters`, `get_admin_state_reports`. Re-pin `search_path` and keep current grants/security-definer hardening.
-- New RPC/server fn for an approved engineer (validated by `access_token`) to insert a `professional` assessment and to verify/attach to an existing one.
-
-**Stats/types:** extend `DamageTotals`, `AreaAggregate`, `RiskFactors` in `stats.functions.ts` and admin analytics types with `orange` (+ professional counts).
-
-**Assets:** generate ✅/❌ example images for the 7 core checklist items (Phase 1 #2) and the shelter poster QR art (Phase 4).
-
-**i18n:** new strings for legend, plain-language questions + examples, onboarding "alguien puede hacerlo por ti", new-damage instruction, the orange level (tag/action/findings), professional/verified labels, and the shelter page.
-
-### Suggested build order
-1. Phase 1 (no schema changes) — fastest visible impact.
-2. Phase 2 migration + orange wiring.
-3. Phase 3 migration + engineer panel pro flow + map differentiation.
-4. Phase 4 shelter kit.
+### Build order
+1. Migration (`prior_risk_level`).
+2. Part B content/type updates (so the app renders Orange correctly).
+3. Generate `og-result-orange.jpg`.
+4. Run the backfill, then report the new distribution.

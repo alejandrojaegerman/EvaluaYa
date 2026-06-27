@@ -11,6 +11,7 @@ import {
   MapPin,
   ScrollText,
   ShieldAlert,
+  TriangleAlert,
   ShieldCheck,
 } from "lucide-react";
 
@@ -52,9 +53,14 @@ function MethodologyPage() {
     t("methodology.red.plumbing"),
     t("methodology.red.combo"),
   ];
+  const orangeItems = [
+    t("methodology.orange.urm"),
+    t("methodology.orange.severe"),
+    t("methodology.orange.spectral"),
+    t("methodology.orange.soil"),
+  ];
   const yellowItems = [
     t("methodology.yellow.intensity"),
-    t("methodology.yellow.spectral"),
     t("methodology.yellow.soil"),
     t("methodology.yellow.floors"),
     t("methodology.yellow.structure"),
@@ -126,6 +132,28 @@ function MethodologyPage() {
               ))}
             </ul>
           </div>
+
+          <div className="mt-3 rounded-xl border border-risk-orange/40 bg-risk-orange-soft/50 p-3">
+            <div className="flex items-center gap-2">
+              <TriangleAlert className="size-4 text-risk-orange" aria-hidden />
+              <p className="text-sm font-semibold text-risk-orange">
+                {t("methodology.orange.title")}
+              </p>
+            </div>
+            <ul className="mt-2 space-y-1.5">
+              {orangeItems.map((item) => (
+                <li key={item} className="flex gap-2 text-sm">
+                  <span
+                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-risk-orange"
+                    aria-hidden
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+
 
           <div className="mt-3 rounded-xl border border-risk-yellow/40 bg-risk-yellow-soft/50 p-3">
             <div className="flex items-center gap-2">

@@ -265,9 +265,11 @@ function AdminPage() {
                         "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
                         r.riskLevel === "red"
                           ? "bg-risk-red-soft text-risk-red"
-                          : r.riskLevel === "yellow"
-                            ? "bg-risk-yellow-soft text-risk-yellow"
-                            : "bg-risk-green-soft text-risk-green",
+                          : r.riskLevel === "orange"
+                            ? "bg-risk-orange-soft text-risk-orange"
+                            : r.riskLevel === "yellow"
+                              ? "bg-risk-yellow-soft text-risk-yellow"
+                              : "bg-risk-green-soft text-risk-green",
                       )}
                     >
                       {r.riskLevel}

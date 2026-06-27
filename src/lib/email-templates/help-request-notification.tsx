@@ -27,12 +27,14 @@ const BRAND = "#0f3443";
 
 const RISK_LABEL: Record<string, string> = {
   red: "Riesgo alto (rojo)",
+  orange: "Riesgo moderado-serio (naranja)",
   yellow: "Riesgo moderado (amarillo)",
   green: "Riesgo bajo (verde)",
 };
 
 const RISK_COLOR: Record<string, string> = {
   red: "#b42318",
+  orange: "#c2410c",
   yellow: "#b54708",
   green: "#067647",
 };

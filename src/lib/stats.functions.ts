@@ -185,6 +185,7 @@ export type FactorRow = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
 };
 
@@ -220,6 +221,7 @@ export function groupRiskFactorRows(
     total: number | null;
     green: number | null;
     yellow: number | null;
+    orange: number | null;
     red: number | null;
   }>,
 ): RiskFactors {
@@ -238,6 +240,7 @@ export function groupRiskFactorRows(
       total: r.total ?? 0,
       green: r.green ?? 0,
       yellow: r.yellow ?? 0,
+      orange: r.orange ?? 0,
       red: r.red ?? 0,
     });
   }

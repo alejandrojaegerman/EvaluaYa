@@ -1,0 +1,1 @@
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS prior_risk_level text;

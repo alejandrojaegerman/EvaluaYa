@@ -4,7 +4,7 @@ import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import type { FactorRow, RiskFactors } from "@/lib/stats.functions";
 
-function rgb(level: "red" | "yellow" | "green"): string {
+function rgb(level: "red" | "orange" | "yellow" | "green"): string {
   const [r, g, b] = RISK_HEX[level];
   return `rgb(${r}, ${g}, ${b})`;
 }
@@ -44,6 +44,9 @@ function FactorGroup({
                   {row.red > 0 && (
                     <span style={{ color: rgb("red") }}>{row.red}</span>
                   )}
+                  {row.orange > 0 && (
+                    <span style={{ color: rgb("orange") }}>{row.orange}</span>
+                  )}
                   {row.yellow > 0 && (
                     <span style={{ color: rgb("yellow") }}>{row.yellow}</span>
                   )}
@@ -64,6 +67,9 @@ function FactorGroup({
                   }}
                 >
                   <div style={{ width: seg(row.red), backgroundColor: rgb("red") }} />
+                  <div
+                    style={{ width: seg(row.orange), backgroundColor: rgb("orange") }}
+                  />
                   <div
                     style={{ width: seg(row.yellow), backgroundColor: rgb("yellow") }}
                   />

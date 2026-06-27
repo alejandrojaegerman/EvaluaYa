@@ -319,6 +319,8 @@ const es: Dict = {
   "provisional.noFindings": "No se reportó daño estructural evidente en la inspección.",
   "provisional.step.evacuate": "Por precaución, evita usar el inmueble hasta una revisión profesional.",
   "provisional.step.limit": "Limita el uso de las áreas afectadas hasta una revisión.",
+  "provisional.step.engineer":
+    "Hay daño estructural: limita el uso y busca la revisión de un ingeniero pronto.",
   "provisional.step.stay": "Puedes permanecer, pero mantente atento a nuevos daños o réplicas.",
   "result.photos": "Fotos enviadas",
   "result.seismicContext": "Contexto sísmico",
@@ -589,13 +591,24 @@ const es: Dict = {
   "methodology.yellow.title": "Elevan a AMARILLO (precaución)",
   "methodology.yellow.intensity":
     "Sacudida moderada en tu ubicación: intensidad MMI VI+ o aceleración pico (PGA) ≥0.25g.",
-  "methodology.yellow.spectral":
-    "Demanda sísmica alta para la altura del edificio: aceleración espectral ≥0.40g en su período estimado.",
   "methodology.yellow.soil":
-    "Suelo blando o muy blando (vs30 bajo), que amplifica la sacudida y aumenta el riesgo de licuefacción.",
+    "Suelo blando (vs30 bajo), que amplifica la sacudida y aumenta el riesgo de licuefacción.",
   "methodology.yellow.floors": "Edificios de más de 7 pisos.",
   "methodology.yellow.structure":
     "Sistemas estructurales más vulnerables: pórticos de concreto, paredes de relleno, prefabricado o mampostería reforzada baja.",
+  "methodology.orange.title": "Elevan a NARANJA (necesitas un ingeniero pronto)",
+  "methodology.orange.urm":
+    "Mampostería no reforzada, aun sin daño visible ni sacudida fuerte: por su fragilidad necesita revisión profesional pronto.",
+  "methodology.orange.severe":
+    "Sacudida muy fuerte en tu ubicación (MMI VIII+ o PGA ≥0.50g), incluso sin daño visible.",
+  "methodology.orange.spectral":
+    "Demanda sísmica alta para la altura del edificio: aceleración espectral ≥0.40g en su período estimado.",
+  "methodology.orange.soil":
+    "Suelo muy blando (vs30 muy bajo), que amplifica fuertemente la sacudida y eleva el riesgo de licuefacción.",
+  "reclassify.orange.note":
+    " Actualizado a Naranja con la nueva escala de 4 niveles: los elementos estructurales reportados requieren la inspección de un ingeniero.",
+  "reclassify.updated":
+    "Resultado actualizado de «{from}» a «{to}» con la nueva escala de 4 niveles (🟢🟡🟠🔴), que distingue mejor el daño moderado del serio.",
 
   "methodology.layerB.title": "Capa 2 · Análisis con IA",
   "methodology.layerB.body":
@@ -1136,6 +1149,8 @@ const en: Dict = {
   "provisional.noFindings": "No obvious structural damage was reported in the inspection.",
   "provisional.step.evacuate": "As a precaution, avoid using the building until a professional review.",
   "provisional.step.limit": "Limit use of the affected areas until a review.",
+  "provisional.step.engineer":
+    "There is structural damage: limit use and seek an engineer's review soon.",
   "provisional.step.stay": "You may stay, but watch for new damage or aftershocks.",
   "result.photos": "Submitted photos",
   "result.seismicContext": "Seismic context",
@@ -1406,13 +1421,24 @@ const en: Dict = {
   "methodology.yellow.title": "Escalate to YELLOW (caution)",
   "methodology.yellow.intensity":
     "Moderate shaking at your location: intensity MMI VI+ or peak ground acceleration (PGA) ≥0.25g.",
-  "methodology.yellow.spectral":
-    "High seismic demand for the building's height: spectral acceleration ≥0.40g at its estimated period.",
   "methodology.yellow.soil":
-    "Soft or very soft soil (low vs30), which amplifies shaking and raises liquefaction risk.",
+    "Soft soil (low vs30), which amplifies shaking and raises liquefaction risk.",
   "methodology.yellow.floors": "Buildings taller than 7 floors.",
   "methodology.yellow.structure":
     "More vulnerable structural systems: concrete moment frames, infill walls, precast, or low-rise reinforced masonry.",
+  "methodology.orange.title": "Escalate to ORANGE (you need an engineer soon)",
+  "methodology.orange.urm":
+    "Unreinforced masonry, even with no visible damage or strong shaking: because it is so brittle it needs a professional look soon.",
+  "methodology.orange.severe":
+    "Very strong shaking at your location (MMI VIII+ or PGA ≥0.50g), even without visible damage.",
+  "methodology.orange.spectral":
+    "High seismic demand for the building's height: spectral acceleration ≥0.40g at its estimated period.",
+  "methodology.orange.soil":
+    "Very soft soil (very low vs30), which strongly amplifies shaking and raises liquefaction risk.",
+  "reclassify.orange.note":
+    " Updated to Orange under the new 4-level scale: the reported structural items need an engineer's inspection.",
+  "reclassify.updated":
+    "Result updated from \u201C{from}\u201D to \u201C{to}\u201D under the new 4-level scale (🟢🟡🟠🔴), which better separates moderate from serious damage.",
 
   "methodology.layerB.title": "Layer 2 · AI analysis",
   "methodology.layerB.body":

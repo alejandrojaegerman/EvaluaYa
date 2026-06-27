@@ -52,6 +52,7 @@ export type Database = {
           id: string
           language: string
           municipality: string | null
+          prior_risk_level: string | null
           property: Json
           public_id: string
           report_type: string
@@ -74,6 +75,7 @@ export type Database = {
           id?: string
           language?: string
           municipality?: string | null
+          prior_risk_level?: string | null
           property?: Json
           public_id: string
           report_type?: string
@@ -96,6 +98,7 @@ export type Database = {
           id?: string
           language?: string
           municipality?: string | null
+          prior_risk_level?: string | null
           property?: Json
           public_id?: string
           report_type?: string

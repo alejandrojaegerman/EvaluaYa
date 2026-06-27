@@ -60,9 +60,9 @@ export function computeProvisional(draft: AssessmentDraft): ProvisionalResult {
     findings.push(t("provisional.multiDamage"));
     nextSteps.push(t("provisional.step.evacuate"));
   } else if (damageCount === 1) {
-    level = maxRisk(level, "yellow");
+    level = maxRisk(level, "orange");
     findings.push(t("provisional.singleDamage"));
-    nextSteps.push(t("provisional.step.limit"));
+    nextSteps.push(t("provisional.step.engineer"));
   } else if (anyUnsure) {
     level = maxRisk(level, "yellow");
     findings.push(t("provisional.unsure"));
