@@ -2,10 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   HardHat,
-  MessageCircle,
-  CheckCircle2,
-  ExternalLink,
-  RotateCcw,
   MapPin,
   AlertCircle,
   ShieldCheck,
@@ -15,18 +11,20 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
-import { RiskBadge } from "@/components/RiskBadge";
+import { EngineerRequestCard } from "@/components/EngineerRequestCard";
 import { Button } from "@/components/ui/button";
+import type { RiskLevel } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
-import { formatDateTime } from "@/lib/datetime";
-import { absoluteUrl } from "@/lib/site";
 import { toWhatsappNumber } from "@/lib/phone";
 import {
   getEngineerPanel,
   claimHelpRequest,
-  closeHelpRequest,
+  updateRequestProgress,
+  submitEngineerVerdict,
   type EngineerPanel,
+  type ProgressStage,
 } from "@/lib/volunteers.functions";
+
 
 export const Route = createFileRoute("/voluntarios/panel/$token")({
   head: () => ({
