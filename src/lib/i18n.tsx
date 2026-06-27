@@ -575,6 +575,7 @@ const es: Dict = {
   "property.effortHint": "Solo toma unos minutos. Las fotos son opcionales.",
   "property.missingPrefix": "Para continuar, falta:",
   "property.miss.state": "estado",
+  "property.miss.municipality": "municipio",
   "property.miss.type": "tipo de edificio",
   "property.miss.age": "antigüedad",
 
