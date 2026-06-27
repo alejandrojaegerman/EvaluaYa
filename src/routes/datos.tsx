@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
+  BookOpen,
   ChevronDown,
   ChevronRight,
   Download,
@@ -27,6 +28,11 @@ import { SeveritySpotlight } from "@/components/SeveritySpotlight";
 import { ShareApp } from "@/components/ShareApp";
 import { TrendChart } from "@/components/TrendChart";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
@@ -624,7 +630,7 @@ function DataRoomPage() {
             <Stat value={totals!.areas} label={t("map.areasLabel")} />
             <Stat
               value={totals!.red + totals!.orange}
-              label={t("map.high")}
+              label={t("map.seriousOrHigh")}
               color={rgb("red")}
             />
             <Stat
@@ -722,6 +728,9 @@ function DataRoomPage() {
             </div>
           </section>
 
+          {/* Data dictionary */}
+          <DataDictionary />
+
           {/* Export & share */}
           <section className="mt-6">
             <h2 className="font-display text-lg font-bold">{t("data.export")}</h2>
@@ -797,5 +806,97 @@ function LegendRow({ color, label }: { color: string; label: string }) {
       />
       <span>{label}</span>
     </p>
+  );
+}
+
+function DataDictionary() {
+  const { t } = useLang();
+  const [open, setOpen] = useState(false);
+
+  const levels: Array<{ level: RiskKey; term: string; def: string }> = [
+    { level: "green", term: t("map.low"), def: t("data.dict.low.def") },
+    { level: "yellow", term: t("map.moderate"), def: t("data.dict.moderate.def") },
+    { level: "orange", term: t("map.urgent"), def: t("data.dict.serious.def") },
+    { level: "red", term: t("map.high"), def: t("data.dict.high.def") },
+  ];
+
+  const terms: Array<{ term: string; def: string }> = [
+    {
+      term: t("data.dict.evaluacion.term"),
+      def: t("data.dict.evaluacion.def"),
+    },
+    { term: t("data.dict.zonas.term"), def: t("data.dict.zonas.def") },
+    {
+      term: t("data.dict.seriousOrHigh.term"),
+      def: t("data.dict.seriousOrHigh.def"),
+    },
+    { term: t("data.dict.verified.term"), def: t("data.dict.verified.def") },
+  ];
+
+  return (
+    <section className="mt-6">
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <CollapsibleTrigger className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-accent/40">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <BookOpen className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold">
+                {t("data.dict.title")}
+              </span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                {t("data.dict.intro")}
+              </span>
+            </span>
+            <ChevronDown
+              className={`size-5 shrink-0 text-muted-foreground transition-transform ${
+                open ? "rotate-180" : ""
+              }`}
+              aria-hidden
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="border-t border-border p-4">
+              <dl className="space-y-3">
+                {levels.map((l) => (
+                  <div key={l.level} className="flex items-start gap-2.5">
+                    <span
+                      className="mt-1 size-3 shrink-0 rounded-full"
+                      style={{ backgroundColor: rgb(l.level) }}
+                      aria-hidden
+                    />
+                    <div className="min-w-0">
+                      <dt className="text-sm font-semibold">{l.term}</dt>
+                      <dd className="text-xs leading-relaxed text-muted-foreground">
+                        {l.def}
+                      </dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+
+              <dl className="mt-4 space-y-3 border-t border-border pt-4">
+                {terms.map((tm) => (
+                  <div key={tm.term}>
+                    <dt className="text-sm font-semibold">{tm.term}</dt>
+                    <dd className="text-xs leading-relaxed text-muted-foreground">
+                      {tm.def}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <Button asChild variant="outline" size="sm" className="mt-4">
+                <Link to="/metodologia">
+                  {t("data.dict.more")}
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </div>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
+    </section>
   );
 }

@@ -450,6 +450,27 @@ const es: Dict = {
   "data.mapTitle": "Mapa interactivo",
   "data.noResults": "No hay datos para estos filtros.",
   "data.export": "Exportar y compartir",
+  "data.dict.title": "¿Cómo leer estos datos?",
+  "data.dict.intro":
+    "Definiciones de los términos usados en esta página, para que todos interpreten los números de la misma forma.",
+  "data.dict.evaluacion.term": "Evaluación",
+  "data.dict.evaluacion.def":
+    "Una autoevaluación enviada desde la app. No equivale a un edificio único: un mismo edificio puede tener varias evaluaciones (p. ej. distintos apartamentos).",
+  "data.dict.zonas.term": "Zonas",
+  "data.dict.zonas.def":
+    "Cantidad de municipios o estados distintos con al menos una evaluación.",
+  "data.dict.low.def": "Sin daños visibles. Uso normal.",
+  "data.dict.moderate.def": "Daños menores. Monitorea y atiende pronto.",
+  "data.dict.serious.def":
+    "Daños moderados a serios. Necesitas un ingeniero con urgencia.",
+  "data.dict.high.def": "Daños graves. No entres; evacúa.",
+  "data.dict.seriousOrHigh.term": "Riesgo serio o alto",
+  "data.dict.seriousOrHigh.def":
+    "Suma de las evaluaciones en nivel naranja (moderado a serio) y rojo (alto): los casos que requieren un ingeniero. No es lo mismo que «Riesgo alto», que cuenta solo el nivel rojo.",
+  "data.dict.verified.term": "Verificado por ingeniero",
+  "data.dict.verified.def":
+    "Evaluaciones confirmadas por un ingeniero voluntario, no solo por el residente.",
+  "data.dict.more": "Ver metodología completa",
   "mapa.seeFullData": "Ver datos completos",
   "mapa.seeFullDataDesc":
     "Filtros, tendencias y análisis por zona en la sala de datos.",
@@ -585,9 +606,10 @@ const es: Dict = {
   "map.totalAssessments": "Evaluaciones",
   "map.areasLabel": "Zonas",
   "map.high": "Riesgo alto",
-  "map.urgent": "Riesgo serio",
+  "map.urgent": "Riesgo moderado a serio",
   "map.moderate": "Riesgo moderado",
   "map.low": "Riesgo bajo",
+  "map.seriousOrHigh": "Riesgo serio o alto",
   "map.distribution": "Distribución de riesgo",
   "map.geoTitle": "Vista geográfica",
   "map.geoHint": "El tamaño indica cantidad de reportes; el color, el riesgo predominante.",
@@ -1426,6 +1448,27 @@ const en: Dict = {
   "data.mapTitle": "Interactive map",
   "data.noResults": "No data for these filters.",
   "data.export": "Export & share",
+  "data.dict.title": "How to read this data",
+  "data.dict.intro":
+    "Definitions for the terms on this page, so everyone reads the numbers the same way.",
+  "data.dict.evaluacion.term": "Assessment",
+  "data.dict.evaluacion.def":
+    "A self-assessment submitted from the app. It is not the same as a unique building: one building may have several assessments (e.g. different apartments).",
+  "data.dict.zonas.term": "Areas",
+  "data.dict.zonas.def":
+    "Number of distinct municipalities or states with at least one assessment.",
+  "data.dict.low.def": "No visible damage. Normal use.",
+  "data.dict.moderate.def": "Minor damage. Monitor and address soon.",
+  "data.dict.serious.def":
+    "Moderate-to-serious damage. You urgently need an engineer.",
+  "data.dict.high.def": "Severe damage. Do not enter; evacuate.",
+  "data.dict.seriousOrHigh.term": "Serious or high risk",
+  "data.dict.seriousOrHigh.def":
+    "The sum of assessments at orange (moderate-to-serious) and red (high) level: the cases that need an engineer. It is not the same as “High risk”, which counts only the red level.",
+  "data.dict.verified.term": "Engineer-verified",
+  "data.dict.verified.def":
+    "Assessments confirmed by a volunteer engineer, not just by the resident.",
+  "data.dict.more": "See full methodology",
   "mapa.seeFullData": "View full data",
   "mapa.seeFullDataDesc":
     "Filters, trends and by-area analysis in the data room.",
@@ -1562,9 +1605,10 @@ const en: Dict = {
   "map.totalAssessments": "Assessments",
   "map.areasLabel": "Areas",
   "map.high": "High risk",
-  "map.urgent": "Serious risk",
+  "map.urgent": "Moderate-to-serious risk",
   "map.moderate": "Moderate risk",
   "map.low": "Low risk",
+  "map.seriousOrHigh": "Serious or high risk",
   "map.distribution": "Risk distribution",
   "map.geoTitle": "Geographic view",
   "map.geoHint": "Size shows number of reports; color shows the dominant risk.",
