@@ -1517,6 +1517,27 @@ const en: Dict = {
   "map.dataNote": "Open, anonymized data for authorities, NGOs and press.",
   "map.cardHeadline": "Structural damage reported",
   "map.cardCta": "Assess your home free at EvalúaYa",
+  "map.storyIntro":
+    "Scroll to see the story behind the data: how serious the damage is, how it's trending, and why.",
+  "map.severityTitle": "How serious it is",
+  "map.severityNeedAttention": "need urgent attention",
+  "map.severityCaption":
+    "Share of assessments at orange or red level: moderate-to-severe damage that needs an engineer.",
+  "map.severityTopArea": "Most affected area",
+  "map.severityNone":
+    "For now, most assessments show no serious damage.",
+  "map.trendTitle": "Reports over time",
+  "map.trendSubtitle":
+    "Assessments per day (last 90 days), split by risk level.",
+  "map.trendEmpty": "Not enough data yet to show the trend.",
+  "map.trendTotalReports": "reports in this period",
+  "map.whyTitle": "Why the data looks this way",
+  "map.whySubtitle":
+    "The factors that show up most across assessments nationwide: flagged damage, building age and type, seismic intensity, and triggered safety rules.",
+  "map.exportTitle": "Export and share",
+  "map.exportSubtitle":
+    "Take this data to an engineer, authority, or news outlet.",
+
 
   "result.shareWhatsapp": "Share on WhatsApp",
   "result.whatsappMessage":
