@@ -10,6 +10,7 @@ export function Footer() {
 
   const columns: Array<{
     heading: string;
+    note?: string;
     links: Array<{ to: string; label: string }>;
   }> = [
     {
@@ -22,6 +23,7 @@ export function Footer() {
     },
     {
       heading: t("footer.participate"),
+      note: t("engineers.footerDesc"),
       links: [
         { to: "/voluntarios", label: t("nav.volunteers") },
         { to: "/assess/property", label: t("footer.evaluate") },
