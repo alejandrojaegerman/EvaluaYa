@@ -758,6 +758,10 @@ const es: Dict = {
   "panel.title": "Panel de ingeniero voluntario",
   "panel.welcome": "Hola",
   "panel.coverage": "Cobertura",
+  "panel.proTitle": "Evaluación profesional",
+  "panel.proBody":
+    "Realiza una inspección certificada. Responderás las mismas preguntas y el reporte quedará marcado como verificado por ingeniero en el mapa.",
+  "panel.startPro": "Iniciar evaluación profesional",
   "panel.invalid": "Enlace no válido o no aprobado",
   "panel.invalidBody":
     "Este enlace no corresponde a un voluntario aprobado. Si crees que es un error, contáctanos.",
@@ -1607,6 +1611,10 @@ const en: Dict = {
   "panel.title": "Volunteer engineer panel",
   "panel.welcome": "Hi",
   "panel.coverage": "Coverage",
+  "panel.proTitle": "Professional evaluation",
+  "panel.proBody":
+    "Run a certified inspection. You'll answer the same questions and the report will be marked as engineer-verified on the map.",
+  "panel.startPro": "Start professional evaluation",
   "panel.invalid": "Invalid or unapproved link",
   "panel.invalidBody":
     "This link doesn't match an approved volunteer. If you think this is a mistake, contact us.",
