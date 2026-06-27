@@ -145,6 +145,47 @@ export const getStateStats = createServerFn({ method: "GET" })
     }
   });
 
+export type TimeseriesPoint = {
+  day: string;
+  total: number;
+  green: number;
+  yellow: number;
+  orange: number;
+  red: number;
+};
+
+/**
+ * Public, anonymized daily damage trend for the last 90 days. Counts only —
+ * never addresses, photos or report ids. Days are bucketed in Eastern time by
+ * the underlying RPC. Brokered through the service role so the locked base
+ * table stays private.
+ */
+export const getDamageTimeseries = createServerFn({ method: "GET" }).handler(
+  async (): Promise<TimeseriesPoint[]> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data, error } = await supabaseAdmin.rpc("get_damage_timeseries");
+      if (error || !data) {
+        if (error) console.error("[stats] getDamageTimeseries", error);
+        return [];
+      }
+      return data.map((r) => ({
+        day: typeof r.day === "string" ? r.day : String(r.day),
+        total: r.total ?? 0,
+        green: r.green ?? 0,
+        yellow: r.yellow ?? 0,
+        orange: r.orange ?? 0,
+        red: r.red ?? 0,
+      }));
+    } catch (e) {
+      console.error("[stats] getDamageTimeseries failed", e);
+      return [];
+    }
+  },
+);
+
 /** Small headline counts for the home trust banner. */
 export const getDamageTotals = createServerFn({ method: "GET" }).handler(
   async (): Promise<DamageTotals> => {
