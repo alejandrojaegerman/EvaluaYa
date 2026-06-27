@@ -9,7 +9,7 @@ import { RISK_HEX } from "./risk";
  * Generate a one-page PDF summary of an assessment and trigger a download.
  * Runs entirely client-side so it works without re-contacting the server.
  */
-export function downloadAssessmentPdf(record: AssessmentRecord) {
+export async function downloadAssessmentPdf(record: AssessmentRecord) {
   const lang = record.language as Lang;
   const t = (k: string) => translate(lang, k);
 
@@ -152,6 +152,72 @@ export function downloadAssessmentPdf(record: AssessmentRecord) {
     addSpace(lines.length * 14 + 2);
   }
 
+  // Photos — embedded so the downloadable PDF is self-contained evidence the
+  // resident can hand to an engineer or authority.
+  const photoItems: { area: string; url: string }[] = [];
+  for (const a of record.answers) {
+    const urls = record.photoUrls[a.id];
+    if (urls && urls.length) {
+      for (const url of urls) {
+        photoItems.push({ area: t(`item.${a.id}.area`), url });
+      }
+    }
+  }
+
+  if (photoItems.length) {
+    const pageH = doc.internal.pageSize.getHeight();
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageH - 64) {
+        doc.addPage();
+        y = margin;
+      }
+    };
+    ensureSpace(40);
+    heading(t("pdf.photos"));
+
+    const gap = 12;
+    const cellW = (contentW - gap) / 2;
+    const imgH = 96;
+    const rowH = imgH + 18 + gap;
+    let col = 0;
+    let rowTop = y;
+
+    for (const item of photoItems) {
+      const img = await loadImage(item.url);
+      if (!img) continue;
+      if (col === 0) {
+        ensureSpace(rowH);
+        rowTop = y;
+      }
+      const x = margin + col * (cellW + gap);
+      const scale = Math.min(cellW / img.w, imgH / img.h);
+      const dw = img.w * scale;
+      const dh = img.h * scale;
+      const dx = x + (cellW - dw) / 2;
+      const dy = rowTop + (imgH - dh) / 2;
+      let drawn = true;
+      try {
+        doc.addImage(img.dataUrl, img.format, dx, dy, dw, dh);
+      } catch {
+        drawn = false;
+      }
+      if (!drawn) continue;
+      doc.setFontSize(9);
+      doc.setTextColor(90, 100, 110);
+      const cap = doc.splitTextToSize(item.area, cellW);
+      doc.text(cap[0], x, rowTop + imgH + 11);
+      col += 1;
+      if (col === 2) {
+        col = 0;
+        y = rowTop + rowH;
+      }
+    }
+    if (col === 1) {
+      y = rowTop + rowH;
+    }
+    addSpace(4);
+  }
+
   // Footer
   const footerY = doc.internal.pageSize.getHeight() - 36;
   doc.setDrawColor(220, 224, 228);
@@ -165,4 +231,36 @@ export function downloadAssessmentPdf(record: AssessmentRecord) {
   });
 
   doc.save(`evaluaya-${record.publicId}.pdf`);
+}
+
+type LoadedImage = { dataUrl: string; format: "JPEG" | "PNG"; w: number; h: number };
+
+/**
+ * Fetch a signed photo URL and decode it client-side into a data URL plus
+ * intrinsic dimensions so jsPDF can embed it. Returns null on any failure so
+ * the PDF always generates even if a photo can't be loaded.
+ */
+async function loadImage(url: string): Promise<LoadedImage | null> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    const format: "JPEG" | "PNG" = blob.type === "image/png" ? "PNG" : "JPEG";
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result as string);
+      fr.onerror = () => reject(new Error("read failed"));
+      fr.readAsDataURL(blob);
+    });
+    const dims = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve({ w: im.naturalWidth, h: im.naturalHeight });
+      im.onerror = () => reject(new Error("decode failed"));
+      im.src = dataUrl;
+    });
+    if (!dims.w || !dims.h) return null;
+    return { dataUrl, format, w: dims.w, h: dims.h };
+  } catch {
+    return null;
+  }
 }

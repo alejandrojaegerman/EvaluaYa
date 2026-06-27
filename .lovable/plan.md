@@ -1,62 +1,48 @@
-## Goal
+# Optimize completion, data quality & help requests
 
-Turn `/mapa` from a stacked dashboard into a smooth, scroll-revealed data story. As the user scrolls, progressively deeper visuals fade/slide in — leading with **severity & urgency**, then **why the damage looks this way**, ending at the existing **export / share / participate** section. Motion stays subtle (gentle fade + slide-up, animated count-ups, chart draw-in). All data stays anonymized and public.
+Goal: get more Venezuelan visitors through the existing 3-step assessment, collect better data, generate more help requests, and put photos into the downloadable report — **without changing the flow or the assessment/AI/safety logic**. All work stays in presentation, copy, and the client-side PDF generator.
 
-## Narrative order (top → bottom)
+## 1. Property screen — reduce visual load (biggest drop-off)
 
-```text
-1. Header + animated headline counters (count-up on reveal)
-2. Severity spotlight        ← NEW (red+orange share, urgency framing)
-3. Reports over time         ← NEW trend chart (animated area chart)
-4. Risk distribution gauge   ← existing RiskGauge (kept)
-5. Interactive map + legend  ← existing DamageMap (kept)
-6. Most-affected areas list  ← existing, with per-area "why" drilldown (kept)
-7. Why behind the data       ← NEW national risk-factors panel
-8. Export your view          ← existing share-image + CSV (kept, framed as section)
-9. Institutions / Share / Start CTA ← existing (kept)
-```
+The property step currently shows ~8 stacked fields at full weight, which feels heavy on mobile (86% of traffic). Same fields, same data, lighter presentation:
 
-Each section is wrapped in a reveal animation that triggers once when it enters the viewport.
+- Group the page into clear blocks: **Location** (state*, municipality, address) and **Building** (type, floors, age), with the structural-system selector collapsed as it already is.
+- Move the two optional free-text fields (address, building name) into a single collapsible "Add more detail (optional)" disclosure so the required path is visually shorter. They stay editable and saved exactly as today.
+- Tighten spacing (the form uses `space-y-7`; reduce to a calmer rhythm) and make the one required field (Estado) visually obvious so people know what's actually needed.
+- Keep the geo auto-detect, ShakeMap intensity card, and all existing behavior intact.
 
-## New data source (anonymized, public)
+## 2. Data-quality nudges (no new required fields, no flow change)
 
-Add a public `get_damage_timeseries` DB function (SECURITY DEFINER, `search_path=public`), mirroring the existing admin timeseries but exposed publicly with **counts only** — no addresses, ids, or photos. Returns daily rows for the last 90 days: `day, total, green, yellow, orange, red`. Grant `EXECUTE` to `anon` and `authenticated`.
+- **Building name nudge**: inside the optional-detail disclosure, a one-line hint explaining that the tower/building name lets neighbors' reports group together (improves same-building clustering). Wording only — field stays optional.
+- **Location nudge**: a soft helper line under municipality/address explaining it powers the public damage map, encouraging (not forcing) entry.
+- **Photo-on-"Yes" nudge (checklist)**: when a structural item is answered **Yes** (damage present) and has no photo yet, show a gentle inline prompt on that card ("A photo helps an engineer understand this") with the existing camera/gallery buttons. Purely a prompt; photos remain optional and submission is never blocked.
 
-Add `getDamageTimeseries` to `src/lib/stats.functions.ts` (same brokered `supabaseAdmin` pattern as the other public stats fns) returning a plain `TimeseriesPoint[]` DTO.
+## 3. Help requests — make the engineer card more prominent (Yellow/Orange/Red)
 
-## New components
+Keep current eligibility (Green excluded). Increase conversions on the existing `ConnectEngineers` card:
 
-- `src/components/Reveal.tsx` — IntersectionObserver wrapper. SSR-safe: same markup on server and first client render (no hydration mismatch); a post-mount effect adds the `is-visible` class to fade + slide-up (`opacity`/`translateY` CSS transition). Respects `prefers-reduced-motion` (renders fully visible, no transform).
-- `src/components/CountUp.tsx` — animates a number from 0 to its final value when revealed. Renders the final formatted value on SSR/first render to avoid hydration mismatch, then animates after mount. Honors reduced motion.
-- `src/components/SeveritySpotlight.tsx` — headline urgency block: big "X% of assessments are Orange/Red" with a thin stacked severity bar (red+orange vs rest), short plain-language caption, and the top most-affected area name. Uses existing `RISK_HEX` tokens.
-- `src/components/TrendChart.tsx` — Recharts stacked `AreaChart` (red/orange/yellow/green by day) with built-in draw-in animation, ET day labels via `formatDayLabel`, responsive container, and a small empty-state.
+- Move the "request a callback / contact an engineer" card higher on the result page, directly under the risk hero + findings, before the seismic/photos/inspection detail sections.
+- Stronger headline and a clear single primary action; keep the two-tap WhatsApp consent flow and the callback form unchanged.
+- Add a short reassurance line ("Free, volunteer engineers — no cost") to lower hesitation.
+- No backend/logic changes to `submitHelpRequest` or eligibility rules.
 
-## Edits to `src/routes/mapa.tsx`
+## 4. Photos in the downloadable PDF
 
-- Load timeseries alongside totals/aggregates (extend the existing `Promise.all`); also fetch **national** risk factors (`getRiskFactors({})` with no state filter) for the new "why" section, lazy-loaded when that section first reveals.
-- Wrap each major `<section>` in `<Reveal>`, applying a small stagger.
-- Replace the two plain headline counters with `<CountUp>` values.
-- Insert `SeveritySpotlight` and `TrendChart` near the top; insert the national `RiskFactorsPanel` (reusing the existing component) as the "why behind the data" section above the export block.
-- Group share-image + CSV under a clearly headed "Export / open data" section (visual only; same handlers).
-- Keep all existing behavior: map navigation to `/zona/$estado`, per-area why drilldown, institution form, ShareApp, start CTA.
+Today photos appear on the web result page but not in `downloadAssessmentPdf`. Add a photo section so the PDF a user shows an engineer/authority is complete:
 
-## i18n
+- After the inspection answers, add a **"Photos / Fotos"** section that embeds the assessment photos (from `record.photoUrls`), labeled by checklist item area.
+- Lay them out as a compact grid of thumbnails, adding pages as needed (`doc.addPage()` with page-break handling) so it never overflows.
+- Fetch each signed URL, draw via `doc.addImage`; skip any image that fails to load so the PDF always generates. Keep everything client-side (jsPDF) as it is now.
 
-Add ES (primary) + EN keys for the new copy: severity spotlight title/caption/percent label, trend section title + subtitle + legend, "why behind the data" national section title/subtitle, and the "Export / open data" section heading. Follow the existing `map.*` key conventions in `src/lib/i18n.tsx`.
+## 5. Copy / i18n
 
-## Motion & styling
+Add the new ES (primary) + EN strings for the nudges, reassurance line, collapsible label, and PDF "Photos" heading in `src/lib/i18n.tsx`.
 
-- Reveal: `opacity 0→1`, `translateY 12px→0`, ~450ms ease-out, triggered once.
-- Count-up: ~900ms ease-out.
-- Recharts `isAnimationActive` for chart draw-in.
-- All colors via existing semantic tokens / `RISK_HEX`; no hardcoded colors. Mobile-first (page is 390px wide in preview).
+---
 
 ## Technical notes
 
-- New timeseries fn is public read-only and anonymized — consistent with the existing `get_damage_*` public RPCs.
-- Reveal/CountUp are written SSR-safe so they don't reintroduce hydration warnings.
-- No new dependencies (Recharts already installed; reveal uses native IntersectionObserver).
-
-## Out of scope
-
-No changes to assessment flow, admin, or the underlying assessments table. No new tracking of personal data.
+- **Files touched**: `src/routes/assess/property.tsx` (grouping + collapsible optional detail), `src/routes/assess/checklist.tsx` (photo-on-Yes prompt), `src/components/ConnectEngineers.tsx` + `src/routes/a/$publicId.tsx` (reorder/emphasis), `src/lib/pdf.ts` (photo embedding), `src/lib/i18n.tsx` (strings).
+- **No changes** to: draft schema, `assessment.functions.ts`, `analyzeAssessment`, safety rules, ShakeMap logic, DB schema, or the 3-step navigation.
+- PDF images: jsPDF `addImage` needs raster data; fetch each signed URL to a data URL client-side before drawing, with a try/catch per image and automatic page breaks.
+- The Dashlane-extension hydration warning on `/mapa` is environmental (browser extension), not addressed here.

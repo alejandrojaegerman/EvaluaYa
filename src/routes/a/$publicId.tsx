@@ -251,14 +251,14 @@ function ResultPage() {
         </Section>
       )}
 
-      {/* Other reports from the same building (anonymized counts) */}
-      <SameBuildingCard record={record} />
-
-
-      {/* Connect with a volunteer engineer (Red / Orange / Yellow) */}
+      {/* Connect with a volunteer engineer (Red / Orange / Yellow) — placed
+          high, right after findings, so urgent residents see the help option. */}
       {(record.riskLevel === "red" ||
         record.riskLevel === "orange" ||
         record.riskLevel === "yellow") && <ConnectEngineers record={record} />}
+
+      {/* Other reports from the same building (anonymized counts) */}
+      <SameBuildingCard record={record} />
 
 
 

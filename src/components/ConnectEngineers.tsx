@@ -147,6 +147,10 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       <p className="mt-2 text-sm leading-relaxed text-foreground/80">
         {urgent ? t("connect.subtitleRed") : t("connect.subtitleYellow")}
       </p>
+      <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card/80 px-2.5 py-1 text-xs font-semibold text-foreground/70">
+        <BadgeCheck className="size-3.5 text-primary" aria-hidden />
+        {t("connect.reassure")}
+      </p>
 
       {/* Directory of approved engineers */}
       {hasEngineers && (
