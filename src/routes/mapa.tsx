@@ -469,6 +469,7 @@ function MapPage() {
               <RiskGauge
                 green={totals!.green}
                 yellow={totals!.yellow}
+                orange={totals!.orange}
                 red={totals!.red}
                 label={t("map.totalAssessments")}
               />
