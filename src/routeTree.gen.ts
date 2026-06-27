@@ -37,7 +37,6 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
-import { Route as ApiPublicAdminForwardHelpRequestRouteImport } from './routes/api/public/admin/forward-help-request'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -184,12 +183,6 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicAdminForwardHelpRequestRoute =
-  ApiPublicAdminForwardHelpRequestRouteImport.update({
-    id: '/api/public/admin/forward-help-request',
-    path: '/api/public/admin/forward-help-request',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -215,7 +208,6 @@ export interface FileRoutesByFullPath {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
-  '/api/public/admin/forward-help-request': typeof ApiPublicAdminForwardHelpRequestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -246,7 +238,6 @@ export interface FileRoutesByTo {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
-  '/api/public/admin/forward-help-request': typeof ApiPublicAdminForwardHelpRequestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -278,7 +269,6 @@ export interface FileRoutesById {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
-  '/api/public/admin/forward-help-request': typeof ApiPublicAdminForwardHelpRequestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -311,7 +301,6 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
-    | '/api/public/admin/forward-help-request'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -342,7 +331,6 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
-    | '/api/public/admin/forward-help-request'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -373,7 +361,6 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
-    | '/api/public/admin/forward-help-request'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -405,7 +392,6 @@ export interface RootRouteChildren {
   LovableCronFunnelAlertRoute: typeof LovableCronFunnelAlertRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
-  ApiPublicAdminForwardHelpRequestRoute: typeof ApiPublicAdminForwardHelpRequestRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -611,13 +597,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/admin/forward-help-request': {
-      id: '/api/public/admin/forward-help-request'
-      path: '/api/public/admin/forward-help-request'
-      fullPath: '/api/public/admin/forward-help-request'
-      preLoaderRoute: typeof ApiPublicAdminForwardHelpRequestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -645,7 +624,6 @@ const rootRouteChildren: RootRouteChildren = {
   LovableCronFunnelAlertRoute: LovableCronFunnelAlertRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,
-  ApiPublicAdminForwardHelpRequestRoute: ApiPublicAdminForwardHelpRequestRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
