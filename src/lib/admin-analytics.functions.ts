@@ -142,6 +142,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
           cov,
           mStats,
           gaps,
+          mProgress,
         ] = await Promise.all([
           supabaseAdmin.rpc("get_admin_assessment_stats"),
           supabaseAdmin.rpc("get_admin_assessment_timeseries"),
@@ -150,11 +151,13 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
           supabaseAdmin.rpc("get_admin_engineer_coverage"),
           supabaseAdmin.rpc("get_admin_matching_stats"),
           supabaseAdmin.rpc("get_admin_coverage_gaps"),
+          supabaseAdmin.rpc("get_admin_matching_progress"),
         ]);
 
         const a = aStats.data?.[0];
         const v = vStats.data?.[0];
         const m = mStats.data?.[0];
+        const mp = mProgress.data?.[0];
 
         const assessTotal = a?.total ?? 0;
         const analyzed = a?.analyzed ?? 0;
