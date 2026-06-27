@@ -196,7 +196,7 @@ function AdminDashboard() {
       <Card>
         <p className="text-sm font-semibold">{t("dash.distribution")}</p>
         <div className="mt-3">
-          <RiskGauge green={a.green} yellow={a.yellow} red={a.red} />
+          <RiskGauge green={a.green} yellow={a.yellow} orange={a.orange} red={a.red} />>
         </div>
       </Card>
 
