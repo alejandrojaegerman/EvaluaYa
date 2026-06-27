@@ -1,55 +1,22 @@
-# Drop-off instrumentation for the evaluation flow
+## Goal
+Remove all "fuera del país / outside the country" (diaspora) framing across the app and refocus copy on people most affected on the ground in Venezuela right now. Keep the genuinely useful "someone can inspect on your behalf" capability — but reframe it around in-country realities (can't safely enter the building, staying in a shelter, a relative or neighbor nearby helping), not being abroad.
 
-## Why
-Today, when evaluations dip, there's no way to tell a **traffic** drop (fewer people arriving) from a **flow** regression (people arriving but getting stuck). Lovable's built-in analytics shows page views but not step-to-step conversion in real time, and the admin dashboard only knows about assessments that reached the database (drafts/analyzed) — it can't see the earlier Home → Property → Checklist steps. This adds a tiny, privacy-safe event trail across the whole funnel plus an admin view and an alert.
+## Where the language lives
+All of it is UI copy in `src/lib/i18n.tsx` (both the Spanish `es` block and the English `en` block). No logic or backend changes needed.
 
-Design priorities: **no added friction, no bulk, no PII.** Events are anonymous, fire-and-forget, skipped when offline, and never block a tap or the next screen.
+| Key | Current (problematic) | Reframe |
+|-----|----------------------|---------|
+| `home.behalfTitle` (ES) | "¿Fuera del país o en un refugio?" | "¿No puedes entrar al edificio?" |
+| `home.behalfTitle` (EN) | "Outside the country or in a shelter?" | "Can't safely enter the building?" |
+| `home.behalfBody` (ES) | "...para decidir si es seguro regresar." (frames user as away) | "No tienes que estar dentro. Un familiar o vecino puede hacer la inspección y compartirte el resultado para decidir si es seguro entrar." |
+| `home.behalfBody` (EN) | "...so you can decide whether it's safe to return." | "You don't have to be inside. A relative or neighbor can run the inspection and share the result so you can decide whether it's safe to enter." |
+| `property.behalfHint` (ES/EN) | "¿No estás en el sitio?..." / "Not on site?..." | Keep the helper idea, swap "regresar/return" → "entrar/enter"; no country reference (already clean, light wording polish only). |
+| `result.shareOwnerTitle` / `result.shareOwnerBody` (ES/EN) | "...decida si es seguro regresar / safe to return." | Change "regresar/return" → "entrar/enter" so it reads for someone nearby, not returning from afar. |
 
-## The funnel we'll measure
-```text
-Home CTA  →  Property started  →  Property completed  →  Checklist started  →  Analyze started  →  Result reached
-```
-Each step records: anonymous device id (existing `getDeviceId()`), step name, language, and timestamp. Nothing else.
+## Approach
+- Edit only the affected string values in the `es` and `en` translation maps in `src/lib/i18n.tsx`. Keys stay identical, so every consumer (`src/routes/index.tsx`, `src/routes/assess/property.tsx`, result page) picks up the new copy with no component edits.
+- Wording principle: speak to a resident who is here and affected — displaced to a shelter, unable to enter a damaged building, or relying on a nearby relative/neighbor — never someone abroad or "returning to the country."
+- Leave `public/llms.txt` as-is (it has no diaspora language) unless you'd like the summary reviewed too.
 
-## What gets built
-
-### 1. Storage (Lovable Cloud)
-- New `funnel_events` table: `id`, `device_id`, `step`, `language`, `created_at`.
-- Locked down: RLS on, **no** anon/authenticated read or write. Inserts happen only through a server function using the service-role client (same brokering pattern as `getDamageAggregates`). This keeps the raw trail private, consistent with how assessment data is already handled.
-- Indexed on `(created_at)` and `(step, created_at)` for fast windowed queries.
-
-### 2. Tracking (client, fire-and-forget)
-- A `trackFunnelStep` server function (POST) that inserts one event; failures are swallowed.
-- A tiny `trackStep(step)` client helper that calls it without `await` blocking the UI and **no-ops when offline** — so low-bandwidth users are never slowed down.
-- Wire one call at each transition:
-  - Home: on "Iniciar evaluación" tap.
-  - Property: on mount (`property_started`) and on "Continuar" (`property_completed`).
-  - Checklist: on mount (`checklist_started`).
-  - Analyze: on mount (`analyze_started`).
-  - Result page `/a/$publicId`: on mount (`result_reached`).
-
-### 3. Admin funnel view (`/admin`)
-- A SECURITY DEFINER RPC `get_funnel_metrics(window_hours)` returning, for the window: count at each step, step-to-step conversion %, and a per-hour breakdown for the last 48 hours.
-- A new card on the existing admin dashboard showing:
-  - The funnel as counts + conversion % per step (so a single broken step stands out as a conversion cliff).
-  - A last-48h hourly sparkline of "Property started" and "Result reached" so you can see the exact hour a dip began and whether it hit all steps (traffic) or one step (flow).
-- Gated by the existing `VOLUNTEER_ADMIN_SECRET`, same as the rest of `/admin`.
-
-### 4. Automated drop alert
-- Extend the existing admin digest/cron path to run a lightweight hourly check: compare the most recent hour's **conversion** (e.g. Property→Result) against the trailing 7-day same-hour baseline.
-- If conversion drops below a threshold **while traffic is still present** (i.e. people are starting but not finishing), email the admin a short "possible flow regression" alert. A pure traffic drop (fewer starts, same conversion) does **not** trigger it — that's the key distinction you asked for.
-
-## Notes / decisions
-- **Privacy:** anonymous device id only; no addresses, IPs, or report ids in the events table. Reuses the existing non-PII `getDeviceId()`.
-- **Performance:** one ~100-byte POST per step, non-blocking, offline-skipped. No third-party scripts.
-- **Backfill:** historical Home→Checklist steps can't be reconstructed (they were never recorded), but DB-side completion (`analyzed/total`) already exists in admin analytics and will sit alongside the new funnel for continuity.
-- **No change to the resident UX** — purely additive tracking; the evaluation screens look and behave exactly as they do now (verified healthy this turn: no console/runtime errors, Continue button unobstructed on mobile).
-
-## Files (technical)
-- `supabase/migration` — `funnel_events` table + grants + RLS + `get_funnel_metrics` RPC.
-- `src/lib/funnel.functions.ts` — `trackFunnelStep` (insert) + `getFunnelMetrics` (admin read).
-- `src/lib/track.ts` — client `trackStep()` helper (non-blocking, offline-aware).
-- `src/routes/index.tsx`, `src/routes/assess/property.tsx`, `src/routes/assess/checklist.tsx`, `src/routes/assess/analyze.tsx`, `src/routes/a/$publicId.tsx` — add step calls.
-- `src/routes/admin.index.tsx` — funnel card + hourly sparkline.
-- `src/lib/admin-help-digest.server.ts` (or a small new check in the existing cron route) — drop-alert logic.
-- i18n keys for the new admin labels.
+## Out of scope
+No changes to the on-behalf feature behavior, sharing flow, or data model — copy only.
