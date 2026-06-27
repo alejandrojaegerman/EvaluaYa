@@ -104,6 +104,7 @@ type DisplayArea = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
 };
 
