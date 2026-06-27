@@ -254,6 +254,7 @@ function MapPage() {
         unspecified.total += a.total;
         unspecified.green += a.green;
         unspecified.yellow += a.yellow;
+        unspecified.orange += a.orange;
         unspecified.red += a.red;
         continue;
       }
