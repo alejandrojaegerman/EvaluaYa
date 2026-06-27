@@ -1,8 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 import { sendSystemEmail } from "./notify-email.server";
-
-const ROOT = "https://evaluaya.app";
+import { engineerPanelUrl } from "./volunteer-links";
 
 type DigestRow = {
   engineer_id: string;
@@ -12,14 +11,6 @@ type DigestRow = {
   open_count: number;
   sample: unknown;
 };
-
-function panelUrl(token: string): string {
-  const u = new URL(`${ROOT}/voluntarios/panel/${token}`);
-  u.searchParams.set("utm_source", "email");
-  u.searchParams.set("utm_medium", "email");
-  u.searchParams.set("utm_campaign", "help_digest");
-  return u.toString();
-}
 
 /**
  * Sends the once-daily "still-open requests in your area" digest to every
