@@ -168,6 +168,13 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
             <span style="color:${hex("yellow")}">${b.yellow}</span> /
             <span style="color:${hex("green")}">${b.green}</span>
           </div>
+          ${
+            hasVerified
+              ? `<div style="font-size:11px;color:#0f3443;margin-top:4px;font-weight:600">✓ ${b.verified} ${escapeHtml(
+                  t("map.verified"),
+                )}</div>`
+              : ""
+          }
           <button data-zone="${escapeHtml(
             b.stateSlug,
           )}" style="margin-top:8px;font-size:12px;font-weight:600;color:#0f3443;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline">
