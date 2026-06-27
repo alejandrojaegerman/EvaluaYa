@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 
-export type RiskKey = "red" | "yellow" | "green";
+export type RiskKey = "red" | "orange" | "yellow" | "green";
 
 export type MapBubble = {
   /** stable id */
@@ -22,6 +22,7 @@ export type MapBubble = {
   total: number;
   green: number;
   yellow: number;
+  orange: number;
   red: number;
   dominant: RiskKey;
 };
