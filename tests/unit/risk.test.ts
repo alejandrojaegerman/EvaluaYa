@@ -59,10 +59,7 @@ describe("shakemap helpers", () => {
   });
 
   it("spectralDemand returns null when the band value is missing", () => {
-    const res = spectralDemand(
-      { sa: { "0.3": undefined as unknown as number } as never },
-      2,
-    );
+    const res = spectralDemand({ sa: {} }, 2);
     expect(res).toBeNull();
   });
 });
