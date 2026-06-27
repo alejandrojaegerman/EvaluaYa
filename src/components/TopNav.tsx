@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useHasReports } from "@/hooks/use-has-reports";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 
@@ -31,6 +32,7 @@ const linkClass =
 export function TopNav() {
   const { t } = useLang();
   const online = useOnline();
+  const hasReports = useHasReports();
 
   return (
     <header className="sticky top-0 z-30 hidden border-b border-border/70 bg-background/85 backdrop-blur-md md:block print:hidden">
