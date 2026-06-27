@@ -46,6 +46,29 @@ const es: Dict = {
   "home.recentEmpty": "Aún no has guardado evaluaciones en este dispositivo.",
   "home.viewResult": "Ver resultado",
 
+  // Volunteer-engineer support thread (reused across surfaces).
+  "engineers.sectionTitle": "Apoyo de ingenieros voluntarios",
+  "engineers.tagline":
+    "Después de tu evaluación, puedes pedir ayuda de un ingeniero voluntario verificado, sin costo.",
+  "engineers.homeBody":
+    "Primero haces tu autoevaluación. Si lo necesitas, te conectamos con un ingeniero voluntario verificado de tu zona.",
+  "engineers.recruit": "Reclutamos",
+  "engineers.recruitDesc":
+    "Convocamos a ingenieros voluntarios y organizaciones en todo el país.",
+  "engineers.validate": "Validamos",
+  "engineers.validateDesc":
+    "Revisamos su experiencia antes de aprobarlos y marcarlos como verificados.",
+  "engineers.connect": "Conectamos",
+  "engineers.connectDesc":
+    "Enlazamos a quienes lo piden con un ingeniero de su zona, sin costo.",
+  "engineers.learnMore": "Conoce la red de ingenieros",
+  "engineers.mapNote":
+    "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado de su zona.",
+  "engineers.footerDesc": "Reclutamos, validamos y conectamos ingenieros.",
+  "engineers.methodologyTitle": "Red de ingenieros voluntarios",
+  "engineers.methodologyBody":
+    "La autoevaluación es el primer paso. Además, reclutamos y validamos a ingenieros voluntarios y organizaciones, y conectamos a los residentes que lo solicitan con un profesional verificado de su zona para confirmar o ajustar el resultado.",
+
   "disclaimer.title": "Aviso importante",
   "disclaimer.body":
     "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inminente, evacúa y llama a emergencias.",
