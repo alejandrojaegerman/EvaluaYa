@@ -713,7 +713,7 @@ export const submitEngineerVerdict = createServerFn({ method: "POST" })
         .maybeSingle();
       if (!assessment) return { ok: false, reason: "no_assessment" };
 
-      const patch: Record<string, unknown> = {
+      const patch: TablesUpdate<"assessments"> = {
         report_type: "professional",
         verified_by_engineer: engineer.id,
         engineer_notes: data.notes || null,
