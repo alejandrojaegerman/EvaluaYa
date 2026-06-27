@@ -502,6 +502,9 @@ function PropertyStep() {
         {/* Floors */}
         <div>
           <p className="text-sm font-semibold">{t("property.floors")}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {t("property.floors.help")}
+          </p>
           <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-2">
             <button
               type="button"
