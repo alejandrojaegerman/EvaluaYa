@@ -1,5 +1,6 @@
-/// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
+import type * as L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
@@ -32,80 +33,62 @@ function hex(level: RiskKey): string {
   return `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
 }
 
-const VENEZUELA_CENTER = { lat: 8.0, lng: -66.0 };
+const VENEZUELA_CENTER: [number, number] = [8.0, -66.0];
 
-// Module-level singleton so the Maps JS API is only fetched once.
-let mapsPromise: Promise<typeof google.maps> | null = null;
-
-function loadGoogleMaps(): Promise<typeof google.maps> {
-  if (typeof window === "undefined") {
-    return Promise.reject(new Error("no-window"));
-  }
-  if (window.google?.maps) return Promise.resolve(window.google.maps);
-  if (mapsPromise) return mapsPromise;
-
-  const key = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as
-    | string
-    | undefined;
-  if (!key) return Promise.reject(new Error("no-key"));
-
-  const channel = import.meta.env
-    .VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID as string | undefined;
-
-  mapsPromise = new Promise((resolve, reject) => {
-    const cbName = "__evaluayaInitMap__";
-    (window as unknown as Record<string, unknown>)[cbName] = () => {
-      if (window.google?.maps) resolve(window.google.maps);
-      else reject(new Error("maps-missing"));
-    };
-    const script = document.createElement("script");
-    const params = new URLSearchParams({
-      key,
-      loading: "async",
-      callback: cbName,
-    });
-    if (channel) params.set("channel", channel);
-    script.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;
-    script.async = true;
-    script.onerror = () => reject(new Error("script-error"));
-    document.head.appendChild(script);
-  });
-  return mapsPromise;
-}
+// Keyless open basemap — CARTO "Positron" light. Renders on any domain with no
+// API key or referrer restriction. Attribution shown in the map corner.
+const TILE_URL =
+  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+const TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 type Props = {
   bubbles: MapBubble[];
   onSelectState: (slug: string) => void;
-  /** rendered instead of the map when Google Maps can't load */
+  /** rendered instead of the map when the map can't load */
   fallback: React.ReactNode;
 };
 
 export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
   const { t, lang } = useLang();
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const overlaysRef = useRef<google.maps.Circle[]>([]);
-  const infoRef = useRef<google.maps.InfoWindow | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const leafletRef = useRef<typeof L | null>(null);
+  const overlaysRef = useRef<L.Circle[]>([]);
+  const onSelectRef = useRef(onSelectState);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
   );
 
-  // Initialize the map once.
+  // keep the latest callback without re-initializing the map
+  useEffect(() => {
+    onSelectRef.current = onSelectState;
+  }, [onSelectState]);
+
+  // Initialize the map once (Leaflet is dynamically imported so SSR never
+  // touches window/document).
   useEffect(() => {
     let cancelled = false;
-    loadGoogleMaps()
-      .then((maps) => {
-        if (cancelled || !containerRef.current) return;
-        mapRef.current = new maps.Map(containerRef.current, {
+    import("leaflet")
+      .then((mod) => {
+        const leaflet = (mod.default ?? mod) as typeof L;
+        if (cancelled || !containerRef.current || mapRef.current) return;
+        leafletRef.current = leaflet;
+        const map = leaflet.map(containerRef.current, {
           center: VENEZUELA_CENTER,
           zoom: 6,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-          clickableIcons: false,
-          gestureHandling: "greedy",
+          zoomControl: true,
+          attributionControl: true,
+          scrollWheelZoom: false,
         });
-        infoRef.current = new maps.InfoWindow();
+        leaflet
+          .tileLayer(TILE_URL, {
+            attribution: TILE_ATTRIBUTION,
+            maxZoom: 19,
+            detectRetina: true,
+          })
+          .addTo(map);
+        mapRef.current = map;
         setStatus("ready");
       })
       .catch(() => {
@@ -113,36 +96,35 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
       });
     return () => {
       cancelled = true;
+      mapRef.current?.remove();
+      mapRef.current = null;
     };
   }, []);
 
-  // Draw / redraw bubbles whenever data or readiness changes.
+  // Draw / redraw bubbles whenever data, readiness, or language changes.
   useEffect(() => {
-    const maps = window.google?.maps;
+    const leaflet = leafletRef.current;
     const map = mapRef.current;
-    if (status !== "ready" || !maps || !map || bubbles.length === 0) return;
+    if (status !== "ready" || !leaflet || !map || bubbles.length === 0) return;
 
     // clear previous overlays
-    for (const c of overlaysRef.current) c.setMap(null);
+    for (const c of overlaysRef.current) c.remove();
     overlaysRef.current = [];
 
     const maxTotal = Math.max(1, ...bubbles.map((b) => b.total));
-    const bounds = new maps.LatLngBounds();
+    const points: [number, number][] = [];
 
     for (const b of bubbles) {
       const color = hex(b.dominant);
       // radius in meters; scaled by share of the max, with a sane floor/ceiling
       const radius = 8000 + (b.total / maxTotal) * 55000;
-      const circle = new maps.Circle({
-        map,
-        center: { lat: b.lat, lng: b.lng },
+      const circle = leaflet.circle([b.lat, b.lng], {
         radius,
-        strokeColor: color,
-        strokeOpacity: 0.9,
-        strokeWeight: 1.5,
+        color,
+        opacity: 0.9,
+        weight: 1.5,
         fillColor: color,
         fillOpacity: 0.45,
-        clickable: true,
       });
 
       const riskLabel =
@@ -184,38 +166,31 @@ export function DamageMap({ bubbles, onSelectState, fallback }: Props) {
             b.stateSlug,
           )}" style="margin-top:8px;font-size:12px;font-weight:600;color:#0f3443;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline">
             ${escapeHtml(t("map.viewZone"))} →
-          </button>
-        </div>`;
+          </button>`;
 
-      circle.addListener("click", () => {
-        const info = infoRef.current;
-        if (!info) return;
-        info.setContent(html);
-        info.setPosition({ lat: b.lat, lng: b.lng });
-        info.open(map);
-        // wire the "view zone" button after the info window renders
-        maps.event.addListenerOnce(info, "domready", () => {
-          const btn = document.querySelector<HTMLButtonElement>(
-            `button[data-zone="${b.stateSlug}"]`,
-          );
-          btn?.addEventListener("click", () => onSelectState(b.stateSlug));
-        });
+      circle.bindPopup(html, { minWidth: 170 });
+      circle.on("popupopen", () => {
+        const btn = document.querySelector<HTMLButtonElement>(
+          `button[data-zone="${b.stateSlug}"]`,
+        );
+        btn?.addEventListener(
+          "click",
+          () => onSelectRef.current(b.stateSlug),
+          { once: true },
+        );
       });
 
+      circle.addTo(map);
       overlaysRef.current.push(circle);
-      bounds.extend({ lat: b.lat, lng: b.lng });
+      points.push([b.lat, b.lng]);
     }
 
-    if (!bounds.isEmpty()) {
-      map.fitBounds(bounds, 48);
-      // don't over-zoom when there's a single point
-      const listener = maps.event.addListenerOnce(map, "idle", () => {
-        if ((map.getZoom() ?? 6) > 9) map.setZoom(9);
-      });
-      void listener;
+    if (points.length > 0) {
+      const bounds = leaflet.latLngBounds(points);
+      map.fitBounds(bounds, { padding: [48, 48], maxZoom: 9 });
     }
-    // re-run when language changes so info windows use the new locale text
-  }, [status, bubbles, onSelectState, t, lang]);
+    // re-run when language changes so popups use the new locale text
+  }, [status, bubbles, t, lang]);
 
   if (status === "error") {
     return (
