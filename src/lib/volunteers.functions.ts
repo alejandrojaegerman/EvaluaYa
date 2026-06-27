@@ -21,6 +21,8 @@ export type PublicEngineer = {
   coversState: boolean;
 };
 
+export type ProgressStage = "claimed" | "contacted" | "visited" | "resolved";
+
 export type EngineerRequest = {
   id: string;
   publicId: string;
@@ -34,7 +36,17 @@ export type EngineerRequest = {
   status: "open" | "claimed" | "closed";
   claimedByMe: boolean;
   createdAt: string;
+  /** Progress reported by the engineer handling this request. */
+  progressStage: ProgressStage | null;
+  engineerNote: string | null;
+  progressUpdatedAt: string | null;
+  /** Linked assessment review state (null when no assessment is attached). */
+  aiRiskLevel: RiskLevel | null;
+  priorRiskLevel: RiskLevel | null;
+  verified: boolean;
+  engineerVerdict: "agree" | "adjust" | null;
 };
+
 
 export type EngineerPanel = {
   engineer: {
