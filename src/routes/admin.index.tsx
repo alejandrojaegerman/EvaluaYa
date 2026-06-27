@@ -130,6 +130,11 @@ function AdminDashboard() {
             if (acc.ok) setAccounts(acc.accounts);
           })
           .catch(() => {});
+        getFunnel({ data: { adminSecret: secret, windowHours: 48 } })
+          .then((f) => {
+            if (f.ok) setFunnel(f.metrics);
+          })
+          .catch(() => {});
       } else {
         toast.error(t("admin.wrong"));
       }
