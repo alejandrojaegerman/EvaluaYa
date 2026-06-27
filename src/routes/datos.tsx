@@ -624,7 +624,7 @@ function DataRoomPage() {
             <Stat value={totals!.areas} label={t("map.areasLabel")} />
             <Stat
               value={totals!.red + totals!.orange}
-              label={t("map.high")}
+              label={t("map.seriousOrHigh")}
               color={rgb("red")}
             />
             <Stat
