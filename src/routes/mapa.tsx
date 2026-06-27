@@ -546,8 +546,12 @@ function MapPage() {
             </div>
           </Reveal>
 
-          {/* Interactive map (Google Maps) with SVG bubble-map fallback */}
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          {/* Interactive map (Leaflet) with SVG bubble-map fallback */}
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+          >
             <p className="text-sm font-semibold">{t("map.geoTitle")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {t("map.interactiveHint")}
