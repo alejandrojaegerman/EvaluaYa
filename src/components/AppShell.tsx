@@ -73,7 +73,8 @@ export function AppShell({
 
       <main
         className={cn(
-          "mx-auto w-full flex-1 px-4 pb-28 pt-5 md:pb-12",
+          "mx-auto w-full flex-1 px-4 pt-5 md:pb-12",
+          hideFooter ? "pb-28" : "pb-4",
           wide ? "max-w-6xl md:px-6" : "max-w-screen-sm",
           className,
         )}
