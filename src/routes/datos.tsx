@@ -28,6 +28,11 @@ import { SeveritySpotlight } from "@/components/SeveritySpotlight";
 import { ShareApp } from "@/components/ShareApp";
 import { TrendChart } from "@/components/TrendChart";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
