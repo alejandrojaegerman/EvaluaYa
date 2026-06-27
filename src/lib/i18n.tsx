@@ -339,6 +339,7 @@ const es: Dict = {
   "result.disclaimerShort":
     "Orientación preliminar. Confirma con un ingeniero estructural o Protección Civil.",
   "result.notFound": "No se encontró esta evaluación.",
+  "result.genericError": "Algo salió mal. Inténtalo de nuevo.",
   "result.goHome": "Ir al inicio",
   "result.assessedOn": "Evaluado el",
 
@@ -487,6 +488,7 @@ const es: Dict = {
   "map.totalAssessments": "Evaluaciones",
   "map.areasLabel": "Zonas",
   "map.high": "Riesgo alto",
+  "map.urgent": "Riesgo serio",
   "map.moderate": "Riesgo moderado",
   "map.low": "Riesgo bajo",
   "map.distribution": "Distribución de riesgo",
@@ -1169,6 +1171,7 @@ const en: Dict = {
   "result.disclaimerShort":
     "Preliminary guidance. Confirm with a structural engineer or Civil Protection.",
   "result.notFound": "This assessment could not be found.",
+  "result.genericError": "Something went wrong. Please try again.",
   "result.goHome": "Go home",
   "result.assessedOn": "Assessed on",
 
@@ -1318,6 +1321,7 @@ const en: Dict = {
   "map.totalAssessments": "Assessments",
   "map.areasLabel": "Areas",
   "map.high": "High risk",
+  "map.urgent": "Serious risk",
   "map.moderate": "Moderate risk",
   "map.low": "Low risk",
   "map.distribution": "Risk distribution",
