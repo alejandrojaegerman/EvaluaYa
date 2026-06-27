@@ -432,7 +432,11 @@ function MapPage() {
       const outcome = await shareImageBlob(blob, {
         filename: "evaluaya-mapa.png",
         title: "EvalúaYa",
-        text: `${t("share.message")} ${absoluteUrl("/mapa")}`,
+        text: `${t("share.message")} ${withUtm("/mapa", {
+          source: "image",
+          medium: "share",
+          campaign: "map",
+        })}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {
