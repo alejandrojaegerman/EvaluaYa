@@ -37,7 +37,7 @@ export function BottomNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 backdrop-blur-md print:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 backdrop-blur-md md:hidden print:hidden">
       <div className="mx-auto flex w-full max-w-screen-sm items-stretch px-2 pb-[env(safe-area-inset-bottom)]">
         <Link
           to="/"
