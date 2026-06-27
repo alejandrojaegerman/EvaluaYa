@@ -207,12 +207,14 @@ function MapPage() {
           yellow: 0,
           orange: 0,
           red: 0,
+          verified: 0,
         };
       cur.total += a.total;
       cur.green += a.green;
       cur.yellow += a.yellow;
       cur.orange += a.orange;
       cur.red += a.red;
+      cur.verified += a.verified;
       grouped.set(key, cur);
     }
     return [...grouped.entries()]
