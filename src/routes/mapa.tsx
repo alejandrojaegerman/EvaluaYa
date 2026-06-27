@@ -295,6 +295,7 @@ function MapPage() {
         total: unspecified.total,
         green: unspecified.green,
         yellow: unspecified.yellow,
+        orange: unspecified.orange,
         red: unspecified.red,
       });
     }
