@@ -98,6 +98,7 @@ function PropertyStep() {
       if (!draft) return;
       const p = draft.property;
       if (p.address) setAddress(p.address);
+      if (p.buildingName) setBuildingName(p.buildingName);
       if (p.state) setState(p.state);
       if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
