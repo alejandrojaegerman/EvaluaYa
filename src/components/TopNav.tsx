@@ -73,13 +73,31 @@ export function TopNav() {
             {t("nav.data")}
           </Link>
           <Link
-            to="/mis-reportes"
+            to="/voluntarios"
             className={linkClass}
             activeProps={{ "data-status": "active" }}
           >
-            <FolderOpen className="size-4" aria-hidden />
-            {t("nav.reports")}
+            <HandHeart className="size-4" aria-hidden />
+            {t("nav.volunteers")}
           </Link>
+          <Link
+            to="/metodologia"
+            className={linkClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <BookOpen className="size-4" aria-hidden />
+            {t("nav.methodology")}
+          </Link>
+          {hasReports && (
+            <Link
+              to="/mis-reportes"
+              className={linkClass}
+              activeProps={{ "data-status": "active" }}
+            >
+              <FolderOpen className="size-4" aria-hidden />
+              {t("nav.reports")}
+            </Link>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger className={linkClass}>
@@ -87,18 +105,6 @@ export function TopNav() {
               <ChevronDown className="size-4" aria-hidden />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem asChild>
-                <Link to="/voluntarios" className="flex items-center gap-2">
-                  <HandHeart className="size-4" aria-hidden />
-                  {t("nav.volunteers")}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/metodologia" className="flex items-center gap-2">
-                  <BookOpen className="size-4" aria-hidden />
-                  {t("nav.methodology")}
-                </Link>
-              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/ayuda" className="flex items-center gap-2">
                   <LifeBuoy className="size-4" aria-hidden />
