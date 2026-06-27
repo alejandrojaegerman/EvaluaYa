@@ -33,7 +33,7 @@ import { useLang } from "@/lib/i18n";
 import { downloadAssessmentPdf } from "@/lib/pdf";
 import { RISK_THEME } from "@/lib/risk";
 import { generateResultCard, shareImageBlob } from "@/lib/share-card";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, withUtm } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const RESULT_OG = {
