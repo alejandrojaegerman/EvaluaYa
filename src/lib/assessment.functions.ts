@@ -206,7 +206,8 @@ function parseAiJson(text: string): AiResult | null {
   try {
     const parsed = JSON.parse(cleaned.slice(start, end + 1));
     const risk = parsed.risk_level;
-    if (risk !== "green" && risk !== "yellow" && risk !== "red") return null;
+    if (risk !== "green" && risk !== "yellow" && risk !== "orange" && risk !== "red")
+      return null;
     return {
       risk_level: risk,
       summary: String(parsed.summary ?? ""),
