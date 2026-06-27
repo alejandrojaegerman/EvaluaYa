@@ -560,21 +560,21 @@ function MapPage() {
                 }
               />
             </div>
-            {/* legend */}
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1.5">
+            {/* legend — one line per color with its meaning (feedback #1) */}
+            <div className="mt-3 space-y-1.5 rounded-xl bg-muted/40 p-3 text-[11px]">
+              <p className="font-semibold text-foreground">{t("map.legendTitle")}</p>
+              <LegendRow color={rgb("green")} label={t("map.legendGreen")} />
+              <LegendRow color={rgb("yellow")} label={t("map.legendYellow")} />
+              <LegendRow color={rgb("orange")} label={t("map.legendOrange")} />
+              <LegendRow color={rgb("red")} label={t("map.legendRed")} />
+              <p className="flex items-center gap-1.5 pt-1 text-muted-foreground">
                 <span className="size-1.5 rounded-full bg-muted-foreground/60" aria-hidden />
                 <span className="size-3 rounded-full bg-muted-foreground/60" aria-hidden />
                 {t("map.legendSize")}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("red") }} aria-hidden />
-                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("yellow") }} aria-hidden />
-                <span className="size-3 rounded-full" style={{ backgroundColor: rgb("green") }} aria-hidden />
-                {t("map.legendRisk")}
-              </span>
+              </p>
             </div>
           </section>
+
 
 
           {/* Top areas list */}
