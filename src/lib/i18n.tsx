@@ -844,27 +844,16 @@ const es: Dict = {
   "nav.volunteers": "Ingenieros voluntarios",
 
   // Result page connect section
-  "connect.title": "Habla con un ingeniero voluntario",
+  "connect.title": "Pide ayuda de un ingeniero voluntario",
   "connect.subtitleRed":
-    "Tu resultado es ROJO. Un ingeniero voluntario puede orientarte sobre los próximos pasos. Es gratuito y sin compromiso.",
+    "Tu resultado es ROJO. Envía tu caso y un ingeniero voluntario verificado lo revisará y te contactará. Es gratuito y sin compromiso.",
   "connect.subtitleYellow":
-    "Un ingeniero voluntario puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
+    "Envía tu caso y un ingeniero voluntario verificado puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
   "connect.reassure": "Ingenieros voluntarios verificados — sin costo.",
-  "connect.directTitle": "Ingenieros voluntarios verificados disponibles",
-  "connect.coversYourState": "Cubre tu estado",
-  "connect.whatsappEngineer": "Escribir por WhatsApp",
-  "connect.revealConsent":
-    "Al continuar compartirás tu contacto con este voluntario por WhatsApp.",
-  "connect.revealing": "Abriendo…",
-  "connect.revealError": "No se pudo abrir el contacto. Intenta de nuevo.",
-  "connect.orgBadge": "Organización",
-  "connect.noneTitle": "Aún estamos sumando ingenieros en tu estado",
-  "connect.noneBody":
-    "Deja tu número y un ingeniero voluntario te contactará en cuanto haya disponibilidad.",
-  "connect.requestTitle": "Pedir que me contacten",
+  "connect.requestTitle": "Solicitar a un ingeniero verificado",
   "connect.requestBody":
-    "¿Prefieres que un ingeniero te escriba? Deja tu WhatsApp y compartiremos tu reporte solo con ingenieros aprobados de tu estado.",
-  "connect.requestCta": "Solicitar contacto",
+    "Deja tu WhatsApp y compartiremos tu reporte con ingenieros voluntarios aprobados. Uno de ellos tomará tu caso y te contactará.",
+  "connect.requestCta": "Enviar solicitud",
   "connect.requestSending": "Enviando…",
   "connect.requestDone": "¡Listo! Un ingeniero te contactará pronto.",
   "connect.requestError": "No se pudo enviar. Intenta de nuevo.",
@@ -872,13 +861,13 @@ const es: Dict = {
   "connect.whatsappPlaceholder": "Ej.: 0414 123 4567",
   "connect.whatsappHint":
     "Incluye el código de área. Si estás en Venezuela puedes usar tu número local (ej.: 0414…); le agregamos el código de país (+58) automáticamente.",
-  "connect.noteOptional": "Mensaje (opcional)",
+  "connect.noteOptional": "Mensaje (puedes editarlo)",
   "connect.notePlaceholder": "Ej.: Hay grietas grandes en la sala.",
+  "connect.notePrefill": "Mi evaluación salió en nivel {risk}. Hallazgos: {findings}.",
   "connect.privacy":
-    "Tu número solo se comparte con ingenieros voluntarios aprobados de tu estado. No se publica.",
+    "Tu número solo se comparte con ingenieros voluntarios aprobados. No se publica.",
   "connect.areEngineer": "¿Eres ingeniero? Súmate como voluntario",
-  "connect.waMessage":
-    "Hola, completé una evaluación con EvalúaYa y mi resultado necesita orientación. Este es mi reporte:",
+
 
   // Volunteer landing + signup
   "vol.title": "Ingenieros voluntarios",
@@ -1947,27 +1936,16 @@ const en: Dict = {
   // ----- Volunteer engineers (EN) -----
   "nav.volunteers": "Volunteer engineers",
 
-  "connect.title": "Talk to a volunteer engineer",
+  "connect.title": "Request a volunteer engineer",
   "connect.subtitleRed":
-    "Your result is RED. A volunteer engineer can guide you on next steps. Free and no obligation.",
+    "Your result is RED. Send your case and a verified volunteer engineer will review it and contact you. Free and no obligation.",
   "connect.subtitleYellow":
-    "A volunteer engineer can help you interpret these findings. Free and no obligation.",
+    "Send your case and a verified volunteer engineer can help you interpret these findings. Free and no obligation.",
   "connect.reassure": "Verified volunteer engineers — no cost.",
-  "connect.directTitle": "Verified volunteer engineers available",
-  "connect.coversYourState": "Covers your state",
-  "connect.whatsappEngineer": "Message on WhatsApp",
-  "connect.revealConsent":
-    "By continuing you'll share your contact with this volunteer on WhatsApp.",
-  "connect.revealing": "Opening…",
-  "connect.revealError": "Couldn't open the contact. Please try again.",
-  "connect.orgBadge": "Organization",
-  "connect.noneTitle": "We're still adding engineers in your state",
-  "connect.noneBody":
-    "Leave your number and a volunteer engineer will reach out as soon as one is available.",
-  "connect.requestTitle": "Request a callback",
+  "connect.requestTitle": "Request a verified engineer",
   "connect.requestBody":
-    "Prefer an engineer to message you? Leave your WhatsApp and we'll share your report only with approved engineers in your state.",
-  "connect.requestCta": "Request contact",
+    "Leave your WhatsApp and we'll share your report with approved volunteer engineers. One of them will take your case and reach out.",
+  "connect.requestCta": "Send request",
   "connect.requestSending": "Sending…",
   "connect.requestDone": "Done! An engineer will contact you soon.",
   "connect.requestError": "Could not send. Please try again.",
@@ -1975,13 +1953,12 @@ const en: Dict = {
   "connect.whatsappPlaceholder": "e.g. 0414 123 4567",
   "connect.whatsappHint":
     "Include your area code. If you're in Venezuela you can use your local number (e.g. 0414…); we add the country code (+58) automatically.",
-  "connect.noteOptional": "Message (optional)",
+  "connect.noteOptional": "Message (you can edit it)",
   "connect.notePlaceholder": "e.g. Large cracks in the living room.",
+  "connect.notePrefill": "My assessment came out as {risk}. Findings: {findings}.",
   "connect.privacy":
-    "Your number is only shared with approved volunteer engineers in your state. It's never published.",
+    "Your number is only shared with approved volunteer engineers. It's never published.",
   "connect.areEngineer": "Are you an engineer? Join as a volunteer",
-  "connect.waMessage":
-    "Hi, I completed an EvalúaYa assessment and my result needs guidance. Here's my report:",
 
   "vol.title": "Volunteer engineers",
   "vol.subtitle":
