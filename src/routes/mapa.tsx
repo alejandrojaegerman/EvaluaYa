@@ -516,10 +516,9 @@ function MapPage() {
           {/* Trend over time */}
           <Reveal
             as="section"
-            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            className="mt-4 hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:block"
             delayMs={60}
           >
-            <p className="text-sm font-semibold">{t("map.trendTitle")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {t("map.trendSubtitle")}
             </p>
