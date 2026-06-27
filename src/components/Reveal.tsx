@@ -35,12 +35,14 @@ export function Reveal({
     if (prefersReduced) {
       setReduced(true);
       setVisible(true);
+      onRevealRef.current?.();
       return;
     }
     const el = ref.current;
     if (!el) return;
     if (typeof IntersectionObserver === "undefined") {
       setVisible(true);
+      onRevealRef.current?.();
       return;
     }
     const observer = new IntersectionObserver(
@@ -48,6 +50,7 @@ export function Reveal({
         for (const entry of entries) {
           if (entry.isIntersecting) {
             setVisible(true);
+            onRevealRef.current?.();
             observer.disconnect();
             break;
           }
