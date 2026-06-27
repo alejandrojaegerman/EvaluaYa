@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, withUtm } from "@/lib/site";
 import {
   getDamageAggregates,
   getDamageTimeseries,
@@ -432,7 +432,11 @@ function MapPage() {
       const outcome = await shareImageBlob(blob, {
         filename: "evaluaya-mapa.png",
         title: "EvalúaYa",
-        text: `${t("share.message")} ${absoluteUrl("/mapa")}`,
+        text: `${t("share.message")} ${withUtm("/mapa", {
+          source: "image",
+          medium: "share",
+          campaign: "map",
+        })}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {

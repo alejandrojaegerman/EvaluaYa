@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, withUtm } from "@/lib/site";
 import {
   getDataRoom,
   getRiskFactorsFiltered,
@@ -423,7 +423,11 @@ function DataRoomPage() {
       const outcome = await shareImageBlob(blob, {
         filename: "evaluaya-datos.png",
         title: "EvalúaYa",
-        text: `${t("share.message")} ${absoluteUrl("/datos")}`,
+        text: `${t("share.message")} ${withUtm("/datos", {
+          source: "image",
+          medium: "share",
+          campaign: "data",
+        })}`,
       });
       if (outcome === "downloaded") toast.success(t("share.imageSaved"));
     } catch {

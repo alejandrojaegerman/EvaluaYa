@@ -1,33 +1,76 @@
+# Add UTM tracking to all shared links
+
 ## Goal
 
-Resolve the confusing duplicate "Sucre" on the map: keep **Sucre (Miranda / Petare)** as a real municipio, but stop treating **Sucre in Distrito Capital** as its own municipio. In Caracas, "Sucre" is a *parroquia* of the **Libertador** municipio — Distrito Capital officially has only Libertador.
+Stop the flywheel traffic from collapsing into "Direct" in analytics. Every link the app emits when a user shares it — or that we send in app emails — gets `utm_source`, `utm_medium`, and `utm_campaign` so you can see exactly which button, on which page, drives visits.
 
-All changes are confined to `src/lib/venezuela.ts` (presentation/lookup data). No DB writes, no flow changes.
+## Tracking taxonomy
 
-## What changes
+`utm_medium` = the type of loop. `utm_source` = the channel. `utm_campaign` = the surface/context.
 
-1. **Remove the bogus DC centroid**
-   Delete the curated entry `{ state: "Distrito Capital", name: "Sucre", ... }` from the `MUNICIPIOS` list, so DC "Sucre" can no longer render as a standalone bubble that mimics Miranda's Sucre.
+```text
+utm_medium   share | email
+utm_source   whatsapp | native | copy | image | email
+utm_campaign app_share | result | map | data | volunteer_panel | help_request
+```
 
-2. **Add a state-scoped alias so DC "Sucre" rolls into Libertador**
-   A plain global alias can't be used here: many states have a *legitimate* Sucre municipio (Aragua, Falcón, Mérida, Monagas, Portuguesa, Táchira, Trujillo, Yaracuy, Zulia, and Miranda), so mapping the name "sucre" → "Libertador" everywhere would corrupt those.
-   Instead, introduce a small **per-state alias table** and have `resolveMunicipio` consult it first:
-   ```text
-   MUNICIPIO_ALIASES_BY_STATE = {
-     "Distrito Capital": { "sucre": "Libertador" }
-   }
-   ```
-   `resolveMunicipio(state, municipality)` will check the state-scoped alias before the existing global alias map. For Distrito Capital + "Sucre"/"sucre", it resolves to **Libertador** (centroid lat 10.5, lng -66.92). Every other state keeps its real Sucre municipio untouched.
+Examples of what lands in analytics:
+- WhatsApp share of a result page → `medium=share, source=whatsapp, campaign=result`
+- Copy-link from the map page → `medium=share, source=copy, campaign=map`
+- Volunteer-approved email CTA → `medium=email, source=email, campaign=volunteer_panel`
 
-## Result
+This lets you compare, e.g., "WhatsApp result shares vs map shares" and prune the weak ones.
 
-- Map / Data Room (`/mapa`, `/datos`) show a single **Sucre** bubble (Miranda/Petare) and fold DC "Sucre" records into **Libertador**.
-- The 8 existing DC "Sucre"/"sucre" records (verified via live query) now aggregate under Libertador instead of a phantom DC Sucre municipio.
-- No other state's Sucre is affected.
+## What gets tagged
+
+Per your choices: user shares (app, result, map, data cards) + outbound emails. Person-to-person and admin links stay clean.
+
+1. **App share block** (`ShareApp`, shown on several pages) — WhatsApp, native share, copy.
+2. **Result page** (`/a/:publicId`) — native share, copy, WhatsApp, and the branded result image's share text.
+3. **Map page** (`/mapa`) — stats card share text.
+4. **Data room** (`/datos`) — stats card share text.
+5. **App emails we control** — volunteer-approved and help-request notification CTA links.
+
+## What is deliberately left untouched
+
+- **`og:url` and `canonical` tags** — these must keep pointing at the clean page URL for SEO; adding UTMs there would break canonicalization.
+- **Auth emails** (magic link, signup, recovery, etc.) — their CTA is a one-time token URL; appending params can break the token, so they stay as-is.
+- **Person-to-person and admin WhatsApp links** (engineer↔resident, admin panel copy) — not part of the viral loop.
+- **The URL printed inside the share images** stays clean/short; the UTM goes on the clickable text link that accompanies the image (a long UTM string would clutter the card and isn't tappable anyway).
+
+## Technical details
+
+**`src/lib/site.ts`** — add a small helper:
+
+```ts
+export type Utm = { source: string; medium: string; campaign: string; content?: string };
+
+export function withUtm(path: string, utm: Utm): string {
+  const url = new URL(absoluteUrl(path));
+  url.searchParams.set("utm_source", utm.source);
+  url.searchParams.set("utm_medium", utm.medium);
+  url.searchParams.set("utm_campaign", utm.campaign);
+  if (utm.content) url.searchParams.set("utm_content", utm.content);
+  return url.toString();
+}
+```
+
+**`src/components/ShareApp.tsx`** — accept an optional `campaign` prop (default `"app_share"`); build the shared URL with `withUtm("/", { source, medium: "share", campaign })`, using `whatsapp` / `native` / `copy` as the source per action. Keep the visible page unchanged.
+
+**`src/routes/a/$publicId.tsx`** — replace the four `absoluteUrl(/a/:id)` share usages (native share, copy, WhatsApp text, result-card share text) with `withUtm`, `campaign: "result"`, source per channel (`image` for the card). Leave the `head()` `og:url` on the plain URL.
+
+**`src/routes/mapa.tsx`** and **`src/routes/datos.tsx`** — in the stats-card share handlers, tag the accompanying text URL with `withUtm("/mapa"|"/datos", { source: "image", medium: "share", campaign: "map"|"data" })`. Leave the URL drawn on the canvas and the `head()` tags clean.
+
+**`src/lib/volunteers.functions.ts`** — append UTMs to the two server-built panel URLs:
+- volunteer-approved email → `?utm_source=email&utm_medium=email&utm_campaign=volunteer_panel`
+- help-request notification → `...&utm_campaign=help_request`
+
+(Done by wrapping the existing `https://evaluaya.app/voluntarios/panel/...` strings; the admin-notification URL is left clean.)
 
 ## Verification
 
-- Run the existing `tests/unit/venezuela.test.ts` suite; add quick assertions that:
-  - `resolveMunicipio("Distrito Capital", "Sucre")` → name `Libertador`, level `municipio`.
-  - `resolveMunicipio("Miranda", "Sucre")` → name `Sucre` (unchanged).
-  - `resolveMunicipio("Aragua", "Sucre")` is not remapped to Libertador.
+- Unit test `withUtm` (correct params, no double `?`, preserves path) in `tests/unit/`.
+- Manually confirm a generated WhatsApp/result link in the preview carries the three params and still resolves to the right page.
+- After publish, GA/analytics should begin attributing these visits to `share` / `email` instead of Direct.
+
+No assessment logic, risk scoring, or UI layout changes — this is purely link-generation plumbing.

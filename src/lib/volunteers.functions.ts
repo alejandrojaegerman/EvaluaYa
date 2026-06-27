@@ -325,8 +325,8 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
                   location,
                   note: data.note || "",
                   panelUrl: eng.access_token
-                    ? `https://evaluaya.app/voluntarios/panel/${eng.access_token}`
-                    : "https://evaluaya.app/voluntarios",
+                    ? `https://evaluaya.app/voluntarios/panel/${eng.access_token}?utm_source=email&utm_medium=email&utm_campaign=help_request`
+                    : "https://evaluaya.app/voluntarios?utm_source=email&utm_medium=email&utm_campaign=help_request",
                 },
               }).catch((err) =>
                 console.error("[volunteers] notify engineer failed", err),
@@ -409,7 +409,7 @@ async function sendAccessEmail(params: {
       templateData: {
         name: params.name ?? "",
         states: stateNames,
-        panelUrl: `https://evaluaya.app/voluntarios/panel/${params.token}`,
+        panelUrl: `https://evaluaya.app/voluntarios/panel/${params.token}?utm_source=email&utm_medium=email&utm_campaign=volunteer_panel`,
       },
     });
     return res.ok;
