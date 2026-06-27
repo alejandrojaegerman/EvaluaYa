@@ -581,6 +581,27 @@ const es: Dict = {
     "Datos abiertos y anónimos para autoridades, ONG y prensa.",
   "map.cardHeadline": "Daños estructurales reportados",
   "map.cardCta": "Evalúa tu vivienda gratis en EvalúaYa",
+  "map.storyIntro":
+    "Desplázate para ver la historia detrás de los datos: qué tan serios son los daños, cómo evolucionan y por qué.",
+  "map.severityTitle": "Qué tan serio es",
+  "map.severityNeedAttention": "necesitan atención urgente",
+  "map.severityCaption":
+    "Proporción de evaluaciones en nivel naranja o rojo: daños moderados a graves que requieren un ingeniero.",
+  "map.severityTopArea": "Zona más afectada",
+  "map.severityNone":
+    "Por ahora, la mayoría de las evaluaciones no muestran daños serios.",
+  "map.trendTitle": "Reportes en el tiempo",
+  "map.trendSubtitle":
+    "Evaluaciones por día (últimos 90 días), divididas por nivel de riesgo.",
+  "map.trendEmpty": "Aún no hay suficientes datos para mostrar la tendencia.",
+  "map.trendTotalReports": "reportes en el período",
+  "map.whyTitle": "Por qué se ven así los datos",
+  "map.whySubtitle":
+    "Los factores que más se repiten en las evaluaciones a nivel nacional: daños marcados, antigüedad y tipo de construcción, intensidad sísmica y reglas de seguridad activadas.",
+  "map.exportTitle": "Exporta y comparte",
+  "map.exportSubtitle":
+    "Lleva estos datos a un ingeniero, autoridad o medio de comunicación.",
+
 
   "result.shareWhatsapp": "Compartir por WhatsApp",
   "result.whatsappMessage":
