@@ -531,7 +531,7 @@ function MapPage() {
           {/* Risk distribution */}
           <Reveal
             as="section"
-            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            className="mt-4 hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:block"
             delayMs={60}
           >
             <p className="text-sm font-semibold">{t("map.distribution")}</p>
