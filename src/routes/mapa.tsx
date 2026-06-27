@@ -241,6 +241,7 @@ function MapPage() {
       total: 0,
       green: 0,
       yellow: 0,
+      orange: 0,
       red: 0,
       lastReport: null as string | null,
     };
