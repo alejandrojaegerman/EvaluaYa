@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
   BookOpen,
+  ClipboardCheck,
   FolderOpen,
   HandHeart,
   Home,
@@ -16,6 +17,7 @@ import {
 import { useState } from "react";
 
 
+import { useHasReports } from "@/hooks/use-has-reports";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -34,6 +36,7 @@ const tabClass =
 export function BottomNav() {
   const { t, lang, setLang } = useLang();
   const online = useOnline();
+  const hasReports = useHasReports();
   const [open, setOpen] = useState(false);
 
   return (
@@ -58,14 +61,25 @@ export function BottomNav() {
           <span>{t("nav.map")}</span>
         </Link>
 
-        <Link
-          to="/mis-reportes"
-          className={tabClass}
-          activeProps={{ "data-status": "active" }}
-        >
-          <FolderOpen className="size-5" aria-hidden />
-          <span>{t("nav.reports")}</span>
-        </Link>
+        {hasReports ? (
+          <Link
+            to="/mis-reportes"
+            className={tabClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <FolderOpen className="size-5" aria-hidden />
+            <span>{t("nav.reports")}</span>
+          </Link>
+        ) : (
+          <Link
+            to="/assess/property"
+            className={tabClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <ClipboardCheck className="size-5" aria-hidden />
+            <span>{t("nav.evaluate")}</span>
+          </Link>
+        )}
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger className={cn(tabClass, "cursor-pointer")}>
@@ -81,6 +95,20 @@ export function BottomNav() {
             </SheetHeader>
 
             <div className="mt-4 grid gap-1">
+              {hasReports && (
+                <SheetClose asChild>
+                  <Link
+                    to="/mis-reportes"
+                    className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                      <FolderOpen className="size-4.5" aria-hidden />
+                    </span>
+                    {t("nav.reports")}
+                  </Link>
+                </SheetClose>
+              )}
+
               <SheetClose asChild>
                 <Link
                   to="/datos"
