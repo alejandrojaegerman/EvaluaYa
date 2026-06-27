@@ -313,6 +313,7 @@ function ChecklistCard({
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
+  const [showExample, setShowExample] = useState(false);
   const canAddMore = photos.length < MAX_PHOTOS_PER_ITEM;
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
