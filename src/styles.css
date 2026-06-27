@@ -104,6 +104,10 @@
   --risk-yellow-foreground: oklch(0.3 0.07 70);
   --risk-yellow-soft: oklch(0.96 0.07 85);
 
+  --risk-orange: oklch(0.68 0.18 47);
+  --risk-orange-foreground: oklch(0.99 0.01 50);
+  --risk-orange-soft: oklch(0.95 0.06 55);
+
   --risk-red: oklch(0.57 0.21 27);
   --risk-red-foreground: oklch(0.99 0.01 30);
   --risk-red-soft: oklch(0.95 0.05 25);
