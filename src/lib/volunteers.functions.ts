@@ -88,6 +88,28 @@ export type AdminHelpRequest = {
   status: "open" | "claimed" | "closed";
   note: string | null;
   createdAt: string;
+  /** Real lifecycle the engineer reports (null = claimed baseline). */
+  progressStage: ProgressStage | null;
+  progressUpdatedAt: string | null;
+  claimedAt: string | null;
+  engineerName: string | null;
+  engineerNote: string | null;
+  /** Linked assessment review state. */
+  assessmentPublicId: string | null;
+  aiRiskLevel: RiskLevel | null;
+  priorRiskLevel: RiskLevel | null;
+  engineerVerdict: "agree" | "adjust" | null;
+  reportType: string | null;
+  /** Claimed >24h ago with no progress beyond "claimed". */
+  stalled: boolean;
+};
+
+export type AdminMatchingProgress = {
+  claimedOnly: number;
+  contacted: number;
+  visited: number;
+  resolved: number;
+  stalled: number;
 };
 
 // ---------------------------------------------------------------------------
