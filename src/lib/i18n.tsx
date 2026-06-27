@@ -494,7 +494,7 @@ const es: Dict = {
   "home.trustAnon": "Anónimo",
   "home.seoTagline":
     "Sabe en 2 minutos si tu vivienda es segura para entrar tras el sismo.",
-  "home.statBuildings": "edificios evaluados",
+  "home.statBuildings": "evaluaciones realizadas",
   "home.statAreas": "zonas con reportes",
   "home.pendingTitle": "Tienes una evaluación sin enviar",
   "home.pendingBody": "Completaste el cuestionario sin conexión. Envíalo ahora para recibir tu resultado.",
@@ -1409,7 +1409,7 @@ const en: Dict = {
   "home.trustAnon": "Anonymous",
   "home.seoTagline":
     "Know in 2 minutes whether your home is safe to enter after the quake.",
-  "home.statBuildings": "buildings assessed",
+  "home.statBuildings": "assessments",
   "home.statAreas": "areas with reports",
   "home.pendingTitle": "You have an unsent assessment",
   "home.pendingBody": "You finished the checklist offline. Submit it now to get your result.",
