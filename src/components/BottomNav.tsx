@@ -36,6 +36,7 @@ const tabClass =
 export function BottomNav() {
   const { t, lang, setLang } = useLang();
   const online = useOnline();
+  const hasReports = useHasReports();
   const [open, setOpen] = useState(false);
 
   return (
