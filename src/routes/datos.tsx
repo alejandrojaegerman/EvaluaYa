@@ -728,6 +728,9 @@ function DataRoomPage() {
             </div>
           </section>
 
+          {/* Data dictionary */}
+          <DataDictionary />
+
           {/* Export & share */}
           <section className="mt-6">
             <h2 className="font-display text-lg font-bold">{t("data.export")}</h2>
