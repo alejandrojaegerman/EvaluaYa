@@ -185,10 +185,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <ClaimOnSignIn />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster position="top-center" richColors closeButton />
       </LanguageProvider>
     </QueryClientProvider>
   );
+}
+
+/** Mounted inside LanguageProvider so the auto-claim toast can be localized. */
+function ClaimOnSignIn() {
+  useClaimOnSignIn();
+  return null;
 }
