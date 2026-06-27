@@ -121,7 +121,9 @@ export const getStateStats = createServerFn({ method: "GET" })
           acc.total += r.total ?? 0;
           acc.green += r.green ?? 0;
           acc.yellow += r.yellow ?? 0;
+          acc.orange += r.orange ?? 0;
           acc.red += r.red ?? 0;
+          acc.verified += r.verified ?? 0;
           const muni = (r.municipality ?? "").trim();
           if (muni && muni.toLowerCase() !== "desconocido") municipios.add(muni);
           if (r.last_report && (!lastReport || r.last_report > lastReport)) {
@@ -129,7 +131,7 @@ export const getStateStats = createServerFn({ method: "GET" })
           }
           return acc;
         },
-        { total: 0, green: 0, yellow: 0, red: 0 },
+        { total: 0, green: 0, yellow: 0, orange: 0, red: 0, verified: 0 },
       );
       return {
         state: data.state,
