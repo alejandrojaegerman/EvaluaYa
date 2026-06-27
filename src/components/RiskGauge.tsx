@@ -9,39 +9,42 @@ import {
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 
-function rgb(level: "red" | "yellow" | "green"): string {
+function rgb(level: "red" | "orange" | "yellow" | "green"): string {
   const [r, g, b] = RISK_HEX[level];
   return `rgb(${r}, ${g}, ${b})`;
 }
 
 /**
- * Radial gauge that renders the high / moderate / low risk split as concentric
- * rings with the total in the center. Colors come from RISK_HEX (no hardcoded
- * color literals). SSR-safe — pure derivation from props.
+ * Radial gauge that renders the high / urgent / moderate / low risk split as
+ * concentric rings with the total in the center. Colors come from RISK_HEX (no
+ * hardcoded color literals). SSR-safe — pure derivation from props.
  */
 export function RiskGauge({
   green,
   yellow,
+  orange = 0,
   red,
   label,
 }: {
   green: number;
   yellow: number;
+  orange?: number;
   red: number;
   label?: string;
 }) {
   const { t } = useLang();
-  const total = green + yellow + red;
+  const total = green + yellow + orange + red;
 
-  // Outer ring = red (high), middle = yellow, inner = green. Each ring fills
+  // Outer ring = red (high), then orange, yellow, inner = green. Each ring fills
   // proportionally to its share of the total via a shared 0..total angle axis.
   const data = useMemo(
     () => [
       { name: "red", value: red, fill: rgb("red") },
+      { name: "orange", value: orange, fill: rgb("orange") },
       { name: "yellow", value: yellow, fill: rgb("yellow") },
       { name: "green", value: green, fill: rgb("green") },
     ],
-    [red, yellow, green],
+    [red, orange, yellow, green],
   );
 
   const pct = (n: number) => (total > 0 ? Math.round((n / total) * 100) : 0);
@@ -52,11 +55,11 @@ export function RiskGauge({
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
             data={data}
-            innerRadius="40%"
+            innerRadius="34%"
             outerRadius="100%"
             startAngle={90}
             endAngle={-270}
-            barSize={11}
+            barSize={9}
           >
             <PolarAngleAxis
               type="number"
@@ -85,12 +88,18 @@ export function RiskGauge({
         </div>
       </div>
 
-      <ul className="mt-3 grid w-full grid-cols-3 gap-2 text-center text-xs sm:mt-0 sm:grid-cols-1 sm:text-left">
+      <ul className="mt-3 grid w-full grid-cols-2 gap-2 text-center text-xs sm:mt-0 sm:grid-cols-1 sm:text-left">
         <GaugeLegend
           color={rgb("red")}
           name={t("map.high")}
           value={red}
           pct={pct(red)}
+        />
+        <GaugeLegend
+          color={rgb("orange")}
+          name={t("map.urgent")}
+          value={orange}
+          pct={pct(orange)}
         />
         <GaugeLegend
           color={rgb("yellow")}
