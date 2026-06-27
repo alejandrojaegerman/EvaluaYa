@@ -2148,6 +2148,8 @@ const en: Dict = {
   "dash.individuals": "individual",
   "dash.coverage": "Coverage by state",
   "dash.matching": "Matching",
+  "dash.matchingProgressHint":
+    "What the engineer reports after claiming a request.",
   "dash.requests": "Requests",
   "dash.open": "Open",
   "dash.openShort": "open",
