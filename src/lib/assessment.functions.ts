@@ -49,6 +49,7 @@ const analyzeSchema = z.object({
     address: z.string().max(300).optional().default(""),
     state: z.string().max(120).optional().default(""),
     municipality: z.string().max(120).optional().default(""),
+    buildingName: z.string().max(160).optional().default(""),
     buildingType: z.enum(["house", "apartment", "commercial"]),
     structuralType: z
       .enum(["URM", "CMF", "CIW", "PCF", "RML", "unknown"])
