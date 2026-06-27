@@ -179,9 +179,25 @@ function AdminPage() {
   const pending = engineers.filter((e) => e.status === "pending");
   const approved = engineers.filter((e) => e.status === "approved");
 
+  const filteredRequests = useMemo(() => {
+    switch (reqFilter) {
+      case "open":
+        return requests.filter((r) => r.status === "open");
+      case "claimed":
+        return requests.filter((r) => r.status === "claimed");
+      case "stalled":
+        return requests.filter((r) => r.stalled);
+      case "resolved":
+        return requests.filter((r) => r.progressStage === "resolved");
+      default:
+        return requests;
+    }
+  }, [requests, reqFilter]);
+
   return (
     <AppShell>
       <h1 className="font-display text-xl font-extrabold">{t("admin.title")}</h1>
+
 
       <Group title={`${t("admin.pending")} (${pending.length})`}>
         {pending.length === 0 ? (
