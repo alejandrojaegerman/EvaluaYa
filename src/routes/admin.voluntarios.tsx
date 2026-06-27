@@ -278,46 +278,70 @@ function AdminPage() {
         )}
       </Group>
 
+      {progress && (
+        <Group title={t("admin.matchingProgress")}>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            <Stat
+              label={t("admin.stageClaimed")}
+              value={progress.claimedOnly}
+            />
+            <Stat
+              label={t("admin.stageContacted")}
+              value={progress.contacted}
+            />
+            <Stat label={t("admin.stageVisited")} value={progress.visited} />
+            <Stat
+              label={t("admin.stageResolved")}
+              value={progress.resolved}
+              tone="green"
+            />
+            <Stat
+              label={t("admin.stalled")}
+              value={progress.stalled}
+              tone="red"
+            />
+          </div>
+        </Group>
+      )}
+
       <Group title={`${t("admin.requests")} (${requests.length})`}>
-        {requests.length === 0 ? (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {(
+            [
+              ["all", t("admin.filterAll")],
+              ["open", t("admin.filterOpen")],
+              ["claimed", t("admin.filterClaimed")],
+              ["stalled", t("admin.filterStalled")],
+              ["resolved", t("admin.filterResolved")],
+            ] as [RequestFilter, string][]
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setReqFilter(key)}
+              className={cn(
+                "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                reqFilter === key
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-background text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {filteredRequests.length === 0 ? (
           <Empty t={t} />
         ) : (
-          <ul className="divide-y divide-border">
-            {requests.map((r) => (
-              <li
-                key={r.id}
-                className="flex items-center justify-between gap-2 py-2 text-sm"
-              >
-                <span className="truncate text-muted-foreground">
-                  {[r.municipality, r.state].filter(Boolean).join(", ") || "—"}
-                </span>
-                <span className="flex items-center gap-2">
-                  {r.riskLevel && (
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
-                        r.riskLevel === "red"
-                          ? "bg-risk-red-soft text-risk-red"
-                          : r.riskLevel === "orange"
-                            ? "bg-risk-orange-soft text-risk-orange"
-                            : r.riskLevel === "yellow"
-                              ? "bg-risk-yellow-soft text-risk-yellow"
-                              : "bg-risk-green-soft text-risk-green",
-                      )}
-                    >
-                      {r.riskLevel}
-                    </span>
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {r.status}
-                  </span>
-                </span>
-              </li>
+          <div className="space-y-3">
+            {filteredRequests.map((r) => (
+              <HelpRequestCard key={r.id} r={r} t={t} />
             ))}
-          </ul>
+          </div>
         )}
       </Group>
     </AppShell>
+
   );
 }
 
