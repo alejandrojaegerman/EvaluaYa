@@ -106,6 +106,11 @@ function ResultPage() {
   const theme = RISK_THEME[record.riskLevel];
   const [cardBusy, setCardBusy] = useState(false);
 
+  // Funnel: resident reached the final result — the completed conversion.
+  useEffect(() => {
+    trackStep("result_reached");
+  }, []);
+
   async function handleShare() {
     const url = withUtm(`/a/${record!.publicId}`, {
       source: "native",
