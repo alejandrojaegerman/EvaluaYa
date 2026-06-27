@@ -37,13 +37,15 @@ import heroEngineer from "@/assets/hero-engineer.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "EvalúaYa — Evaluación estructural" },
+      { title: "EvalúaYa — Evaluación estructural tras un sismo" },
       {
         name: "description",
         content:
           "Autoevaluación de daños estructurales tras un sismo. Sin registro, funciona con poca señal. Si lo necesitas, te conectamos con un ingeniero voluntario verificado.",
       },
+      { property: "og:url", content: SITE_URL },
     ],
+    links: [{ rel: "canonical", href: SITE_URL }],
   }),
   component: Index,
 });
