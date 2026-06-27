@@ -3,6 +3,7 @@ import { ShieldCheck, Wifi, WifiOff } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { BottomNav } from "./BottomNav";
+import { Footer } from "./Footer";
 import { LanguageToggle } from "./LanguageToggle";
 import { OfflineBanner } from "./OfflineBanner";
 import { TopNav } from "./TopNav";
