@@ -56,6 +56,14 @@ export type AdminAnalytics = {
     closed: number;
     claimRate: number; // (claimed + closed) / total, 0..1
     avgClaimHours: number | null;
+    /** Lifecycle breakdown the engineer actually reports. */
+    progress: {
+      claimedOnly: number;
+      contacted: number;
+      visited: number;
+      resolved: number;
+      stalled: number;
+    };
   };
   coverageGaps: Array<{ state: string; openRequests: number }>;
 };
