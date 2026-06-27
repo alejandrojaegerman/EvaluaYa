@@ -138,7 +138,7 @@ function MapPage() {
   const stateBubbles = useMemo(() => {
     const byState = new Map<
       string,
-      { total: number; green: number; yellow: number; red: number }
+      { total: number; green: number; yellow: number; orange: number; red: number }
     >();
     for (const a of areas) {
       if (!a.state) continue;
@@ -146,6 +146,7 @@ function MapPage() {
         total: 0,
         green: 0,
         yellow: 0,
+        orange: 0,
         red: 0,
       };
       cur.total += a.total;
