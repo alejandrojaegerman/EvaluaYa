@@ -1,27 +1,29 @@
-# Fix missing translation keys (orange label + others)
+# Fix "map.urgent" still showing
 
-## Problem
-On the Mapa page the orange tier renders the raw key `map.urgent` instead of a label (visible in the screenshot: "map.urgent 49%"). A full scan of every `t("...")` call against the i18n dictionary found exactly two keys that are referenced in code but never defined in either language:
+## What's actually going on
 
-1. `map.urgent` — used in `src/components/DamageMap.tsx` and `src/components/RiskGauge.tsx` for the orange (moderate-to-serious) tier.
-2. `result.genericError` — used in `src/routes/a/$publicId.tsx`, `src/routes/mapa.tsx`, and `src/routes/voluntarios.panel.$token.tsx` for error toasts.
+The raw `map.urgent` label is **already fixed in the code**:
+- `src/lib/i18n.tsx` defines `"map.urgent": "Riesgo serio"` (ES) and `"Serious risk"` (EN).
+- `src/components/RiskGauge.tsx` renders `t("map.urgent")`, which resolves correctly.
 
-Good news: ES/EN parity is otherwise perfect — all 634 existing keys are defined in both languages, so no other key falls back to its raw name.
+The reason you still see it:
+1. The **published app at evaluaya.app is many versions behind** — it still shows the old 3-level risk scale (no orange tier at all). The `map.urgent` fix, the orange tier, and other recent work were never published.
+2. Your **preview/phone is serving a cached bundle** from an older build (orange tier present, i18n fix missing), so it shows the raw key.
 
-## Changes (`src/lib/i18n.tsx` only)
+This is a deploy + cache problem, not a code bug.
 
-Add to the Spanish block (near the other `map.*` keys ~line 489 and a `result.*` location):
-- `"map.urgent": "Riesgo serio"` — keeps the same short pattern as `map.high` / `map.moderate` / `map.low`, and is consistent with the orange tier wording already used (`result.orange.tag` = "Riesgo moderado a serio", legend "daños moderados a serios").
-- `"result.genericError": "Algo salió mal. Inténtalo de nuevo."`
+## Plan
 
-Add the matching English entries in the EN block:
-- `"map.urgent": "Serious risk"`
-- `"result.genericError": "Something went wrong. Please try again."`
+1. **Republish the app** so evaluaya.app serves the current code — this pushes the `map.urgent` fix and brings production in line with the 4-level scale (Green / Yellow / Orange / Red) and all other recent features.
 
-## Verification
-- Re-run the missing-key scan (parse all `t("literal")` calls vs. defined keys) → expect 0 missing.
-- Re-check ES/EN parity → every key defined exactly twice.
-- Visually confirm the Mapa "Distribución de riesgo" legend now shows the orange label instead of `map.urgent`, in both ES and EN.
+2. **Verify the live render** after publishing: load `evaluaya.app/mapa` and confirm the gauge legend reads "Riesgo serio" (ES) / "Serious risk" (EN) — not `map.urgent` — and that all four tiers appear.
 
-## Notes
-This is a content/i18n-only fix — no logic, schema, or component structure changes. The scan only covers static string keys; dynamic keys (e.g. `result.${level}.tag`) were already confirmed to resolve because every risk level has its tag/action defined.
+3. **Bust stale PWA cache for returning visitors.** The service worker uses `autoUpdate` with `NetworkFirst` for pages, so HTML refreshes, but cached older asset bundles can linger on installed PWAs. To make the update reliable, add a lightweight "new version available — tap to refresh" prompt (or a one-time forced `skipWaiting` + reload on activation) so users like the volunteer who reported this get the new bundle without manually clearing cache.
+
+4. **On your device right now:** use the preview refresh button (or pull-to-refresh / reinstall the PWA) to drop the cached bundle and load the current build.
+
+## Technical notes
+
+- No dictionary or component changes are needed for `map.urgent`; the keys and lookup (`translate`, `i18n.tsx` line ~1683) are correct.
+- Step 3 touches `src/lib/pwa.ts` / `vite.config.ts` PWA config only — a small update-flow enhancement, no business logic.
+- Recommend a quick parity re-scan of `t("...")` calls vs the dictionary before publishing, to confirm no other raw keys ship to production.
