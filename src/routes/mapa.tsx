@@ -344,7 +344,9 @@ function MapPage() {
       "total",
       "green",
       "yellow",
+      "orange",
       "red",
+      "verified",
       "last_report",
     ];
     const rows = areas.map((a) =>
@@ -354,7 +356,9 @@ function MapPage() {
         a.total,
         a.green,
         a.yellow,
+        a.orange,
         a.red,
+        a.verified,
         a.lastReport ?? "",
       ]
         .map((v) => `"${String(v).replace(/"/g, '""')}"`)
