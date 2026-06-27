@@ -83,6 +83,24 @@ export function BottomNav() {
             <div className="mt-4 grid gap-1">
               <SheetClose asChild>
                 <Link
+                  to="/datos"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <BarChart3 className="size-4.5" aria-hidden />
+                  </span>
+                  <span className="flex-1">
+                    {t("nav.data")}
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {t("nav.dataDesc")}
+                    </span>
+                  </span>
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+
+                <Link
                   to="/voluntarios"
                   className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
                 >
