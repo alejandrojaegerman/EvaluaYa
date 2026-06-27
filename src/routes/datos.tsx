@@ -773,8 +773,8 @@ function Stat({
   return (
     <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
       <p
-        className="font-display text-2xl font-extrabold"
-        style={{ color: color ?? "var(--primary)" }}
+        className="font-display text-2xl font-extrabold text-primary"
+        style={color ? { color } : undefined}
       >
         <CountUp value={value} />
       </p>
