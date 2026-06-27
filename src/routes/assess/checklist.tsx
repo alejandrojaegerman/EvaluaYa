@@ -26,6 +26,7 @@ import { loadDraft, saveDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { compressImageToDataUrl } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
+import { trackStep } from "@/lib/track";
 import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { cn } from "@/lib/utils";
@@ -74,6 +75,7 @@ function ChecklistStep() {
   const [showOptional, setShowOptional] = useState(false);
 
   useEffect(() => {
+    trackStep("checklist_started");
     let active = true;
     loadDraft().then((d) => {
       if (!active) return;

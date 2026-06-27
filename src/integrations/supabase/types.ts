@@ -238,6 +238,30 @@ export type Database = {
         }
         Relationships: []
       }
+      funnel_events: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          language: string | null
+          step: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          language?: string | null
+          step: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          language?: string | null
+          step?: string
+        }
+        Relationships: []
+      }
       help_requests: {
         Row: {
           assessment_public_id: string | null
@@ -716,6 +740,7 @@ export type Database = {
           name: string
         }[]
       }
+      get_funnel_metrics: { Args: { _window_hours?: number }; Returns: Json }
       get_risk_factors: {
         Args: { _municipality?: string; _state?: string }
         Returns: {

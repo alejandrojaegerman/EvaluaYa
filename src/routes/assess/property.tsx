@@ -24,6 +24,7 @@ import type {
   StructuralType,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
+import { trackStep } from "@/lib/track";
 import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
@@ -100,6 +101,11 @@ function PropertyStep() {
 
   const draftLoaded = useRef(false);
   const geoTried = useRef(false);
+
+  // Funnel: resident reached the first step of the evaluation.
+  useEffect(() => {
+    trackStep("property_started");
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -264,6 +270,7 @@ function PropertyStep() {
       ...(engParam ? { engineerToken: engParam } : {}),
       updatedAt: Date.now(),
     });
+    trackStep("property_completed");
     navigate({ to: "/assess/checklist" });
   }
 

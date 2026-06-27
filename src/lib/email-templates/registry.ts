@@ -25,6 +25,7 @@ import { template as feedbackNotification } from './feedback-notification'
 import { template as adminHelpNew } from './admin-help-new'
 import { template as adminHelpResolved } from './admin-help-resolved'
 import { template as adminHelpDigest } from './admin-help-digest'
+import { template as funnelAlert } from './funnel-alert'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'volunteer-signup-notification': volunteerSignupNotification,
@@ -35,5 +36,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'admin-help-new': adminHelpNew,
   'admin-help-resolved': adminHelpResolved,
   'admin-help-digest': adminHelpDigest,
+  'funnel-alert': funnelAlert,
 }
 
