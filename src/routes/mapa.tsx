@@ -747,10 +747,29 @@ function MapPage() {
                 );
               })}
             </ul>
-          </section>
+          </Reveal>
+
+          {/* National "why behind the data" — lazy-loaded on reveal */}
+          <Reveal
+            as="section"
+            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            delayMs={60}
+            onReveal={() => setWhyVisible(true)}
+          >
+            <h2 className="font-display text-lg font-bold">{t("map.whyTitle")}</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("map.whySubtitle")}
+            </p>
+            <div className="mt-3">
+              <RiskFactorsPanel
+                factors={nationalFactors}
+                loading={whyVisible && !nationalFactors}
+              />
+            </div>
+          </Reveal>
 
           {/* Share stats image — flywheel */}
-          <section className="mt-6">
+          <Reveal as="section" className="mt-6" delayMs={60}>
             <Button
               className="w-full"
               onClick={shareStats}
@@ -759,10 +778,10 @@ function MapPage() {
               <ImageDown className="size-4" />
               {cardBusy ? t("share.generating") : t("share.shareStats")}
             </Button>
-          </section>
+          </Reveal>
 
           {/* Open data download */}
-          <section className="mt-4">
+          <Reveal as="section" className="mt-4" delayMs={60}>
             <Button variant="outline" className="w-full" onClick={downloadCsv}>
               <Download className="size-4" />
               {t("map.download")}
@@ -770,7 +789,7 @@ function MapPage() {
             <p className="mt-2 text-center text-xs text-muted-foreground">
               {t("map.dataNote")}
             </p>
-          </section>
+          </Reveal>
 
         </>
       )}
