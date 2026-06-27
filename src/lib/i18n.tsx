@@ -1711,7 +1711,7 @@ const en: Dict = {
   "account.saveBody":
     "Want to see this report later or from another phone? Get a link by email to save it. No password needed.",
   "account.saveHint":
-    "We only use your email to send you the access link. It's optional.",
+    "We only use your email to send you the access link. No password, no spam. It's optional.",
   "account.emailLabel": "Email address",
   "account.emailPlaceholder": "you@example.com",
   "account.sendLink": "Send link",
