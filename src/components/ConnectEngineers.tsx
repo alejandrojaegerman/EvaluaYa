@@ -40,7 +40,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
 
   const state = record.property.state ?? "";
   const reportUrl = absoluteUrl(`/a/${record.publicId}`);
-  const isRed = record.riskLevel === "red";
+  const urgent = record.riskLevel === "red" || record.riskLevel === "orange";
 
   const [engineers, setEngineers] = useState<PublicEngineer[]>([]);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
@@ -127,7 +127,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
     <section
       className={cn(
         "mt-6 rounded-2xl border p-5 shadow-sm",
-        isRed
+        urgent
           ? "border-risk-red/30 bg-risk-red-soft/50"
           : "border-risk-yellow/40 bg-risk-yellow-soft/40",
       )}
@@ -136,7 +136,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
         <HardHat
           className={cn(
             "size-5",
-            isRed ? "text-risk-red" : "text-risk-yellow",
+            urgent ? "text-risk-red" : "text-risk-yellow",
           )}
           aria-hidden
         />
@@ -145,7 +145,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
         </h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-        {isRed ? t("connect.subtitleRed") : t("connect.subtitleYellow")}
+        {urgent ? t("connect.subtitleRed") : t("connect.subtitleYellow")}
       </p>
 
       {/* Directory of approved engineers */}

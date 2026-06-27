@@ -452,7 +452,7 @@ export const getAssessment = createServerFn({ method: "GET" })
     const buildingName = (row.building_name as string | null) ?? null;
     const buildingKey = (row.building_key as string | null) ?? null;
     if (buildingName && buildingKey) {
-      let peers = { total: 0, green: 0, yellow: 0, red: 0 };
+      let peers = { total: 0, green: 0, yellow: 0, orange: 0, red: 0 };
       try {
         const { data: peerRows } = await supabaseAdmin.rpc("get_building_peers", {
           _state: (row.state as string | null) ?? "",
@@ -465,6 +465,7 @@ export const getAssessment = createServerFn({ method: "GET" })
             total: pr.total ?? 0,
             green: pr.green ?? 0,
             yellow: pr.yellow ?? 0,
+            orange: pr.orange ?? 0,
             red: pr.red ?? 0,
           };
         }
@@ -483,6 +484,7 @@ export const getAssessment = createServerFn({ method: "GET" })
       answers: ordered,
       aiResult: row.ai_result as AiResult,
       riskLevel: (row.risk_level as RiskLevel) ?? "yellow",
+      priorRiskLevel: (row.prior_risk_level as RiskLevel | null) ?? null,
       createdAt: row.created_at,
       photoUrls,
       building,

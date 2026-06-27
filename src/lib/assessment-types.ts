@@ -136,6 +136,8 @@ export type AssessmentRecord = {
   answers: ChecklistAnswer[];
   aiResult: AiResult;
   riskLevel: RiskLevel;
+  /** Original risk level before the 4-level retroactive reclassification, if changed. */
+  priorRiskLevel?: RiskLevel | null;
   createdAt: string;
   /** signed urls per item id; may contain multiple photos per item */
   photoUrls: Record<string, string[]>;
@@ -147,6 +149,6 @@ export type AssessmentRecord = {
     name: string;
     /** number of OTHER analyzed reports from the same building */
     others: number;
-    peers: { total: number; green: number; yellow: number; red: number };
+    peers: { total: number; green: number; yellow: number; orange: number; red: number };
   } | null;
 };

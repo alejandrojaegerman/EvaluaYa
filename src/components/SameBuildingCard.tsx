@@ -15,8 +15,13 @@ export function SameBuildingCard({ record }: { record: AssessmentRecord }) {
   if (!building || building.others < 1) return null;
 
   const { peers } = building;
-  const segs: Array<{ key: "red" | "yellow" | "green"; count: number; cls: string }> = [
+  const segs: Array<{
+    key: "red" | "orange" | "yellow" | "green";
+    count: number;
+    cls: string;
+  }> = [
     { key: "red", count: peers.red, cls: "bg-risk-red" },
+    { key: "orange", count: peers.orange, cls: "bg-risk-orange" },
     { key: "yellow", count: peers.yellow, cls: "bg-risk-yellow" },
     { key: "green", count: peers.green, cls: "bg-risk-green" },
   ];
@@ -55,6 +60,10 @@ export function SameBuildingCard({ record }: { record: AssessmentRecord }) {
             <span className="inline-flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-risk-red" />
               {peers.red} {t("building.legend.red")}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-2 rounded-full bg-risk-orange" />
+              {peers.orange} {t("building.legend.orange")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-risk-yellow" />

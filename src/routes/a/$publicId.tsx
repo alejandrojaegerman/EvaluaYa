@@ -189,6 +189,14 @@ function ResultPage() {
         )}
       </section>
 
+      {record.priorRiskLevel && record.priorRiskLevel !== record.riskLevel && (
+        <p className="mt-3 rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+          {t("reclassify.updated")
+            .replace("{from}", t(`result.${record.priorRiskLevel}.tag`))
+            .replace("{to}", t(`result.${record.riskLevel}.tag`))}
+        </p>
+      )}
+
       {/* Findings */}
       {record.aiResult.findings.length > 0 && (
         <Section title={t("result.findings")}>
@@ -227,10 +235,10 @@ function ResultPage() {
       <SameBuildingCard record={record} />
 
 
-      {/* Connect with a volunteer engineer (Red / Yellow only) */}
-      {(record.riskLevel === "red" || record.riskLevel === "yellow") && (
-        <ConnectEngineers record={record} />
-      )}
+      {/* Connect with a volunteer engineer (Red / Orange / Yellow) */}
+      {(record.riskLevel === "red" ||
+        record.riskLevel === "orange" ||
+        record.riskLevel === "yellow") && <ConnectEngineers record={record} />}
 
 
 

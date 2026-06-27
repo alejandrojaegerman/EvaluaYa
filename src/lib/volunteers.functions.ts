@@ -89,7 +89,7 @@ function normalizePhone(raw: string): string {
   return toWhatsappNumber(raw);
 }
 
-const RISK_ORDER: Record<string, number> = { red: 0, yellow: 1, green: 2 };
+const RISK_ORDER: Record<string, number> = { red: 0, orange: 1, yellow: 2, green: 3 };
 
 /** Constant-ish-time admin secret comparison. */
 function adminOk(provided: string): boolean {
@@ -271,7 +271,7 @@ const helpSchema = z.object({
   assessmentPublicId: z.string().trim().max(64).optional().default(""),
   state: z.string().trim().max(120).optional().default(""),
   municipality: z.string().trim().max(160).optional().default(""),
-  riskLevel: z.enum(["green", "yellow", "red"]).optional(),
+  riskLevel: z.enum(["green", "yellow", "orange", "red"]).optional(),
   whatsapp: z
     .string()
     .trim()
