@@ -106,12 +106,13 @@ export function evaluateSafetyRules(
   // Unreinforced masonry that ALSO shows structural damage or was strongly
   // shaken is unsafe to enter; URM on its own is escalated to orange below.
   const urm = property.structuralType === "URM";
-  if (urm && (anyStructuralYes || moderateShaking)) fireRed("urm");
+  const urmRed = urm && (anyStructuralYes || moderateShaking);
+  if (urmRed) fireRed("urm");
 
   // --- Escalate to ORANGE: needs an engineer urgently (not imminent collapse) ---
   // URM alone (no observed damage, no strong shaking) still warrants an
   // urgent professional look given how brittle these buildings are.
-  if (urm && level !== "red") fireOrange("urm");
+  if (urm && !urmRed) fireOrange("urm");
   // Severe shaking at the site, on its own, pushes to orange (was yellow).
   if (severeShaking) fireOrange("intensity_severe");
   // High spectral demand AT THE BUILDING'S OWN PERIOD: this height was shaken
