@@ -793,7 +793,7 @@ function MapPage() {
           </Reveal>
 
           {/* Open data download */}
-          <Reveal as="section" className="mt-4" delayMs={60}>
+          <Reveal as="section" className="mt-4 hidden md:block" delayMs={60}>
             <Button variant="outline" className="w-full" onClick={downloadCsv}>
               <Download className="size-4" />
               {t("map.download")}
