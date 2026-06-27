@@ -267,6 +267,10 @@ function AdminDashboard() {
         </Card>
       )}
 
+      {funnel && <FunnelCard metrics={funnel} t={t} />}
+
+
+
       {data.topStates.length > 0 && (
         <Card>
           <p className="text-sm font-semibold">{t("dash.topStates")}</p>
