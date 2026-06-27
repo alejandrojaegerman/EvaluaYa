@@ -1,41 +1,39 @@
-# Device-aware navigation cleanup
+# EvalúaYa — required municipio dropdown, then full-flow testing
 
-Make the nav adapt to the visitor and the device: stop showing "Mis reportes" as a dead end when there's nothing to show, point mobile visitors toward starting an evaluation instead, and surface the higher-value pages directly on desktop.
+Two parts: first the municipio UX change you asked for, then the test suite from before.
 
-## 1. Detect whether the visitor has reports
+## Part 1 — Make municipio a required, state-dependent dropdown
 
-A small client-only hook (`src/hooks/use-has-reports.ts`) returns a boolean that is `true` when **either**:
-- this device has at least one entry in local history (`getHistory()`), **or**
-- there is an active account session (`supabase.auth.getSession()` / `onAuthStateChange`).
+Today the Municipio field is an optional free-text input, and we only have centroids for ~33 municipios. Free text hurts data quality (typos, aliases) and the field is skippable. Change it to a required picker driven by the selected state.
 
-To avoid SSR hydration mismatches, it starts `false` on the server and first paint, then resolves on mount and updates live on sign-in/sign-out. This mirrors the existing client-only patterns already used in `index.tsx` and `use-claim-on-signin.ts`.
+### Data
+- Add a complete `MUNICIPIOS_BY_STATE: Record<string, string[]>` to `src/lib/venezuela.ts` listing every official municipio for all 24 federal entities (335 total), each grouped under its state and sorted alphabetically.
+- Keep the existing curated `MUNICIPIOS` centroids as-is for the map; names not in that subset still roll up to the state centroid via `resolveMunicipio` (unchanged).
+- Add a `nearestMunicipio(lat, lng, state)` helper that snaps a detected coordinate to the closest curated municipio centroid within the detected state (used only for geo autopopulate).
 
-## 2. Mobile bottom nav (`BottomNav.tsx`)
+### Property screen (`src/routes/assess/property.tsx`)
+- Replace the free-text Municipio `Input` with a `<select>`:
+  - Options come from `MUNICIPIOS_BY_STATE[state]`; the control is disabled with a "Selecciona primero el estado" placeholder until a state is chosen.
+  - Mark it required (red asterisk like Estado), add it to the `missing` list and the `valid` gate, and add a `property.miss.municipality` validation hint.
+  - When the state changes, reset the municipio selection so a stale value from another state can't persist.
+- Geo autopopulate: in the existing geolocation effect, after setting the detected estado, call `nearestMunicipio` and prefill the municipio select (only when the user hasn't already chosen one) so location-based detection fills both fields.
+- Draft load: if a saved draft has a municipio that exists in the current state's list, preselect it.
 
-Four tabs, last slot is conditional:
-- **Has reports:** Inicio · Mapa · **Mis reportes** · Más (current behavior)
-- **No reports:** Inicio · Mapa · **Evaluar** · Más
+### i18n (`src/lib/i18n.tsx`)
+- Update the Municipio label to drop the "(optional)" suffix, add the `property.miss.municipality` and a "select state first" placeholder string, in ES and EN.
 
-The "Evaluar" tab links straight to the assessment start (`/assess/property`) with a clear icon (e.g. `ClipboardCheck`) — the most direct path to a completed evaluation. Inside the "Más" sheet, the "Mis reportes" entry is added only when the visitor has reports, so it's reachable but never a dead end.
+### Notes / decisions
+- The server schema (`assessment.functions.ts`) keeps `municipality` optional for backward compatibility with existing records and the engineer/offline paths; the requirement is enforced client-side in the flow.
+- To avoid new drop-off, the dropdown will include a final **"No estoy seguro" / "Not sure"** option so a resident who genuinely doesn't know can still proceed while we still capture a controlled value instead of free text. (If you'd rather force a real municipio with no escape hatch, say so and I'll remove that option.)
 
-## 3. Desktop top nav (`TopNav.tsx`)
+## Part 2 — Full-flow tests (unchanged from prior plan)
 
-- Promote **Voluntarios** and **Metodología** out of the "Más" dropdown into the main inline nav row.
-- Show **Mis reportes** in the main row only when the visitor has reports; otherwise it's hidden entirely.
-- The "Más" dropdown keeps the remaining secondary items (Ayuda, Feedback), plus Mis reportes only when relevant.
+After the municipio change is in, add the permanent suite and run the one-off verification pass with real AI:
+- **Unit (Vitest):** `safety-rules`, `risk`, `building`, `phone`, `shakemap.spectralDemand`, `provisional`, AI-JSON parsing, plus `nearestMunicipio` / `MUNICIPIOS_BY_STATE` integrity (every state has ≥1 municipio, no dupes).
+- **E2E (Playwright):** drive `/assess/property` → `/assess/checklist` → `/assess/analyze` → `/a/$publicId`, now also asserting Continue stays disabled until a municipio is picked; verify the result card, PDF, share/WhatsApp, and save-reports actions; a Red-forcing run validates safety rules end-to-end; and no-draft redirects.
+- Run once, screenshot each step, fix any real bugs surfaced.
 
-Resulting desktop main row:
-- No reports: Inicio · Mapa · Datos · Voluntarios · Metodología · Más(Ayuda, Feedback)
-- Has reports: Inicio · Mapa · Datos · Voluntarios · Metodología · Mis reportes · Más(Ayuda, Feedback)
-
-## 4. New i18n key
-
-Add `nav.evaluate` ("Evaluar" / "Evaluate") in both ES and EN blocks of `src/lib/i18n.tsx` for the mobile fallback tab.
-
-## Technical notes
-
-- New file: `src/hooks/use-has-reports.ts` — client-only boolean hook (history + session), subscribes to `supabase.auth.onAuthStateChange`, cleans up on unmount.
-- `src/components/BottomNav.tsx`: use the hook; swap the 3rd tab between the Mis reportes link and the Evaluar link (`to="/assess/property"`); conditionally render the Mis reportes row in the sheet.
-- `src/components/TopNav.tsx`: add Voluntarios + Metodología inline links; gate the Mis reportes link on the hook; trim the dropdown accordingly.
-- No backend, assessment-flow, or triage changes. No route additions (links target existing routes).
-- The `/datos` and `/feedback` hydration warnings in the console come from a browser password-manager extension (Dashlane) injecting attributes into form inputs, not from app code; out of scope here.
+### Technical notes
+- Dev deps `vitest` + `@playwright/test`; add `test`, `test:unit`, `test:e2e` scripts. Tests under `tests/`.
+- E2E targets the running sandbox dev server (port 8080); real AI uses the existing `LOVABLE_API_KEY`.
+- No changes to assessment scoring/prompts beyond genuine bug fixes.
