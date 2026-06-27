@@ -339,6 +339,7 @@ const es: Dict = {
   "result.disclaimerShort":
     "Orientación preliminar. Confirma con un ingeniero estructural o Protección Civil.",
   "result.notFound": "No se encontró esta evaluación.",
+  "result.genericError": "Algo salió mal. Inténtalo de nuevo.",
   "result.goHome": "Ir al inicio",
   "result.assessedOn": "Evaluado el",
 
