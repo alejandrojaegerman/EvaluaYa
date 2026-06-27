@@ -544,6 +544,13 @@ const es: Dict = {
   "result.viewMap": "Ver mapa de daños de tu zona",
   "result.shareCard": "Compartir imagen de resultado",
   "result.cardFooter": "Autoevaluación estructural tras el sismo · No sustituye una inspección profesional",
+  "result.proBadge": "Evaluación verificada por ingeniero",
+  "result.proBadgeDesc":
+    "Este reporte fue realizado por un ingeniero voluntario, no es una autoevaluación.",
+  "result.residentBadge": "Autoevaluación de residente",
+  "result.shareOwnerTitle": "¿Es para otra persona?",
+  "result.shareOwnerBody":
+    "Comparte este resultado con el dueño o residente para que decida si es seguro regresar.",
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
