@@ -1396,6 +1396,13 @@ const en: Dict = {
   "result.viewMap": "View your area's damage map",
   "result.shareCard": "Share result image",
   "result.cardFooter": "Post-earthquake structural self-assessment · Not a substitute for a professional inspection",
+  "result.proBadge": "Engineer-verified evaluation",
+  "result.proBadgeDesc":
+    "This report was completed by a volunteer engineer — it is not a self-assessment.",
+  "result.residentBadge": "Resident self-assessment",
+  "result.shareOwnerTitle": "Is this for someone else?",
+  "result.shareOwnerBody":
+    "Share this result with the owner or resident so they can decide whether it's safe to return.",
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
