@@ -374,6 +374,27 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] request notification failed", notifyErr);
       }
 
+      // Notify the site admin of every new help request (best-effort).
+      try {
+        const { sendSystemEmail } = await import("./notify-email.server");
+        const location =
+          [data.municipality, data.state].filter(Boolean).join(", ") || "—";
+        await sendSystemEmail({
+          templateName: "admin-help-new",
+          templateData: {
+            riskLevel: data.riskLevel ?? "",
+            location,
+            note: data.note || "",
+            adminUrl:
+              "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_new",
+          },
+        }).catch((err) =>
+          console.error("[volunteers] admin new-request notify failed", err),
+        );
+      } catch (notifyErr) {
+        console.error("[volunteers] admin new-request notify failed", notifyErr);
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] submitHelpRequest failed", e);
