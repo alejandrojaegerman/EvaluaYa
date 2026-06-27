@@ -25,6 +25,9 @@ import {
 import { loadDraft, saveDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { compressImageToDataUrl } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
+import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
+import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
+import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { cn } from "@/lib/utils";
 
 const STRUCTURE_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "structure");
