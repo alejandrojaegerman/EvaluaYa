@@ -4,7 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import { LanguageToggle } from "./LanguageToggle";
 import { useLang } from "@/lib/i18n";
 
-/** Desktop-only site footer. Hidden on mobile so it never collides with BottomNav. */
+/** Site footer. On mobile it adds extra bottom padding so it clears the fixed BottomNav. */
 export function Footer() {
   const { t } = useLang();
 
@@ -40,9 +40,9 @@ export function Footer() {
   ];
 
   return (
-    <footer className="mt-12 hidden border-t border-border/70 bg-muted/30 print:hidden md:block">
-      <div className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="grid grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] gap-8">
+    <footer className="mt-12 border-t border-border/70 bg-muted/30 print:hidden">
+      <div className="mx-auto w-full max-w-6xl px-4 pt-10 pb-28 md:px-6 md:pb-10">
+        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
           {/* Brand */}
           <div className="min-w-0">
             <Link to="/" className="flex items-center gap-2">
