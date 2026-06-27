@@ -82,6 +82,7 @@ function PropertyStep() {
   const [structuralType, setStructuralType] =
     useState<StructuralType>("unknown");
   const [structOpen, setStructOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
   const [geoStatus, setGeoStatus] = useState<
@@ -101,6 +102,7 @@ function PropertyStep() {
       const p = draft.property;
       if (p.address) setAddress(p.address);
       if (p.buildingName) setBuildingName(p.buildingName);
+      if (p.address || p.buildingName) setDetailsOpen(true);
       if (p.state) setState(p.state);
       if (p.municipality) setMunicipality(p.municipality);
       if (p.buildingType) setBuildingType(p.buildingType);
