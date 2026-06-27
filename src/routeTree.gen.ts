@@ -15,6 +15,7 @@ import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as DatosRouteImport } from './routes/datos'
 import { Route as AyudaRouteImport } from './routes/ayuda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
@@ -62,6 +63,11 @@ const MapaRoute = MapaRouteImport.update({
 const FeedbackRoute = FeedbackRouteImport.update({
   id: '/feedback',
   path: '/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatosRoute = DatosRouteImport.update({
+  id: '/datos',
+  path: '/datos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AyudaRoute = AyudaRouteImport.update({
@@ -161,6 +167,7 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
+  '/datos': typeof DatosRoute
   '/feedback': typeof FeedbackRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
+  '/datos': typeof DatosRoute
   '/feedback': typeof FeedbackRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
+  '/datos': typeof DatosRoute
   '/feedback': typeof FeedbackRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ayuda'
+    | '/datos'
     | '/feedback'
     | '/mapa'
     | '/metodologia'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ayuda'
+    | '/datos'
     | '/feedback'
     | '/mapa'
     | '/metodologia'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/ayuda'
+    | '/datos'
     | '/feedback'
     | '/mapa'
     | '/metodologia'
@@ -321,6 +333,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AyudaRoute: typeof AyudaRoute
+  DatosRoute: typeof DatosRoute
   FeedbackRoute: typeof FeedbackRoute
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
@@ -387,6 +400,13 @@ declare module '@tanstack/react-router' {
       path: '/feedback'
       fullPath: '/feedback'
       preLoaderRoute: typeof FeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datos': {
+      id: '/datos'
+      path: '/datos'
+      fullPath: '/datos'
+      preLoaderRoute: typeof DatosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ayuda': {
@@ -521,6 +541,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AyudaRoute: AyudaRoute,
+  DatosRoute: DatosRoute,
   FeedbackRoute: FeedbackRoute,
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
