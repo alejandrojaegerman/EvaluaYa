@@ -130,9 +130,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cJy4f9Hr3ub8meqhg39MueCFNYX2/social-images/social-1782403490801-Screenshot_2026-06-25_at_12.04.39_PM.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cJy4f9Hr3ub8meqhg39MueCFNYX2/social-images/social-1782403490801-Screenshot_2026-06-25_at_12.04.39_PM.webp" },
-      { name: "description", content: "Una guía paso a paso para revisar daños estructurales después de un terremoto. Sin registro. Funciona con poca señal." },
-      { property: "og:description", content: "Una guía paso a paso para revisar daños estructurales después de un terremoto. Sin registro. Funciona con poca señal." },
-      { name: "twitter:description", content: "Una guía paso a paso para revisar daños estructurales después de un terremoto. Sin registro. Funciona con poca señal." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
