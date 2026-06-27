@@ -257,332 +257,364 @@ function PropertyStep() {
 
 
 
-      <div className="mt-6 space-y-7">
-        {/* Address */}
-        <div>
-          <Label htmlFor="address" className="text-sm font-semibold">
-            {t("property.address")}{" "}
-            <span className="font-normal text-muted-foreground">
-              ({t("common.optional")})
-            </span>
-          </Label>
-          <Input
-            id="address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder={t("property.addressPlaceholder")}
-            className="mt-2 h-12 rounded-xl bg-card"
-            autoComplete="street-address"
-          />
-        </div>
+      <div className="mt-6 space-y-8">
+        {/* ── Location ──────────────────────────────────────── */}
+        <section className="space-y-4">
+          <h2 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            {t("property.sectionLocation")}
+          </h2>
 
-        {/* Building / tower name — optional, powers community map clustering */}
-        <div>
-          <Label htmlFor="buildingName" className="text-sm font-semibold">
-            {t("property.buildingName")}{" "}
-            <span className="font-normal text-muted-foreground">
-              ({t("common.optional")})
-            </span>
-          </Label>
-          <Input
-            id="buildingName"
-            value={buildingName}
-            onChange={(e) => setBuildingName(e.target.value)}
-            placeholder={t("property.buildingNamePlaceholder")}
-            className="mt-2 h-12 rounded-xl bg-card"
-            maxLength={160}
-          />
-          <p className="mt-1.5 text-xs text-muted-foreground">
-            {t("property.buildingNameHint")}
-          </p>
-        </div>
-
-
-
-        {/* Estado + Municipio (coarse location for the public map) */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="estado" className="text-sm font-semibold">
-              {t("property.state")}{" "}
-              <span className="font-normal text-destructive">*</span>
-            </Label>
-            <select
-              id="estado"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">{t("property.statePlaceholder")}</option>
-              {ESTADO_NAMES.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <Label htmlFor="municipio" className="text-sm font-semibold">
-              {t("property.municipality")}{" "}
-              <span className="font-normal text-muted-foreground">
-                ({t("common.optional")})
-              </span>
-            </Label>
-            <Input
-              id="municipio"
-              value={municipality}
-              onChange={(e) => setMunicipality(e.target.value)}
-              placeholder={t("property.municipalityPlaceholder")}
-              className="mt-2 h-12 rounded-xl bg-card"
-              maxLength={120}
-            />
-          </div>
-        </div>
-
-        {geoStatus !== "idle" && (
-          <p
-            className={cn(
-              "-mt-3 flex items-center gap-1.5 text-xs",
-              geoStatus === "detected"
-                ? "text-primary"
-                : "text-muted-foreground",
-            )}
-          >
-            <LocateFixed className="size-3.5 shrink-0" aria-hidden />
-            {geoStatus === "detecting" && t("property.detecting")}
-            {geoStatus === "detected" && t("property.detected")}
-            {geoStatus === "failed" && t("property.detectFailed")}
-          </p>
-        )}
-
-        <p className="-mt-3 text-xs text-muted-foreground">
-          {t("property.locationHint")}
-        </p>
-
-        {/* ShakeMap intensity (auto-detected) */}
-        {intensity && (
-          <div
-            className={cn(
-              "-mt-2 flex items-start gap-2 rounded-xl border p-3 text-sm",
-              intensity.mmi >= 7
-                ? "border-risk-yellow/40 bg-risk-yellow-soft"
-                : "border-border bg-card",
-            )}
-          >
-            <Activity className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          {/* Estado + Municipio (coarse location for the public map) */}
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="font-medium">
-                {t("property.intensityDetected")}:{" "}
-                <span className="font-bold tabular-nums">
-                  {intensity.roman} ({intensity.mmi})
+              <Label htmlFor="estado" className="text-sm font-semibold">
+                {t("property.state")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <select
+                id="estado"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">{t("property.statePlaceholder")}</option>
+                {ESTADO_NAMES.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="municipio" className="text-sm font-semibold">
+                {t("property.municipality")}{" "}
+                <span className="font-normal text-muted-foreground">
+                  ({t("common.optional")})
                 </span>
-              </p>
-              {intensity.mmi >= 7 && (
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {t("property.intensityHigh")}
-                </p>
-              )}
-              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground tabular-nums">
-                {intensity.pga != null && (
-                  <span>PGA {(intensity.pga * 100).toFixed(0)}%g</span>
-                )}
-                {intensity.pgv != null && (
-                  <span>PGV {intensity.pgv.toFixed(0)} cm/s</span>
-                )}
-                {intensity.soilClass && (
-                  <span>{t(`soil.${intensity.soilClass}`)}</span>
-                )}
-              </div>
+              </Label>
+              <Input
+                id="municipio"
+                value={municipality}
+                onChange={(e) => setMunicipality(e.target.value)}
+                placeholder={t("property.municipalityPlaceholder")}
+                className="mt-2 h-12 rounded-xl bg-card"
+                maxLength={120}
+              />
             </div>
           </div>
-        )}
 
-
-        {/* Building type */}
-        <div>
-          <p className="text-sm font-semibold">{t("property.buildingType")}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {t("property.buildingType.help")}
-          </p>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {BUILDING_TYPES.map(({ id, icon: Icon }) => {
-              const selected = buildingType === id;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setBuildingType(id)}
-                  aria-pressed={selected}
-                  className={cn(
-                    "flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center text-sm font-medium transition-colors",
-                    selected
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card text-foreground hover:border-primary/40",
-                  )}
-                >
-                  <Icon className="size-6" aria-hidden />
-                  {t(`property.type.${id}`)}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Structural system — collapsed by default, defaults to "Not sure" so
-            it never blocks the resident from continuing. */}
-        <div>
-          <p className="text-sm font-semibold">{t("property.structuralType")}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {t("property.structuralType.help")}
-          </p>
-          {!structOpen ? (
-            <button
-              type="button"
-              onClick={() => setStructOpen(true)}
-              className="mt-2 flex w-full items-center justify-between gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left transition-colors hover:border-primary/40"
+          {geoStatus !== "idle" && (
+            <p
+              className={cn(
+                "flex items-center gap-1.5 text-xs",
+                geoStatus === "detected"
+                  ? "text-primary"
+                  : "text-muted-foreground",
+              )}
             >
-              <span className="min-w-0 truncate text-sm font-medium">
-                {t(`property.struct.${structuralType}`)}
-              </span>
-              <span className="shrink-0 text-xs font-semibold text-primary">
-                {t("property.structToggle")}
-              </span>
-            </button>
-          ) : (
-            <>
-              <div className="mt-2 space-y-2">
-                {STRUCTURAL_TYPES.map((id) => {
-                  const selected = structuralType === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setStructuralType(id)}
-                      aria-pressed={selected}
-                      className={cn(
-                        "flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors",
-                        selected
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-card hover:border-primary/40",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "mt-1 size-4 shrink-0 rounded-full border-2",
-                          selected
-                            ? "border-primary bg-primary"
-                            : "border-muted-foreground/40",
-                        )}
-                      />
-                      <span>
-                        <span
-                          className={cn(
-                            "block text-sm font-medium",
-                            selected ? "text-primary" : "text-foreground",
-                          )}
-                        >
-                          {t(`property.struct.${id}`)}
-                        </span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">
-                          {t(`property.struct.${id}.desc`)}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                type="button"
-                onClick={() => setStructOpen(false)}
-                className="mt-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
-              >
-                {t("property.structHide")}
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Floors */}
-        <div>
-          <p className="text-sm font-semibold">{t("property.floors")}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {t("property.floors.help")}
-          </p>
-          <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-2">
-            <button
-              type="button"
-              onClick={() => setFloors((f) => Math.max(1, f - 1))}
-              disabled={floors <= 1}
-              aria-label="-"
-              className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70 disabled:opacity-40"
-            >
-              <Minus className="size-5" />
-            </button>
-            <span className="flex-1 text-center font-display text-2xl font-bold tabular-nums">
-              {floors}
-            </span>
-            <button
-              type="button"
-              onClick={() => setFloors((f) => Math.min(200, f + 1))}
-              aria-label="+"
-              className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70"
-            >
-              <Plus className="size-5" />
-            </button>
-          </div>
-          {floors > 7 && (
-            <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
-              {t("property.floorsHigh")}
+              <LocateFixed className="size-3.5 shrink-0" aria-hidden />
+              {geoStatus === "detecting" && t("property.detecting")}
+              {geoStatus === "detected" && t("property.detected")}
+              {geoStatus === "failed" && t("property.detectFailed")}
             </p>
           )}
-        </div>
 
-        {/* Age */}
-        <div>
-          <p className="text-sm font-semibold">{t("property.age")}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {t("property.age.help")}
+          <p className="text-xs text-muted-foreground">
+            {t("property.locationHint")}
           </p>
-          <div className="mt-2 space-y-2">
-            {AGES.map((a) => {
-              const selected = age === a;
-              return (
-                <button
-                  key={a}
-                  type="button"
-                  onClick={() => setAge(a)}
-                  aria-pressed={selected}
-                  className={cn(
-                    "flex w-full items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-colors",
-                    selected
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card text-foreground hover:border-primary/40",
+
+          {/* Optional free-text detail (address + building name) — collapsed by
+              default so the required path stays short on mobile. */}
+          {!detailsOpen ? (
+            <button
+              type="button"
+              onClick={() => setDetailsOpen(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-card py-3 text-sm font-semibold text-primary transition-colors hover:border-primary/40"
+            >
+              <Plus className="size-4" />
+              {t("property.optionalDetails")}
+            </button>
+          ) : (
+            <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
+              <div>
+                <Label htmlFor="address" className="text-sm font-semibold">
+                  {t("property.address")}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                </Label>
+                <Input
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={t("property.addressPlaceholder")}
+                  className="mt-2 h-12 rounded-xl bg-background"
+                  autoComplete="street-address"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="buildingName" className="text-sm font-semibold">
+                  {t("property.buildingName")}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                </Label>
+                <Input
+                  id="buildingName"
+                  value={buildingName}
+                  onChange={(e) => setBuildingName(e.target.value)}
+                  placeholder={t("property.buildingNamePlaceholder")}
+                  className="mt-2 h-12 rounded-xl bg-background"
+                  maxLength={160}
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t("property.buildingNameHint")}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDetailsOpen(false)}
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+              >
+                {t("property.optionalDetailsHide")}
+              </button>
+            </div>
+          )}
+
+          {/* ShakeMap intensity (auto-detected) */}
+          {intensity && (
+            <div
+              className={cn(
+                "flex items-start gap-2 rounded-xl border p-3 text-sm",
+                intensity.mmi >= 7
+                  ? "border-risk-yellow/40 bg-risk-yellow-soft"
+                  : "border-border bg-card",
+              )}
+            >
+              <Activity className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <div>
+                <p className="font-medium">
+                  {t("property.intensityDetected")}:{" "}
+                  <span className="font-bold tabular-nums">
+                    {intensity.roman} ({intensity.mmi})
+                  </span>
+                </p>
+                {intensity.mmi >= 7 && (
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {t("property.intensityHigh")}
+                  </p>
+                )}
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground tabular-nums">
+                  {intensity.pga != null && (
+                    <span>PGA {(intensity.pga * 100).toFixed(0)}%g</span>
                   )}
+                  {intensity.pgv != null && (
+                    <span>PGV {intensity.pgv.toFixed(0)} cm/s</span>
+                  )}
+                  {intensity.soilClass && (
+                    <span>{t(`soil.${intensity.soilClass}`)}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* ── Building ──────────────────────────────────────── */}
+        <section className="space-y-6">
+          <h2 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            {t("property.sectionBuilding")}
+          </h2>
+
+          {/* Building type */}
+          <div>
+            <p className="text-sm font-semibold">{t("property.buildingType")}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("property.buildingType.help")}
+            </p>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {BUILDING_TYPES.map(({ id, icon: Icon }) => {
+                const selected = buildingType === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setBuildingType(id)}
+                    aria-pressed={selected}
+                    className={cn(
+                      "flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center text-sm font-medium transition-colors",
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-foreground hover:border-primary/40",
+                    )}
+                  >
+                    <Icon className="size-6" aria-hidden />
+                    {t(`property.type.${id}`)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Structural system — collapsed by default, defaults to "Not sure" so
+              it never blocks the resident from continuing. */}
+          <div>
+            <p className="text-sm font-semibold">{t("property.structuralType")}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("property.structuralType.help")}
+            </p>
+            {!structOpen ? (
+              <button
+                type="button"
+                onClick={() => setStructOpen(true)}
+                className="mt-2 flex w-full items-center justify-between gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left transition-colors hover:border-primary/40"
+              >
+                <span className="min-w-0 truncate text-sm font-medium">
+                  {t(`property.struct.${structuralType}`)}
+                </span>
+                <span className="shrink-0 text-xs font-semibold text-primary">
+                  {t("property.structToggle")}
+                </span>
+              </button>
+            ) : (
+              <>
+                <div className="mt-2 space-y-2">
+                  {STRUCTURAL_TYPES.map((id) => {
+                    const selected = structuralType === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setStructuralType(id)}
+                        aria-pressed={selected}
+                        className={cn(
+                          "flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors",
+                          selected
+                            ? "border-primary bg-primary/10"
+                            : "border-border bg-card hover:border-primary/40",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "mt-1 size-4 shrink-0 rounded-full border-2",
+                            selected
+                              ? "border-primary bg-primary"
+                              : "border-muted-foreground/40",
+                          )}
+                        />
+                        <span>
+                          <span
+                            className={cn(
+                              "block text-sm font-medium",
+                              selected ? "text-primary" : "text-foreground",
+                            )}
+                          >
+                            {t(`property.struct.${id}`)}
+                          </span>
+                          <span className="mt-0.5 block text-xs text-muted-foreground">
+                            {t(`property.struct.${id}.desc`)}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setStructOpen(false)}
+                  className="mt-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
                 >
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium">
-                      {t(`property.age.${a}`)}
+                  {t("property.structHide")}
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Floors */}
+          <div>
+            <p className="text-sm font-semibold">{t("property.floors")}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("property.floors.help")}
+            </p>
+            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-2">
+              <button
+                type="button"
+                onClick={() => setFloors((f) => Math.max(1, f - 1))}
+                disabled={floors <= 1}
+                aria-label="-"
+                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70 disabled:opacity-40"
+              >
+                <Minus className="size-5" />
+              </button>
+              <span className="flex-1 text-center font-display text-2xl font-bold tabular-nums">
+                {floors}
+              </span>
+              <button
+                type="button"
+                onClick={() => setFloors((f) => Math.min(200, f + 1))}
+                aria-label="+"
+                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70"
+              >
+                <Plus className="size-5" />
+              </button>
+            </div>
+            {floors > 7 && (
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
+                {t("property.floorsHigh")}
+              </p>
+            )}
+          </div>
+
+          {/* Age */}
+          <div>
+            <p className="text-sm font-semibold">{t("property.age")}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("property.age.help")}
+            </p>
+            <div className="mt-2 space-y-2">
+              {AGES.map((a) => {
+                const selected = age === a;
+                return (
+                  <button
+                    key={a}
+                    type="button"
+                    onClick={() => setAge(a)}
+                    aria-pressed={selected}
+                    className={cn(
+                      "flex w-full items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-colors",
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-foreground hover:border-primary/40",
+                    )}
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium">
+                        {t(`property.age.${a}`)}
+                      </span>
+                      <span
+                        className={cn(
+                          "mt-0.5 block text-xs",
+                          selected ? "text-primary/80" : "text-muted-foreground",
+                        )}
+                      >
+                        {t(`property.age.${a}.desc`)}
+                      </span>
                     </span>
                     <span
                       className={cn(
-                        "mt-0.5 block text-xs",
-                        selected ? "text-primary/80" : "text-muted-foreground",
+                        "size-4 shrink-0 rounded-full border-2",
+                        selected ? "border-primary bg-primary" : "border-muted-foreground/40",
                       )}
-                    >
-                      {t(`property.age.${a}.desc`)}
-                    </span>
-                  </span>
-                  <span
-                    className={cn(
-                      "size-4 shrink-0 rounded-full border-2",
-                      selected ? "border-primary bg-primary" : "border-muted-foreground/40",
-                    )}
-                  />
-                </button>
-              );
-            })}
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </section>
       </div>
 
       {!valid && missing.length > 0 && (
