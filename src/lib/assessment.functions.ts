@@ -383,6 +383,25 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
     };
     aiResult = mergedResult;
 
+    // Certify the report when a valid, approved, non-expired engineer panel
+    // token is supplied. Never trust the flag without a server-side check.
+    let reportType: "resident" | "professional" = "resident";
+    let verifiedByEngineer: string | null = null;
+    if (data.engineerToken) {
+      const { data: eng } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("id, status, token_expires_at")
+        .eq("access_token", data.engineerToken)
+        .maybeSingle();
+      const notExpired =
+        !eng?.token_expires_at ||
+        new Date(eng.token_expires_at).getTime() > Date.now();
+      if (eng && eng.status === "approved" && notExpired) {
+        reportType = "professional";
+        verifiedByEngineer = eng.id as string;
+      }
+    }
+
     const { error: insertError } = await supabaseAdmin.from("assessments").insert({
       public_id: publicId,
       device_id: data.deviceId?.trim() || null,
@@ -392,7 +411,9 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       municipality: data.property.municipality?.trim() || null,
       building_name: building?.name ?? null,
       building_key: building?.key ?? null,
-      building_inferred: building ? true : false,
+      building_inferred: buildingInferred,
+      report_type: reportType,
+      verified_by_engineer: verifiedByEngineer,
       answers: storedAnswers,
       ai_result: aiResult,
       risk_level: finalRisk,
