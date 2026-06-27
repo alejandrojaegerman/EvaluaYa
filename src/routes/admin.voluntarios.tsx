@@ -58,6 +58,8 @@ function AdminPage() {
   const [unlocked, setUnlocked] = useState(false);
   const [engineers, setEngineers] = useState<AdminEngineer[]>([]);
   const [requests, setRequests] = useState<AdminHelpRequest[]>([]);
+  const [progress, setProgress] = useState<AdminMatchingProgress | null>(null);
+  const [reqFilter, setReqFilter] = useState<RequestFilter>("all");
   const [busy, setBusy] = useState(false);
 
   async function refresh(s: string) {
@@ -68,6 +70,7 @@ function AdminPage() {
     if (!e.ok) return false;
     setEngineers(e.engineers);
     setRequests(r.requests);
+    setProgress(r.progress);
     return true;
   }
 
