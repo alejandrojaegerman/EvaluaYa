@@ -576,6 +576,20 @@ function MapPage() {
                 <span className="size-3 rounded-full bg-muted-foreground/60" aria-hidden />
                 {t("map.legendSize")}
               </p>
+              <p className="flex items-center gap-1.5 text-muted-foreground">
+                <span
+                  className="size-3 rounded-full border-2 border-primary"
+                  aria-hidden
+                />
+                {t("map.legendVerified")}
+              </p>
+              <p className="flex items-center gap-1.5 text-muted-foreground">
+                <span
+                  className="size-3 rounded-full border border-dashed border-muted-foreground/60"
+                  aria-hidden
+                />
+                {t("map.legendSelf")}
+              </p>
             </div>
           </section>
 
