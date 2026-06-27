@@ -29,6 +29,7 @@ import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
 import { ESTADOS, estadoSlug } from "@/lib/venezuela";
+import { trackStep } from "@/lib/track";
 import heroEngineer from "@/assets/hero-engineer.png";
 
 
@@ -96,7 +97,10 @@ function Index() {
         </div>
         <Button
           size="lg"
-          onClick={() => navigate({ to: "/assess/property" })}
+          onClick={() => {
+            trackStep("home_cta");
+            navigate({ to: "/assess/property" });
+          }}
           className="relative mt-6 w-full bg-card text-base font-semibold text-foreground shadow-md hover:bg-card/90"
         >
           {t("home.startCta")}
