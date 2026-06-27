@@ -151,6 +151,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
             total: assessTotal,
             green: a?.green ?? 0,
             yellow: a?.yellow ?? 0,
+            orange: a?.orange ?? 0,
             red: a?.red ?? 0,
             analyzed,
             drafts: a?.drafts ?? 0,
@@ -161,6 +162,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
             total: r.total ?? 0,
             green: r.green ?? 0,
             yellow: r.yellow ?? 0,
+            orange: r.orange ?? 0,
             red: r.red ?? 0,
           })),
           topStates: (aTop.data ?? []).map((r) => ({
@@ -168,6 +170,7 @@ export const adminGetAnalytics = createServerFn({ method: "POST" })
             total: r.total ?? 0,
             green: r.green ?? 0,
             yellow: r.yellow ?? 0,
+            orange: r.orange ?? 0,
             red: r.red ?? 0,
           })),
           volunteers: {
