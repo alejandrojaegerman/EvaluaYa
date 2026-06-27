@@ -1552,6 +1552,7 @@ const en: Dict = {
   "property.effortHint": "It only takes a few minutes. Photos are optional.",
   "property.missingPrefix": "To continue, you still need:",
   "property.miss.state": "state",
+  "property.miss.municipality": "municipality",
   "property.miss.type": "building type",
   "property.miss.age": "age",
 
