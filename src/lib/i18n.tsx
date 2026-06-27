@@ -35,9 +35,9 @@ const es: Dict = {
   "home.howTitle": "Cómo funciona",
   "home.how1Title": "Datos de la propiedad",
   "home.how1Desc": "Registra el tipo de edificación, pisos y antigüedad.",
-  "home.behalfTitle": "¿Fuera del país o en un refugio?",
+  "home.behalfTitle": "¿No puedes entrar al edificio?",
   "home.behalfBody":
-    "No necesitas estar en el edificio. Un familiar o vecino puede hacer la inspección por ti y compartirte el resultado para decidir si es seguro regresar.",
+    "No tienes que estar dentro. Un familiar o vecino puede hacer la inspección por ti y compartirte el resultado para decidir si es seguro entrar.",
   "home.how2Title": "Inspección guiada",
   "home.how2Desc": "Responde el cuestionario y sube una foto de cada área.",
   "home.how3Title": "Análisis con IA",
@@ -86,7 +86,7 @@ const es: Dict = {
   "property.optionalDetails": "Agregar más detalles (opcional)",
   "property.optionalDetailsHide": "Ocultar detalles",
   "property.behalfHint":
-    "¿No estás en el sitio? Un familiar o vecino puede hacer esta inspección por ti y compartirte el resultado.",
+    "¿No puedes entrar al edificio? Un familiar o vecino puede hacer esta inspección por ti y compartirte el resultado.",
   "property.buildingType": "Tipo de edificación",
   "property.type.house": "Casa",
   "property.type.apartment": "Apartamento",
@@ -714,7 +714,7 @@ const es: Dict = {
   "result.residentBadge": "Autoevaluación de residente",
   "result.shareOwnerTitle": "¿Es para otra persona?",
   "result.shareOwnerBody":
-    "Comparte este resultado con el dueño o residente para que decida si es seguro regresar.",
+    "Comparte este resultado con el dueño o residente para que decida si es seguro entrar.",
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
@@ -1144,9 +1144,9 @@ const en: Dict = {
   "home.howTitle": "How it works",
   "home.how1Title": "Property details",
   "home.how1Desc": "Record building type, floors and age.",
-  "home.behalfTitle": "Outside the country or in a shelter?",
+  "home.behalfTitle": "Can't safely enter the building?",
   "home.behalfBody":
-    "You don't have to be in the building. A relative or neighbor can run the inspection for you and share the result so you can decide whether it's safe to return.",
+    "You don't have to be inside. A relative or neighbor can run the inspection for you and share the result so you can decide whether it's safe to enter.",
   "home.how2Title": "Guided inspection",
   "home.how2Desc": "Answer the questionnaire and add a photo for each area.",
   "home.how3Title": "AI analysis",
@@ -1195,7 +1195,7 @@ const en: Dict = {
   "property.optionalDetails": "Add more details (optional)",
   "property.optionalDetailsHide": "Hide details",
   "property.behalfHint":
-    "Not on site? A relative or neighbor can run this inspection for you and share the result.",
+    "Can't safely enter the building? A relative or neighbor can run this inspection for you and share the result.",
   "property.buildingType": "Building type",
   "property.type.house": "House",
   "property.type.apartment": "Apartment",
@@ -1818,7 +1818,7 @@ const en: Dict = {
   "result.residentBadge": "Resident self-assessment",
   "result.shareOwnerTitle": "Is this for someone else?",
   "result.shareOwnerBody":
-    "Share this result with the owner or resident so they can decide whether it's safe to return.",
+    "Share this result with the owner or resident so they can decide whether it's safe to enter.",
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
