@@ -133,6 +133,60 @@ function DataRoomPage() {
   const [timeseries, setTimeseries] = useState<TimeseriesPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Available filter options for the active date range (independent of the
+  // currently selected state/municipality) so dropdowns only show places that
+  // actually have reports.
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
+  const [availableMunicipios, setAvailableMunicipios] = useState<
+    Record<string, string[]>
+  >({});
+
+  useEffect(() => {
+    let active = true;
+    const { from, to } = rangeToDates(filters.range);
+    getDataRoom({ data: { from, to } })
+      .then((res) => {
+        if (!active) return;
+        const stateSet = new Set<string>();
+        const muniMap: Record<string, Set<string>> = {};
+        for (const a of res.areas) {
+          if (isUnspecified(a.state)) continue;
+          stateSet.add(a.state);
+          if (!isUnspecified(a.municipality)) {
+            (muniMap[a.state] ??= new Set()).add(a.municipality);
+          }
+        }
+        setAvailableStates([...stateSet]);
+        setAvailableMunicipios(
+          Object.fromEntries(
+            Object.entries(muniMap).map(([s, set]) => [s, [...set]]),
+          ),
+        );
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [filters.range]);
+
+  // Drop a selected state/municipality that no longer has records in the range.
+  useEffect(() => {
+    setFilters((prev) => {
+      let next = prev;
+      if (prev.state && !availableStates.includes(prev.state)) {
+        next = { ...next, state: null, municipality: null };
+      } else if (
+        prev.municipality &&
+        prev.state &&
+        !(availableMunicipios[prev.state] ?? []).includes(prev.municipality)
+      ) {
+        next = { ...next, municipality: null };
+      }
+      return next === prev ? prev : next;
+    });
+  }, [availableStates, availableMunicipios]);
+
+
   useEffect(() => {
     let active = true;
     setLoading(true);
