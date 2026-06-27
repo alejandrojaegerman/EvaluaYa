@@ -153,6 +153,26 @@ function VolunteersPage() {
         </p>
       </section>
 
+      {/* Three pillars: recruit → validate → connect (the page that owns the story) */}
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        {[
+          { title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
+          { title: t("engineers.validate"), desc: t("engineers.validateDesc") },
+          { title: t("engineers.connect"), desc: t("engineers.connectDesc") },
+        ].map((p, i) => (
+          <div
+            key={i}
+            className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+          >
+            <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              {i + 1}
+            </span>
+            <p className="mt-2 font-semibold leading-tight">{p.title}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">{p.desc}</p>
+          </div>
+        ))}
+      </div>
+
       <ol className="mt-5 space-y-3">
         {steps.map((s, i) => (
           <li
