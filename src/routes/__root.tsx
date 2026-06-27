@@ -22,6 +22,7 @@ import { LanguageProvider } from "../lib/i18n";
 import { registerServiceWorker } from "../lib/pwa";
 import { Toaster } from "../components/ui/sonner";
 import { SITE_URL } from "../lib/site";
+import { useClaimOnSignIn } from "../lib/use-claim-on-signin";
 
 function NotFoundComponent() {
   return (
