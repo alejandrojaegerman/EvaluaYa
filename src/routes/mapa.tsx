@@ -502,7 +502,7 @@ function MapPage() {
           </Reveal>
 
           {/* Severity spotlight — leads the story with urgency */}
-          <Reveal as="section" className="mt-4" delayMs={60}>
+          <Reveal as="section" className="mt-4 hidden md:block" delayMs={60}>
             <SeveritySpotlight
               total={totals!.total}
               green={totals!.green}
