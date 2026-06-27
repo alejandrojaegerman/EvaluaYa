@@ -849,7 +849,7 @@ const es: Dict = {
   "account.saveBody":
     "¿Quieres volver a ver este reporte más adelante o desde otro teléfono? Recibe un enlace por correo para guardarlo. Sin contraseña.",
   "account.saveHint":
-    "Solo usamos tu correo para enviarte el enlace de acceso. No es obligatorio.",
+    "Solo usamos tu correo para enviarte el enlace de acceso. Sin contraseña ni spam. No es obligatorio.",
   "account.emailLabel": "Correo electrónico",
   "account.emailPlaceholder": "tucorreo@ejemplo.com",
   "account.sendLink": "Enviar enlace",
@@ -870,6 +870,16 @@ const es: Dict = {
   "account.emptyReports":
     "Aún no tienes reportes guardados en esta cuenta. Cuando guardes un reporte, aparecerá aquí.",
   "account.signOut": "Cerrar sesión",
+  "account.claimToast": "Reporte guardado en tu cuenta.",
+  "dash.accounts": "Cuentas guardadas",
+  "dash.accountsHint":
+    "Personas que guardaron sus reportes con su correo (cuenta opcional, sin contraseña).",
+  "dash.totalAccounts": "Cuentas",
+  "dash.accountsWithReports": "Con reportes",
+  "dash.accountsNoReports": "Sin reportes aún",
+  "dash.recentSignups": "Registros recientes",
+  "dash.noAccounts": "Aún no hay cuentas guardadas.",
+  "dash.neverSignedIn": "Nunca",
 };
 
 
@@ -1701,7 +1711,7 @@ const en: Dict = {
   "account.saveBody":
     "Want to see this report later or from another phone? Get a link by email to save it. No password needed.",
   "account.saveHint":
-    "We only use your email to send you the access link. It's optional.",
+    "We only use your email to send you the access link. No password, no spam. It's optional.",
   "account.emailLabel": "Email address",
   "account.emailPlaceholder": "you@example.com",
   "account.sendLink": "Send link",
@@ -1722,6 +1732,16 @@ const en: Dict = {
   "account.emptyReports":
     "You don't have any saved reports in this account yet. Once you save a report, it will appear here.",
   "account.signOut": "Sign out",
+  "account.claimToast": "Report saved to your account.",
+  "dash.accounts": "Saved accounts",
+  "dash.accountsHint":
+    "People who saved their reports with their email (optional, passwordless account).",
+  "dash.totalAccounts": "Accounts",
+  "dash.accountsWithReports": "With reports",
+  "dash.accountsNoReports": "No reports yet",
+  "dash.recentSignups": "Recent signups",
+  "dash.noAccounts": "No saved accounts yet.",
+  "dash.neverSignedIn": "Never",
 };
 
 
