@@ -3,43 +3,49 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
-import { SITE_URL } from "@/lib/site";
+import { withUtm } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 /**
  * Reusable promotion block. Encourages anyone — not just people who
  * finished an assessment — to share EvalúaYa with their network, with a
  * one-tap WhatsApp share plus native share / copy-link fallbacks.
+ *
+ * Every emitted link carries UTM params so analytics can attribute the
+ * resulting visits to this share loop (`campaign`, defaulting to "app_share").
  */
-export function ShareApp({ className }: { className?: string }) {
+export function ShareApp({
+  className,
+  campaign = "app_share",
+}: {
+  className?: string;
+  /** UTM campaign tag — override when reusing on a specific surface. */
+  campaign?: string;
+}) {
   const { t } = useLang();
 
-  function shareUrl() {
-    // Always the canonical branded domain, never a Lovable preview /
-    // published host or a draft path.
-    return SITE_URL;
-  }
-
-  function shareText() {
-    return `${t("share.message")} ${shareUrl()}`.trim();
+  function shareUrl(source: string) {
+    // Always the canonical branded domain (never a preview/published host),
+    // tagged with the channel so we can compare WhatsApp vs copy vs native.
+    return withUtm("/", { source, medium: "share", campaign });
   }
 
   function shareWhatsApp() {
+    const text = `${t("share.message")} ${shareUrl("whatsapp")}`.trim();
     window.open(
-      `https://wa.me/?text=${encodeURIComponent(shareText())}`,
+      `https://wa.me/?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer",
     );
   }
 
   async function nativeOrCopy() {
-    const url = shareUrl();
     if (navigator.share) {
       try {
         await navigator.share({
           title: "EvalúaYa",
           text: t("share.message"),
-          url,
+          url: shareUrl("native"),
         });
         return;
       } catch {
@@ -47,7 +53,7 @@ export function ShareApp({ className }: { className?: string }) {
       }
     }
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl("copy"));
       toast.success(t("share.copied"));
     } catch {
       /* clipboard unavailable — open WhatsApp as last resort */
