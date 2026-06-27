@@ -11,7 +11,7 @@ import type {
 } from "./assessment-types";
 import { translate, type Lang } from "./i18n";
 
-const ORDER: RiskLevel[] = ["green", "yellow", "red"];
+const ORDER: RiskLevel[] = ["green", "yellow", "orange", "red"];
 
 /** Return the more severe of two risk levels. */
 export function maxRisk(a: RiskLevel, b: RiskLevel): RiskLevel {
