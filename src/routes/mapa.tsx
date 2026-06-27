@@ -454,6 +454,11 @@ function MapPage() {
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {t("map.subtitle")}
         </p>
+        {!loading && hasData && (
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground/80">
+            {t("map.storyIntro")}
+          </p>
+        )}
       </header>
 
       {loading && (
