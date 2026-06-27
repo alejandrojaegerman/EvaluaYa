@@ -243,7 +243,18 @@ const MUNICIPIO_ALIASES: Record<string, string> = {
   "san juan de los morros": "Juan Germán Roscio",
 };
 
-// Index municipios by "state|normalizedName" for fast resolution.
+// State-scoped aliases: applied ONLY within a specific estado, before the
+// global alias map. Needed when a free-text name is ambiguous across states —
+// e.g. "Sucre" is a real municipio in many states (Aragua, Miranda, Monagas,
+// etc.), but in Distrito Capital it's a parroquia of Libertador. A global
+// alias would corrupt the legitimate Sucre municipios, so we scope it here.
+const MUNICIPIO_ALIASES_BY_STATE: Record<string, Record<string, string>> = {
+  "Distrito Capital": {
+    sucre: "Libertador",
+  },
+};
+
+
 const MUNICIPIO_INDEX = new Map<string, Municipio>(
   MUNICIPIOS.map((m) => [`${normKey(m.state)}|${normKey(m.name)}`, m]),
 );
