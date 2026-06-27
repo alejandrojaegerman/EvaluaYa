@@ -702,6 +702,36 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
         console.error("[volunteers] updateRequestProgress", error);
         return { ok: false };
       }
+
+      // Notify the site admin when a request is marked resolved (best-effort).
+      if (data.stage === "resolved") {
+        try {
+          const { data: row } = await supabaseAdmin
+            .from("help_requests")
+            .select("state, municipality, risk_level")
+            .eq("id", data.requestId)
+            .maybeSingle();
+          const { sendSystemEmail } = await import("./notify-email.server");
+          const location =
+            [row?.municipality, row?.state].filter(Boolean).join(", ") || "—";
+          await sendSystemEmail({
+            templateName: "admin-help-resolved",
+            templateData: {
+              engineerName: engineer.name ?? "",
+              riskLevel: row?.risk_level ?? "",
+              location,
+              note: data.note || "",
+              adminUrl:
+                "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_resolved",
+            },
+          }).catch((err) =>
+            console.error("[volunteers] admin resolved notify failed", err),
+          );
+        } catch (notifyErr) {
+          console.error("[volunteers] admin resolved notify failed", notifyErr);
+        }
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] updateRequestProgress failed", e);
