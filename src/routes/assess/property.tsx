@@ -195,6 +195,7 @@ function PropertyStep() {
       language: lang,
       property: {
         address: address.trim(),
+        buildingName: buildingName.trim(),
         state: state.trim(),
         municipality: municipality.trim(),
         buildingType,
