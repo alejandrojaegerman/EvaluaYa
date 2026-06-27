@@ -212,6 +212,55 @@ const es: Dict = {
   "checklist.newDamageTitle": "Reporta solo daños NUEVOS",
   "checklist.newDamageBody": "Responde pensando solo en daños que aparecieron con este sismo. Si una grieta ya existía antes, no la marques. Si no sabes si es nueva, elige \"No estoy seguro\".",
 
+  // Visual examples + glossary (accessibility)
+  "checklist.exampleAlt": "Ejemplo: cómo se ve el daño frente a una estructura sana",
+  "checklist.illoDamage": "Señal de daño",
+  "checklist.illoOk": "Se ve bien",
+  "checklist.glossaryHint": "Toca una palabra para ver qué significa:",
+
+  "glossary.cimientos.term": "Cimientos",
+  "glossary.cimientos.def":
+    "La base sobre la que se apoya toda la construcción, normalmente bajo el primer piso.",
+  "glossary.licuefaccion.term": "Licuefacción",
+  "glossary.licuefaccion.def":
+    "Cuando el suelo lleno de agua pierde firmeza con el sismo y se comporta como lodo: puede brotar agua o arena y las estructuras se hunden o inclinan.",
+  "glossary.grieta_diagonal.term": "Grieta diagonal",
+  "glossary.grieta_diagonal.def":
+    "Grieta inclinada, en forma de X o de escalera. Suele ser más seria que una grieta recta y fina porque indica esfuerzo en la estructura.",
+  "glossary.golpeteo.term": "Golpeteo",
+  "glossary.golpeteo.def":
+    "Cuando dos edificios vecinos chocan entre sí durante el sismo por estar muy juntos.",
+  "glossary.columna.term": "Columna",
+  "glossary.columna.def":
+    "Elemento vertical (normalmente de concreto) que sostiene el peso del edificio.",
+  "glossary.viga.term": "Viga",
+  "glossary.viga.def":
+    "Elemento horizontal que conecta las columnas y sostiene los pisos y el techo.",
+  "glossary.cabilla.term": "Cabilla",
+  "glossary.cabilla.def":
+    "Las barras de acero que van dentro del concreto para reforzarlo. Si quedan a la vista, el daño es serio.",
+  "glossary.pandeo.term": "Pandeo",
+  "glossary.pandeo.def":
+    "Cuando una superficie que debería estar recta se ve hundida, curvada o abombada.",
+  "glossary.rodapie.term": "Rodapié",
+  "glossary.rodapie.def":
+    "La moldura que une la pared con el piso. Un espacio nuevo ahí puede indicar movimiento.",
+  "glossary.breaker.term": "Breaker",
+  "glossary.breaker.def":
+    "El interruptor del tablero eléctrico que corta la corriente cuando hay una falla.",
+  "glossary.tomacorriente.term": "Tomacorriente",
+  "glossary.tomacorriente.def":
+    "El enchufe de la pared donde conectas los aparatos.",
+
+  // Property helper text (accessibility)
+  "property.buildingType.help": "¿Qué tipo de lugar estás evaluando?",
+  "property.floors.help": "Cuenta cuántos pisos tiene la edificación completa.",
+  "property.age.help": "Si no sabes el año exacto, elige lo más cercano.",
+  "property.age.pre1970.desc":
+    "Construcción antigua, anterior a las normas sísmicas modernas.",
+  "property.age.1970to2000.desc": "Construcción de finales del siglo pasado.",
+  "property.age.post2000.desc": "Construcción más reciente.",
+
 
 
   "rule.urm.finding":
