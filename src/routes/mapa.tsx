@@ -231,6 +231,7 @@ function MapPage() {
         yellow: g.yellow,
         orange: g.orange,
         red: g.red,
+        verified: g.verified,
         dominant: dominantRisk(g),
       }))
       .sort((x, y) => y.total - x.total);
