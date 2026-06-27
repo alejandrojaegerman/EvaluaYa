@@ -1,14 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  HardHat,
-  MessageCircle,
-  CheckCircle2,
-  BadgeCheck,
-  ShieldQuestion,
-  Building2,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { HardHat, CheckCircle2, BadgeCheck } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,81 +10,41 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
-import { absoluteUrl } from "@/lib/site";
-import { toWhatsappNumber } from "@/lib/phone";
 import { cn } from "@/lib/utils";
-import {
-  getApprovedEngineersForState,
-  revealEngineerContact,
-  submitHelpRequest,
-  type PublicEngineer,
-} from "@/lib/volunteers.functions";
+import { submitHelpRequest } from "@/lib/volunteers.functions";
 
 /**
- * Shown on Red/Yellow results: a directory of approved volunteer engineers for
- * the resident's estado (one-tap WhatsApp), plus a "request a callback" form
- * that records a help request for engineers to pick up.
+ * Shown on Red/Orange/Yellow results: a single "request a verified engineer"
+ * form that records a help request for engineers to claim. Residents never see
+ * the engineer directory — engineers get notified and claim open requests from
+ * their own panels. The message is pre-filled from the resident's AI analysis.
  */
 export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const { t } = useLang();
-  const fetchEngineers = useServerFn(getApprovedEngineersForState);
-  const reveal = useServerFn(revealEngineerContact);
   const submit = useServerFn(submitHelpRequest);
 
-  const state = record.property.state ?? "";
-  const reportUrl = absoluteUrl(`/a/${record.publicId}`);
   const urgent = record.riskLevel === "red" || record.riskLevel === "orange";
 
-  const [engineers, setEngineers] = useState<PublicEngineer[]>([]);
-  const [confirmingId, setConfirmingId] = useState<string | null>(null);
-  const [revealingId, setRevealingId] = useState<string | null>(null);
+  // Pre-fill the message from the analysis that already ran (no new AI call):
+  // risk level + the top findings, in the resident's voice. Stays editable.
+  const buildPrefill = () => {
+    const riskLabel = t(`result.${record.riskLevel}.tag`);
+    const findings = (record.aiResult?.findings ?? [])
+      .slice(0, 3)
+      .map((f) => f.trim())
+      .filter(Boolean)
+      .join("; ");
+    if (!findings) return "";
+    return t("connect.notePrefill")
+      .replace("{risk}", riskLabel)
+      .replace("{findings}", findings)
+      .slice(0, 600);
+  };
+
   const [whatsapp, setWhatsapp] = useState("");
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    fetchEngineers({ data: { state } })
-      .then((res) => {
-        if (active) setEngineers(res);
-      })
-      .catch(() => {
-        if (active) setEngineers([]);
-      });
-    return () => {
-      active = false;
-    };
-  }, [fetchEngineers, state]);
-
-  // Two-tap consent: first tap shows the consent line, second tap fetches the
-  // number (kept out of the page payload) and opens WhatsApp.
-  async function contactEngineer(id: string) {
-    if (confirmingId !== id) {
-      setConfirmingId(id);
-      return;
-    }
-    setRevealingId(id);
-    try {
-      const res = await reveal({ data: { engineerId: id } });
-      if (!res.whatsapp) {
-        toast.error(t("connect.revealError"));
-        return;
-      }
-      const text = `${t("connect.waMessage")} ${reportUrl}`;
-      window.open(
-        `https://wa.me/${toWhatsappNumber(res.whatsapp)}?text=${encodeURIComponent(text)}`,
-        "_blank",
-        "noopener,noreferrer",
-      );
-      setConfirmingId(null);
-    } catch {
-      toast.error(t("connect.revealError"));
-    } finally {
-      setRevealingId(null);
-    }
-  }
-
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -120,8 +73,6 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       setBusy(false);
     }
   }
-
-  const hasEngineers = engineers.length > 0;
 
   return (
     <section
@@ -152,74 +103,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
         {t("connect.reassure")}
       </p>
 
-      {/* Directory of approved engineers */}
-      {hasEngineers && (
-        <div className="mt-4">
-          <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            {t("connect.directTitle")}
-          </h3>
-          <ul className="mt-2 space-y-2">
-            {engineers.map((e) => {
-              const isOrg = e.volunteerType === "organization";
-              const primary = isOrg ? e.organization || e.name : e.name;
-              const secondary = isOrg
-                ? e.name && e.name !== e.organization
-                  ? e.name
-                  : null
-                : e.organization;
-              return (
-                <li
-                  key={e.id}
-                  className="rounded-xl border border-border bg-card p-3"
-                >
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <BadgeCheck className="size-4 text-primary" aria-hidden />
-                    <p className="font-semibold">{primary}</p>
-                    {isOrg && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                        <Building2 className="size-3" aria-hidden />
-                        {t("connect.orgBadge")}
-                      </span>
-                    )}
-                  </div>
-                  {secondary && (
-                    <p className="text-xs text-muted-foreground">{secondary}</p>
-                  )}
-                  {e.specialization && (
-                    <p className="text-xs text-muted-foreground">
-                      {e.specialization}
-                    </p>
-                  )}
-                  {e.coversState && (
-                    <p className="mt-0.5 text-[11px] font-medium text-risk-green">
-                      {t("connect.coversYourState")}
-                    </p>
-                  )}
-                  {confirmingId === e.id && (
-                    <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                      {t("connect.revealConsent")}
-                    </p>
-                  )}
-                  <Button
-                    onClick={() => contactEngineer(e.id)}
-                    disabled={revealingId === e.id}
-                    className="mt-2 w-full bg-[#25D366] text-white hover:bg-[#1ebe5a]"
-                    size="sm"
-                  >
-                    <MessageCircle className="size-4" />
-                    {revealingId === e.id
-                      ? t("connect.revealing")
-                      : t("connect.whatsappEngineer")}
-                  </Button>
-
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
-      {/* Request a callback */}
+      {/* Request a verified engineer */}
       <div className="mt-5">
         {sent ? (
           <p className="flex items-center gap-2 rounded-xl border border-risk-green/30 bg-risk-green-soft/50 p-3 text-sm font-medium text-risk-green">
@@ -231,21 +115,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
             onSubmit={onSubmit}
             className="rounded-xl border border-border bg-card p-3"
           >
-            <div className="flex items-center gap-1.5">
-              {!hasEngineers && (
-                <ShieldQuestion
-                  className="size-4 text-muted-foreground"
-                  aria-hidden
-                />
-              )}
-              <h3 className="text-sm font-bold">
-                {hasEngineers
-                  ? t("connect.requestTitle")
-                  : t("connect.noneTitle")}
-              </h3>
-            </div>
+            <h3 className="text-sm font-bold">{t("connect.requestTitle")}</h3>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              {hasEngineers ? t("connect.requestBody") : t("connect.noneBody")}
+              {t("connect.requestBody")}
             </p>
 
             <div className="mt-3">
@@ -273,7 +145,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                 onChange={(e) => setNote(e.target.value)}
                 placeholder={t("connect.notePlaceholder")}
                 maxLength={600}
-                rows={2}
+                rows={3}
                 className="mt-1.5"
               />
             </div>
