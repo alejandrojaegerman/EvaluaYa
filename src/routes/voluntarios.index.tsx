@@ -11,6 +11,10 @@ import {
   User2,
   Building2,
   ShieldCheck,
+  BadgeCheck,
+  FileUp,
+  Loader2,
+  Award,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,6 +31,8 @@ import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
   getAllApprovedEngineers,
   submitEngineerSignup,
+  uploadEngineerCredential,
+  type RecognitionTier,
   type VerifiedEngineer,
   type VolunteerType,
 } from "@/lib/volunteers.functions";
