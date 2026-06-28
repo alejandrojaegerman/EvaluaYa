@@ -601,6 +601,8 @@ function VerifiedEngineers({
                           ? t("vol.organizationLabel")
                           : t("vol.individualLabel")}
                       </span>
+                      <TierBadge tier={e.tier} />
+
                       {e.states.slice(0, 3).map((s) => (
                         <span
                           key={s}
