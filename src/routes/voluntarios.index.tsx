@@ -7,8 +7,10 @@ import {
   MessageCircle,
   CheckCircle2,
   ArrowLeft,
+  ArrowRight,
   User2,
   Building2,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -23,9 +25,12 @@ import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
+  getAllApprovedEngineers,
   submitEngineerSignup,
+  type VerifiedEngineer,
   type VolunteerType,
 } from "@/lib/volunteers.functions";
+
 
 export const Route = createFileRoute("/voluntarios/")({
   head: () => {
@@ -47,12 +52,20 @@ export const Route = createFileRoute("/voluntarios/")({
       links: [{ rel: "canonical", href: absoluteUrl("/voluntarios") }],
     };
   },
+  loader: async () => {
+    const engineers = await getAllApprovedEngineers().catch(
+      () => [] as VerifiedEngineer[],
+    );
+    return { engineers };
+  },
   component: VolunteersPage,
 });
 
 function VolunteersPage() {
   const { t } = useLang();
+  const { engineers } = Route.useLoaderData();
   const submit = useServerFn(submitEngineerSignup);
+
 
   const [volunteerType, setVolunteerType] =
     useState<VolunteerType>("individual");
@@ -153,7 +166,11 @@ function VolunteersPage() {
         </p>
       </section>
 
+      {/* Verified engineers — social proof, names + org only, no contact */}
+      <VerifiedEngineers engineers={engineers} />
+
       {/* Three pillars: recruit → validate → connect (the page that owns the story) */}
+
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         {[
           { title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
@@ -186,6 +203,31 @@ function VolunteersPage() {
           </li>
         ))}
       </ol>
+
+      {/* Residents connect only after completing an evaluation */}
+      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ClipboardList className="size-5" aria-hidden />
+          </span>
+          <div>
+            <p className="font-semibold leading-tight">
+              {t("vol.residentNoteTitle")}
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("vol.residentNoteBody")}
+            </p>
+          </div>
+        </div>
+        <Button asChild variant="outline" className="shrink-0">
+          <Link to="/assess/property">
+            {t("vol.residentNoteCta")}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </div>
+
+
 
       <form
         onSubmit={onSubmit}
@@ -373,3 +415,108 @@ function VolunteersPage() {
     </AppShell>
   );
 }
+
+/** Two-letter initials from a name or organization. */
+function initials(label: string): string {
+  const parts = label.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function VerifiedEngineers({
+  engineers,
+}: {
+  engineers: VerifiedEngineer[];
+}) {
+  const { t } = useLang();
+  const count = engineers.length;
+
+  const heading =
+    count === 1
+      ? t("vol.verifiedCountOne").replace("{n}", String(count))
+      : t("vol.verifiedCountMany").replace("{n}", String(count));
+
+  return (
+    <section className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="flex items-center gap-2">
+        <ShieldCheck className="size-5 text-primary" aria-hidden />
+        <h2 className="font-display text-base font-bold">
+          {t("vol.verifiedTitle")}
+        </h2>
+      </div>
+
+      {count === 0 ? (
+        <div className="mt-3 rounded-xl border border-dashed border-border bg-background p-4 text-center">
+          <p className="font-semibold">{t("vol.verifiedEmptyTitle")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("vol.verifiedEmptyBody")}
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="mt-1 text-sm font-semibold text-primary">{heading}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {t("vol.verifiedSubtitle")}
+          </p>
+          <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+            {engineers.map((e) => {
+              const isOrg = e.volunteerType === "organization";
+              const primary = isOrg && e.organization ? e.organization : e.name;
+              const secondary =
+                isOrg && e.organization
+                  ? e.name
+                  : e.organization || null;
+              const TypeIcon = isOrg ? Building2 : User2;
+              return (
+                <li
+                  key={e.id}
+                  className="flex items-start gap-3 rounded-xl border border-border bg-background p-3"
+                >
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary"
+                    aria-hidden
+                  >
+                    {initials(primary)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold leading-tight">
+                      {primary}
+                    </p>
+                    {secondary && (
+                      <p className="truncate text-xs text-muted-foreground">
+                        {secondary}
+                      </p>
+                    )}
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground/70">
+                        <TypeIcon className="size-3" aria-hidden />
+                        {isOrg
+                          ? t("vol.organizationLabel")
+                          : t("vol.individualLabel")}
+                      </span>
+                      {e.states.slice(0, 3).map((s) => (
+                        <span
+                          key={s}
+                          className="rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                      {e.states.length > 3 && (
+                        <span className="text-[11px] font-medium text-muted-foreground">
+                          +{e.states.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+

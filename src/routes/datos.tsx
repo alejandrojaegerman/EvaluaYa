@@ -24,7 +24,7 @@ import {
   rangeToDates,
   type DataFilters,
 } from "@/components/DataRoomFilters";
-import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
 import { SeveritySpotlight } from "@/components/SeveritySpotlight";
@@ -821,11 +821,10 @@ function DataRoomPage() {
       {/* Open data API */}
       <OpenDataSection />
 
-      {/* Closing band: institutions on one side, share + CTA on the other */}
-      <section className="mt-10 grid gap-4 lg:grid-cols-2 lg:items-start">
-        <InstitutionLeadForm />
-
+      {/* Closing band: share + CTA */}
+      <section className="mt-10">
         <div className="flex flex-col gap-4">
+
           <ShareApp />
           <Button asChild size="lg" className="w-full">
             <Link to="/assess/property">

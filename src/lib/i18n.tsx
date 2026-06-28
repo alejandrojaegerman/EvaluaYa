@@ -917,6 +917,24 @@ const es: Dict = {
   "vol.orgSpecialization": "Áreas de especialización / servicios (opcional)",
   "vol.orgRequired": "Indica el nombre de la organización.",
 
+  // Verified engineers showcase
+  "vol.verifiedTitle": "Ingenieros verificados",
+  "vol.verifiedCountOne": "{n} ingeniero u organización verificada",
+  "vol.verifiedCountMany": "{n} ingenieros y organizaciones verificadas",
+  "vol.verifiedSubtitle":
+    "Profesionales y organizaciones que ya revisamos y se sumaron a la red.",
+  "vol.verifiedEmptyTitle": "Sé el primero",
+  "vol.verifiedEmptyBody":
+    "Aún no hay ingenieros verificados. Súmate hoy y aparece aquí cuando validemos tu solicitud.",
+  "vol.individualLabel": "Ingeniero",
+  "vol.organizationLabel": "Organización",
+  "vol.coversStates": "Cubre",
+  "vol.residentNoteTitle": "¿Necesitas un ingeniero?",
+  "vol.residentNoteBody":
+    "Completa tu evaluación y, al final, podrás solicitar una conexión con un ingeniero verificado.",
+  "vol.residentNoteCta": "Iniciar evaluación",
+
+
   // Engineer panel
   "panel.title": "Panel de ingeniero voluntario",
   "panel.welcome": "Hola",
@@ -2087,6 +2105,24 @@ const en: Dict = {
   "vol.contactNamePlaceholder": "e.g. Eng. María Pérez",
   "vol.orgSpecialization": "Areas of expertise / services (optional)",
   "vol.orgRequired": "Please enter the organization name.",
+
+  // Verified engineers showcase
+  "vol.verifiedTitle": "Verified engineers",
+  "vol.verifiedCountOne": "{n} verified engineer or organization",
+  "vol.verifiedCountMany": "{n} verified engineers and organizations",
+  "vol.verifiedSubtitle":
+    "Professionals and organizations we've reviewed who joined the network.",
+  "vol.verifiedEmptyTitle": "Be the first",
+  "vol.verifiedEmptyBody":
+    "No verified engineers yet. Join today and you'll appear here once we validate your request.",
+  "vol.individualLabel": "Engineer",
+  "vol.organizationLabel": "Organization",
+  "vol.coversStates": "Covers",
+  "vol.residentNoteTitle": "Need an engineer?",
+  "vol.residentNoteBody":
+    "Complete your evaluation and, at the end, you can request a connection with a verified engineer.",
+  "vol.residentNoteCta": "Start evaluation",
+
 
   "panel.title": "Volunteer engineer panel",
   "panel.welcome": "Hi",
