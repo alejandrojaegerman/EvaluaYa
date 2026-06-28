@@ -1346,6 +1346,8 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
               (r.engineer_verdict as "agree" | "adjust" | null) ?? null,
             reportType: r.report_type ?? null,
             stalled: Boolean(r.stalled),
+            reclaimCount: r.reclaim_count ?? 0,
+            residentConfirmedAt: r.resident_confirmed_at ?? null,
           })),
           progress: p
             ? {
@@ -1354,6 +1356,8 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
                 visited: p.visited ?? 0,
                 resolved: p.resolved ?? 0,
                 stalled: p.stalled ?? 0,
+                reclaimed: p.reclaimed ?? 0,
+                residentConfirmed: p.resident_confirmed ?? 0,
               }
             : null,
         };
