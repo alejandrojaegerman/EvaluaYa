@@ -501,6 +501,9 @@ function AdminDashboard() {
         </>
       )}
 
+      {/* Quality, completeness & verification (Goal 1) */}
+      <QualityWatchdog secret={secret} />
+
       <SectionTitle icon={Users} title={t("dash.volunteers")} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label={t("dash.totalVolunteers")} value={v.total} />
