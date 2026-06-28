@@ -56,6 +56,9 @@ function AdminPage() {
   const resend = useServerFn(adminResendAccessLink);
   const rotate = useServerFn(adminRotateAccessLink);
   const listRequests = useServerFn(adminListHelpRequests);
+  const remindEngineer = useServerFn(adminRemindEngineer);
+  const reclaimRequest = useServerFn(adminReclaimRequest);
+  const reassignRequest = useServerFn(adminReassignRequest);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
