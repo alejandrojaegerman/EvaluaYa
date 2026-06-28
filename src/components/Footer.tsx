@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 
 import { LanguageToggle } from "./LanguageToggle";
 import { useLang } from "@/lib/i18n";
+import { contactMailto } from "@/lib/site";
 
 /** Site footer. On mobile it adds extra bottom padding so it clears the fixed BottomNav. */
 export function Footer() {
