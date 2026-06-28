@@ -203,6 +203,11 @@ function HelpPage() {
             </Link>
           </Button>
           <Button asChild variant="outline">
+            <Link to="/guia/falla-de-bocono">
+              {t("help.boconoGuideLink")}
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/metodologia">{t("home.methodologyLink")}</Link>
           </Button>
         </div>
