@@ -79,11 +79,17 @@ function VolunteersPage() {
   const [org, setOrg] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [credentialPath, setCredentialPath] = useState("");
+  const [credentialName, setCredentialName] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [states, setStates] = useState<string[]>([]);
   const [specialization, setSpecialization] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+
+  const upload = useServerFn(uploadEngineerCredential);
 
   const isOrg = volunteerType === "organization";
 
@@ -91,6 +97,37 @@ function VolunteersPage() {
     setStates((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
     );
+  }
+
+  async function onCredentialChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 6_000_000) {
+      toast.error(t("vol.credentialTooLarge"));
+      return;
+    }
+    setUploading(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      const res = await upload({ data: { dataUrl, filename: file.name } });
+      if (res.ok && res.path) {
+        setCredentialPath(res.path);
+        setCredentialName(file.name);
+        toast.success(t("vol.credentialUploaded"));
+      } else {
+        toast.error(t("vol.credentialError"));
+      }
+    } catch {
+      toast.error(t("vol.credentialError"));
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
