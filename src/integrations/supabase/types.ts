@@ -270,11 +270,16 @@ export type Database = {
           created_at: string
           engineer_note: string | null
           id: string
+          last_reminder_at: string | null
           municipality: string | null
           note: string | null
           progress_stage: string | null
           progress_updated_at: string | null
           public_id: string
+          reclaim_count: number
+          reminder_count: number
+          resident_confirmed_at: string | null
+          resident_token: string
           resident_whatsapp: string
           risk_level: string | null
           state: string | null
@@ -288,11 +293,16 @@ export type Database = {
           created_at?: string
           engineer_note?: string | null
           id?: string
+          last_reminder_at?: string | null
           municipality?: string | null
           note?: string | null
           progress_stage?: string | null
           progress_updated_at?: string | null
           public_id?: string
+          reclaim_count?: number
+          reminder_count?: number
+          resident_confirmed_at?: string | null
+          resident_token?: string
           resident_whatsapp: string
           risk_level?: string | null
           state?: string | null
@@ -306,11 +316,16 @@ export type Database = {
           created_at?: string
           engineer_note?: string | null
           id?: string
+          last_reminder_at?: string | null
           municipality?: string | null
           note?: string | null
           progress_stage?: string | null
           progress_updated_at?: string | null
           public_id?: string
+          reclaim_count?: number
+          reminder_count?: number
+          resident_confirmed_at?: string | null
+          resident_token?: string
           resident_whatsapp?: string
           risk_level?: string | null
           state?: string | null
@@ -415,8 +430,10 @@ export type Database = {
         Row: {
           access_token: string | null
           created_at: string
+          credential_path: string | null
           email: string | null
           id: string
+          license_number: string | null
           name: string
           note: string | null
           organization: string | null
@@ -424,6 +441,8 @@ export type Database = {
           states: string[]
           status: string
           token_expires_at: string | null
+          trust_flags: Json
+          trust_score: number
           updated_at: string
           volunteer_type: string
           whatsapp: string
@@ -431,8 +450,10 @@ export type Database = {
         Insert: {
           access_token?: string | null
           created_at?: string
+          credential_path?: string | null
           email?: string | null
           id?: string
+          license_number?: string | null
           name: string
           note?: string | null
           organization?: string | null
@@ -440,6 +461,8 @@ export type Database = {
           states?: string[]
           status?: string
           token_expires_at?: string | null
+          trust_flags?: Json
+          trust_score?: number
           updated_at?: string
           volunteer_type?: string
           whatsapp: string
@@ -447,8 +470,10 @@ export type Database = {
         Update: {
           access_token?: string | null
           created_at?: string
+          credential_path?: string | null
           email?: string | null
           id?: string
+          license_number?: string | null
           name?: string
           note?: string | null
           organization?: string | null
@@ -456,6 +481,8 @@ export type Database = {
           states?: string[]
           status?: string
           token_expires_at?: string | null
+          trust_flags?: Json
+          trust_score?: number
           updated_at?: string
           volunteer_type?: string
           whatsapp?: string
@@ -543,7 +570,9 @@ export type Database = {
           prior_risk_level: string
           progress_stage: string
           progress_updated_at: string
+          reclaim_count: number
           report_type: string
+          resident_confirmed_at: string
           risk_level: string
           stalled: boolean
           state: string
@@ -555,6 +584,8 @@ export type Database = {
         Returns: {
           claimed_only: number
           contacted: number
+          reclaimed: number
+          resident_confirmed: number
           resolved: number
           stalled: number
           visited: number
@@ -731,6 +762,16 @@ export type Database = {
           sample: Json
         }[]
       }
+      get_engineer_stats: {
+        Args: { _engineer_id: string }
+        Returns: {
+          avg_response_seconds: number
+          claimed_active: number
+          open_in_area: number
+          resolved: number
+          tier: string
+        }[]
+      }
       get_engineers_to_notify: {
         Args: { _state: string }
         Returns: {
@@ -741,6 +782,47 @@ export type Database = {
         }[]
       }
       get_funnel_metrics: { Args: { _window_hours?: number }; Returns: Json }
+      get_requests_needing_action: {
+        Args: never
+        Returns: {
+          action: string
+          claimed_at: string
+          engineer_email: string
+          engineer_id: string
+          engineer_name: string
+          engineer_token: string
+          id: string
+          last_reminder_at: string
+          municipality: string
+          progress_stage: string
+          progress_updated_at: string
+          public_id: string
+          reminder_count: number
+          risk_level: string
+          state: string
+        }[]
+      }
+      get_resident_request: {
+        Args: { _token: string }
+        Returns: {
+          ai_risk_level: string
+          assessment_public_id: string
+          claimed_at: string
+          created_at: string
+          engineer_name: string
+          engineer_note: string
+          engineer_verdict: string
+          municipality: string
+          prior_risk_level: string
+          progress_stage: string
+          progress_updated_at: string
+          report_type: string
+          resident_confirmed_at: string
+          risk_level: string
+          state: string
+          status: string
+        }[]
+      }
       get_risk_factors: {
         Args: { _municipality?: string; _state?: string }
         Returns: {
@@ -770,6 +852,19 @@ export type Database = {
           yellow: number
         }[]
       }
+      get_verified_engineers_public: {
+        Args: never
+        Returns: {
+          id: string
+          name: string
+          organization: string
+          resolved: number
+          states: string[]
+          tier: string
+          volunteer_type: string
+        }[]
+      }
+      mark_request_reminded: { Args: { _id: string }; Returns: undefined }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -786,6 +881,11 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      reclaim_stalled_request: { Args: { _id: string }; Returns: undefined }
+      resident_update_request: {
+        Args: { _confirm: boolean; _token: string }
+        Returns: boolean
       }
     }
     Enums: {

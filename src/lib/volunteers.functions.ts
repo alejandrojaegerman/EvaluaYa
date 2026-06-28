@@ -50,6 +50,17 @@ export type EngineerRequest = {
 };
 
 
+export type RecognitionTier = "none" | "bronze" | "silver" | "gold";
+
+/** Impact + recognition stats shown on the engineer panel. */
+export type EngineerStats = {
+  resolved: number;
+  claimedActive: number;
+  openInArea: number;
+  avgResponseSeconds: number | null;
+  tier: RecognitionTier;
+};
+
 export type EngineerPanel = {
   engineer: {
     name: string;
@@ -57,6 +68,7 @@ export type EngineerPanel = {
     states: string[];
     specialization: string | null;
   };
+  stats: EngineerStats;
   requests: EngineerRequest[];
 };
 
@@ -65,6 +77,26 @@ export type EngineerPanelResult =
   | EngineerPanel
   | { expired: true }
   | null;
+
+/** Public, non-sensitive view of a resident's own help request. */
+export type ResidentRequestStatus = {
+  state: string | null;
+  municipality: string | null;
+  riskLevel: RiskLevel | null;
+  status: "open" | "claimed" | "closed";
+  progressStage: ProgressStage | null;
+  progressUpdatedAt: string | null;
+  createdAt: string;
+  claimedAt: string | null;
+  engineerName: string | null;
+  engineerNote: string | null;
+  assessmentPublicId: string | null;
+  residentConfirmedAt: string | null;
+  aiRiskLevel: RiskLevel | null;
+  priorRiskLevel: RiskLevel | null;
+  reportType: string | null;
+  engineerVerdict: "agree" | "adjust" | null;
+};
 
 export type AdminEngineer = {
   id: string;
@@ -78,6 +110,11 @@ export type AdminEngineer = {
   status: "pending" | "approved" | "rejected";
   accessToken: string | null;
   createdAt: string;
+  /** Validation signals captured at signup. */
+  licenseNumber: string | null;
+  credentialPath: string | null;
+  trustScore: number;
+  trustFlags: string[];
 };
 
 export type AdminHelpRequest = {
@@ -102,6 +139,10 @@ export type AdminHelpRequest = {
   reportType: string | null;
   /** Claimed >24h ago with no progress beyond "claimed". */
   stalled: boolean;
+  /** How many times the request was auto-reclaimed by the completion engine. */
+  reclaimCount: number;
+  /** When the resident confirmed the issue was resolved (null = not confirmed). */
+  residentConfirmedAt: string | null;
 };
 
 export type AdminMatchingProgress = {
@@ -110,6 +151,8 @@ export type AdminMatchingProgress = {
   visited: number;
   resolved: number;
   stalled: number;
+  reclaimed: number;
+  residentConfirmed: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -160,6 +203,8 @@ const signupSchema = z
         message: "invalid_phone",
       }),
     email: z.string().trim().email().max(255),
+    licenseNumber: z.string().trim().max(40).optional().default(""),
+    credentialPath: z.string().trim().max(300).optional().default(""),
     states: z
       .array(z.string().trim())
       .min(1)
@@ -174,6 +219,130 @@ const signupSchema = z
     { message: "organization_required", path: ["organization"] },
   );
 
+/** Free webmail domains that don't add professional-identity signal. */
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com",
+  "hotmail.com",
+  "yahoo.com",
+  "yahoo.es",
+  "outlook.com",
+  "outlook.es",
+  "icloud.com",
+  "live.com",
+  "proton.me",
+  "protonmail.com",
+]);
+
+/**
+ * Deterministic, automated pre-checks run at signup. Produces a 0–100 trust
+ * score and a list of human-readable flags the admin can review before
+ * approving. No external registry exists for Venezuelan engineers (CIV), so we
+ * score the signals we *can* verify: a plausible license number, an uploaded
+ * credential document, and a non-free email domain.
+ */
+export function runValidationPrechecks(input: {
+  licenseNumber: string;
+  email: string;
+  hasCredential: boolean;
+  volunteerType: VolunteerType;
+}): { score: number; flags: string[] } {
+  const flags: string[] = [];
+  let score = 0;
+
+  const lic = input.licenseNumber.replace(/[^0-9a-zA-Z]/g, "");
+  if (!lic) {
+    flags.push("no_license");
+  } else if (!/^[A-Za-z]{0,4}\d{3,8}$/.test(lic)) {
+    flags.push("license_format");
+    score += 10;
+  } else {
+    score += 35;
+  }
+
+  if (input.hasCredential) {
+    score += 40;
+  } else {
+    flags.push("no_credential");
+  }
+
+  const domain = input.email.split("@")[1]?.toLowerCase() ?? "";
+  if (domain && !FREE_EMAIL_DOMAINS.has(domain)) {
+    score += 15;
+  } else {
+    flags.push("free_email");
+  }
+
+  if (input.volunteerType === "organization") score += 10;
+
+  return { score: Math.min(100, score), flags };
+}
+
+const credentialUploadSchema = z.object({
+  dataUrl: z.string().trim().min(16).max(8_000_000),
+  filename: z.string().trim().max(160).optional().default(""),
+});
+
+/** Decode a data: URL into raw bytes + content type (credentials/images/PDF). */
+function decodeDataUrl(
+  dataUrl: string,
+): { buffer: Uint8Array; contentType: string; ext: string } | null {
+  const match = /^data:([^;]+);base64,(.*)$/s.exec(dataUrl);
+  if (!match) return null;
+  const contentType = match[1];
+  const allowed: Record<string, string> = {
+    "application/pdf": "pdf",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/heic": "heic",
+  };
+  const ext = allowed[contentType];
+  if (!ext) return null;
+  try {
+    const binary = atob(match[2]);
+    const buffer = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) buffer[i] = binary.charCodeAt(i);
+    return { buffer, contentType, ext };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Upload a volunteer credential document to the private engineer-credentials
+ * bucket BEFORE the signup row exists. Returns the storage path to attach to
+ * the signup. Public (unauthenticated) but service-role gated and validated.
+ */
+export const uploadEngineerCredential = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => credentialUploadSchema.parse(data))
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; path?: string; reason?: string }> => {
+      const decoded = decodeDataUrl(data.dataUrl);
+      if (!decoded) return { ok: false, reason: "invalid_file" };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const path = `signups/${crypto.randomUUID()}.${decoded.ext}`;
+        const { error } = await supabaseAdmin.storage
+          .from("engineer-credentials")
+          .upload(path, decoded.buffer, {
+            contentType: decoded.contentType,
+            upsert: false,
+          });
+        if (error) {
+          console.error("[volunteers] uploadEngineerCredential", error);
+          return { ok: false, reason: "upload_failed" };
+        }
+        return { ok: true, path };
+      } catch (e) {
+        console.error("[volunteers] uploadEngineerCredential failed", e);
+        return { ok: false, reason: "error" };
+      }
+    },
+  );
+
 export const submitEngineerSignup = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => signupSchema.parse(data))
   .handler(async ({ data }): Promise<{ ok: boolean }> => {
@@ -181,12 +350,24 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
+
+      const checks = runValidationPrechecks({
+        licenseNumber: data.licenseNumber,
+        email: data.email,
+        hasCredential: !!data.credentialPath,
+        volunteerType: data.volunteerType,
+      });
+
       const { error } = await supabaseAdmin.from("volunteer_engineers").insert({
         volunteer_type: data.volunteerType,
         name: data.name,
         organization: data.organization || null,
         whatsapp: data.whatsapp,
         email: data.email || null,
+        license_number: data.licenseNumber || null,
+        credential_path: data.credentialPath || null,
+        trust_score: checks.score,
+        trust_flags: checks.flags,
         states: data.states,
         specialization: data.specialization || null,
         note: data.note || null,
@@ -212,6 +393,10 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
             contactName: data.name,
             whatsapp: data.whatsapp,
             email: data.email || "",
+            license: data.licenseNumber || "",
+            trustScore: String(checks.score),
+            trustFlags: checks.flags.join(", "),
+            hasCredential: data.credentialPath ? "Sí" : "No",
             states: stateNames || "—",
             specialization: data.specialization || "",
             note: data.note || "",
@@ -229,6 +414,7 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
       return { ok: false };
     }
   });
+
 
 // ---------------------------------------------------------------------------
 // Approved engineer directory for a given estado (public read, brokered)
@@ -282,6 +468,9 @@ export type VerifiedEngineer = {
   organization: string | null;
   states: string[];
   volunteerType: VolunteerType;
+  /** Lifetime resolved help requests (powers recognition badges). */
+  resolved: number;
+  tier: RecognitionTier;
 };
 
 export const getAllApprovedEngineers = createServerFn({ method: "GET" })
@@ -290,11 +479,9 @@ export const getAllApprovedEngineers = createServerFn({ method: "GET" })
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
-      const { data: rows, error } = await supabaseAdmin
-        .from("volunteer_engineers")
-        .select("id, name, organization, states, volunteer_type")
-        .eq("status", "approved")
-        .order("created_at", { ascending: true });
+      const { data: rows, error } = await supabaseAdmin.rpc(
+        "get_verified_engineers_public",
+      );
       if (error || !rows) {
         if (error) console.error("[volunteers] getAllApprovedEngineers", error);
         return [];
@@ -306,6 +493,8 @@ export const getAllApprovedEngineers = createServerFn({ method: "GET" })
         states: r.states ?? [],
         volunteerType:
           (r.volunteer_type as VolunteerType | null) ?? "individual",
+        resolved: r.resolved ?? 0,
+        tier: (r.tier as RecognitionTier) ?? "none",
       }));
     } catch (e) {
       console.error("[volunteers] getAllApprovedEngineers failed", e);
@@ -366,24 +555,31 @@ const helpSchema = z.object({
 
 export const submitHelpRequest = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => helpSchema.parse(data))
-  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; residentToken?: string }> => {
     try {
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
-      const { error } = await supabaseAdmin.from("help_requests").insert({
-        assessment_public_id: data.assessmentPublicId || null,
-        state: data.state || null,
-        municipality: data.municipality || null,
-        risk_level: data.riskLevel ?? null,
-        resident_whatsapp: data.whatsapp,
-        note: data.note || null,
-        status: "open",
-      });
+      const { data: inserted, error } = await supabaseAdmin
+        .from("help_requests")
+        .insert({
+          assessment_public_id: data.assessmentPublicId || null,
+          state: data.state || null,
+          municipality: data.municipality || null,
+          risk_level: data.riskLevel ?? null,
+          resident_whatsapp: data.whatsapp,
+          note: data.note || null,
+          status: "open",
+        })
+        .select("resident_token")
+        .maybeSingle();
       if (error) {
         console.error("[volunteers] submitHelpRequest", error);
         return { ok: false };
       }
+      const residentToken =
+        (inserted?.resident_token as string | null) ?? undefined;
 
       // Notify approved engineers covering this estado (best-effort).
       try {
@@ -440,12 +636,90 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] admin new-request notify failed", notifyErr);
       }
 
-      return { ok: true };
+      return { ok: true, residentToken };
     } catch (e) {
       console.error("[volunteers] submitHelpRequest failed", e);
       return { ok: false };
     }
   });
+
+// ---------------------------------------------------------------------------
+// Resident self-service request tracking (public, token-gated, non-sensitive)
+// ---------------------------------------------------------------------------
+
+const residentTokenSchema = z.object({
+  token: z.string().trim().uuid(),
+});
+
+export const getResidentRequestStatus = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => residentTokenSchema.parse(data))
+  .handler(async ({ data }): Promise<ResidentRequestStatus | null> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } = await supabaseAdmin.rpc(
+        "get_resident_request",
+        { _token: data.token },
+      );
+      if (error) {
+        console.error("[volunteers] getResidentRequestStatus", error);
+        return null;
+      }
+      const r = Array.isArray(rows) ? rows[0] : rows;
+      if (!r) return null;
+      return {
+        state: r.state ?? null,
+        municipality: r.municipality ?? null,
+        riskLevel: (r.risk_level as RiskLevel | null) ?? null,
+        status: (r.status as "open" | "claimed" | "closed") ?? "open",
+        progressStage: (r.progress_stage as ProgressStage | null) ?? null,
+        progressUpdatedAt: r.progress_updated_at ?? null,
+        createdAt: r.created_at,
+        claimedAt: r.claimed_at ?? null,
+        engineerName: r.engineer_name ?? null,
+        engineerNote: r.engineer_note ?? null,
+        assessmentPublicId: r.assessment_public_id ?? null,
+        residentConfirmedAt: r.resident_confirmed_at ?? null,
+        aiRiskLevel: (r.ai_risk_level as RiskLevel | null) ?? null,
+        priorRiskLevel: (r.prior_risk_level as RiskLevel | null) ?? null,
+        reportType: r.report_type ?? null,
+        engineerVerdict:
+          (r.engineer_verdict as "agree" | "adjust" | null) ?? null,
+      };
+    } catch (e) {
+      console.error("[volunteers] getResidentRequestStatus failed", e);
+      return null;
+    }
+  });
+
+const residentConfirmSchema = z.object({
+  token: z.string().trim().uuid(),
+  resolved: z.boolean(),
+});
+
+export const residentConfirmRequest = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => residentConfirmSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { error } = await supabaseAdmin.rpc("resident_update_request", {
+        _token: data.token,
+        _confirm: data.resolved,
+      });
+      if (error) {
+        console.error("[volunteers] residentConfirmRequest", error);
+        return { ok: false };
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] residentConfirmRequest failed", e);
+      return { ok: false };
+    }
+  });
+
 
 // ---------------------------------------------------------------------------
 // Engineer panel (gated by per-row access token)
@@ -543,7 +817,11 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
         .limit(200);
       if (error) {
         console.error("[volunteers] getEngineerPanel", error);
-        return { engineer: mapEng(engineer), requests: [] };
+        return {
+          engineer: mapEng(engineer),
+          stats: emptyEngineerStats(),
+          requests: [],
+        };
       }
 
       const relevant = (rows ?? []).filter((r) => {
@@ -627,12 +905,51 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       });
 
 
-      return { engineer: mapEng(engineer), requests };
+      // Recognition + impact stats, computed atomically in the database so the
+      // tier thresholds stay consistent with the public verified roster.
+      const { data: statRows } = await supabaseAdmin.rpc("get_engineer_stats", {
+        _engineer_id: engineer.id,
+      });
+      const s = Array.isArray(statRows) ? statRows[0] : statRows;
+      const stats: EngineerStats = s
+        ? {
+            resolved: s.resolved ?? 0,
+            claimedActive: s.claimed_active ?? 0,
+            openInArea: s.open_in_area ?? 0,
+            avgResponseSeconds:
+              s.avg_response_seconds != null
+                ? Math.round(s.avg_response_seconds)
+                : null,
+            tier: (s.tier as RecognitionTier) ?? "none",
+          }
+        : emptyEngineerStats();
+
+      return { engineer: mapEng(engineer), stats, requests };
     } catch (e) {
       console.error("[volunteers] getEngineerPanel failed", e);
       return null;
     }
   });
+
+/** Recognition tier thresholds based on lifetime resolved requests. */
+export function recognitionTier(resolved: number): RecognitionTier {
+  if (resolved >= 10) return "gold";
+  if (resolved >= 4) return "silver";
+  if (resolved >= 1) return "bronze";
+  return "none";
+}
+
+
+function emptyEngineerStats(): EngineerStats {
+  return {
+    resolved: 0,
+    claimedActive: 0,
+    openInArea: 0,
+    avgResponseSeconds: null,
+    tier: "none",
+  };
+}
+
 
 
 function mapEng(e: {
@@ -882,7 +1199,7 @@ export const adminListEngineers = createServerFn({ method: "POST" })
         const { data: rows, error } = await supabaseAdmin
           .from("volunteer_engineers")
           .select(
-            "id, name, organization, whatsapp, email, states, specialization, note, status, access_token, created_at",
+            "id, name, organization, whatsapp, email, states, specialization, note, status, access_token, created_at, license_number, credential_path, trust_score, trust_flags",
           )
           .order("created_at", { ascending: false });
         if (error || !rows) return { ok: true, engineers: [] };
@@ -900,6 +1217,10 @@ export const adminListEngineers = createServerFn({ method: "POST" })
             status: r.status as AdminEngineer["status"],
             accessToken: r.access_token,
             createdAt: r.created_at,
+            licenseNumber: r.license_number ?? null,
+            credentialPath: r.credential_path ?? null,
+            trustScore: r.trust_score ?? 0,
+            trustFlags: (r.trust_flags as string[] | null) ?? [],
           })),
         };
       } catch (e) {
@@ -1094,6 +1415,8 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
               (r.engineer_verdict as "agree" | "adjust" | null) ?? null,
             reportType: r.report_type ?? null,
             stalled: Boolean(r.stalled),
+            reclaimCount: r.reclaim_count ?? 0,
+            residentConfirmedAt: r.resident_confirmed_at ?? null,
           })),
           progress: p
             ? {
@@ -1102,6 +1425,8 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
                 visited: p.visited ?? 0,
                 resolved: p.resolved ?? 0,
                 stalled: p.stalled ?? 0,
+                reclaimed: p.reclaimed ?? 0,
+                residentConfirmed: p.resident_confirmed ?? 0,
               }
             : null,
         };

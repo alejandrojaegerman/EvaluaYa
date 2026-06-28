@@ -895,6 +895,20 @@ const es: Dict = {
   "vol.email": "Correo electrónico",
   "vol.emailHint":
     "Lo necesitamos para enviarte tu enlace de acceso cuando te validemos.",
+  "vol.verifyTitle": "Verificación profesional",
+  "vol.verifyHint":
+    "Para proteger a las familias, validamos a cada voluntario(a). Agrega tu número de colegiatura (CIV) y un documento que respalde tu profesión. Acelera tu aprobación.",
+  "vol.license": "Número de colegiatura / CIV (opcional)",
+  "vol.licensePlaceholder": "Ej.: CIV 123456",
+  "vol.credential": "Documento de respaldo (opcional)",
+  "vol.credentialCta": "Subir credencial o título",
+  "vol.credentialHint":
+    "PDF o imagen (carnet del CIV, título, constancia laboral). Máx. 6 MB. Solo lo ve nuestro equipo de validación.",
+  "vol.credentialUploading": "Subiendo…",
+  "vol.credentialUploaded": "Documento cargado",
+  "vol.credentialCta2": "Cambiar documento",
+  "vol.credentialError": "No se pudo subir el documento. Intenta de nuevo.",
+  "vol.credentialTooLarge": "El archivo supera los 6 MB.",
   "vol.states": "Estados que puedes cubrir",
   "vol.statesHint": "Selecciona uno o más.",
   "vol.specialization": "Especialidad (opcional)",
@@ -2084,6 +2098,20 @@ const en: Dict = {
   "vol.email": "Email",
   "vol.emailHint":
     "We need it to send you your access link once you're validated.",
+  "vol.verifyTitle": "Professional verification",
+  "vol.verifyHint":
+    "To protect families, we validate every volunteer. Add your license number (CIV) and a document supporting your profession. It speeds up your approval.",
+  "vol.license": "License / CIV number (optional)",
+  "vol.licensePlaceholder": "e.g. CIV 123456",
+  "vol.credential": "Supporting document (optional)",
+  "vol.credentialCta": "Upload credential or degree",
+  "vol.credentialHint":
+    "PDF or image (CIV ID, degree, work proof). Max 6 MB. Only our validation team can see it.",
+  "vol.credentialUploading": "Uploading…",
+  "vol.credentialUploaded": "Document uploaded",
+  "vol.credentialCta2": "Change document",
+  "vol.credentialError": "Could not upload the document. Try again.",
+  "vol.credentialTooLarge": "The file exceeds 6 MB.",
   "vol.states": "States you can cover",
   "vol.statesHint": "Select one or more.",
   "vol.specialization": "Specialty (optional)",

@@ -8,7 +8,10 @@
 export const APP_ROOT = "https://evaluaya.app";
 
 /** Campaigns we attribute panel link clicks to, by surface. */
-export type PanelLinkCampaign = "volunteer_panel" | "help_digest";
+export type PanelLinkCampaign =
+  | "volunteer_panel"
+  | "help_digest"
+  | "help_reminder";
 
 /**
  * Build an absolute engineer-panel URL for `token`, tagged with email UTMs so

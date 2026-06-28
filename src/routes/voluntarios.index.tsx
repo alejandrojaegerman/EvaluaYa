@@ -11,6 +11,10 @@ import {
   User2,
   Building2,
   ShieldCheck,
+  BadgeCheck,
+  FileUp,
+  Loader2,
+  Award,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,6 +31,8 @@ import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
   getAllApprovedEngineers,
   submitEngineerSignup,
+  uploadEngineerCredential,
+  type RecognitionTier,
   type VerifiedEngineer,
   type VolunteerType,
 } from "@/lib/volunteers.functions";
@@ -73,11 +79,17 @@ function VolunteersPage() {
   const [org, setOrg] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [credentialPath, setCredentialPath] = useState("");
+  const [credentialName, setCredentialName] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [states, setStates] = useState<string[]>([]);
   const [specialization, setSpecialization] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+
+  const upload = useServerFn(uploadEngineerCredential);
 
   const isOrg = volunteerType === "organization";
 
@@ -85,6 +97,37 @@ function VolunteersPage() {
     setStates((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
     );
+  }
+
+  async function onCredentialChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 6_000_000) {
+      toast.error(t("vol.credentialTooLarge"));
+      return;
+    }
+    setUploading(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      const res = await upload({ data: { dataUrl, filename: file.name } });
+      if (res.ok && res.path) {
+        setCredentialPath(res.path);
+        setCredentialName(file.name);
+        toast.success(t("vol.credentialUploaded"));
+      } else {
+        toast.error(t("vol.credentialError"));
+      }
+    } catch {
+      toast.error(t("vol.credentialError"));
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -107,6 +150,8 @@ function VolunteersPage() {
           organization: org,
           whatsapp,
           email,
+          licenseNumber,
+          credentialPath,
           states,
           specialization,
           note,
@@ -353,6 +398,67 @@ function VolunteersPage() {
             </p>
           </div>
 
+          {/* Validation: CIV/license + credential upload */}
+          <div className="rounded-xl border border-primary/20 bg-secondary/30 p-3.5">
+            <div className="flex items-center gap-2">
+              <BadgeCheck className="size-4 text-primary" aria-hidden />
+              <p className="text-sm font-semibold">{t("vol.verifyTitle")}</p>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("vol.verifyHint")}
+            </p>
+
+            <div className="mt-3">
+              <Label htmlFor="vol-license">{t("vol.license")}</Label>
+              <Input
+                id="vol-license"
+                value={licenseNumber}
+                onChange={(e) => setLicenseNumber(e.target.value)}
+                placeholder={t("vol.licensePlaceholder")}
+                maxLength={40}
+                className="mt-1.5"
+              />
+            </div>
+
+            <div className="mt-3">
+              <Label htmlFor="vol-credential">{t("vol.credential")}</Label>
+              <div className="mt-1.5">
+                <input
+                  id="vol-credential"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
+                  onChange={onCredentialChange}
+                  className="sr-only"
+                  disabled={uploading}
+                />
+                <Label
+                  htmlFor="vol-credential"
+                  className={cn(
+                    "flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-background px-3 py-2.5 text-sm font-medium transition-colors hover:border-primary/50",
+                    uploading && "pointer-events-none opacity-70",
+                  )}
+                >
+                  {uploading ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : credentialPath ? (
+                    <CheckCircle2 className="size-4 text-risk-green" aria-hidden />
+                  ) : (
+                    <FileUp className="size-4" aria-hidden />
+                  )}
+                  {uploading
+                    ? t("vol.credentialUploading")
+                    : credentialPath
+                      ? credentialName || t("vol.credentialUploaded")
+                      : t("vol.credentialCta")}
+                </Label>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("vol.credentialHint")}
+              </p>
+            </div>
+          </div>
+
+
           <div>
             <Label>{t("vol.states")}</Label>
             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -423,6 +529,33 @@ function initials(label: string): string {
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
+
+const TIER_STYLE: Record<
+  Exclude<RecognitionTier, "none">,
+  { label: string; className: string }
+> = {
+  gold: { label: "Oro", className: "bg-amber-100 text-amber-800" },
+  silver: { label: "Plata", className: "bg-slate-200 text-slate-700" },
+  bronze: { label: "Bronce", className: "bg-orange-100 text-orange-800" },
+};
+
+/** Recognition badge shown next to engineers who have resolved requests. */
+function TierBadge({ tier }: { tier: RecognitionTier }) {
+  if (tier === "none") return null;
+  const s = TIER_STYLE[tier];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+        s.className,
+      )}
+    >
+      <Award className="size-3" aria-hidden />
+      {s.label}
+    </span>
+  );
+}
+
 
 function VerifiedEngineers({
   engineers,
@@ -495,6 +628,8 @@ function VerifiedEngineers({
                           ? t("vol.organizationLabel")
                           : t("vol.individualLabel")}
                       </span>
+                      <TierBadge tier={e.tier} />
+
                       {e.states.slice(0, 3).map((s) => (
                         <span
                           key={s}
