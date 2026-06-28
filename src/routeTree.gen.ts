@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
+import { Route as GuiaQueHacerDespuesDeUnTemblorRouteImport } from './routes/guia.que-hacer-despues-de-un-temblor'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
@@ -111,6 +112,12 @@ const ZonaEstadoRoute = ZonaEstadoRouteImport.update({
   path: '/zona/$estado',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuiaQueHacerDespuesDeUnTemblorRoute =
+  GuiaQueHacerDespuesDeUnTemblorRouteImport.update({
+    id: '/guia/que-hacer-despues-de-un-temblor',
+    path: '/guia/que-hacer-despues-de-un-temblor',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
@@ -255,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin': typeof AdminIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
@@ -332,6 +341,7 @@ export interface FileRoutesById {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
     | '/voluntarios/'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin'
     | '/voluntarios'
@@ -448,6 +460,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
     | '/voluntarios/'
@@ -487,6 +500,7 @@ export interface RootRouteChildren {
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
   ZonaEstadoRoute: typeof ZonaEstadoRoute
   AdminIndexRoute: typeof AdminIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
@@ -600,6 +614,13 @@ declare module '@tanstack/react-router' {
       path: '/zona/$estado'
       fullPath: '/zona/$estado'
       preLoaderRoute: typeof ZonaEstadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/que-hacer-despues-de-un-temblor': {
+      id: '/guia/que-hacer-despues-de-un-temblor'
+      path: '/guia/que-hacer-despues-de-un-temblor'
+      fullPath: '/guia/que-hacer-despues-de-un-temblor'
+      preLoaderRoute: typeof GuiaQueHacerDespuesDeUnTemblorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -783,6 +804,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
   ZonaEstadoRoute: ZonaEstadoRoute,
   AdminIndexRoute: AdminIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,

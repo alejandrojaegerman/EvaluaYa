@@ -198,6 +198,11 @@ function HelpPage() {
             </Link>
           </Button>
           <Button asChild variant="outline">
+            <Link to="/guia/que-hacer-despues-de-un-temblor">
+              {t("help.tremorGuideLink")}
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/metodologia">{t("home.methodologyLink")}</Link>
           </Button>
         </div>
