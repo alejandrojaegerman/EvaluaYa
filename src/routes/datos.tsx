@@ -673,6 +673,8 @@ function DataRoomPage() {
           onChange={setFilters}
           availableStates={availableStates}
           availableMunicipios={availableMunicipios}
+          featuredStates={impactRanking.featuredStates}
+          featuredMunicipios={impactRanking.featuredMunicipios}
         />
         <p className="mt-2 text-xs text-muted-foreground">
           {t("data.activeScope")}: <span className="font-semibold">{scopeLabel}</span>
