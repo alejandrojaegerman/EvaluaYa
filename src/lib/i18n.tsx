@@ -1116,6 +1116,78 @@ const es: Dict = {
   "dash.recentSignups": "Registros recientes",
   "dash.noAccounts": "Aún no hay cuentas guardadas.",
   "dash.neverSignedIn": "Nunca",
+
+  // Privacy policy
+  "nav.privacy": "Privacidad",
+  "footer.legal": "Legal",
+  "privacy.title": "Política de privacidad",
+  "privacy.subtitle":
+    "Cómo EvalúaYa recoge, usa y protege tus datos. Escrito en lenguaje claro.",
+  "privacy.updated": "Última actualización: junio de 2026",
+  "privacy.intro":
+    "EvalúaYa es una herramienta gratuita para autoevaluar daños estructurales tras un sismo. Puedes hacer una evaluación sin registrarte. Esta página explica qué información recogemos y qué hacemos con ella.",
+  "privacy.responsible.title": "Quién es responsable",
+  "privacy.responsible.body":
+    "El responsable de esta aplicación es EvalúaYa.app. Para cualquier consulta sobre privacidad puedes escribir a contacto@evaluaya.app.",
+  "privacy.collect.title": "Qué datos recogemos",
+  "privacy.collect.intro": "Según cómo uses la app, podemos recoger:",
+  "privacy.collect.b1":
+    "Tus respuestas de la inspección y los datos de la propiedad (tipo de edificación, pisos, antigüedad, nombre del edificio).",
+  "privacy.collect.b2":
+    "Ubicación aproximada que ingresas: estado, municipio y el texto de dirección o sector.",
+  "privacy.collect.b3":
+    "Fotos que decidas subir (son opcionales). Se guardan en almacenamiento privado.",
+  "privacy.collect.b4":
+    "Tu correo electrónico solo si creas una cuenta para guardar reportes, te registras como voluntario, envías comentarios o eres una institución interesada.",
+  "privacy.collect.b5":
+    "Datos técnicos básicos para evitar abuso (por ejemplo, una dirección IP usada de forma temporal para límites de uso).",
+  "privacy.use.title": "Cómo usamos los datos",
+  "privacy.use.intro": "Usamos la información para:",
+  "privacy.use.b1":
+    "Generar tu resultado mediante un análisis estructural automatizado (IA) y reglas de seguridad.",
+  "privacy.use.b2":
+    "Crear el reporte que puedes guardar, descargar en PDF y compartir.",
+  "privacy.use.b3":
+    "Producir estadísticas anónimas y agregadas para el mapa y la sala de datos.",
+  "privacy.use.b4":
+    "Conectar a los residentes que lo solicitan con un ingeniero voluntario verificado.",
+  "privacy.share.title": "Qué compartimos",
+  "privacy.share.body":
+    "Las fotos se mantienen en almacenamiento privado y solo se acceden mediante enlaces firmados temporales. Las superficies públicas (mapa, sala de datos, API abierta) muestran únicamente conteos anónimos y agregados: nunca direcciones, fotos ni identificadores de reportes. No vendemos tus datos.",
+  "privacy.retention.title": "Conservación",
+  "privacy.retention.body":
+    "Conservamos los reportes para mantener el historial del edificio y las estadísticas agregadas. Puedes pedir acceso o eliminación de tus datos escribiendo al correo de contacto.",
+  "privacy.processors.title": "Proveedores",
+  "privacy.processors.body":
+    "Nos apoyamos en proveedores de infraestructura para el alojamiento, la base de datos, el análisis con IA y el envío de correos. Solo procesan datos para prestar estos servicios en nuestro nombre.",
+  "privacy.cookies.title": "Cookies y almacenamiento del dispositivo",
+  "privacy.cookies.body":
+    "Guardamos información en tu dispositivo para que la app funcione sin conexión (borradores y cola de envío) y para recordar tu idioma. Usamos analítica básica para entender el uso de la app.",
+  "privacy.rights.title": "Tus derechos",
+  "privacy.rights.body":
+    "Puedes solicitar acceso, corrección o eliminación de tus datos personales, o retirar tu correo, en cualquier momento escribiendo a contacto@evaluaya.app.",
+  "privacy.contact.title": "Contacto",
+  "privacy.contact.body":
+    "¿Preguntas sobre privacidad? Escríbenos a contacto@evaluaya.app.",
+  "privacy.disclaimer":
+    "EvalúaYa ofrece orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil.",
+
+  // Open data API (data room)
+  "data.api.title": "Datos abiertos / API",
+  "data.api.body":
+    "Publicamos los datos anónimos y agregados como una API abierta para autoridades, medios, investigadores y agentes de IA. Solo conteos: nunca direcciones, fotos ni identificadores.",
+  "data.api.endpointsTitle": "Endpoints",
+  "data.api.licenseLabel": "Licencia",
+  "data.api.license": "CC BY 4.0",
+  "data.api.attributionLabel": "Atribución requerida",
+  "data.api.attribution": "Datos de EvalúaYa (evaluaya.app), CC BY 4.0",
+  "data.api.exampleLabel": "Ejemplo",
+  "data.api.viewManifest": "Ver manifiesto de la API",
+  "data.api.ep.aggregates": "Conteos por estado/municipio y nivel de riesgo",
+  "data.api.ep.totals": "Totales nacionales",
+  "data.api.ep.timeseries": "Tendencia diaria (últimos ~90 días)",
+  "data.api.ep.riskFactors": "Factores de riesgo (el porqué de los resultados)",
+  "data.api.ep.methodology": "Metodología, reglas de seguridad y glosario",
 };
 
 
