@@ -204,6 +204,31 @@ function VolunteersPage() {
         ))}
       </ol>
 
+      {/* Residents connect only after completing an evaluation */}
+      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ClipboardList className="size-5" aria-hidden />
+          </span>
+          <div>
+            <p className="font-semibold leading-tight">
+              {t("vol.residentNoteTitle")}
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("vol.residentNoteBody")}
+            </p>
+          </div>
+        </div>
+        <Button asChild variant="outline" className="shrink-0">
+          <Link to="/assess/property">
+            {t("vol.residentNoteCta")}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </div>
+
+
+
       <form
         onSubmit={onSubmit}
         className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm"
