@@ -1644,6 +1644,7 @@ export const adminCreateReviewRequest = createServerFn({ method: "POST" })
         municipality: assessment.municipality || null,
         risk_level: assessment.risk_level ?? null,
         note: "Revisión profesional solicitada por el equipo (verificación).",
+        resident_whatsapp: "",
         status: "open",
       });
       if (error) {
