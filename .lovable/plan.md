@@ -1,70 +1,65 @@
-# Bulk up Admin — two goals, action-first
+# Slack alerts for EvalúaYa
 
-Two outcomes drive every addition:
-1. **More & better evaluations** — quality flags, verification push, data completeness.
-2. **Drive help requests to done** — a hands-on stalled-request triage worklist.
+Route loud, deep-linked Slack messages for every key event to a single channel, and move the internal/admin notifications off email and onto Slack. Resident- and engineer-facing emails stay exactly as they are.
 
-Everything stays behind the existing admin secret. New panels live on the two pages that already exist (`/admin` for evaluation quality, `/admin/voluntarios` for resolution), so navigation doesn't change.
+## What you'll get
 
----
+One Slack channel that lights up on:
 
-## Goal 1 — Evaluation quantity & validity (`/admin`)
+- **New high-risk assessments** (Red/Orange) — a neighbor finished a self-evaluation that flagged danger. Red gets an `@channel` ping so it's impossible to miss. Links straight to the report.
+- **Help requests** — a resident requested an engineer, and again when a request is marked resolved. Links to the admin triage panel.
+- **Volunteers** — a new engineer/organization signed up, and when one is approved. Links to volunteer review.
+- **Feedback + funnel alerts** — new feedback submissions, and the existing hourly conversion-drop watchdog. Links to the admin dashboard.
 
-### A. Quality & completeness scorecard (new top section)
-A row of KPIs computed across analyzed reports:
-- **Data completeness %**: share of reports with a real location (not "Desconocido"), building info, and a seismic intensity value — plus a breakdown of which field is most often missing.
-- **With photos %** and **Low-quality count** (reports with no photos, or mostly "unsure"/single-answer).
-- **Professional/verified %** and **AI↔engineer disagreement rate**.
+Every message is formatted with a colored risk tag, location, any note, and a button that opens the exact right page in the app.
 
-Each KPI is a tappable stat; tapping reveals the relevant drill-down list below.
+## Channel & connection
 
-### B. "Needs attention" report worklist (new section + action levers)
-A filterable list of flagged reports (chips: *No photos*, *Mostly unsure*, *Thin (1 answer)*, *Missing location*, *Unverified Red/Orange*). Each row links to the public report `/a/$publicId` and offers actions:
-- **Request engineer review** — opens (or creates) a help request for that report so a verified engineer validates it. This directly raises validity.
-- **Copy share link** — to re-engage the resident / push completion of a draft.
+```text
+Event happens  ->  sendSlackNotification()  ->  Slack connector gateway  ->  #your-channel
+                         |
+                         +-- builds a Block Kit message with a deep-link button
+```
 
-This is where "increase validity" becomes an action, not just a chart.
+- Connect the **Slack** connector (you'll pick which workspace/connection to use).
+- You tell me the channel name (e.g. `#evaluaya-alertas`); I store it as config. The Slack bot is already present in all public channels, so no manual invite is needed for a public channel. (For a private channel, you'd invite the bot once.)
 
-### C. Verification push panel (new section)
-- Counts: professional vs self-assessment, engineer verdicts (agree / adjust), disagreement rate, recently verified reports.
-- A short list of high-risk (Red/Orange) reports that are **still unverified**, each with the same **Request engineer review** button — closing the loop between risky self-assessments and professional confirmation.
+## Events → message → destination
 
----
+| Event | Where it fires | Slack links to |
+|---|---|---|
+| High-risk assessment (Red/Orange) | `analyzeAssessment` (new hook) | `/a/{publicId}` (the report) |
+| New help request | `createHelpRequest` (replaces admin email) | `/admin/voluntarios` |
+| Help request resolved | `updateRequestProgress` (replaces admin email) | `/admin/voluntarios` |
+| New volunteer signup | volunteer signup (replaces admin email) | `/admin/voluntarios` |
+| Volunteer approved | approve flow (new FYI post) | `/admin/voluntarios` |
+| New feedback | `submitFeedback` (replaces admin email) | `/admin` |
+| Funnel/conversion drop | hourly funnel watchdog (replaces admin email) | `/admin` |
 
-## Goal 2 — Drive resolution (`/admin/voluntarios`)
+## Email behavior
 
-### D. Stalled-request triage worklist (new section at top of requests)
-A focused queue of at-risk requests (stalled >24h, claimed-no-progress, or open-with-no-coverage), each card showing the engineer, time-in-stage, reminder count, and reclaim count, with one-click levers:
-- **Remind engineer** — sends the staged reminder email now and bumps the reminder counter (same mechanism the hourly engine uses, but on demand).
-- **Reclaim → pool** — returns a stalled claimed request to the open pool immediately.
-- **Reassign** — pick another approved engineer (filtered to ones covering the state) and hand the request to them directly (re-notifies the new engineer).
+- **Admin-only emails become Slack-only**: new help request, help resolved, volunteer signup, feedback, funnel alert, and the daily admin help digest.
+- **Untouched (still email)**: resident magic links/reports, engineer request notifications, engineer approval email, engineer digests, and all auth emails.
 
-### E. Engineer worklist context
-Inline per-request: which engineers cover that state (so reassign is one tap), and a compact "open in this state / no coverage" flag to spot gaps fast.
+This means the admin inbox goes quiet and Slack becomes the live ops feed, exactly as requested.
 
----
+## Technical details
 
-## What's intentionally NOT changing
-- No new auth model, no schema for new tables beyond small helper columns already present.
-- No changes to the resident-facing flow or public copy.
-- Leaderboard, resident follow-up, and coverage-gap recruiting were considered but deprioritized per your selections (can add later).
+- New helper `src/lib/slack-notify.server.ts`:
+  - `sendSlackNotification({ kind, title, fields, url, urgent })` posts via the Lovable connector gateway (`POST https://connector-gateway.lovable.dev/slack/api/chat.postMessage`) with `Authorization: Bearer ${LOVABLE_API_KEY}` and `X-Connection-Api-Key: ${SLACK_API_KEY}`.
+  - Reads target channel from a `SLACK_NOTIFY_CHANNEL` config value.
+  - Builds Block Kit blocks: header with emoji, a fields section (risk tag with 🟢🟡🟠🔴, location, note), and an actions block with a URL button. `urgent` (Red) prepends `<!channel>` and sets `link_names`.
+  - Fully fail-safe: missing env or gateway errors are logged and swallowed, never blocking the user flow (mirrors the existing best-effort email pattern).
+  - Links built from the existing `APP_ROOT`/`absoluteUrl` helpers with `utm_source=slack`.
+- Wire-up points (all wrapped in try/catch, awaited best-effort):
+  - `src/lib/assessment.functions.ts` — after a successful insert, if `finalRisk` is `red`/`orange`, post to Slack.
+  - `src/lib/volunteers.functions.ts` — swap the three admin `sendSystemEmail` calls (`admin-help-new`, `admin-help-resolved`, `volunteer-signup-notification`) for `sendSlackNotification`; add an FYI post in the approve flow (keep the engineer-facing `volunteer-approved` email).
+  - `src/lib/feedback.functions.ts` — swap `feedback-notification` admin email for Slack.
+  - `src/lib/funnel-alert.server.ts` — swap `funnel-alert` admin email for Slack.
+  - `src/lib/admin-help-digest.server.ts` — post the daily digest summary to Slack instead of email.
+- No new tables, no schema changes, no client-side code. All work runs in existing server functions / cron-driven server helpers, so it's same-origin and low-bandwidth-safe.
+- Build verified with a typecheck.
 
----
+## Open item I'll confirm during build
 
-## Technical notes
-
-**New read RPCs (SECURITY DEFINER, search_path pinned, EXECUTE revoked from anon/authenticated — matching existing pattern):**
-- `get_admin_quality_metrics()` → completeness %, photo %, low-quality counts, missing-field breakdown (parses `answers` jsonb for `yes/unsure`/photo presence and `property` for location/building/intensity).
-- `get_admin_flagged_reports(_filter text, _limit int)` → flagged report rows (public_id, risk, municipality, reason flags) for the worklist.
-- `get_admin_verification_metrics()` → professional share, verdict agree/adjust, disagreement rate, recent verified, unverified high-risk list.
-
-**New action server fns (gated by `adminOk`, service-role via `await import("@/integrations/supabase/client.server")` inside handler):**
-- In `admin-analytics.functions.ts`: `adminGetQualityMetrics`, `adminGetFlaggedReports`, `adminGetVerificationMetrics`.
-- In `volunteers.functions.ts`: `adminRemindEngineer` (calls `mark_request_reminded` + sends `help-request-reminder` email), `adminReclaimRequest` (calls existing `reclaim_stalled_request`), `adminReassignRequest` (sets `claimed_by`/resets `progress_stage`, fresh `claimed_at`, re-sends access/notification email), and `adminCreateReviewRequest(publicId)` to spin up a help request from a flagged report.
-- Reassign needs an approved-engineers-by-state read for the dropdown — reuse `get_approved_engineers` via a thin admin wrapper.
-
-**UI:** extend `src/routes/admin.index.tsx` (sections A–C) and `src/routes/admin.voluntarios.tsx` (sections D–E) with the existing `Card`/`Stat`/`Group` components and `useServerFn` calls. New bilingual strings added to `src/lib/i18n.tsx` (ES + EN) for every label, filter chip, and action.
-
-**Migration:** one migration adding the three read RPCs and grants/revokes. No new tables.
-
-After build: typecheck with `tsgo --noEmit` and verify the admin panels load with the secret.
+The exact channel name to post to (e.g. `#evaluaya-alertas`). I'll connect Slack first, then wire the channel in.
