@@ -150,7 +150,62 @@ function AdminPage() {
     }
   }
 
-  const filteredRequests = useMemo(() => {
+  async function onRemind(id: string) {
+    setBusy(true);
+    try {
+      const res = await remindEngineer({ data: { adminSecret: secret, requestId: id } });
+      if (res.ok) {
+        toast.success(t("vadmin.reminded"));
+        await refresh(secret);
+      } else toast.error(t("vadmin.actionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onReclaim(id: string) {
+    setBusy(true);
+    try {
+      const res = await reclaimRequest({ data: { adminSecret: secret, requestId: id } });
+      if (res.ok) {
+        toast.success(t("vadmin.reclaimed"));
+        await refresh(secret);
+      } else toast.error(t("vadmin.actionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onReassign(id: string, engineerId: string) {
+    setBusy(true);
+    try {
+      const res = await reassignRequest({
+        data: { adminSecret: secret, requestId: id, engineerId },
+      });
+      if (res.ok) {
+        toast.success(t("vadmin.reassigned"));
+        await refresh(secret);
+      } else toast.error(t("vadmin.actionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Triage worklist: requests that need a push — open (waiting to be claimed)
+  // or claimed-but-stalled. Resolved/closed requests are excluded.
+  const triageRequests = useMemo(
+    () =>
+      requests.filter(
+        (r) => r.status === "open" || (r.status === "claimed" && r.stalled),
+      ),
+    [requests],
+  );
+
+  const approvedEngineers = useMemo(
+    () => engineers.filter((e) => e.status === "approved" && e.accessToken),
+    [engineers],
+  );
+
     switch (reqFilter) {
       case "open":
         return requests.filter((r) => r.status === "open");
