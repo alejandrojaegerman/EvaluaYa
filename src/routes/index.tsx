@@ -107,7 +107,7 @@ function Index() {
           <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
             {t("home.heroTitle")}
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-primary-foreground/85">
+          <p className="mt-3 text-sm leading-relaxed text-primary-foreground/90">
             {t("home.heroSubtitle")}
           </p>
         </div>
