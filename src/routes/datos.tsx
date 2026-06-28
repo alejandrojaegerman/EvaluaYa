@@ -24,7 +24,7 @@ import {
   rangeToDates,
   type DataFilters,
 } from "@/components/DataRoomFilters";
-import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
 import { SeveritySpotlight } from "@/components/SeveritySpotlight";
