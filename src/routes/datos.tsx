@@ -245,6 +245,15 @@ function DataRoomPage() {
     };
   }, [filters]);
 
+  // Severity-weighted ranking so the hardest-hit areas surface first in filters.
+  const impactRanking = useMemo(
+    () => ({
+      featuredStates: rankStates(areas, ESTADO_NAMES),
+      featuredMunicipios: rankMunicipios(areas, municipiosFor),
+    }),
+    [areas],
+  );
+
   const stateBubbles = useMemo(() => {
     const byState = new Map<
       string,
