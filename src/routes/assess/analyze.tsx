@@ -25,6 +25,9 @@ import { syncOutboxItem } from "@/lib/outbox-sync";
 import { trackStep } from "@/lib/track";
 
 export const Route = createFileRoute("/assess/analyze")({
+  head: () => ({
+    meta: [{ name: "robots", content: "noindex, nofollow" }],
+  }),
   component: AnalyzeStep,
 });
 
