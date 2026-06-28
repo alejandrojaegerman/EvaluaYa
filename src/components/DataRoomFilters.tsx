@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { useLang } from "@/lib/i18n";
+import { splitFeatured } from "@/lib/impact";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES, MUNICIPIOS } from "@/lib/venezuela";
 
