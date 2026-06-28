@@ -1437,3 +1437,262 @@ export const adminListHelpRequests = createServerFn({ method: "POST" })
     },
   );
 
+// ---------------------------------------------------------------------------
+// Admin action levers — drive help requests to completion (Goal 2).
+// ---------------------------------------------------------------------------
+
+const STAGE_LABEL_ES: Record<string, string> = {
+  claimed: "Reclamada",
+  contacted: "Contactó al residente",
+  visited: "Visitó el inmueble",
+  resolved: "Resuelta",
+};
+
+function waitingLabelEs(since: string | null): string {
+  if (!since) return "";
+  const ms = Date.now() - new Date(since).getTime();
+  if (ms <= 0) return "";
+  const hours = Math.floor(ms / 3_600_000);
+  if (hours < 24) return `${hours} ${hours === 1 ? "hora" : "horas"}`;
+  const days = Math.floor(hours / 24);
+  return `${days} ${days === 1 ? "día" : "días"}`;
+}
+
+const requestIdSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  requestId: z.string().trim().uuid(),
+});
+
+/** Send the staged reminder email to the engineer holding a claimed request. */
+export const adminRemindEngineer = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => requestIdSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean; reason?: string }> => {
+    if (!adminOk(data.adminSecret)) return { ok: false };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: hr } = await supabaseAdmin
+        .from("help_requests")
+        .select(
+          "id, state, municipality, risk_level, progress_stage, claimed_at, progress_updated_at, reminder_count, claimed_by, status",
+        )
+        .eq("id", data.requestId)
+        .maybeSingle();
+      if (!hr || hr.status !== "claimed" || !hr.claimed_by) {
+        return { ok: false, reason: "not_claimed" };
+      }
+      const { data: eng } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("name, email, access_token")
+        .eq("id", hr.claimed_by)
+        .maybeSingle();
+      if (!eng?.email?.trim() || !eng.access_token) {
+        return { ok: false, reason: "no_contact" };
+      }
+      const stageSince = hr.progress_updated_at ?? hr.claimed_at;
+      const nextNumber = (hr.reminder_count ?? 0) + 1;
+      const { sendSystemEmail } = await import("./notify-email.server");
+      const res = await sendSystemEmail({
+        templateName: "help-request-reminder",
+        recipientEmail: eng.email,
+        idempotencyKey: `admin-remind:${hr.id}:${Date.now()}`,
+        templateData: {
+          engineerName: eng.name ?? "",
+          riskLevel: hr.risk_level ?? "",
+          location:
+            [hr.municipality, hr.state].filter(Boolean).join(", ") || "—",
+          stageLabel:
+            STAGE_LABEL_ES[hr.progress_stage ?? "claimed"] ?? "Reclamada",
+          waitingLabel: waitingLabelEs(stageSince),
+          reminderNumber: nextNumber,
+          panelUrl: engineerPanelUrl(eng.access_token, "help_reminder"),
+        },
+      });
+      if (!res.ok) return { ok: false, reason: "send_failed" };
+      await supabaseAdmin.rpc("mark_request_reminded", { _id: hr.id });
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] adminRemindEngineer failed", e);
+      return { ok: false };
+    }
+  });
+
+/** Return a claimed request to the open pool immediately (admin override). */
+export const adminReclaimRequest = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => requestIdSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    if (!adminOk(data.adminSecret)) return { ok: false };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { error } = await supabaseAdmin.rpc("reclaim_stalled_request", {
+        _id: data.requestId,
+      });
+      if (error) {
+        console.error("[volunteers] adminReclaimRequest", error);
+        return { ok: false };
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] adminReclaimRequest failed", e);
+      return { ok: false };
+    }
+  });
+
+const reassignSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  requestId: z.string().trim().uuid(),
+  engineerId: z.string().trim().uuid(),
+});
+
+/** Hand a request directly to a chosen approved engineer and notify them. */
+export const adminReassignRequest = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => reassignSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean; reason?: string }> => {
+    if (!adminOk(data.adminSecret)) return { ok: false };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: eng } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("name, email, access_token, status")
+        .eq("id", data.engineerId)
+        .maybeSingle();
+      if (!eng || eng.status !== "approved") {
+        return { ok: false, reason: "not_approved" };
+      }
+      const { data: hr, error } = await supabaseAdmin
+        .from("help_requests")
+        .update({
+          claimed_by: data.engineerId,
+          claimed_at: new Date().toISOString(),
+          status: "claimed",
+          progress_stage: null,
+          progress_updated_at: null,
+        })
+        .eq("id", data.requestId)
+        .select("state, municipality, risk_level, note")
+        .maybeSingle();
+      if (error || !hr) {
+        console.error("[volunteers] adminReassignRequest update", error);
+        return { ok: false, reason: "update_failed" };
+      }
+      if (eng.email?.trim() && eng.access_token) {
+        const { sendSystemEmail } = await import("./notify-email.server");
+        const location =
+          [hr.municipality, hr.state].filter(Boolean).join(", ") || "—";
+        await sendSystemEmail({
+          templateName: "help-request-notification",
+          recipientEmail: eng.email,
+          idempotencyKey: `admin-reassign:${data.requestId}:${Date.now()}`,
+          templateData: {
+            engineerName: eng.name ?? "",
+            riskLevel: hr.risk_level ?? "",
+            location,
+            note: hr.note || "",
+            panelUrl: engineerPanelUrl(eng.access_token, "help_reminder"),
+          },
+        }).catch((err) =>
+          console.error("[volunteers] reassign notify failed", err),
+        );
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] adminReassignRequest failed", e);
+      return { ok: false };
+    }
+  });
+
+const reviewRequestSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  publicId: z.string().trim().min(3).max(64),
+});
+
+/** Spin up an engineer-review help request from a flagged report (Goal 1). */
+export const adminCreateReviewRequest = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => reviewRequestSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean; reason?: string }> => {
+    if (!adminOk(data.adminSecret)) return { ok: false };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: assessment } = await supabaseAdmin
+        .from("assessments")
+        .select("public_id, state, municipality, risk_level")
+        .eq("public_id", data.publicId)
+        .maybeSingle();
+      if (!assessment) return { ok: false, reason: "not_found" };
+
+      // Avoid duplicate open review requests for the same report.
+      const { data: existing } = await supabaseAdmin
+        .from("help_requests")
+        .select("id")
+        .eq("assessment_public_id", data.publicId)
+        .neq("status", "closed")
+        .limit(1);
+      if (existing && existing.length > 0) {
+        return { ok: false, reason: "already_open" };
+      }
+
+      const { error } = await supabaseAdmin.from("help_requests").insert({
+        assessment_public_id: assessment.public_id,
+        state: assessment.state || null,
+        municipality: assessment.municipality || null,
+        risk_level: assessment.risk_level ?? null,
+        note: "Revisión profesional solicitada por el equipo (verificación).",
+        resident_whatsapp: "",
+        status: "open",
+      });
+      if (error) {
+        console.error("[volunteers] adminCreateReviewRequest insert", error);
+        return { ok: false, reason: "insert_failed" };
+      }
+
+      // Notify engineers covering this estado (best-effort).
+      try {
+        const { data: engineers } = await supabaseAdmin.rpc(
+          "get_engineers_to_notify",
+          { _state: assessment.state || "" },
+        );
+        if (engineers && engineers.length > 0) {
+          const { sendSystemEmail } = await import("./notify-email.server");
+          const location =
+            [assessment.municipality, assessment.state]
+              .filter(Boolean)
+              .join(", ") || "—";
+          await Promise.all(
+            engineers.map((eng) =>
+              sendSystemEmail({
+                templateName: "help-request-notification",
+                recipientEmail: eng.email ?? undefined,
+                templateData: {
+                  engineerName: eng.name ?? "",
+                  riskLevel: assessment.risk_level ?? "",
+                  location,
+                  note: "Revisión profesional solicitada por el equipo.",
+                  panelUrl: eng.access_token
+                    ? engineerPanelUrl(eng.access_token, "help_reminder")
+                    : "https://evaluaya.app/voluntarios",
+                },
+              }).catch((err) =>
+                console.error("[volunteers] review notify failed", err),
+              ),
+            ),
+          );
+        }
+      } catch (notifyErr) {
+        console.error("[volunteers] review notify failed", notifyErr);
+      }
+
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] adminCreateReviewRequest failed", e);
+      return { ok: false };
+    }
+  });
+
+

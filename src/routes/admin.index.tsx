@@ -26,6 +26,7 @@ import {
 } from "recharts";
 
 import { AppShell } from "@/components/AppShell";
+import { QualityWatchdog } from "@/components/admin/QualityWatchdog";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
 import { Button } from "@/components/ui/button";
@@ -500,6 +501,9 @@ function AdminDashboard() {
           </Card>
         </>
       )}
+
+      {/* Quality, completeness & verification (Goal 1) */}
+      <QualityWatchdog secret={secret} />
 
       <SectionTitle icon={Users} title={t("dash.volunteers")} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

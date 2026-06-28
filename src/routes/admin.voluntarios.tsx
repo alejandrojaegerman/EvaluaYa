@@ -29,6 +29,9 @@ import {
   adminResendAccessLink,
   adminRotateAccessLink,
   adminListHelpRequests,
+  adminRemindEngineer,
+  adminReclaimRequest,
+  adminReassignRequest,
   type AdminEngineer,
   type AdminHelpRequest,
   type AdminMatchingProgress,
@@ -53,6 +56,9 @@ function AdminPage() {
   const resend = useServerFn(adminResendAccessLink);
   const rotate = useServerFn(adminRotateAccessLink);
   const listRequests = useServerFn(adminListHelpRequests);
+  const remindEngineer = useServerFn(adminRemindEngineer);
+  const reclaimRequest = useServerFn(adminReclaimRequest);
+  const reassignRequest = useServerFn(adminReassignRequest);
 
   const [secret, setSecret] = useState("");
   const [unlocked, setUnlocked] = useState(false);
@@ -143,6 +149,62 @@ function AdminPage() {
       setBusy(false);
     }
   }
+
+  async function onRemind(id: string) {
+    setBusy(true);
+    try {
+      const res = await remindEngineer({ data: { adminSecret: secret, requestId: id } });
+      if (res.ok) {
+        toast.success(t("vadmin.reminded"));
+        await refresh(secret);
+      } else toast.error(t("vadmin.actionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onReclaim(id: string) {
+    setBusy(true);
+    try {
+      const res = await reclaimRequest({ data: { adminSecret: secret, requestId: id } });
+      if (res.ok) {
+        toast.success(t("vadmin.reclaimed"));
+        await refresh(secret);
+      } else toast.error(t("vadmin.actionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onReassign(id: string, engineerId: string) {
+    setBusy(true);
+    try {
+      const res = await reassignRequest({
+        data: { adminSecret: secret, requestId: id, engineerId },
+      });
+      if (res.ok) {
+        toast.success(t("vadmin.reassigned"));
+        await refresh(secret);
+      } else toast.error(t("vadmin.actionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Triage worklist: requests that need a push — open (waiting to be claimed)
+  // or claimed-but-stalled. Resolved/closed requests are excluded.
+  const triageRequests = useMemo(
+    () =>
+      requests.filter(
+        (r) => r.status === "open" || (r.status === "claimed" && r.stalled),
+      ),
+    [requests],
+  );
+
+  const approvedEngineers = useMemo(
+    () => engineers.filter((e) => e.status === "approved" && e.accessToken),
+    [engineers],
+  );
 
   const filteredRequests = useMemo(() => {
     switch (reqFilter) {
@@ -305,6 +367,33 @@ function AdminPage() {
           </div>
         </Group>
       )}
+
+      {/* Triage worklist — drive requests to completion (Goal 2) */}
+      <Group title={`${t("vadmin.triage")} (${triageRequests.length})`}>
+        <p className="-mt-1 mb-2 text-xs text-muted-foreground">
+          {t("vadmin.triageHint")}
+        </p>
+        {triageRequests.length === 0 ? (
+          <p className="text-sm text-risk-green">{t("vadmin.triageEmpty")}</p>
+        ) : (
+          <div className="space-y-3">
+            {triageRequests.map((r) => (
+              <TriageCard
+                key={r.id}
+                r={r}
+                t={t}
+                engineers={approvedEngineers}
+                busy={busy}
+                onRemind={onRemind}
+                onReclaim={onReclaim}
+                onReassign={onReassign}
+              />
+            ))}
+          </div>
+        )}
+      </Group>
+
+
 
       <Group title={`${t("admin.requests")} (${requests.length})`}>
         <div className="mb-3 flex flex-wrap gap-2">
@@ -529,6 +618,154 @@ function HelpRequestCard({
     </div>
   );
 }
+
+function TriageCard({
+  r,
+  t,
+  engineers,
+  busy,
+  onRemind,
+  onReclaim,
+  onReassign,
+}: {
+  r: AdminHelpRequest;
+  t: (key: string) => string;
+  engineers: AdminEngineer[];
+  busy: boolean;
+  onRemind: (id: string) => void;
+  onReclaim: (id: string) => void;
+  onReassign: (id: string, engineerId: string) => void;
+}) {
+  const location =
+    [r.municipality, r.state].filter(Boolean).join(", ") || "—";
+  const isClaimed = r.status === "claimed";
+  // Rank engineers covering this state first.
+  const ranked = [...engineers].sort((a, b) => {
+    const aCov = r.state && a.states.includes(r.state) ? 0 : 1;
+    const bCov = r.state && b.states.includes(r.state) ? 0 : 1;
+    return aCov - bCov;
+  });
+
+  return (
+    <div
+      className={cn(
+        "rounded-xl border bg-background p-3",
+        r.stalled ? "border-risk-red/40 bg-risk-red-soft/30" : "border-border",
+      )}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="font-semibold">{location}</p>
+        <div className="flex items-center gap-2">
+          {r.riskLevel && (
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+                r.riskLevel === "red"
+                  ? "bg-risk-red-soft text-risk-red"
+                  : r.riskLevel === "orange"
+                    ? "bg-risk-orange-soft text-risk-orange"
+                    : r.riskLevel === "yellow"
+                      ? "bg-risk-yellow-soft text-risk-yellow"
+                      : "bg-risk-green-soft text-risk-green",
+              )}
+            >
+              {r.riskLevel}
+            </span>
+          )}
+          <span className="text-xs text-muted-foreground">
+            {isClaimed ? t("admin.statusClaimed") : t("admin.statusOpen")}
+          </span>
+          {r.stalled && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-risk-red-soft px-2 py-0.5 text-[10px] font-bold uppercase text-risk-red">
+              <AlertTriangle className="size-3" aria-hidden />
+              {t("admin.stalled")}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-2 grid gap-1 text-xs text-muted-foreground">
+        <p className="flex items-center gap-1">
+          <User className="size-3" aria-hidden />
+          {t("admin.reqClaimedBy")}:{" "}
+          <span className="font-medium text-foreground">
+            {r.engineerName || t("admin.reqUnclaimed")}
+          </span>
+        </p>
+        {r.claimedAt && (
+          <p>
+            {t("admin.reqClaimedAt")}: {formatDateTime(r.claimedAt)}
+          </p>
+        )}
+        {r.reclaimCount > 0 && (
+          <p>
+            {t("vadmin.remindersSent")}: {r.reclaimCount}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {isClaimed && (
+          <>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={() => onRemind(r.id)}
+            >
+              <Mail className="size-4" />
+              {t("vadmin.remind")}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={() => onReclaim(r.id)}
+            >
+              <RotateCcw className="size-4" />
+              {t("vadmin.reclaim")}
+            </Button>
+          </>
+        )}
+        <select
+          aria-label={t("vadmin.reassign")}
+          disabled={busy || ranked.length === 0}
+          defaultValue=""
+          onChange={(ev) => {
+            const id = ev.target.value;
+            if (id) {
+              onReassign(r.id, id);
+              ev.target.value = "";
+            }
+          }}
+          className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground disabled:opacity-50"
+        >
+          <option value="" disabled>
+            {t("vadmin.reassignPick")}
+          </option>
+          {ranked.map((e) => {
+            const covers = r.state && e.states.includes(r.state);
+            return (
+              <option key={e.id} value={e.id}>
+                {e.name}
+                {e.organization ? ` · ${e.organization}` : ""} —{" "}
+                {covers ? t("vadmin.coversState") : t("vadmin.noCoverage")}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+
+      {r.note && (
+        <p className="mt-2 text-xs italic text-muted-foreground">
+          {t("admin.reqResidentNote")}: {r.note}
+        </p>
+      )}
+    </div>
+  );
+}
+
+
 
 
 function EngineerCard({
