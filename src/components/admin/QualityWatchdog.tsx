@@ -24,6 +24,7 @@ import {
   type VerificationMetrics,
 } from "@/lib/admin-analytics.functions";
 import { adminCreateReviewRequest } from "@/lib/volunteers.functions";
+import { APP_ROOT } from "@/lib/volunteer-links";
 
 function rgb(level: "red" | "orange" | "yellow" | "green"): string {
   const [r, g, b] = RISK_HEX[level];
