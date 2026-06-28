@@ -13,10 +13,24 @@ EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o loc
 - [Metodología](/metodologia): Cómo se determinan los niveles de riesgo y la lógica de seguridad.
 - [Ayuda](/ayuda): Centro de ayuda para usar la aplicación.
 - [Comentarios](/feedback): Envía sugerencias o reporta problemas.
+- [Privacidad](/privacidad): Política de privacidad. Contacto: contacto@evaluaya.app.
 
 ## Optional
 
 - [Zonas regionales](/zona/distrito-capital): Páginas regionales con estadísticas locales por estado.
+
+## API / Open data
+
+Datos anónimos y agregados, abiertos para autoridades, medios, investigadores y agentes de IA. Solo conteos: nunca direcciones, fotos ni identificadores de reportes. Empieza por el manifiesto de descubrimiento. / Anonymized, aggregated data, open for authorities, media, researchers and AI agents. Counts only — never addresses, photos or report IDs. Start from the discovery manifest.
+
+- [Manifiesto / Manifest](/api/public/v1/index.json): Lista de endpoints, parámetros, licencia y atribución.
+- [Aggregates](/api/public/v1/aggregates.json): Conteos por estado/municipio y nivel de riesgo. Filtros: ?state= ?municipality= ?from=YYYY-MM-DD ?to=YYYY-MM-DD.
+- [Totals](/api/public/v1/totals.json): Totales nacionales.
+- [Timeseries](/api/public/v1/timeseries.json): Tendencia diaria (~90 días).
+- [Risk factors](/api/public/v1/risk-factors.json): El porqué de los resultados (ítems marcados, edad/tipo, intensidad, reglas de seguridad).
+- [Methodology](/api/public/v1/methodology.json): Taxonomía de riesgo, reglas de seguridad, lista de inspección y glosario (legible por máquina).
+
+Licencia de datos / Data license: CC BY 4.0. Atribución requerida / Required attribution: "Datos de EvalúaYa (evaluaya.app), CC BY 4.0".
 
 ## License
 

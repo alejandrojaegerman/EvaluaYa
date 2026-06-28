@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
@@ -37,6 +38,12 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicV1TotalsDotjsonRouteImport } from './routes/api/public/v1/totals[.]json'
+import { Route as ApiPublicV1TimeseriesDotjsonRouteImport } from './routes/api/public/v1/timeseries[.]json'
+import { Route as ApiPublicV1RiskFactorsDotjsonRouteImport } from './routes/api/public/v1/risk-factors[.]json'
+import { Route as ApiPublicV1MethodologyDotjsonRouteImport } from './routes/api/public/v1/methodology[.]json'
+import { Route as ApiPublicV1IndexDotjsonRouteImport } from './routes/api/public/v1/index[.]json'
+import { Route as ApiPublicV1AggregatesDotjsonRouteImport } from './routes/api/public/v1/aggregates[.]json'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -46,6 +53,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MisReportesRoute = MisReportesRouteImport.update({
@@ -183,6 +195,41 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1TotalsDotjsonRoute =
+  ApiPublicV1TotalsDotjsonRouteImport.update({
+    id: '/api/public/v1/totals.json',
+    path: '/api/public/v1/totals.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicV1TimeseriesDotjsonRoute =
+  ApiPublicV1TimeseriesDotjsonRouteImport.update({
+    id: '/api/public/v1/timeseries.json',
+    path: '/api/public/v1/timeseries.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicV1RiskFactorsDotjsonRoute =
+  ApiPublicV1RiskFactorsDotjsonRouteImport.update({
+    id: '/api/public/v1/risk-factors.json',
+    path: '/api/public/v1/risk-factors.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicV1MethodologyDotjsonRoute =
+  ApiPublicV1MethodologyDotjsonRouteImport.update({
+    id: '/api/public/v1/methodology.json',
+    path: '/api/public/v1/methodology.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicV1IndexDotjsonRoute = ApiPublicV1IndexDotjsonRouteImport.update({
+  id: '/api/public/v1/index.json',
+  path: '/api/public/v1/index.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1AggregatesDotjsonRoute =
+  ApiPublicV1AggregatesDotjsonRouteImport.update({
+    id: '/api/public/v1/aggregates.json',
+    path: '/api/public/v1/aggregates.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -192,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
@@ -208,6 +256,12 @@ export interface FileRoutesByFullPath {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/api/public/v1/aggregates.json': typeof ApiPublicV1AggregatesDotjsonRoute
+  '/api/public/v1/index.json': typeof ApiPublicV1IndexDotjsonRoute
+  '/api/public/v1/methodology.json': typeof ApiPublicV1MethodologyDotjsonRoute
+  '/api/public/v1/risk-factors.json': typeof ApiPublicV1RiskFactorsDotjsonRoute
+  '/api/public/v1/timeseries.json': typeof ApiPublicV1TimeseriesDotjsonRoute
+  '/api/public/v1/totals.json': typeof ApiPublicV1TotalsDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -222,6 +276,7 @@ export interface FileRoutesByTo {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
@@ -238,6 +293,12 @@ export interface FileRoutesByTo {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/api/public/v1/aggregates.json': typeof ApiPublicV1AggregatesDotjsonRoute
+  '/api/public/v1/index.json': typeof ApiPublicV1IndexDotjsonRoute
+  '/api/public/v1/methodology.json': typeof ApiPublicV1MethodologyDotjsonRoute
+  '/api/public/v1/risk-factors.json': typeof ApiPublicV1RiskFactorsDotjsonRoute
+  '/api/public/v1/timeseries.json': typeof ApiPublicV1TimeseriesDotjsonRoute
+  '/api/public/v1/totals.json': typeof ApiPublicV1TotalsDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -253,6 +314,7 @@ export interface FileRoutesById {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
@@ -269,6 +331,12 @@ export interface FileRoutesById {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/api/public/v1/aggregates.json': typeof ApiPublicV1AggregatesDotjsonRoute
+  '/api/public/v1/index.json': typeof ApiPublicV1IndexDotjsonRoute
+  '/api/public/v1/methodology.json': typeof ApiPublicV1MethodologyDotjsonRoute
+  '/api/public/v1/risk-factors.json': typeof ApiPublicV1RiskFactorsDotjsonRoute
+  '/api/public/v1/timeseries.json': typeof ApiPublicV1TimeseriesDotjsonRoute
+  '/api/public/v1/totals.json': typeof ApiPublicV1TotalsDotjsonRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -285,6 +353,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/privacidad'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/a/$publicId'
@@ -301,6 +370,12 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
+    | '/api/public/v1/aggregates.json'
+    | '/api/public/v1/index.json'
+    | '/api/public/v1/methodology.json'
+    | '/api/public/v1/risk-factors.json'
+    | '/api/public/v1/timeseries.json'
+    | '/api/public/v1/totals.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -315,6 +390,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/privacidad'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/a/$publicId'
@@ -331,6 +407,12 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
+    | '/api/public/v1/aggregates.json'
+    | '/api/public/v1/index.json'
+    | '/api/public/v1/methodology.json'
+    | '/api/public/v1/risk-factors.json'
+    | '/api/public/v1/timeseries.json'
+    | '/api/public/v1/totals.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -345,6 +427,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/privacidad'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/a/$publicId'
@@ -361,6 +444,12 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
+    | '/api/public/v1/aggregates.json'
+    | '/api/public/v1/index.json'
+    | '/api/public/v1/methodology.json'
+    | '/api/public/v1/risk-factors.json'
+    | '/api/public/v1/timeseries.json'
+    | '/api/public/v1/totals.json'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -376,6 +465,7 @@ export interface RootRouteChildren {
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   MisReportesRoute: typeof MisReportesRoute
+  PrivacidadRoute: typeof PrivacidadRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   APublicIdRoute: typeof APublicIdRoute
@@ -392,6 +482,12 @@ export interface RootRouteChildren {
   LovableCronFunnelAlertRoute: typeof LovableCronFunnelAlertRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   VoluntariosPanelTokenRoute: typeof VoluntariosPanelTokenRoute
+  ApiPublicV1AggregatesDotjsonRoute: typeof ApiPublicV1AggregatesDotjsonRoute
+  ApiPublicV1IndexDotjsonRoute: typeof ApiPublicV1IndexDotjsonRoute
+  ApiPublicV1MethodologyDotjsonRoute: typeof ApiPublicV1MethodologyDotjsonRoute
+  ApiPublicV1RiskFactorsDotjsonRoute: typeof ApiPublicV1RiskFactorsDotjsonRoute
+  ApiPublicV1TimeseriesDotjsonRoute: typeof ApiPublicV1TimeseriesDotjsonRoute
+  ApiPublicV1TotalsDotjsonRoute: typeof ApiPublicV1TotalsDotjsonRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -413,6 +509,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mis-reportes': {
@@ -597,6 +700,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/totals.json': {
+      id: '/api/public/v1/totals.json'
+      path: '/api/public/v1/totals.json'
+      fullPath: '/api/public/v1/totals.json'
+      preLoaderRoute: typeof ApiPublicV1TotalsDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/timeseries.json': {
+      id: '/api/public/v1/timeseries.json'
+      path: '/api/public/v1/timeseries.json'
+      fullPath: '/api/public/v1/timeseries.json'
+      preLoaderRoute: typeof ApiPublicV1TimeseriesDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/risk-factors.json': {
+      id: '/api/public/v1/risk-factors.json'
+      path: '/api/public/v1/risk-factors.json'
+      fullPath: '/api/public/v1/risk-factors.json'
+      preLoaderRoute: typeof ApiPublicV1RiskFactorsDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/methodology.json': {
+      id: '/api/public/v1/methodology.json'
+      path: '/api/public/v1/methodology.json'
+      fullPath: '/api/public/v1/methodology.json'
+      preLoaderRoute: typeof ApiPublicV1MethodologyDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/index.json': {
+      id: '/api/public/v1/index.json'
+      path: '/api/public/v1/index.json'
+      fullPath: '/api/public/v1/index.json'
+      preLoaderRoute: typeof ApiPublicV1IndexDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/aggregates.json': {
+      id: '/api/public/v1/aggregates.json'
+      path: '/api/public/v1/aggregates.json'
+      fullPath: '/api/public/v1/aggregates.json'
+      preLoaderRoute: typeof ApiPublicV1AggregatesDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -608,6 +753,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   MisReportesRoute: MisReportesRoute,
+  PrivacidadRoute: PrivacidadRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   APublicIdRoute: APublicIdRoute,
@@ -624,6 +770,12 @@ const rootRouteChildren: RootRouteChildren = {
   LovableCronFunnelAlertRoute: LovableCronFunnelAlertRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   VoluntariosPanelTokenRoute: VoluntariosPanelTokenRoute,
+  ApiPublicV1AggregatesDotjsonRoute: ApiPublicV1AggregatesDotjsonRoute,
+  ApiPublicV1IndexDotjsonRoute: ApiPublicV1IndexDotjsonRoute,
+  ApiPublicV1MethodologyDotjsonRoute: ApiPublicV1MethodologyDotjsonRoute,
+  ApiPublicV1RiskFactorsDotjsonRoute: ApiPublicV1RiskFactorsDotjsonRoute,
+  ApiPublicV1TimeseriesDotjsonRoute: ApiPublicV1TimeseriesDotjsonRoute,
+  ApiPublicV1TotalsDotjsonRoute: ApiPublicV1TotalsDotjsonRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
