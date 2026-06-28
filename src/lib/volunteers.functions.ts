@@ -203,6 +203,8 @@ const signupSchema = z
         message: "invalid_phone",
       }),
     email: z.string().trim().email().max(255),
+    licenseNumber: z.string().trim().max(40).optional().default(""),
+    credentialPath: z.string().trim().max(300).optional().default(""),
     states: z
       .array(z.string().trim())
       .min(1)
@@ -217,6 +219,130 @@ const signupSchema = z
     { message: "organization_required", path: ["organization"] },
   );
 
+/** Free webmail domains that don't add professional-identity signal. */
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com",
+  "hotmail.com",
+  "yahoo.com",
+  "yahoo.es",
+  "outlook.com",
+  "outlook.es",
+  "icloud.com",
+  "live.com",
+  "proton.me",
+  "protonmail.com",
+]);
+
+/**
+ * Deterministic, automated pre-checks run at signup. Produces a 0–100 trust
+ * score and a list of human-readable flags the admin can review before
+ * approving. No external registry exists for Venezuelan engineers (CIV), so we
+ * score the signals we *can* verify: a plausible license number, an uploaded
+ * credential document, and a non-free email domain.
+ */
+export function runValidationPrechecks(input: {
+  licenseNumber: string;
+  email: string;
+  hasCredential: boolean;
+  volunteerType: VolunteerType;
+}): { score: number; flags: string[] } {
+  const flags: string[] = [];
+  let score = 0;
+
+  const lic = input.licenseNumber.replace(/[^0-9a-zA-Z]/g, "");
+  if (!lic) {
+    flags.push("no_license");
+  } else if (!/^[A-Za-z]{0,4}\d{3,8}$/.test(lic)) {
+    flags.push("license_format");
+    score += 10;
+  } else {
+    score += 35;
+  }
+
+  if (input.hasCredential) {
+    score += 40;
+  } else {
+    flags.push("no_credential");
+  }
+
+  const domain = input.email.split("@")[1]?.toLowerCase() ?? "";
+  if (domain && !FREE_EMAIL_DOMAINS.has(domain)) {
+    score += 15;
+  } else {
+    flags.push("free_email");
+  }
+
+  if (input.volunteerType === "organization") score += 10;
+
+  return { score: Math.min(100, score), flags };
+}
+
+const credentialUploadSchema = z.object({
+  dataUrl: z.string().trim().min(16).max(8_000_000),
+  filename: z.string().trim().max(160).optional().default(""),
+});
+
+/** Decode a data: URL into raw bytes + content type (credentials/images/PDF). */
+function decodeDataUrl(
+  dataUrl: string,
+): { buffer: Uint8Array; contentType: string; ext: string } | null {
+  const match = /^data:([^;]+);base64,(.*)$/s.exec(dataUrl);
+  if (!match) return null;
+  const contentType = match[1];
+  const allowed: Record<string, string> = {
+    "application/pdf": "pdf",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/heic": "heic",
+  };
+  const ext = allowed[contentType];
+  if (!ext) return null;
+  try {
+    const binary = atob(match[2]);
+    const buffer = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) buffer[i] = binary.charCodeAt(i);
+    return { buffer, contentType, ext };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Upload a volunteer credential document to the private engineer-credentials
+ * bucket BEFORE the signup row exists. Returns the storage path to attach to
+ * the signup. Public (unauthenticated) but service-role gated and validated.
+ */
+export const uploadEngineerCredential = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => credentialUploadSchema.parse(data))
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; path?: string; reason?: string }> => {
+      const decoded = decodeDataUrl(data.dataUrl);
+      if (!decoded) return { ok: false, reason: "invalid_file" };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const path = `signups/${crypto.randomUUID()}.${decoded.ext}`;
+        const { error } = await supabaseAdmin.storage
+          .from("engineer-credentials")
+          .upload(path, decoded.buffer, {
+            contentType: decoded.contentType,
+            upsert: false,
+          });
+        if (error) {
+          console.error("[volunteers] uploadEngineerCredential", error);
+          return { ok: false, reason: "upload_failed" };
+        }
+        return { ok: true, path };
+      } catch (e) {
+        console.error("[volunteers] uploadEngineerCredential failed", e);
+        return { ok: false, reason: "error" };
+      }
+    },
+  );
+
 export const submitEngineerSignup = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => signupSchema.parse(data))
   .handler(async ({ data }): Promise<{ ok: boolean }> => {
@@ -224,12 +350,24 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
+
+      const checks = runValidationPrechecks({
+        licenseNumber: data.licenseNumber,
+        email: data.email,
+        hasCredential: !!data.credentialPath,
+        volunteerType: data.volunteerType,
+      });
+
       const { error } = await supabaseAdmin.from("volunteer_engineers").insert({
         volunteer_type: data.volunteerType,
         name: data.name,
         organization: data.organization || null,
         whatsapp: data.whatsapp,
         email: data.email || null,
+        license_number: data.licenseNumber || null,
+        credential_path: data.credentialPath || null,
+        trust_score: checks.score,
+        trust_flags: checks.flags,
         states: data.states,
         specialization: data.specialization || null,
         note: data.note || null,
@@ -255,6 +393,10 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
             contactName: data.name,
             whatsapp: data.whatsapp,
             email: data.email || "",
+            license: data.licenseNumber || "",
+            trustScore: String(checks.score),
+            trustFlags: checks.flags.join(", "),
+            hasCredential: data.credentialPath ? "Sí" : "No",
             states: stateNames || "—",
             specialization: data.specialization || "",
             note: data.note || "",
@@ -272,6 +414,7 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
       return { ok: false };
     }
   });
+
 
 // ---------------------------------------------------------------------------
 // Approved engineer directory for a given estado (public read, brokered)
