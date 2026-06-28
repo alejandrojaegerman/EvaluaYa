@@ -49,10 +49,13 @@ import {
   type RiskFactors,
   type TimeseriesPoint,
 } from "@/lib/stats.functions";
+import { rankMunicipios, rankStates } from "@/lib/impact";
 import {
+  ESTADO_NAMES,
   ESTADOS,
   estadoSlug,
   getEstado,
+  municipiosFor,
   outlinePath,
   projectToSvg,
   resolveMunicipio,
