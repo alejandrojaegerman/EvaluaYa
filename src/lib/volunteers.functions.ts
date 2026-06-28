@@ -1130,7 +1130,7 @@ export const adminListEngineers = createServerFn({ method: "POST" })
         const { data: rows, error } = await supabaseAdmin
           .from("volunteer_engineers")
           .select(
-            "id, name, organization, whatsapp, email, states, specialization, note, status, access_token, created_at",
+            "id, name, organization, whatsapp, email, states, specialization, note, status, access_token, created_at, license_number, credential_path, trust_score, trust_flags",
           )
           .order("created_at", { ascending: false });
         if (error || !rows) return { ok: true, engineers: [] };
@@ -1148,6 +1148,10 @@ export const adminListEngineers = createServerFn({ method: "POST" })
             status: r.status as AdminEngineer["status"],
             accessToken: r.access_token,
             createdAt: r.created_at,
+            licenseNumber: r.license_number ?? null,
+            credentialPath: r.credential_path ?? null,
+            trustScore: r.trust_score ?? 0,
+            trustFlags: (r.trust_flags as string[] | null) ?? [],
           })),
         };
       } catch (e) {
