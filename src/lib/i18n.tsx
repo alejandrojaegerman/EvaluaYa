@@ -759,6 +759,7 @@ const es: Dict = {
 
   "nav.methodology": "Metodología",
   "home.methodologyLink": "Cómo se calcula el resultado",
+  "help.tremorGuideLink": "Qué hacer después de un temblor",
 
   "methodology.title": "Cómo funciona EvalúaYa",
   "methodology.subtitle":
