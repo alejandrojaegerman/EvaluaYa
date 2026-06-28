@@ -598,7 +598,27 @@ function TierBadge({ tier }: { tier: RecognitionTier }) {
 }
 
 
+/** Compact one-line social proof shown under the hero; hidden when empty. */
+function VerifiedCount({ engineers }: { engineers: VerifiedEngineer[] }) {
+  const { t } = useLang();
+  const count = engineers.length;
+  if (count === 0) return null;
+
+  const label =
+    count === 1
+      ? t("vol.verifiedCountOne").replace("{n}", String(count))
+      : t("vol.verifiedCountMany").replace("{n}", String(count));
+
+  return (
+    <div className="mt-4 flex items-center gap-2 rounded-full border border-primary/20 bg-secondary/40 px-4 py-2 text-sm font-semibold text-primary">
+      <ShieldCheck className="size-4 shrink-0" aria-hidden />
+      <span>{label}</span>
+    </div>
+  );
+}
+
 function VerifiedEngineers({
+
   engineers,
 }: {
   engineers: VerifiedEngineer[];
