@@ -917,6 +917,24 @@ const es: Dict = {
   "vol.orgSpecialization": "Áreas de especialización / servicios (opcional)",
   "vol.orgRequired": "Indica el nombre de la organización.",
 
+  // Verified engineers showcase
+  "vol.verifiedTitle": "Ingenieros verificados",
+  "vol.verifiedCountOne": "{n} ingeniero u organización verificada",
+  "vol.verifiedCountMany": "{n} ingenieros y organizaciones verificadas",
+  "vol.verifiedSubtitle":
+    "Profesionales y organizaciones que ya revisamos y se sumaron a la red.",
+  "vol.verifiedEmptyTitle": "Sé el primero",
+  "vol.verifiedEmptyBody":
+    "Aún no hay ingenieros verificados. Súmate hoy y aparece aquí cuando validemos tu solicitud.",
+  "vol.individualLabel": "Ingeniero",
+  "vol.organizationLabel": "Organización",
+  "vol.coversStates": "Cubre",
+  "vol.residentNoteTitle": "¿Necesitas un ingeniero?",
+  "vol.residentNoteBody":
+    "Completa tu evaluación y, al final, podrás solicitar una conexión con un ingeniero verificado.",
+  "vol.residentNoteCta": "Iniciar evaluación",
+
+
   // Engineer panel
   "panel.title": "Panel de ingeniero voluntario",
   "panel.welcome": "Hola",
