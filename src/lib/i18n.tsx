@@ -1739,6 +1739,9 @@ const en: Dict = {
   "footer.note":
     "Anonymized, open data · Community-built open-source project · Made with ❤️ for Venezuela 🇻🇪",
   "footer.evaluate": "Evaluate",
+  "footer.contact": "Contact",
+  "contact.email": "contacto@evaluaya.app",
+  "contact.subject": "Inquiry — EvalúaYa",
 
 
   "data.title": "Data room",
