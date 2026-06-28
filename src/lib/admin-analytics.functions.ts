@@ -376,3 +376,246 @@ export const adminGetBuildingClusters = createServerFn({ method: "POST" })
       }
     },
   );
+
+// ---------------------------------------------------------------------------
+// Evaluation quality & completeness scorecard (Goal 1).
+// ---------------------------------------------------------------------------
+
+export type QualityMetrics = {
+  total: number;
+  withPhotos: number;
+  noPhotos: number;
+  mostlyUnsure: number;
+  thin: number;
+  missingLocation: number;
+  missingBuilding: number;
+  missingIntensity: number;
+  complete: number;
+  professional: number;
+  verified: number;
+  unverifiedHigh: number;
+  lowQuality: number;
+};
+
+const EMPTY_QUALITY: QualityMetrics = {
+  total: 0,
+  withPhotos: 0,
+  noPhotos: 0,
+  mostlyUnsure: 0,
+  thin: 0,
+  missingLocation: 0,
+  missingBuilding: 0,
+  missingIntensity: 0,
+  complete: 0,
+  professional: 0,
+  verified: 0,
+  unverifiedHigh: 0,
+  lowQuality: 0,
+};
+
+export const adminGetQualityMetrics = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => adminSchema.parse(data))
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; quality: QualityMetrics }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false, quality: EMPTY_QUALITY };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: row, error } = await supabaseAdmin.rpc(
+          "get_admin_quality_metrics",
+        );
+        if (error) {
+          console.error("[admin-analytics] quality metrics", error);
+          return { ok: false, quality: EMPTY_QUALITY };
+        }
+        const q = (row ?? {}) as Partial<QualityMetrics>;
+        return {
+          ok: true,
+          quality: { ...EMPTY_QUALITY, ...q },
+        };
+      } catch (e) {
+        console.error("[admin-analytics] adminGetQualityMetrics failed", e);
+        return { ok: false, quality: EMPTY_QUALITY };
+      }
+    },
+  );
+
+// ---------------------------------------------------------------------------
+// Flagged-report worklist (Goal 1) — reports that need manual oversight.
+// ---------------------------------------------------------------------------
+
+export type FlaggedFilter =
+  | "all"
+  | "no_photos"
+  | "mostly_unsure"
+  | "thin"
+  | "missing_location"
+  | "unverified_high";
+
+export type FlaggedReport = {
+  publicId: string;
+  createdAt: string;
+  riskLevel: "green" | "yellow" | "orange" | "red";
+  reportType: string | null;
+  state: string;
+  municipality: string;
+  buildingType: string | null;
+  answerCount: number;
+  photoCount: number;
+  unsureCount: number;
+  flaggedCount: number;
+  verified: boolean;
+  noPhotos: boolean;
+  mostlyUnsure: boolean;
+  thin: boolean;
+  missingLocation: boolean;
+  unverifiedHigh: boolean;
+};
+
+const flaggedSchema = z.object({
+  adminSecret: z.string().min(1).max(256),
+  filter: z
+    .enum([
+      "all",
+      "no_photos",
+      "mostly_unsure",
+      "thin",
+      "missing_location",
+      "unverified_high",
+    ])
+    .default("all"),
+  limit: z.number().int().min(1).max(200).optional(),
+});
+
+export const adminGetFlaggedReports = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => flaggedSchema.parse(data))
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; reports: FlaggedReport[] }> => {
+      if (!adminOk(data.adminSecret)) return { ok: false, reports: [] };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: rows, error } = await supabaseAdmin.rpc(
+          "get_admin_flagged_reports",
+          { _filter: data.filter, _limit: data.limit ?? 50 },
+        );
+        if (error) {
+          console.error("[admin-analytics] flagged reports", error);
+          return { ok: false, reports: [] };
+        }
+        const reports: FlaggedReport[] = (rows ?? []).map((r) => ({
+          publicId: r.public_id,
+          createdAt: String(r.created_at),
+          riskLevel: (r.risk_level ?? "green") as
+            | "green"
+            | "yellow"
+            | "orange"
+            | "red",
+          reportType: r.report_type ?? null,
+          state: r.state ?? "Desconocido",
+          municipality: r.municipality ?? "Desconocido",
+          buildingType: r.building_type ?? null,
+          answerCount: r.answer_count ?? 0,
+          photoCount: r.photo_count ?? 0,
+          unsureCount: r.unsure_count ?? 0,
+          flaggedCount: r.flagged_count ?? 0,
+          verified: Boolean(r.verified),
+          noPhotos: Boolean(r.no_photos),
+          mostlyUnsure: Boolean(r.mostly_unsure),
+          thin: Boolean(r.thin),
+          missingLocation: Boolean(r.missing_location),
+          unverifiedHigh: Boolean(r.unverified_high),
+        }));
+        return { ok: true, reports };
+      } catch (e) {
+        console.error("[admin-analytics] adminGetFlaggedReports failed", e);
+        return { ok: false, reports: [] };
+      }
+    },
+  );
+
+// ---------------------------------------------------------------------------
+// Verification metrics (Goal 1) — professional/verified share + verdicts.
+// ---------------------------------------------------------------------------
+
+export type VerificationMetrics = {
+  total: number;
+  professional: number;
+  selfAssessed: number;
+  verified: number;
+  agree: number;
+  adjust: number;
+  unverifiedHigh: number;
+  unverifiedHighList: Array<{
+    publicId: string;
+    createdAt: string;
+    riskLevel: "green" | "yellow" | "orange" | "red";
+    state: string;
+    municipality: string;
+  }>;
+};
+
+const EMPTY_VERIFICATION: VerificationMetrics = {
+  total: 0,
+  professional: 0,
+  selfAssessed: 0,
+  verified: 0,
+  agree: 0,
+  adjust: 0,
+  unverifiedHigh: 0,
+  unverifiedHighList: [],
+};
+
+export const adminGetVerificationMetrics = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => adminSchema.parse(data))
+  .handler(
+    async ({
+      data,
+    }): Promise<{ ok: boolean; verification: VerificationMetrics }> => {
+      if (!adminOk(data.adminSecret))
+        return { ok: false, verification: EMPTY_VERIFICATION };
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: row, error } = await supabaseAdmin.rpc(
+          "get_admin_verification_metrics",
+        );
+        if (error) {
+          console.error("[admin-analytics] verification metrics", error);
+          return { ok: false, verification: EMPTY_VERIFICATION };
+        }
+        const v = (row ?? {}) as Partial<VerificationMetrics> & {
+          unverifiedHighList?: unknown;
+        };
+        const list = Array.isArray(v.unverifiedHighList)
+          ? (v.unverifiedHighList as Array<Record<string, unknown>>).map(
+              (x) => ({
+                publicId: String(x.public_id ?? ""),
+                createdAt: String(x.created_at ?? ""),
+                riskLevel: (x.risk_level ?? "red") as
+                  | "green"
+                  | "yellow"
+                  | "orange"
+                  | "red",
+                state: String(x.state ?? "Desconocido"),
+                municipality: String(x.municipality ?? "Desconocido"),
+              }),
+            )
+          : [];
+        return {
+          ok: true,
+          verification: {
+            ...EMPTY_VERIFICATION,
+            ...v,
+            unverifiedHighList: list,
+          },
+        };
+      } catch (e) {
+        console.error("[admin-analytics] adminGetVerificationMetrics failed", e);
+        return { ok: false, verification: EMPTY_VERIFICATION };
+      }
+    },
+  );
