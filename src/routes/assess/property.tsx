@@ -225,6 +225,12 @@ function PropertyStep() {
   }
 
   const municipioOptions = municipiosFor(state);
+  // Impact-ordered grouping: most-affected areas first, full list below.
+  const stateGroups = splitFeatured(ESTADO_NAMES, ranking.featuredStates);
+  const muniGroups = splitFeatured(
+    municipioOptions,
+    state ? ranking.featuredMunicipios[state] : undefined,
+  );
   // Required: either a real municipio is selected, or the resident chose "not sure".
   const municipalitySatisfied = municipality.trim() !== "" || municipalityUnsure;
 
