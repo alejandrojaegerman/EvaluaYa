@@ -20,7 +20,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { translate, useLang } from "@/lib/i18n";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, contactMailto } from "@/lib/site";
 
 const FAQ_KEYS = [
   "free",
