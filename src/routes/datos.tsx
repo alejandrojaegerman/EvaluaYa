@@ -840,6 +840,106 @@ function DataRoomPage() {
   );
 }
 
+function OpenDataSection() {
+  const { t } = useLang();
+  const endpoints: Array<{ path: string; label: string }> = [
+    { path: "/api/public/v1/aggregates.json", label: t("data.api.ep.aggregates") },
+    { path: "/api/public/v1/totals.json", label: t("data.api.ep.totals") },
+    { path: "/api/public/v1/timeseries.json", label: t("data.api.ep.timeseries") },
+    { path: "/api/public/v1/risk-factors.json", label: t("data.api.ep.riskFactors") },
+    { path: "/api/public/v1/methodology.json", label: t("data.api.ep.methodology") },
+  ];
+  const example = `${API_BASE}/aggregates.json?state=Miranda`;
+  const copyAttribution = () => {
+    navigator.clipboard
+      ?.writeText(t("data.api.attribution"))
+      .then(() => toast.success(t("data.api.attributionLabel")))
+      .catch(() => {});
+  };
+
+  return (
+    <section className="mt-10 rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="flex items-center gap-2">
+        <Code2 className="size-4 text-muted-foreground" aria-hidden />
+        <h2 className="font-display text-lg font-bold">{t("data.api.title")}</h2>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {t("data.api.body")}
+      </p>
+
+      <h3 className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {t("data.api.endpointsTitle")}
+      </h3>
+      <ul className="mt-2 space-y-2">
+        {endpoints.map((ep) => (
+          <li
+            key={ep.path}
+            className="rounded-xl border border-border bg-muted/30 p-3"
+          >
+            <a
+              href={ep.path}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all font-mono text-xs text-primary hover:underline"
+            >
+              {ep.path}
+            </a>
+            <p className="mt-1 text-xs text-muted-foreground">{ep.label}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-4 rounded-xl border border-border bg-muted/30 p-3">
+        <p className="text-xs font-semibold text-muted-foreground">
+          {t("data.api.exampleLabel")}
+        </p>
+        <code className="mt-1 block break-all font-mono text-xs">{example}</code>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-muted/30 p-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            {t("data.api.licenseLabel")}
+          </p>
+          <a
+            href={DATA_LICENSE.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-block text-sm font-semibold text-primary hover:underline"
+          >
+            {t("data.api.license")}
+          </a>
+        </div>
+        <div className="rounded-xl border border-border bg-muted/30 p-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            {t("data.api.attributionLabel")}
+          </p>
+          <button
+            type="button"
+            onClick={copyAttribution}
+            className="mt-1 flex w-full items-start gap-1.5 text-left text-sm hover:text-primary"
+          >
+            <Copy className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+            <span>{t("data.api.attribution")}</span>
+          </button>
+        </div>
+      </div>
+
+      <Button asChild size="lg" variant="outline" className="mt-4 w-full">
+        <a
+          href="/api/public/v1/index.json"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Code2 className="size-4" aria-hidden />
+          {t("data.api.viewManifest")}
+        </a>
+      </Button>
+    </section>
+  );
+}
+
+
 function Stat({
   value,
   label,
