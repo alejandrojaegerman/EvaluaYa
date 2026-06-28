@@ -141,11 +141,32 @@ export function DataRoomFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>{t("data.filterAll")}</SelectItem>
-              {states.map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              ))}
+              {stateGroups.featured.length > 0 ? (
+                <>
+                  <SelectGroup>
+                    <SelectLabel>{t("picker.mostAffected")}</SelectLabel>
+                    {stateGroups.featured.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>{t("picker.allAreas")}</SelectLabel>
+                    {stateGroups.rest.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </>
+              ) : (
+                stateGroups.rest.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </label>
