@@ -895,6 +895,20 @@ const es: Dict = {
   "vol.email": "Correo electrónico",
   "vol.emailHint":
     "Lo necesitamos para enviarte tu enlace de acceso cuando te validemos.",
+  "vol.verifyTitle": "Verificación profesional",
+  "vol.verifyHint":
+    "Para proteger a las familias, validamos a cada voluntario(a). Agrega tu número de colegiatura (CIV) y un documento que respalde tu profesión. Acelera tu aprobación.",
+  "vol.license": "Número de colegiatura / CIV (opcional)",
+  "vol.licensePlaceholder": "Ej.: CIV 123456",
+  "vol.credential": "Documento de respaldo (opcional)",
+  "vol.credentialCta": "Subir credencial o título",
+  "vol.credentialHint":
+    "PDF o imagen (carnet del CIV, título, constancia laboral). Máx. 6 MB. Solo lo ve nuestro equipo de validación.",
+  "vol.credentialUploading": "Subiendo…",
+  "vol.credentialUploaded": "Documento cargado",
+  "vol.credentialCta2": "Cambiar documento",
+  "vol.credentialError": "No se pudo subir el documento. Intenta de nuevo.",
+  "vol.credentialTooLarge": "El archivo supera los 6 MB.",
   "vol.states": "Estados que puedes cubrir",
   "vol.statesHint": "Selecciona uno o más.",
   "vol.specialization": "Especialidad (opcional)",
