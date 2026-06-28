@@ -1869,6 +1869,7 @@ const en: Dict = {
   "help.moreBody":
     "Reach out if you have a question that isn't covered here, or learn how we calculate results.",
   "help.contactCta": "Send a message",
+  "help.emailUs": "Email us",
 
 
   "home.timePromise": "Free · 2 minutes · no sign-up",
