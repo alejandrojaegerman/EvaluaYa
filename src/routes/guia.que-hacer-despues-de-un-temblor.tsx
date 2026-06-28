@@ -28,14 +28,14 @@ const PATH = "/guia/que-hacer-despues-de-un-temblor";
 
 const META = {
   es: {
-    title: "¿Tembló en Venezuela hoy? Qué hacer después de un temblor | EvalúaYa",
+    title: "Qué hacer después de un temblor en Venezuela | EvalúaYa",
     description:
-      "Guía rápida de seguridad tras un sismo en Venezuela: qué hacer en los primeros minutos, cómo revisar tu casa y cuándo evacuar. Pasos claros y una autoevaluación gratis.",
+      "Guía de seguridad tras un sismo en Venezuela: qué hacer en los primeros minutos, cómo revisar tu casa y cuándo evacuar. Incluye autoevaluación gratis.",
   },
   en: {
-    title: "Earthquake in Venezuela? What to do after a tremor | EvalúaYa",
+    title: "What to do after an earthquake in Venezuela | EvalúaYa",
     description:
-      "Quick safety guide after an earthquake in Venezuela: what to do in the first minutes, how to check your home, and when to evacuate. Clear steps and a free self-assessment.",
+      "Safety guide after an earthquake in Venezuela: what to do in the first minutes, how to check your home, and when to evacuate. Free self-assessment.",
   },
 };
 
