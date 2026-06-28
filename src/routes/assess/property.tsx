@@ -335,11 +335,30 @@ function PropertyStep() {
                 className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="">{t("property.statePlaceholder")}</option>
-                {ESTADO_NAMES.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                {stateGroups.featured.length > 0 ? (
+                  <>
+                    <optgroup label={t("picker.mostAffected")}>
+                      {stateGroups.featured.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label={t("picker.allAreas")}>
+                      {stateGroups.rest.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </>
+                ) : (
+                  stateGroups.rest.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
             <div>
