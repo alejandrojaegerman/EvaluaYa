@@ -150,6 +150,8 @@ function VolunteersPage() {
           organization: org,
           whatsapp,
           email,
+          licenseNumber,
+          credentialPath,
           states,
           specialization,
           note,
