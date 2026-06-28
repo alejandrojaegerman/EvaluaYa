@@ -39,6 +39,7 @@ import {
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
+import { API_BASE, DATA_LICENSE } from "@/lib/open-data";
 import { absoluteUrl, withUtm } from "@/lib/site";
 import {
   getDataRoom,
