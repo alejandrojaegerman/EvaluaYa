@@ -398,6 +398,67 @@ function VolunteersPage() {
             </p>
           </div>
 
+          {/* Validation: CIV/license + credential upload */}
+          <div className="rounded-xl border border-primary/20 bg-secondary/30 p-3.5">
+            <div className="flex items-center gap-2">
+              <BadgeCheck className="size-4 text-primary" aria-hidden />
+              <p className="text-sm font-semibold">{t("vol.verifyTitle")}</p>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("vol.verifyHint")}
+            </p>
+
+            <div className="mt-3">
+              <Label htmlFor="vol-license">{t("vol.license")}</Label>
+              <Input
+                id="vol-license"
+                value={licenseNumber}
+                onChange={(e) => setLicenseNumber(e.target.value)}
+                placeholder={t("vol.licensePlaceholder")}
+                maxLength={40}
+                className="mt-1.5"
+              />
+            </div>
+
+            <div className="mt-3">
+              <Label htmlFor="vol-credential">{t("vol.credential")}</Label>
+              <div className="mt-1.5">
+                <input
+                  id="vol-credential"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
+                  onChange={onCredentialChange}
+                  className="sr-only"
+                  disabled={uploading}
+                />
+                <Label
+                  htmlFor="vol-credential"
+                  className={cn(
+                    "flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-background px-3 py-2.5 text-sm font-medium transition-colors hover:border-primary/50",
+                    uploading && "pointer-events-none opacity-70",
+                  )}
+                >
+                  {uploading ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : credentialPath ? (
+                    <CheckCircle2 className="size-4 text-risk-green" aria-hidden />
+                  ) : (
+                    <FileUp className="size-4" aria-hidden />
+                  )}
+                  {uploading
+                    ? t("vol.credentialUploading")
+                    : credentialPath
+                      ? credentialName || t("vol.credentialUploaded")
+                      : t("vol.credentialCta")}
+                </Label>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("vol.credentialHint")}
+              </p>
+            </div>
+          </div>
+
+
           <div>
             <Label>{t("vol.states")}</Label>
             <p className="mt-0.5 text-xs text-muted-foreground">
