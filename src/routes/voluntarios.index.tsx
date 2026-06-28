@@ -52,12 +52,20 @@ export const Route = createFileRoute("/voluntarios/")({
       links: [{ rel: "canonical", href: absoluteUrl("/voluntarios") }],
     };
   },
+  loader: async () => {
+    const engineers = await getAllApprovedEngineers().catch(
+      () => [] as VerifiedEngineer[],
+    );
+    return { engineers };
+  },
   component: VolunteersPage,
 });
 
 function VolunteersPage() {
   const { t } = useLang();
+  const { engineers } = Route.useLoaderData();
   const submit = useServerFn(submitEngineerSignup);
+
 
   const [volunteerType, setVolunteerType] =
     useState<VolunteerType>("individual");
