@@ -1742,6 +1742,8 @@ const en: Dict = {
     "You're viewing a summary. Open the data room on a larger screen for filters, an expanded map and full analysis.",
   "data.openMap": "View full map",
   "data.filters": "Filters",
+  "picker.mostAffected": "Most-affected areas",
+  "picker.allAreas": "All areas",
   "data.filterState": "State",
   "data.filterMunicipality": "Municipality",
   "data.filterAll": "All",
