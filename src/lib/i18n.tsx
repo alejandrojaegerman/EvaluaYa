@@ -459,6 +459,9 @@ const es: Dict = {
   "footer.note":
     "Datos anónimos y abiertos · Proyecto comunitario de código abierto · Hecho con ❤️ para Venezuela 🇻🇪",
   "footer.evaluate": "Evaluar",
+  "footer.contact": "Contacto",
+  "contact.email": "contacto@evaluaya.app",
+  "contact.subject": "Consulta — EvalúaYa",
 
 
   "data.title": "Sala de datos",
