@@ -18,6 +18,7 @@ function buildSitemap(): string {
       priority: "0.9",
     },
     { loc: absoluteUrl("/mapa"), changefreq: "daily", priority: "0.8" },
+    { loc: absoluteUrl("/datos"), changefreq: "daily", priority: "0.8" },
     {
       loc: absoluteUrl("/voluntarios"),
       changefreq: "weekly",
