@@ -802,6 +802,27 @@ export type Database = {
           state: string
         }[]
       }
+      get_resident_request: {
+        Args: { _token: string }
+        Returns: {
+          ai_risk_level: string
+          assessment_public_id: string
+          claimed_at: string
+          created_at: string
+          engineer_name: string
+          engineer_note: string
+          engineer_verdict: string
+          municipality: string
+          prior_risk_level: string
+          progress_stage: string
+          progress_updated_at: string
+          report_type: string
+          resident_confirmed_at: string
+          risk_level: string
+          state: string
+          status: string
+        }[]
+      }
       get_risk_factors: {
         Args: { _municipality?: string; _state?: string }
         Returns: {
@@ -843,6 +864,7 @@ export type Database = {
           volunteer_type: string
         }[]
       }
+      mark_request_reminded: { Args: { _id: string }; Returns: undefined }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -859,6 +881,11 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      reclaim_stalled_request: { Args: { _id: string }; Returns: undefined }
+      resident_update_request: {
+        Args: { _confirm: boolean; _token: string }
+        Returns: boolean
       }
     }
     Enums: {
