@@ -44,17 +44,20 @@ export const submitFeedback = createServerFn({ method: "POST" })
         return { ok: false };
       }
 
-      // Notify the site owner (best-effort — never blocks the submission).
+      // Notify the site team in Slack (best-effort — never blocks submission).
       try {
-        const { sendSystemEmail } = await import("./notify-email.server");
-        await sendSystemEmail({
-          templateName: "feedback-notification",
-          templateData: {
-            message: data.message,
-            email: data.email ?? "",
-            page: data.page || "—",
-            language: data.language,
-          },
+        const { sendSlackNotification } = await import("./slack-notify.server");
+        await sendSlackNotification({
+          emoji: "💬",
+          title: "Nuevo comentario / feedback",
+          fields: [
+            { label: "Mensaje", value: data.message },
+            { label: "Email", value: data.email ?? "—" },
+            { label: "Página", value: data.page || "—" },
+            { label: "Idioma", value: data.language },
+          ],
+          url: "/admin",
+          buttonLabel: "Abrir panel admin",
         });
       } catch (notifyErr) {
         console.error("[feedback] notification failed", notifyErr);

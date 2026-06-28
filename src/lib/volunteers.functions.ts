@@ -378,30 +378,33 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
         return { ok: false };
       }
 
-      // Notify the site owner (best-effort — never blocks the signup).
+      // Notify the site team in Slack (best-effort — never blocks the signup).
       try {
-        const { sendSystemEmail } = await import("./notify-email.server");
+        const { sendSlackNotification } = await import("./slack-notify.server");
         const stateNames = data.states
           .map((s) => ESTADO_NAMES.find((n) => n === s) ?? s)
           .join(", ");
-        await sendSystemEmail({
-          templateName: "volunteer-signup-notification",
-          templateData: {
-            volunteerType: data.volunteerType,
-            name: data.name,
-            organization: data.organization || "",
-            contactName: data.name,
-            whatsapp: data.whatsapp,
-            email: data.email || "",
-            license: data.licenseNumber || "",
-            trustScore: String(checks.score),
-            trustFlags: checks.flags.join(", "),
-            hasCredential: data.credentialPath ? "Sí" : "No",
-            states: stateNames || "—",
-            specialization: data.specialization || "",
-            note: data.note || "",
-            adminUrl: "https://evaluaya.app/admin/voluntarios",
-          },
+        await sendSlackNotification({
+          emoji: "🙋",
+          title:
+            data.volunteerType === "organization"
+              ? "Nueva organización voluntaria"
+              : "Nuevo ingeniero voluntario",
+          context: `Confianza: ${checks.score}${
+            checks.flags.length ? ` · ${checks.flags.join(", ")}` : ""
+          }`,
+          fields: [
+            { label: "Nombre", value: data.name },
+            { label: "Organización", value: data.organization || "—" },
+            { label: "WhatsApp", value: data.whatsapp },
+            { label: "Email", value: data.email || "—" },
+            { label: "Colegiatura (CIV)", value: data.licenseNumber || "—" },
+            { label: "Credencial", value: data.credentialPath ? "Sí" : "No" },
+            { label: "Estados", value: stateNames || "—" },
+            { label: "Especialización", value: data.specialization || "—" },
+          ],
+          url: "/admin/voluntarios",
+          buttonLabel: "Revisar voluntario",
         });
       } catch (notifyErr) {
         console.error("[volunteers] signup notification failed", notifyErr);
@@ -615,23 +618,26 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] request notification failed", notifyErr);
       }
 
-      // Notify the site admin of every new help request (best-effort).
+      // Notify the site team in Slack of every new help request (best-effort).
       try {
-        const { sendSystemEmail } = await import("./notify-email.server");
+        const { sendSlackNotification, riskTag } = await import(
+          "./slack-notify.server"
+        );
         const location =
           [data.municipality, data.state].filter(Boolean).join(", ") || "—";
-        await sendSystemEmail({
-          templateName: "admin-help-new",
-          templateData: {
-            riskLevel: data.riskLevel ?? "",
-            location,
-            note: data.note || "",
-            adminUrl:
-              "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_new",
-          },
-        }).catch((err) =>
-          console.error("[volunteers] admin new-request notify failed", err),
-        );
+        await sendSlackNotification({
+          emoji: "🛠️",
+          title: "Nueva solicitud de ayuda",
+          context: "Un residente pidió apoyo de un ingeniero voluntario",
+          fields: [
+            { label: "Riesgo", value: riskTag(data.riskLevel) },
+            { label: "Ubicación", value: location },
+            { label: "Nota", value: data.note || "—" },
+          ],
+          url: "/admin/voluntarios",
+          buttonLabel: "Ir a triaje",
+          urgent: data.riskLevel === "red",
+        });
       } catch (notifyErr) {
         console.error("[volunteers] admin new-request notify failed", notifyErr);
       }
@@ -1065,7 +1071,7 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
         return { ok: false };
       }
 
-      // Notify the site admin when a request is marked resolved (best-effort).
+      // Notify the site team in Slack when a request is resolved (best-effort).
       if (data.stage === "resolved") {
         try {
           const { data: row } = await supabaseAdmin
@@ -1073,22 +1079,24 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
             .select("state, municipality, risk_level")
             .eq("id", data.requestId)
             .maybeSingle();
-          const { sendSystemEmail } = await import("./notify-email.server");
+          const { sendSlackNotification, riskTag } = await import(
+            "./slack-notify.server"
+          );
           const location =
             [row?.municipality, row?.state].filter(Boolean).join(", ") || "—";
-          await sendSystemEmail({
-            templateName: "admin-help-resolved",
-            templateData: {
-              engineerName: engineer.name ?? "",
-              riskLevel: row?.risk_level ?? "",
-              location,
-              note: data.note || "",
-              adminUrl:
-                "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_resolved",
-            },
-          }).catch((err) =>
-            console.error("[volunteers] admin resolved notify failed", err),
-          );
+          await sendSlackNotification({
+            emoji: "✅",
+            title: "Solicitud de ayuda resuelta",
+            context: "Un ingeniero voluntario cerró el caso",
+            fields: [
+              { label: "Ingeniero", value: engineer.name ?? "—" },
+              { label: "Riesgo", value: riskTag(row?.risk_level) },
+              { label: "Ubicación", value: location },
+              { label: "Nota", value: data.note || "—" },
+            ],
+            url: "/admin/voluntarios",
+            buttonLabel: "Ver en triaje",
+          });
         } catch (notifyErr) {
           console.error("[volunteers] admin resolved notify failed", notifyErr);
         }
@@ -1280,6 +1288,27 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
           token,
           idempotencyKey: `volunteer-approved-${data.id}`,
         });
+
+        // FYI post to the Slack ops feed (best-effort).
+        try {
+          const { sendSlackNotification } = await import("./slack-notify.server");
+          const stateNames = (existing?.states ?? [])
+            .map((s) => ESTADO_NAMES.find((n) => n === s) ?? s)
+            .join(", ");
+          await sendSlackNotification({
+            emoji: "🎉",
+            title: "Voluntario aprobado",
+            fields: [
+              { label: "Nombre", value: existing?.name ?? "—" },
+              { label: "Estados", value: stateNames || "—" },
+            ],
+            url: "/admin/voluntarios",
+            buttonLabel: "Ver voluntarios",
+          });
+        } catch (notifyErr) {
+          console.error("[volunteers] approved slack notify failed", notifyErr);
+        }
+
 
         return { ok: true, accessToken: token };
       } catch (e) {
