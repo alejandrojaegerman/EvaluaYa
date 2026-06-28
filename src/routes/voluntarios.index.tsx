@@ -7,8 +7,10 @@ import {
   MessageCircle,
   CheckCircle2,
   ArrowLeft,
+  ArrowRight,
   User2,
   Building2,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -23,9 +25,12 @@ import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
+  getAllApprovedEngineers,
   submitEngineerSignup,
+  type VerifiedEngineer,
   type VolunteerType,
 } from "@/lib/volunteers.functions";
+
 
 export const Route = createFileRoute("/voluntarios/")({
   head: () => {
