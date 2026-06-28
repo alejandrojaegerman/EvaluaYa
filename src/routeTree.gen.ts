@@ -23,6 +23,7 @@ import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
 import { Route as GuiaQueHacerDespuesDeUnTemblorRouteImport } from './routes/guia.que-hacer-despues-de-un-temblor'
+import { Route as GuiaFallaDeBoconoRouteImport } from './routes/guia.falla-de-bocono'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
 import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
@@ -118,6 +119,11 @@ const GuiaQueHacerDespuesDeUnTemblorRoute =
     path: '/guia/que-hacer-despues-de-un-temblor',
     getParentRoute: () => rootRouteImport,
   } as any)
+const GuiaFallaDeBoconoRoute = GuiaFallaDeBoconoRouteImport.update({
+  id: '/guia/falla-de-bocono',
+  path: '/guia/falla-de-bocono',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin': typeof AdminIndexRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/assess/checklist': typeof AssessChecklistRoute
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRoute
   '/admin/': typeof AdminIndexRoute
@@ -382,6 +391,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/guia/falla-de-bocono'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/guia/falla-de-bocono'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/assess/checklist'
     | '/assess/property'
     | '/email/unsubscribe'
+    | '/guia/falla-de-bocono'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
@@ -500,6 +512,7 @@ export interface RootRouteChildren {
   AssessChecklistRoute: typeof AssessChecklistRoute
   AssessPropertyRoute: typeof AssessPropertyRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  GuiaFallaDeBoconoRoute: typeof GuiaFallaDeBoconoRoute
   GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
   ZonaEstadoRoute: typeof ZonaEstadoRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -621,6 +634,13 @@ declare module '@tanstack/react-router' {
       path: '/guia/que-hacer-despues-de-un-temblor'
       fullPath: '/guia/que-hacer-despues-de-un-temblor'
       preLoaderRoute: typeof GuiaQueHacerDespuesDeUnTemblorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/falla-de-bocono': {
+      id: '/guia/falla-de-bocono'
+      path: '/guia/falla-de-bocono'
+      fullPath: '/guia/falla-de-bocono'
+      preLoaderRoute: typeof GuiaFallaDeBoconoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -804,6 +824,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssessChecklistRoute: AssessChecklistRoute,
   AssessPropertyRoute: AssessPropertyRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  GuiaFallaDeBoconoRoute: GuiaFallaDeBoconoRoute,
   GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
   ZonaEstadoRoute: ZonaEstadoRoute,
   AdminIndexRoute: AdminIndexRoute,
