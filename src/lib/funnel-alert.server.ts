@@ -1,10 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { sendSystemEmail } from "./notify-email.server";
+import { sendSlackNotification } from "./slack-notify.server";
 import { FUNNEL_STEPS, type FunnelMetrics, type FunnelStep } from "./funnel.functions";
 
-const ADMIN_URL =
-  "https://evaluaya.app/admin?utm_source=email&utm_medium=email&utm_campaign=funnel_alert";
 
 // How many of the most-recent complete hours count as "recent".
 const RECENT_HOURS = 3;
