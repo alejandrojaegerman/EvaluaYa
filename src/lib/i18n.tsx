@@ -60,7 +60,7 @@ const es: Dict = {
     "Revisamos su experiencia antes de aprobarlos y marcarlos como verificados.",
   "engineers.connect": "Conectamos",
   "engineers.connectDesc":
-    "Enlazamos a quienes lo piden con un ingeniero voluntario verificado, sin costo.",
+    "Cuando una familia lo solicita tras su autoevaluación, la enlazamos con un ingeniero voluntario verificado que la orienta por videollamada y, si hace falta, en persona. Sin costo.",
   "engineers.learnMore": "Conoce la red de ingenieros",
   "engineers.mapNote":
     "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado.",
@@ -881,11 +881,11 @@ const es: Dict = {
   // Volunteer landing + signup
   "vol.title": "Ingenieros voluntarios",
   "vol.subtitle":
-    "Suma tu experiencia para ayudar a familias a entender el daño en sus viviendas tras un sismo.",
+    "Iniciativa comunitaria. Cuando una familia lo solicita tras su autoevaluación, la orientas — primero por videollamada y, si hace falta, con una visita presencial.",
   "vol.how1": "Te registras con tu WhatsApp y los estados que puedes cubrir.",
   "vol.how2": "Revisamos tu solicitud y te enviamos un enlace privado.",
   "vol.how3":
-    "Recibes solicitudes de personas con resultados de riesgo en tu zona y respondes por WhatsApp.",
+    "Recibes solicitudes de familias que pidieron ayuda tras su autoevaluación. Las orientas por videollamada o WhatsApp y, si es posible, con una visita presencial.",
   "vol.formTitle": "Quiero ser voluntario",
   "vol.name": "Nombre completo",
   "vol.namePlaceholder": "Ej.: Ing. María Pérez",
