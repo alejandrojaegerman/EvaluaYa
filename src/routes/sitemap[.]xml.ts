@@ -30,6 +30,11 @@ function buildSitemap(): string {
       priority: "0.7",
     },
     { loc: absoluteUrl("/ayuda"), changefreq: "monthly", priority: "0.6" },
+    {
+      loc: absoluteUrl("/guia/que-hacer-despues-de-un-temblor"),
+      changefreq: "weekly",
+      priority: "0.8",
+    },
     { loc: absoluteUrl("/feedback"), changefreq: "monthly", priority: "0.5" },
     { loc: absoluteUrl("/privacidad"), changefreq: "yearly", priority: "0.3" },
     // Regional landing pages — one per estado.
