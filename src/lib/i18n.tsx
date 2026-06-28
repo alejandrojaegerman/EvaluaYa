@@ -2106,6 +2106,24 @@ const en: Dict = {
   "vol.orgSpecialization": "Areas of expertise / services (optional)",
   "vol.orgRequired": "Please enter the organization name.",
 
+  // Verified engineers showcase
+  "vol.verifiedTitle": "Verified engineers",
+  "vol.verifiedCountOne": "{n} verified engineer or organization",
+  "vol.verifiedCountMany": "{n} verified engineers and organizations",
+  "vol.verifiedSubtitle":
+    "Professionals and organizations we've reviewed who joined the network.",
+  "vol.verifiedEmptyTitle": "Be the first",
+  "vol.verifiedEmptyBody":
+    "No verified engineers yet. Join today and you'll appear here once we validate your request.",
+  "vol.individualLabel": "Engineer",
+  "vol.organizationLabel": "Organization",
+  "vol.coversStates": "Covers",
+  "vol.residentNoteTitle": "Need an engineer?",
+  "vol.residentNoteBody":
+    "Complete your evaluation and, at the end, you can request a connection with a verified engineer.",
+  "vol.residentNoteCta": "Start evaluation",
+
+
   "panel.title": "Volunteer engineer panel",
   "panel.welcome": "Hi",
   "panel.coverage": "Coverage",
