@@ -1,37 +1,37 @@
-## Goal
+# Update Ayuda (Help Center) content
 
-Forward the new help request — Baruta, Miranda, 🔴 red, received 9:51pm ET — to the verified (approved) engineers, including the one who didn't get the automatic email.
+The help center copy predates several shipped features. Goal: bring it current without redesigning the page. All changes are copy-only, in `src/lib/i18n.tsx` (ES + EN `help.*` keys) plus one small array edit in `src/routes/ayuda.tsx`.
 
-This is a one-time send for this single request. No change to the normal matching logic.
+## What's out of date
 
-## Why it didn't reach everyone
+1. **Risk colors show only 3 tiers.** `help.faq.resultsA` and `help.step3Desc` still say "Verde / Amarillo / Rojo". The app now uses a 4-tier taxonomy including 🟠 **Naranja / Orange (Serious)**.
+2. **No mention of requesting a verified engineer.** The app now lets residents send a help request after their assessment and get contacted by a verified volunteer engineer at no cost. There's no FAQ explaining this.
+3. **No "report only NEW damage" guidance**, which is now part of the assessment framing.
+4. **No guidance on assessing on behalf of someone else** (a neighbor or relative in a shelter), which onboarding now supports.
 
-The automatic notifier only emails approved engineers whose coverage states include the request's state (Miranda). Of the two verified engineers:
-- **Daniel Herrera Hidalgo** — covers Miranda → already received the email (confirmed "sent").
-- **Gustavo Oliveira** — covers Carabobo, Distrito Capital, La Guaira, Aragua, but **not** Miranda → correctly skipped by the matcher, so he never got it.
+## Changes
 
-## What I'll do
+### A. Fix risk-level copy (existing keys)
+- `help.faq.resultsA` (ES/EN): rewrite to 4 tiers — Verde (sin riesgo evidente), Amarillo (precaución, busca revisión), Naranja (daño serio, limita el uso y busca revisión pronto), Rojo (peligro grave, evacúa y contacta autoridades).
+- `help.step3Desc` (ES/EN): change "(Verde / Amarillo / Rojo)" to "(Verde / Amarillo / Naranja / Rojo)".
 
-1. Add a small, admin-secret-protected one-off action that:
-   - Loads the specific request `cab526f9-d061-4f93-ba3f-fbceb4ea7d5c` (Baruta / Miranda / red).
-   - Loads **all approved engineers** that have an email and a valid panel access link — regardless of coverage state.
-   - Sends each the existing `help-request-notification` email (same template the matcher uses) with their personal panel link, so they can open the panel and **claim** the request.
-   - Uses a per-engineer idempotency key (`manual-forward:<requestId>:<engineerId>`) so Daniel isn't double-sent and re-runs are safe.
+### B. Add new FAQ entries (new keys + render list)
+Add three new FAQ pairs to both language blocks in `src/lib/i18n.tsx`:
+- `help.faq.engineerQ/A` — "¿Puedo pedir que un ingeniero revise mi caso?" → after the assessment you can send a free request; a verified volunteer engineer is notified and may contact you by WhatsApp to confirm or adjust the result. Links conceptually to the results screen.
+- `help.faq.newDamageQ/A` — "¿Qué daños debo reportar?" → report only NEW damage caused by the recent quake, not pre-existing cracks, so results stay accurate.
+- `help.faq.behalfQ/A` — "¿Puedo evaluar por otra persona?" → yes, you can complete an assessment on behalf of a neighbor or relative (e.g. someone in a shelter) using what you can observe or photos they send.
 
-2. Run it once against this request.
+Then update `FAQ_KEYS` and the `faqs` array in `src/routes/ayuda.tsx` to include `engineer`, `newDamage`, `behalf` so they render in the page and in the FAQ JSON-LD schema. Order: place `engineer` after `results`, `newDamage` after `photos`, `behalf` after `signup`.
 
-3. Verify in the email send log that Gustavo's send shows `sent`, then confirm back to you.
+### C. Light wording refresh
+- `help.faq.officialA`: keep, already accurate (mentions licensed engineer + Civil Protection).
+- Verify all engineer references say "verified" (not geographic proximity), consistent with prior copy decisions.
 
-## How claiming works (so it's clear)
-
-The email contains a private panel link. The engineer opens it, sees the open request, and taps **claim** — which reveals the resident's WhatsApp and lets them report progress (Contacted → Visited → Resolved). Nothing about that changes here.
+## Out of scope
+- No layout/visual changes to the page.
+- No changes to the actual assessment, results, or engineer-request logic — copy only.
+- `public/llms.txt` already lists `/ayuda`; no change needed there.
 
 ## Technical notes
-
-- New file: a guarded server route under `src/routes/api/public/admin/forward-help-request.ts` that checks `VOLUNTEER_ADMIN_SECRET` (passed as a header), then reuses the existing `sendSystemEmail` helper and `help-request-notification` template — no new email template or infrastructure.
-- It selects approved engineers directly (not via `get_engineers_to_notify`, which filters by state), so the verified-but-uncovered engineer is included.
-- After the one-time run and verification, I'll leave the route in place only if you want a reusable "forward to all verified engineers" admin button; otherwise I'll remove it. Default: remove it to keep the app lean.
-
-## Optional follow-up (not in this change)
-
-If you'd rather Gustavo always hear about Miranda requests, the durable fix is adding Miranda to his coverage states — say the word and I'll do that separately.
+- `src/lib/i18n.tsx` has two parallel maps (ES around lines 533–577, EN around 1626–1670). Every new key must be added to BOTH or the typed `t()` lookups break.
+- `FAQ_KEYS` in `ayuda.tsx` drives both the rendered accordion and the `FAQPage` JSON-LD, so the new keys must exist before referencing them.

@@ -24,11 +24,14 @@ import { absoluteUrl } from "@/lib/site";
 const FAQ_KEYS = [
   "free",
   "signup",
+  "behalf",
   "offline",
   "results",
+  "engineer",
   "privacy",
   "save",
   "photos",
+  "newDamage",
   "official",
 ] as const;
 
@@ -100,11 +103,14 @@ function HelpPage() {
   const faqs = [
     { q: t("help.faq.freeQ"), a: t("help.faq.freeA") },
     { q: t("help.faq.signupQ"), a: t("help.faq.signupA") },
+    { q: t("help.faq.behalfQ"), a: t("help.faq.behalfA") },
     { q: t("help.faq.offlineQ"), a: t("help.faq.offlineA") },
     { q: t("help.faq.resultsQ"), a: t("help.faq.resultsA") },
+    { q: t("help.faq.engineerQ"), a: t("help.faq.engineerA") },
     { q: t("help.faq.privacyQ"), a: t("help.faq.privacyA") },
     { q: t("help.faq.saveQ"), a: t("help.faq.saveA") },
     { q: t("help.faq.photosQ"), a: t("help.faq.photosA") },
+    { q: t("help.faq.newDamageQ"), a: t("help.faq.newDamageA") },
     { q: t("help.faq.officialQ"), a: t("help.faq.officialA") },
   ];
 
