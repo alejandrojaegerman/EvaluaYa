@@ -91,6 +91,7 @@ function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
   const { estado: estadoParam, eng: engParam } = Route.useSearch();
+  const ranking = Route.useLoaderData();
 
   const [address, setAddress] = useState("");
   const [buildingName, setBuildingName] = useState("");
