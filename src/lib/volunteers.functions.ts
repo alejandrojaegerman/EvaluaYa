@@ -693,7 +693,6 @@ export const getResidentRequestStatus = createServerFn({ method: "POST" })
 const residentConfirmSchema = z.object({
   token: z.string().trim().uuid(),
   resolved: z.boolean(),
-  note: z.string().trim().max(600).optional().default(""),
 });
 
 export const residentConfirmRequest = createServerFn({ method: "POST" })
@@ -705,8 +704,7 @@ export const residentConfirmRequest = createServerFn({ method: "POST" })
       );
       const { error } = await supabaseAdmin.rpc("resident_update_request", {
         _token: data.token,
-        _resolved: data.resolved,
-        _note: data.note || null,
+        _confirm: data.resolved,
       });
       if (error) {
         console.error("[volunteers] residentConfirmRequest", error);
