@@ -425,6 +425,40 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       return { ok: false, errorCode: "generic" };
     }
 
+    // Loud Slack alert for dangerous self-evaluations (best-effort). Red pings
+    // the channel; Orange is posted without a ping.
+    if (finalRisk === "red" || finalRisk === "orange") {
+      try {
+        const { sendSlackNotification, riskTag } = await import("./slack-notify.server");
+        const location =
+          [data.property.municipality, data.property.state]
+            .map((v) => v?.trim())
+            .filter(Boolean)
+            .join(", ") || "—";
+        await sendSlackNotification({
+          emoji: finalRisk === "red" ? "🚨" : "🟠",
+          title:
+            finalRisk === "red"
+              ? "Evaluación de ALTO RIESGO (Rojo)"
+              : "Evaluación de riesgo elevado (Naranja)",
+          context:
+            reportType === "professional"
+              ? "Reporte verificado por ingeniero"
+              : "Autoevaluación de un vecino",
+          fields: [
+            { label: "Riesgo", value: riskTag(finalRisk) },
+            { label: "Ubicación", value: location },
+            { label: "Edificación", value: building?.name ?? "—" },
+          ],
+          url: `/a/${publicId}`,
+          buttonLabel: "Ver reporte",
+          urgent: finalRisk === "red",
+        });
+      } catch (notifyErr) {
+        console.error("[analyze] slack notify failed", notifyErr);
+      }
+    }
+
     return {
       ok: true,
       publicId,
