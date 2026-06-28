@@ -110,6 +110,11 @@ export type AdminEngineer = {
   status: "pending" | "approved" | "rejected";
   accessToken: string | null;
   createdAt: string;
+  /** Validation signals captured at signup. */
+  licenseNumber: string | null;
+  credentialPath: string | null;
+  trustScore: number;
+  trustFlags: string[];
 };
 
 export type AdminHelpRequest = {
@@ -134,6 +139,10 @@ export type AdminHelpRequest = {
   reportType: string | null;
   /** Claimed >24h ago with no progress beyond "claimed". */
   stalled: boolean;
+  /** How many times the request was auto-reclaimed by the completion engine. */
+  reclaimCount: number;
+  /** When the resident confirmed the issue was resolved (null = not confirmed). */
+  residentConfirmedAt: string | null;
 };
 
 export type AdminMatchingProgress = {
@@ -142,6 +151,8 @@ export type AdminMatchingProgress = {
   visited: number;
   resolved: number;
   stalled: number;
+  reclaimed: number;
+  residentConfirmed: number;
 };
 
 // ---------------------------------------------------------------------------
