@@ -815,6 +815,9 @@ function DataRoomPage() {
         </>
       )}
 
+      {/* Open data API */}
+      <OpenDataSection />
+
       {/* Closing band: institutions on one side, share + CTA on the other */}
       <section className="mt-10 grid gap-4 lg:grid-cols-2 lg:items-start">
         <InstitutionLeadForm />
