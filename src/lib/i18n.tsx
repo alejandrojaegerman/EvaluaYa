@@ -542,7 +542,7 @@ const es: Dict = {
     "Responde preguntas simples (Sí / No / No estoy seguro) área por área y, si puedes, sube una foto.",
   "help.step3Title": "3. Análisis con IA",
   "help.step3Desc":
-    "Recibes un nivel de riesgo (Verde / Amarillo / Rojo) con una explicación clara y pasos a seguir.",
+    "Recibes un nivel de riesgo (Verde / Amarillo / Naranja / Rojo) con una explicación clara y pasos a seguir.",
   "help.step4Title": "4. Guarda y comparte",
   "help.step4Desc":
     "Descarga un PDF, compártelo por WhatsApp o guárdalo para consultarlo después.",
@@ -553,12 +553,18 @@ const es: Dict = {
   "help.faq.signupQ": "¿Necesito registrarme?",
   "help.faq.signupA":
     "No. Puedes evaluar tu vivienda sin crear una cuenta. Si quieres guardar tus reportes para verlos más adelante, puedes crear una cuenta opcional con tu correo.",
+  "help.faq.behalfQ": "¿Puedo evaluar por otra persona?",
+  "help.faq.behalfA":
+    "Sí. Puedes completar una evaluación en nombre de un vecino o familiar (por ejemplo, alguien que está en un refugio) con lo que puedas observar o con fotos que te envíen.",
   "help.faq.offlineQ": "¿Funciona sin internet o con poca señal?",
   "help.faq.offlineA":
     "Sí. Puedes responder el cuestionario con poca señal; tu avance se guarda en el dispositivo y el análisis se envía cuando recuperes conexión.",
   "help.faq.resultsQ": "¿Qué significan los colores del resultado?",
   "help.faq.resultsA":
-    "Verde: sin señales de riesgo estructural evidente. Amarillo: usa el inmueble con precaución y busca revisión profesional. Rojo: posible peligro grave; evacúa y contacta a las autoridades.",
+    "Verde: sin señales de riesgo estructural evidente. Amarillo: usa el inmueble con precaución y busca una revisión profesional. Naranja: daño serio; limita el uso y busca una revisión profesional pronto. Rojo: posible peligro grave; evacúa y contacta a las autoridades.",
+  "help.faq.engineerQ": "¿Puedo pedir que un ingeniero revise mi caso?",
+  "help.faq.engineerA":
+    "Sí. Al terminar tu evaluación puedes enviar una solicitud gratuita. Un ingeniero voluntario verificado recibe el aviso y puede contactarte por WhatsApp para confirmar o ajustar el resultado, sin costo.",
   "help.faq.privacyQ": "¿Mis datos son privados?",
   "help.faq.privacyA":
     "Sí. La evaluación es anónima. No pedimos tu nombre ni datos personales para usar la app.",
@@ -568,6 +574,9 @@ const es: Dict = {
   "help.faq.photosQ": "¿Las fotos son obligatorias?",
   "help.faq.photosA":
     "No. Las fotos son opcionales, pero ayudan a que el análisis sea más preciso.",
+  "help.faq.newDamageQ": "¿Qué daños debo reportar?",
+  "help.faq.newDamageA":
+    "Reporta solo el daño nuevo causado por el sismo reciente, no las grietas o fallas que ya existían antes. Así el resultado refleja mejor el riesgo actual.",
   "help.faq.officialQ": "¿Esto reemplaza una inspección oficial?",
   "help.faq.officialA":
     "No. EvalúaYa ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil.",
