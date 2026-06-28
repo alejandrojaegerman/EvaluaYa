@@ -24,11 +24,14 @@ import { absoluteUrl } from "@/lib/site";
 const FAQ_KEYS = [
   "free",
   "signup",
+  "behalf",
   "offline",
   "results",
+  "engineer",
   "privacy",
   "save",
   "photos",
+  "newDamage",
   "official",
 ] as const;
 
