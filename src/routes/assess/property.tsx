@@ -387,11 +387,30 @@ function PropertyStep() {
                     ? t("property.municipalitySelectState")
                     : t("property.municipalityPlaceholder")}
                 </option>
-                {municipioOptions.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                {muniGroups.featured.length > 0 ? (
+                  <>
+                    <optgroup label={t("picker.mostAffected")}>
+                      {muniGroups.featured.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label={t("picker.allAreas")}>
+                      {muniGroups.rest.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </>
+                ) : (
+                  muniGroups.rest.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))
+                )}
                 {state.trim() !== "" && (
                   <option value={UNSURE_MUNICIPIO}>
                     {t("property.municipalityUnsure")}
