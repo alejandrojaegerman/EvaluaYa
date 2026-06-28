@@ -729,7 +729,11 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
         .limit(200);
       if (error) {
         console.error("[volunteers] getEngineerPanel", error);
-        return { engineer: mapEng(engineer), requests: [] };
+        return {
+          engineer: mapEng(engineer),
+          stats: emptyEngineerStats(),
+          requests: [],
+        };
       }
 
       const relevant = (rows ?? []).filter((r) => {
