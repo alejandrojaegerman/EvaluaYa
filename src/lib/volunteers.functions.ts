@@ -817,12 +817,70 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       });
 
 
-      return { engineer: mapEng(engineer), requests };
+      // Recognition + impact stats. Resolved/response data lives on closed
+      // rows we didn't fetch above, so query the engineer's full history.
+      const { data: mineRows } = await supabaseAdmin
+        .from("help_requests")
+        .select("status, progress_stage, claimed_at, progress_updated_at")
+        .eq("claimed_by", engineer.id)
+        .limit(1000);
+
+      let resolved = 0;
+      const responseSpans: number[] = [];
+      for (const r of mineRows ?? []) {
+        const isResolved =
+          r.status === "closed" || r.progress_stage === "resolved";
+        if (isResolved) resolved += 1;
+        if (r.claimed_at && r.progress_updated_at) {
+          const span =
+            (new Date(r.progress_updated_at).getTime() -
+              new Date(r.claimed_at).getTime()) /
+            1000;
+          if (span > 0) responseSpans.push(span);
+        }
+      }
+      const avgResponseSeconds =
+        responseSpans.length > 0
+          ? Math.round(
+              responseSpans.reduce((s, v) => s + v, 0) / responseSpans.length,
+            )
+          : null;
+
+      const stats: EngineerStats = {
+        resolved,
+        claimedActive: requests.filter(
+          (r) => r.claimedByMe && r.status === "claimed",
+        ).length,
+        openInArea: requests.filter((r) => r.status === "open").length,
+        avgResponseSeconds,
+        tier: recognitionTier(resolved),
+      };
+
+      return { engineer: mapEng(engineer), stats, requests };
     } catch (e) {
       console.error("[volunteers] getEngineerPanel failed", e);
       return null;
     }
   });
+
+/** Recognition tier thresholds based on lifetime resolved requests. */
+export function recognitionTier(resolved: number): RecognitionTier {
+  if (resolved >= 15) return "gold";
+  if (resolved >= 5) return "silver";
+  if (resolved >= 1) return "bronze";
+  return "none";
+}
+
+function emptyEngineerStats(): EngineerStats {
+  return {
+    resolved: 0,
+    claimedActive: 0,
+    openInArea: 0,
+    avgResponseSeconds: null,
+    tier: "none",
+  };
+}
+
 
 
 function mapEng(e: {
