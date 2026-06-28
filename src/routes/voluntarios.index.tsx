@@ -65,17 +65,18 @@ export const Route = createFileRoute("/voluntarios/")({
     };
   },
   loader: async () => {
-    const engineers = await getAllApprovedEngineers().catch(
-      () => [] as VerifiedEngineer[],
-    );
-    return { engineers };
+    const [engineers, ranking] = await Promise.all([
+      getAllApprovedEngineers().catch(() => [] as VerifiedEngineer[]),
+      getImpactRanking().catch(() => EMPTY_IMPACT_RANKING as ImpactRanking),
+    ]);
+    return { engineers, ranking };
   },
   component: VolunteersPage,
 });
 
 function VolunteersPage() {
   const { t } = useLang();
-  const { engineers } = Route.useLoaderData();
+  const { engineers, ranking } = Route.useLoaderData();
   const submit = useServerFn(submitEngineerSignup);
 
 
