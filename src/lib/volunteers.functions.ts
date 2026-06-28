@@ -270,6 +270,51 @@ export const getApprovedEngineersForState = createServerFn({ method: "POST" })
   });
 
 // ---------------------------------------------------------------------------
+// Public roster of every verified (approved) volunteer — names + org only.
+// No contact details ship to the browser. Used by the /voluntarios showcase
+// to provide social proof without exposing a way to reach engineers directly
+// (residents request a connection only after completing an evaluation).
+// ---------------------------------------------------------------------------
+
+export type VerifiedEngineer = {
+  id: string;
+  name: string;
+  organization: string | null;
+  states: string[];
+  volunteerType: VolunteerType;
+};
+
+export const getAllApprovedEngineers = createServerFn({ method: "GET" })
+  .handler(async (): Promise<VerifiedEngineer[]> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } = await supabaseAdmin
+        .from("volunteer_engineers")
+        .select("id, name, organization, states, volunteer_type")
+        .eq("status", "approved")
+        .order("created_at", { ascending: true });
+      if (error || !rows) {
+        if (error) console.error("[volunteers] getAllApprovedEngineers", error);
+        return [];
+      }
+      return rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        organization: r.organization,
+        states: r.states ?? [],
+        volunteerType:
+          (r.volunteer_type as VolunteerType | null) ?? "individual",
+      }));
+    } catch (e) {
+      console.error("[volunteers] getAllApprovedEngineers failed", e);
+      return [];
+    }
+  });
+
+
+// ---------------------------------------------------------------------------
 // Reveal a single engineer's WhatsApp — only after the resident taps to
 // connect. Keeping numbers out of the directory payload prevents bulk scraping.
 // ---------------------------------------------------------------------------
