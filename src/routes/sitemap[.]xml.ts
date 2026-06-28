@@ -31,6 +31,7 @@ function buildSitemap(): string {
     },
     { loc: absoluteUrl("/ayuda"), changefreq: "monthly", priority: "0.6" },
     { loc: absoluteUrl("/feedback"), changefreq: "monthly", priority: "0.5" },
+    { loc: absoluteUrl("/privacidad"), changefreq: "yearly", priority: "0.3" },
     // Regional landing pages — one per estado.
     ...ESTADOS.map((e) => ({
       loc: absoluteUrl(`/zona/${estadoSlug(e.name)}`),
