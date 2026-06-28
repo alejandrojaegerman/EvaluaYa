@@ -31,7 +31,7 @@ import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
 import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 import { trackStep } from "@/lib/track";
 import { SITE_URL } from "@/lib/site";
-import heroEngineer from "@/assets/hero-engineer.png";
+import heroEngineer from "@/assets/hero-engineer.webp";
 
 
 
@@ -106,8 +106,8 @@ function Index() {
           src={heroEngineer}
           alt=""
           aria-hidden
-          width={816}
-          height={816}
+          width={400}
+          height={400}
           fetchPriority="high"
           decoding="async"
           className="pointer-events-none absolute -right-6 -top-2 hidden h-44 w-44 select-none opacity-90 sm:block"
