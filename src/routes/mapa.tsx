@@ -811,10 +811,7 @@ function MapPage() {
         </>
       )}
 
-      {/* Institution lead capture — always available */}
-      <section className="mt-8">
-        <InstitutionLeadForm />
-      </section>
+
 
       {/* Spread the word — flywheel */}
       <ShareApp className="mt-6" />
