@@ -473,3 +473,53 @@ export const submitInstitutionLead = createServerFn({ method: "POST" })
       return { ok: false };
     }
   });
+
+// ---------------------------------------------------------------------------
+// Impact ranking — severity-weighted ordering of states / municipios for the
+// location pickers. Anonymized counts only, derived from the same public RPC
+// that powers the map. Returns just the "most-affected" featured names; the
+// client fills in the full inclusive list locally.
+// ---------------------------------------------------------------------------
+
+export type ImpactRanking = {
+  /** state names ordered most-affected first (score > 0, capped) */
+  featuredStates: string[];
+  /** per-state municipio names ordered most-affected first (score > 0, capped) */
+  featuredMunicipios: Record<string, string[]>;
+};
+
+export const EMPTY_IMPACT_RANKING: ImpactRanking = {
+  featuredStates: [],
+  featuredMunicipios: {},
+};
+
+export const getImpactRanking = createServerFn({ method: "GET" }).handler(
+  async (): Promise<ImpactRanking> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data, error } = await supabaseAdmin.rpc("get_damage_aggregates");
+      if (error || !data) {
+        if (error) console.error("[stats] getImpactRanking", error);
+        return EMPTY_IMPACT_RANKING;
+      }
+      const rows: AreaRow[] = data.map((r) => ({
+        state: r.state,
+        municipality: r.municipality,
+        green: r.green ?? 0,
+        yellow: r.yellow ?? 0,
+        orange: r.orange ?? 0,
+        red: r.red ?? 0,
+        total: r.total ?? 0,
+      }));
+      return {
+        featuredStates: rankStates(rows, ESTADO_NAMES),
+        featuredMunicipios: rankMunicipios(rows, municipiosFor),
+      };
+    } catch (e) {
+      console.error("[stats] getImpactRanking failed", e);
+      return EMPTY_IMPACT_RANKING;
+    }
+  },
+);
