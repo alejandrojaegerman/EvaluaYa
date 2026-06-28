@@ -5,6 +5,7 @@ import {
   ClipboardCheck,
   HelpCircle,
   LifeBuoy,
+  Mail,
   MessageSquareHeart,
   Share2,
   Sparkles,
