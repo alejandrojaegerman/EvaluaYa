@@ -1289,6 +1289,27 @@ export const adminReviewEngineer = createServerFn({ method: "POST" })
           idempotencyKey: `volunteer-approved-${data.id}`,
         });
 
+        // FYI post to the Slack ops feed (best-effort).
+        try {
+          const { sendSlackNotification } = await import("./slack-notify.server");
+          const stateNames = (existing?.states ?? [])
+            .map((s) => ESTADO_NAMES.find((n) => n === s) ?? s)
+            .join(", ");
+          await sendSlackNotification({
+            emoji: "🎉",
+            title: "Voluntario aprobado",
+            fields: [
+              { label: "Nombre", value: existing?.name ?? "—" },
+              { label: "Estados", value: stateNames || "—" },
+            ],
+            url: "/admin/voluntarios",
+            buttonLabel: "Ver voluntarios",
+          });
+        } catch (notifyErr) {
+          console.error("[volunteers] approved slack notify failed", notifyErr);
+        }
+
+
         return { ok: true, accessToken: token };
       } catch (e) {
         console.error("[volunteers] adminReviewEngineer failed", e);
