@@ -199,6 +199,13 @@ function HelpPage() {
             </Link>
           </Button>
           <Button asChild variant="outline">
+            <a href={contactMailto(t("contact.subject"))}>
+              <Mail className="size-4" />
+              {t("help.emailUs")} · {t("contact.email")}
+            </a>
+          </Button>
+
+          <Button asChild variant="outline">
             <Link to="/guia/que-hacer-despues-de-un-temblor">
               {t("help.tremorGuideLink")}
             </Link>
