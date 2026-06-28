@@ -160,7 +160,7 @@ export function QualityWatchdog({ secret }: { secret: string }) {
   }
 
   async function onCopyLink(publicId: string) {
-    const url = `https://evaluaya.app/a/${publicId}`;
+    const url = `${APP_ROOT}/a/${publicId}`;
     try {
       await navigator.clipboard.writeText(url);
       toast.success(t("dash.linkCopied"));
