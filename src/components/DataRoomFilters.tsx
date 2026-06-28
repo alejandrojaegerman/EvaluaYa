@@ -56,6 +56,8 @@ export function DataRoomFilters({
   onChange,
   availableStates,
   availableMunicipios,
+  featuredStates,
+  featuredMunicipios,
 }: {
   filters: DataFilters;
   onChange: (next: DataFilters) => void;
@@ -63,6 +65,10 @@ export function DataRoomFilters({
   availableStates?: string[];
   /** Per-state municipalities that have reports in the active range. */
   availableMunicipios?: Record<string, string[]>;
+  /** Most-affected states, impact-ordered, to surface first. */
+  featuredStates?: string[];
+  /** Most-affected municipios per state, impact-ordered. */
+  featuredMunicipios?: Record<string, string[]>;
 }) {
   const { t } = useLang();
 
@@ -83,6 +89,20 @@ export function DataRoomFilters({
       .map((m) => m.name)
       .sort((a, b) => a.localeCompare(b));
   }, [filters.state, availableMunicipios]);
+
+  const stateGroups = useMemo(
+    () => splitFeatured(states, featuredStates),
+    [states, featuredStates],
+  );
+
+  const muniGroups = useMemo(
+    () =>
+      splitFeatured(
+        municipios,
+        filters.state ? featuredMunicipios?.[filters.state] : undefined,
+      ),
+    [municipios, filters.state, featuredMunicipios],
+  );
 
 
   const ranges: RangeKey[] = ["7", "30", "90", "all"];
