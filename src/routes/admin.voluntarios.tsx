@@ -206,6 +206,7 @@ function AdminPage() {
     [engineers],
   );
 
+  const filteredRequests = useMemo(() => {
     switch (reqFilter) {
       case "open":
         return requests.filter((r) => r.status === "open");
