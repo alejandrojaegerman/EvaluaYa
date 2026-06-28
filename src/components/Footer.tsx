@@ -79,16 +79,26 @@ export function Footer() {
               )}
               <ul className="mt-3 space-y-2">
                 {col.links.map((link) => (
-                  <li key={link.to}>
-                    <Link
-                      to={link.to}
-                      className="text-sm text-foreground/80 transition-colors hover:text-foreground"
-                    >
-                      {link.label}
-                    </Link>
+                  <li key={link.label}>
+                    {link.href ? (
+                      <a
+                        href={link.href}
+                        className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.to!}
+                        className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
+
             </nav>
           ))}
         </div>
