@@ -368,6 +368,33 @@ function AdminPage() {
         </Group>
       )}
 
+      {/* Triage worklist — drive requests to completion (Goal 2) */}
+      <Group title={`${t("vadmin.triage")} (${triageRequests.length})`}>
+        <p className="-mt-1 mb-2 text-xs text-muted-foreground">
+          {t("vadmin.triageHint")}
+        </p>
+        {triageRequests.length === 0 ? (
+          <p className="text-sm text-risk-green">{t("vadmin.triageEmpty")}</p>
+        ) : (
+          <div className="space-y-3">
+            {triageRequests.map((r) => (
+              <TriageCard
+                key={r.id}
+                r={r}
+                t={t}
+                engineers={approvedEngineers}
+                busy={busy}
+                onRemind={onRemind}
+                onReclaim={onReclaim}
+                onReassign={onReassign}
+              />
+            ))}
+          </div>
+        )}
+      </Group>
+
+
+
       <Group title={`${t("admin.requests")} (${requests.length})`}>
         <div className="mb-3 flex flex-wrap gap-2">
           {(
