@@ -65,6 +65,26 @@ export function corsPreflight(): Response {
   return new Response(null, { status: 204, headers: jsonHeaders(86400) });
 }
 
+/** Parse + lightly validate the shared filter query params from a request URL. */
+export function parseFilters(url: string): {
+  state?: string;
+  municipality?: string;
+  from?: string;
+  to?: string;
+} {
+  const params = new URL(url).searchParams;
+  const clamp = (v: string | null, max: number) =>
+    v ? v.trim().slice(0, max) || undefined : undefined;
+  const date = (v: string | null) =>
+    v && /^\d{4}-\d{2}-\d{2}$/.test(v.trim()) ? v.trim() : undefined;
+  return {
+    state: clamp(params.get("state"), 120),
+    municipality: clamp(params.get("municipality"), 120),
+    from: date(params.get("from")),
+    to: date(params.get("to")),
+  };
+}
+
 // --- Methodology (machine-readable risk taxonomy + safety rules + glossary) ---
 
 const RISK_LEVELS: RiskLevel[] = ["green", "yellow", "orange", "red"];
