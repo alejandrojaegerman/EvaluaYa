@@ -31,7 +31,7 @@ import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
 import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 import { trackStep } from "@/lib/track";
 import { SITE_URL } from "@/lib/site";
-import heroEngineer from "@/assets/hero-engineer.png";
+import heroEngineer from "@/assets/hero-engineer.webp";
 
 
 
