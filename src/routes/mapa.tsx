@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { CountUp } from "@/components/CountUp";
 import { DamageMap, type MapBubble } from "@/components/DamageMap";
-import { InstitutionLeadForm } from "@/components/InstitutionLeadForm";
+
 import { Reveal } from "@/components/Reveal";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
