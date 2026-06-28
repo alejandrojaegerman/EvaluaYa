@@ -554,6 +554,28 @@ export type Database = {
           state: string
         }[]
       }
+      get_admin_flagged_reports: {
+        Args: { _filter?: string; _limit?: number }
+        Returns: {
+          answer_count: number
+          building_type: string
+          created_at: string
+          flagged_count: number
+          missing_location: boolean
+          mostly_unsure: boolean
+          municipality: string
+          no_photos: boolean
+          photo_count: number
+          public_id: string
+          report_type: string
+          risk_level: string
+          state: string
+          thin: boolean
+          unsure_count: number
+          unverified_high: boolean
+          verified: boolean
+        }[]
+      }
       get_admin_help_requests: {
         Args: { _limit?: number }
         Returns: {
@@ -601,6 +623,7 @@ export type Database = {
           total: number
         }[]
       }
+      get_admin_quality_metrics: { Args: never; Returns: Json }
       get_admin_state_reports: {
         Args: { _limit?: number; _state: string }
         Returns: {
@@ -627,6 +650,7 @@ export type Database = {
           yellow: number
         }[]
       }
+      get_admin_verification_metrics: { Args: never; Returns: Json }
       get_admin_volunteer_stats: {
         Args: never
         Returns: {
