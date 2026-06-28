@@ -618,23 +618,26 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] request notification failed", notifyErr);
       }
 
-      // Notify the site admin of every new help request (best-effort).
+      // Notify the site team in Slack of every new help request (best-effort).
       try {
-        const { sendSystemEmail } = await import("./notify-email.server");
+        const { sendSlackNotification, riskTag } = await import(
+          "./slack-notify.server"
+        );
         const location =
           [data.municipality, data.state].filter(Boolean).join(", ") || "—";
-        await sendSystemEmail({
-          templateName: "admin-help-new",
-          templateData: {
-            riskLevel: data.riskLevel ?? "",
-            location,
-            note: data.note || "",
-            adminUrl:
-              "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_new",
-          },
-        }).catch((err) =>
-          console.error("[volunteers] admin new-request notify failed", err),
-        );
+        await sendSlackNotification({
+          emoji: "🛠️",
+          title: "Nueva solicitud de ayuda",
+          context: "Un residente pidió apoyo de un ingeniero voluntario",
+          fields: [
+            { label: "Riesgo", value: riskTag(data.riskLevel) },
+            { label: "Ubicación", value: location },
+            { label: "Nota", value: data.note || "—" },
+          ],
+          url: "/admin/voluntarios",
+          buttonLabel: "Ir a triaje",
+          urgent: data.riskLevel === "red",
+        });
       } catch (notifyErr) {
         console.error("[volunteers] admin new-request notify failed", notifyErr);
       }
