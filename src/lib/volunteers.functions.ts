@@ -1071,7 +1071,7 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
         return { ok: false };
       }
 
-      // Notify the site admin when a request is marked resolved (best-effort).
+      // Notify the site team in Slack when a request is resolved (best-effort).
       if (data.stage === "resolved") {
         try {
           const { data: row } = await supabaseAdmin
@@ -1079,22 +1079,24 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
             .select("state, municipality, risk_level")
             .eq("id", data.requestId)
             .maybeSingle();
-          const { sendSystemEmail } = await import("./notify-email.server");
+          const { sendSlackNotification, riskTag } = await import(
+            "./slack-notify.server"
+          );
           const location =
             [row?.municipality, row?.state].filter(Boolean).join(", ") || "—";
-          await sendSystemEmail({
-            templateName: "admin-help-resolved",
-            templateData: {
-              engineerName: engineer.name ?? "",
-              riskLevel: row?.risk_level ?? "",
-              location,
-              note: data.note || "",
-              adminUrl:
-                "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_resolved",
-            },
-          }).catch((err) =>
-            console.error("[volunteers] admin resolved notify failed", err),
-          );
+          await sendSlackNotification({
+            emoji: "✅",
+            title: "Solicitud de ayuda resuelta",
+            context: "Un ingeniero voluntario cerró el caso",
+            fields: [
+              { label: "Ingeniero", value: engineer.name ?? "—" },
+              { label: "Riesgo", value: riskTag(row?.risk_level) },
+              { label: "Ubicación", value: location },
+              { label: "Nota", value: data.note || "—" },
+            ],
+            url: "/admin/voluntarios",
+            buttonLabel: "Ver en triaje",
+          });
         } catch (notifyErr) {
           console.error("[volunteers] admin resolved notify failed", notifyErr);
         }
