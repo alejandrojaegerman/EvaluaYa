@@ -92,7 +92,7 @@ function Index() {
   return (
     <AppShell>
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary/80 px-6 py-8 text-primary-foreground shadow-lg">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-[oklch(0.36_0.06_220)] px-6 py-8 text-primary-foreground shadow-lg">
         <img
           src={heroEngineer}
           alt=""
@@ -107,7 +107,7 @@ function Index() {
           <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
             {t("home.heroTitle")}
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-primary-foreground/85">
+          <p className="mt-3 text-sm leading-relaxed text-primary-foreground/90">
             {t("home.heroSubtitle")}
           </p>
         </div>
@@ -122,7 +122,7 @@ function Index() {
           {t("home.startCta")}
           <ArrowRight className="size-5" />
         </Button>
-        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/80">
+        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/90">
           {t("home.timePromise")}
         </p>
         <div className="relative mt-4 flex items-start gap-2 rounded-xl bg-primary-foreground/10 px-3 py-2.5 text-left text-xs leading-relaxed text-primary-foreground/90">
