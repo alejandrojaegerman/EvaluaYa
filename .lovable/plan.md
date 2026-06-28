@@ -1,53 +1,62 @@
-# Optimize the Volunteers page for sign-ups
+# Add contacto@evaluaya.app contact email
 
-## The problem
+Two parts: a one-time DNS setup you do at Cloudflare (I guide, you click), and the in-app changes (I build).
 
-Right now `/voluntarios` makes people scroll through a lot before they can act. The current order is:
+## Part 1 — Email forwarding (you do this, I guide)
 
+Lovable only *sends* email (via `notify.evaluaya.app`). To *receive* mail at `contacto@evaluaya.app`, set up free forwarding with Cloudflare Email Routing. This touches the **root `evaluaya.app`** zone and does not conflict with Lovable's `notify.` subdomain.
+
+Steps:
 ```text
-1. Hero
-2. Full verified-engineer roster (cards w/ initials, tiers, states)  ← big block, top of page
-3. Three pillars (recruit → validate → connect)
-4. Three "how it works" steps
-5. Resident note ("connect after your evaluation")
-6. Sign-up form  ← the actual goal, all the way at the bottom
+1. Ensure evaluaya.app is on Cloudflare (domain added as a zone).
+   - If your registrar manages DNS, you'd move DNS to Cloudflare (free)
+     or instead use your registrar's own forwarding / ImprovMX.
+2. Cloudflare dashboard → evaluaya.app → Email → Email Routing → Enable.
+3. Cloudflare auto-adds the required MX + TXT (SPF) records. Approve them.
+4. Under "Routing rules", add a custom address:
+      contacto@evaluaya.app  →  Destination: your-personal@inbox.com
+5. Cloudflare emails your personal inbox a verification link — click it.
+6. Send a test from another account to contacto@evaluaya.app to confirm.
+```
+Notes:
+- Keep Lovable's existing `notify.evaluaya.app` NS records untouched — Email Routing on the root zone is independent.
+- Cloudflare Email Routing is receive/forward only (inbound). Outbound app mail keeps going through Lovable. Replies you send from your personal inbox will come from your personal address unless you also configure "Send as" in your mail client.
+
+## Part 2 — Surface the address in the app (I build)
+
+Present `contacto@evaluaya.app` as a clickable link that opens the user's mail app pre-addressed with a subject, in two places.
+
+### Footer (site-wide)
+Add a small "Contact" entry to the existing Legal column (or a short contact line in the bottom bar) in `src/components/Footer.tsx`:
+```text
+Legal
+  Privacidad
+  contacto@evaluaya.app   ← mailto with prefilled subject
 ```
 
-The roster is the most "convoluted" piece — it's detailed social proof aimed at *residents*, but this page's job is to convert *engineers* into signing up. Pushing the form down and leading with a directory buries the call to action.
-
-## Recommendation: keep it, but demote it
-
-Don't delete the roster entirely — a visible community of verified engineers is real trust ("others like me already joined"). Instead:
-
-- Replace the big top block with a **single compact trust line** near the hero (e.g. "🛡️ 12 ingenieros y organizaciones ya verificados / 12 verified engineers & organizations already onboard"). One sentence, no cards.
-- Move the **full roster to the very bottom** of the page, after the form, as a showcase for anyone who scrolls.
-- When there are zero approved engineers, show nothing up top (no empty-state block) so a new community doesn't look empty — the bottom section keeps its existing empty state or is hidden.
-
-## New page order
-
+### Help / Ayuda page
+In the existing "still need help" section of `src/routes/ayuda.tsx`, add a direct email option alongside the feedback button:
 ```text
-1. Hero
-2. Compact trust line (count only; hidden when count = 0)
-3. Sign-up form  ← now high, right after the hero
-4. Three pillars (recruit → validate → connect)
-5. Three "how it works" steps
-6. Resident note ("connect after your evaluation")
-7. Full verified-engineer roster (social proof, at the bottom)
+[ Enviar comentarios ]  (existing)
+[ Escríbenos: contacto@evaluaya.app ]  ← new, mailto link
 ```
 
-This puts the form in the first screen or two, keeps the explanatory context for people who want it, and preserves the roster as closing reassurance.
+### Mailto format
+```
+mailto:contacto@evaluaya.app?subject=Consulta%20%E2%80%94%20Eval%C3%BAaYa
+```
+- ES subject: `Consulta — EvalúaYa`
+- EN subject: `Inquiry — EvalúaYa`
 
-## Implementation notes (technical)
+### Bilingual strings
+Add keys to `src/lib/i18n.tsx` (ES + EN), e.g.:
+- `footer.contact` → "Contacto" / "Contact"
+- `help.emailUs` → "Escríbenos por correo" / "Email us"
+- `contact.subject` → "Consulta — EvalúaYa" / "Inquiry — EvalúaYa"
 
-- File: `src/routes/voluntarios.index.tsx` only. No backend, schema, or server-fn changes — `getAllApprovedEngineers` / `getImpactRanking` loader stays the same.
-- Split the existing `VerifiedEngineers` component into two pieces:
-  - A small `VerifiedCount` inline element (icon + localized count) rendered right under the hero, returning `null` when `engineers.length === 0`.
-  - The existing roster grid (`<ul>` of cards) kept as `VerifiedEngineers`, rendered once at the bottom after the `</form>`.
-- Reorder the JSX in `VolunteersPage`: move the `<form>` block up to immediately follow the hero/trust line, and move `<VerifiedEngineers …>` to the end.
-- Reuse existing i18n keys (`vol.verifiedCountOne` / `vol.verifiedCountMany`, `vol.verifiedTitle`, `vol.verifiedSubtitle`). Add at most one new key pair if a distinct short trust-line label is needed (`vol.trustLine` ES/EN); otherwise reuse the count strings.
-- Keep all `TierBadge` / `initials` helpers; nothing about an individual card changes.
-- Verify with a typecheck and a quick mobile-viewport screenshot that the form now sits near the top and the roster renders at the bottom.
+The existing Privacy page references stay as-is (already correct).
 
-## Open choice
-
-I recommend **demote + move to bottom** (above). If you'd rather **remove the roster entirely**, I'll drop both the top block and the bottom section and keep only the compact count line — say the word and I'll adjust the plan.
+## Technical notes
+- No backend or schema changes; pure presentation + i18n.
+- A reusable subject-building helper keeps the mailto consistent across both spots.
+- Address is rendered as a normal `<a href="mailto:...">`, styled to match existing footer/help links.
