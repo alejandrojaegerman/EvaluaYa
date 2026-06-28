@@ -1593,7 +1593,7 @@ export const adminReassignRequest = createServerFn({ method: "POST" })
             riskLevel: hr.risk_level ?? "",
             location,
             note: hr.note || "",
-            panelUrl: engineerPanelUrl(eng.access_token, "help_request"),
+            panelUrl: engineerPanelUrl(eng.access_token, "help_reminder"),
           },
         }).catch((err) =>
           console.error("[volunteers] reassign notify failed", err),
@@ -1674,7 +1674,7 @@ export const adminCreateReviewRequest = createServerFn({ method: "POST" })
                   location,
                   note: "Revisión profesional solicitada por el equipo.",
                   panelUrl: eng.access_token
-                    ? engineerPanelUrl(eng.access_token, "help_request")
+                    ? engineerPanelUrl(eng.access_token, "help_reminder")
                     : "https://evaluaya.app/voluntarios",
                 },
               }).catch((err) =>
