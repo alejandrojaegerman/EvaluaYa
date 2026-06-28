@@ -191,11 +191,32 @@ export function DataRoomFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>{t("data.filterAll")}</SelectItem>
-              {municipios.map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              ))}
+              {muniGroups.featured.length > 0 ? (
+                <>
+                  <SelectGroup>
+                    <SelectLabel>{t("picker.mostAffected")}</SelectLabel>
+                    {muniGroups.featured.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>{t("picker.allAreas")}</SelectLabel>
+                    {muniGroups.rest.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </>
+              ) : (
+                muniGroups.rest.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </label>
