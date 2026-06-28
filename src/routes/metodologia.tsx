@@ -24,7 +24,7 @@ export const Route = createFileRoute("/metodologia")({
   head: () => {
     const title = "Cómo funciona — Metodología y credibilidad | EvalúaYa";
     const description =
-      "Cómo EvalúaYa calcula el resultado: reglas de seguridad tipo ATC-20, intensidad sísmica USGS ShakeMap y análisis con IA. Además reclutamos, validamos y conectamos ingenieros voluntarios. Fuentes, límites y privacidad.";
+      "Cómo EvalúaYa calcula el resultado: reglas tipo ATC-20, intensidad sísmica USGS ShakeMap y análisis con IA. Fuentes, límites y privacidad.";
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "Article",
