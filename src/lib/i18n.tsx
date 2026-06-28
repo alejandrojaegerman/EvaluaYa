@@ -60,7 +60,7 @@ const es: Dict = {
     "Revisamos su experiencia antes de aprobarlos y marcarlos como verificados.",
   "engineers.connect": "Conectamos",
   "engineers.connectDesc":
-    "Enlazamos a quienes lo piden con un ingeniero voluntario verificado, sin costo.",
+    "Cuando una familia lo solicita tras su autoevaluación, la enlazamos con un ingeniero voluntario verificado que la orienta por videollamada y, si hace falta, en persona. Sin costo.",
   "engineers.learnMore": "Conoce la red de ingenieros",
   "engineers.mapNote":
     "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado.",
@@ -881,11 +881,11 @@ const es: Dict = {
   // Volunteer landing + signup
   "vol.title": "Ingenieros voluntarios",
   "vol.subtitle":
-    "Suma tu experiencia para ayudar a familias a entender el daño en sus viviendas tras un sismo.",
+    "Iniciativa comunitaria. Cuando una familia lo solicita tras su autoevaluación, la orientas — primero por videollamada y, si hace falta, con una visita presencial.",
   "vol.how1": "Te registras con tu WhatsApp y los estados que puedes cubrir.",
   "vol.how2": "Revisamos tu solicitud y te enviamos un enlace privado.",
   "vol.how3":
-    "Recibes solicitudes de personas con resultados de riesgo en tu zona y respondes por WhatsApp.",
+    "Recibes solicitudes de familias que pidieron ayuda tras su autoevaluación. Las orientas por videollamada o WhatsApp y, si es posible, con una visita presencial.",
   "vol.formTitle": "Quiero ser voluntario",
   "vol.name": "Nombre completo",
   "vol.namePlaceholder": "Ej.: Ing. María Pérez",
@@ -1271,7 +1271,7 @@ const en: Dict = {
     "We review their experience before approving them and marking them verified.",
   "engineers.connect": "We connect",
   "engineers.connectDesc":
-    "We link residents who ask with a verified volunteer engineer, at no cost.",
+    "When a family asks after their self-assessment, we link them with a verified volunteer engineer who guides them over a video call — and in person if needed. At no cost.",
   "engineers.learnMore": "Meet the engineer network",
   "engineers.mapNote":
     "After an assessment, residents can request support from a verified volunteer engineer.",
@@ -2084,11 +2084,11 @@ const en: Dict = {
 
   "vol.title": "Volunteer engineers",
   "vol.subtitle":
-    "Lend your expertise to help families understand the damage to their homes after an earthquake.",
+    "A community initiative. When a family asks after their self-assessment, you guide them — first over a video call, and with an in-person visit if needed.",
   "vol.how1": "Sign up with your WhatsApp and the states you can cover.",
   "vol.how2": "We review your request and send you a private link.",
   "vol.how3":
-    "You receive requests from people with risk results in your area and respond over WhatsApp.",
+    "You receive requests from families who asked for help after their self-assessment. You guide them over a video call or WhatsApp and, when possible, with an in-person visit.",
   "vol.formTitle": "I want to volunteer",
   "vol.name": "Full name",
   "vol.namePlaceholder": "e.g. Eng. María Pérez",

@@ -1,67 +1,84 @@
-… keep existing context …
+# Recruit volunteer engineers — neutral, founder-invisible
 
-# Goal
+Goal: a LinkedIn post that recruits **engineers in Venezuela** to help families after an earthquake, without it reading as self-promotion. Reinforce the same "volunteer collective / community project" voice inside the app so the post, link preview, and `/voluntarios` page all feel like a shared initiative — not one person's project.
 
-Make volunteer-engineer onboarding more trustworthy and partly automated, and turn the help-request lifecycle into a system that actively drives cases to completion — supporting engineers at each step while tracking progress and reducing abandoned requests.
+How the help actually works (corrected): after a resident finishes their self-evaluation and **requests help**, they're matched with a verified engineer. The engineer can help **remotely first — typically a video call** — and **optionally** follow up with an in-person visit when feasible. The messaging leads with remote/tele-help, not the physical visit.
 
-This builds on what already exists (claim → contacted → visited → resolved stages, `engineer_note`, verdicts, daily engineer + admin digests, the `stalled` flag) and fills the gaps: no credential checks, no auto-reclaim, no per-stage nudges, no resident-facing status, no engineer stats.
+The app already helps: there is **no personal name** anywhere (license, contact, and copy use "EvalúaYa"), and the footer already says "Community-built open-source project." We lean into that.
 
----
+## Part 1 — LinkedIn post (the deliverable, no code)
 
-## 1. More robust + automated validation
+Two ready-to-paste drafts in a neutral "the project / families need" voice — no "I built this." You post it as a share, not as the creator.
 
-**At signup** (`/voluntarios`), add two fields:
-- **Número CIV / colegiatura** (license number) — required for individuals, optional for organizations.
-- **Credencial / constancia** — upload one image (CIV card, company registry, or letterhead) to a new private `engineer-credentials` bucket, mirroring the existing private `assessment-photos` flow.
+**Draft A — Spanish primary (recommended, short EN tail)**
 
-**Automatic pre-checks** run server-side on submit and produce a stored trust score + flags (no auto-approval — admin still decides):
-- License-number format sanity (non-empty, plausible length/characters).
-- Duplicate detection: same email, WhatsApp, or license already in the table → flag.
-- Disposable / free-domain email heuristic → informational flag.
-- Missing credential image or missing license → flag.
-- Score = simple weighted tally surfaced to the admin.
+```text
+🇻🇪 Ingenieros en Venezuela: se buscan voluntarios.
 
-**Admin review** (`/admin/voluntarios`) gains, per pending volunteer: the trust score, the list of flags, and a one-tap **View credential** (signed URL preview). Approve/reject stays manual but is now evidence-based.
+Tras un sismo, miles de familias no saben si es seguro quedarse en casa.
+EvalúaYa es una herramienta comunitaria y gratuita que las guía en una
+autoevaluación inicial. Cuando una familia lo solicita, se conecta con un
+ingeniero voluntario que la orienta — primero de forma remota, por
+videollamada, y si hace falta, con una visita presencial.
 
-## 2. Drive requests to completion (completion engine)
+El proyecto busca ingenieros y organizaciones en Venezuela dispuestos a
+dedicar un poco de tiempo para acompañar a sus vecinos.
 
-A new hourly cron (`/lovable/cron/completion-engine`) running three deterministic passes:
+Lo que implica:
+• Registro en minutos, sin costo
+• Validación de credenciales (CIV / título)
+• Recibes solicitudes de tu propio estado
+• Orientas por videollamada o WhatsApp; visita presencial si es posible
 
-**a) Auto-reclaim stalled requests** — a claimed request with no stage progress past its deadline (default 48h on `claimed`, configurable per stage) is released back to the open pool: `status='open'`, `claimed_by` cleared, `reclaim_count++`. Other approved engineers in that state are re-notified, and the previous engineer gets a courteous "released" email.
+Si eres ingeniero(a) estructural o civil en Venezuela —o conoces a
+alguien— súmate o comparte:
+👉 https://evaluaya.app/voluntarios
 
-**b) Staged auto-reminders** — for still-claimed requests sitting in a stage past its soft SLA (e.g. 24h), email the assigned engineer a nudge to advance or hand back, tracking `reminder_count` / `last_reminder_at` so we don't spam (max reminders before reclaim kicks in).
+Es un esfuerzo voluntario, abierto y sin fines de lucro. Cada ingeniero
+que se suma es una familia más que duerme tranquila. 🧡
 
-**c) Resident-side updates & loop closure** — every request gets a `resident_token`. On submission the resident sees/keeps a private status link (`/solicitud/$token`, low-bandwidth public page) showing the live stage (Solicitud recibida → Ingeniero asignado → En contacto → Visita → Resuelto) and a **Confirmar que recibí ayuda** button. Resident confirmation sets `resident_confirmed_at` and notifies the admin — the real signal that a case truly completed. When an engineer advances a stage, the resident status page reflects it immediately.
+#Venezuela #IngenieríaCivil #IngenieríaEstructural #Voluntariado #Sismo
+```
 
-## 3. Support engineers + track progress
+**Draft B — Shorter / bilingual**
 
-**Per-request guidance** in the engineer panel: each claimed request shows stage-specific next steps and a short on-site checklist (contact resident → schedule visit → inspect key elements → submit verdict), so engineers know exactly what to do and capture findings consistently. Presentation only, bilingual copy.
+```text
+Se buscan ingenieros voluntarios en Venezuela 🇻🇪
 
-**Completion stats & recognition**: the panel header gets a "Tu impacto" card — resolved count, open/claimed in your area, average response time — plus a recognition tier badge (e.g. Bronce/Plata/Oro by resolved count). The same badge appears next to the engineer's name in the `/voluntarios` verified showcase (names only, no contact info — unchanged privacy rule).
+EvalúaYa ayuda a familias a autoevaluar el daño estructural de su casa
+tras un sismo. Cuando lo piden, las conectamos con un ingeniero que las
+orienta por videollamada — y, si es necesario, con una visita presencial.
+Gratis, validado y por tu propio estado.
 
-**Admin visibility**: the admin matching view surfaces reclaimed counts and resident-confirmed resolutions alongside the existing stalled metric, and the daily admin digest includes reclaims + resident confirmations.
+Súmate o comparte 👉 https://evaluaya.app/voluntarios
 
----
+—
 
-## Technical details
+Volunteer structural/civil engineers wanted in Venezuela. After a family
+asks for help, guide them remotely over a video call — and visit in person
+if needed. A free, open, nonprofit effort.
+```
 
-**Migration (schema only):**
-- `volunteer_engineers` add: `license_number text`, `credential_path text`, `trust_score int default 0`, `trust_flags jsonb default '[]'`.
-- `help_requests` add: `resident_token uuid default gen_random_uuid()` (unique), `reclaim_count int default 0`, `reminder_count int default 0`, `last_reminder_at timestamptz`, `resident_confirmed_at timestamptz`. Backfill `resident_token` for existing rows.
-- New RPCs (SECURITY DEFINER, `search_path=public`, service-role): `get_requests_needing_action()` (returns stalled-for-reclaim + reminder-due sets with engineer email/token/area), `get_engineer_stats(_engineer_id uuid)` (resolved, claimed, open-in-area, avg response seconds, badge tier), and extend `get_admin_matching_progress` with `reclaimed` + `resident_confirmed`.
-- Private storage bucket `engineer-credentials` (via storage tool) + `storage.objects` RLS mirroring `assessment-photos`.
+Tips to keep distance from you personally: open with the need (not "I made"), use "el proyecto / EvalúaYa busca" instead of "busco," optionally add a one-line comment like "Comparto esta iniciativa comunitaria," and avoid first-person ownership in the caption.
 
-**Server (TanStack `createServerFn` / `.server.ts`, never expose service role):**
-- Extend `signupSchema` + `submitEngineerSignup` with license/credential + `runValidationPrechecks()` writing `trust_score`/`trust_flags`.
-- New `credential upload` path reusing the existing photo-upload mechanism.
-- `runCompletionEngine()` in `completion-engine.server.ts` (reclaim + reminders + resident nudges), exposed at `src/routes/lovable/cron/completion-engine.ts` with the same Bearer service-role guard as existing cron routes.
-- `getResidentRequestStatus({token})` and `confirmResidentResolved({token})` (public, token-scoped) for `/solicitud/$token`.
-- `getEngineerStats` for the panel; admin list/review extended to return trust data + signed credential URL.
+## Part 2 — In-app copy tweaks (reinforce collective voice + remote-first help)
 
-**Email templates (registry):** add `engineer-reminder`, `engineer-reclaimed`, `admin-resident-confirmed`; reuse `help-request-notification` for re-notify after reclaim. All Spanish-primary with the existing ❤️/🇻🇪 footer.
+Small, presentation-only string edits in `src/lib/i18n.tsx` (ES + EN) so anyone arriving from the post sees a matching, founder-invisible, remote-first message.
 
-**Cron:** add one `pg_cron` job calling `/lovable/cron/completion-engine` hourly, using the same vault service-role Bearer pattern as the current digest jobs.
+1. **`vol.subtitle`**: collective framing + correct flow. ES e.g. "Iniciativa comunitaria. Cuando una familia lo solicita tras su autoevaluación, la orientas — primero por videollamada y, si hace falta, con una visita presencial."
+2. **`vol.how3`**: clarify that requests come from residents after they ask for help, and that help starts remotely (video call/WhatsApp) with an optional in-person visit.
+3. **`engineers.recruitDesc`** (and connect/validate descriptions if needed): phrase around "este esfuerzo voluntario / el proyecto," never an individual.
+4. **OG description for `/voluntarios`** (`src/routes/voluntarios.index.tsx` `head()`): update to the same remote-first, nonprofit-collective wording so the LinkedIn link preview reinforces it.
+5. **Footer note** (`footer.note`): already "Community-built open-source project / Proyecto comunitario" — keep as-is.
 
-**Routes/UI:** new public `/solicitud/$token`; enhancements to `voluntarios.panel.$token.tsx` (impact card, badges, per-stage guidance), `admin.voluntarios.tsx` (trust score/flags/credential view, reclaim & confirmation metrics), `voluntarios.index.tsx` (recognition badges, new signup fields). All new strings added to `src/lib/i18n.tsx` (ES + EN).
+No changes to logic, schema, server functions, or attribution — there is no personal name to remove. Purely copy.
 
-**Constraints respected:** no resident login; WhatsApp stays manual (we link the status page rather than auto-messaging); contact info never exposed in the public roster; deterministic safety/verdict logic untouched.
+## What we deliberately do NOT do
+- No new "About me / founder" page.
+- No fabricated org names or fake team claims (keep it honestly "a volunteer/community effort").
+- No over-emphasis on physical visits — remote/video help leads.
+- No backend, auth, or data changes.
+
+## Technical notes
+- Files touched: `src/lib/i18n.tsx` (4–5 string pairs, ES + EN) and `src/routes/voluntarios.index.tsx` (`head()` description only).
+- All strings flow through the existing `t()` i18n system, so both languages stay in sync.
