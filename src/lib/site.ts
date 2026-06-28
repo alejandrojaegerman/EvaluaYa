@@ -16,6 +16,18 @@ export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/** Public contact address. Inbound mail is forwarded to the team inbox. */
+export const CONTACT_EMAIL = "contacto@evaluaya.app";
+
+/**
+ * Build a `mailto:` link to the contact address with an optional prefilled
+ * subject so the user's mail app opens ready to send.
+ */
+export function contactMailto(subject?: string): string {
+  const base = `mailto:${CONTACT_EMAIL}`;
+  return subject ? `${base}?subject=${encodeURIComponent(subject)}` : base;
+}
+
 /**
  * UTM parameters for attribution. We tag every link the app emits when a user
  * shares it (or that we send in app emails) so analytics can distinguish the

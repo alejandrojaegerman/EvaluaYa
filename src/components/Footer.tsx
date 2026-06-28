@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 
 import { LanguageToggle } from "./LanguageToggle";
 import { useLang } from "@/lib/i18n";
+import { contactMailto } from "@/lib/site";
 
 /** Site footer. On mobile it adds extra bottom padding so it clears the fixed BottomNav. */
 export function Footer() {
@@ -11,7 +12,7 @@ export function Footer() {
   const columns: Array<{
     heading: string;
     note?: string;
-    links: Array<{ to: string; label: string }>;
+    links: Array<{ to?: string; href?: string; label: string }>;
   }> = [
     {
       heading: t("footer.explore"),
@@ -39,7 +40,10 @@ export function Footer() {
     },
     {
       heading: t("footer.legal"),
-      links: [{ to: "/privacidad", label: t("nav.privacy") }],
+      links: [
+        { to: "/privacidad", label: t("nav.privacy") },
+        { href: contactMailto(t("contact.subject")), label: t("footer.contact") },
+      ],
     },
   ];
 
@@ -75,16 +79,26 @@ export function Footer() {
               )}
               <ul className="mt-3 space-y-2">
                 {col.links.map((link) => (
-                  <li key={link.to}>
-                    <Link
-                      to={link.to}
-                      className="text-sm text-foreground/80 transition-colors hover:text-foreground"
-                    >
-                      {link.label}
-                    </Link>
+                  <li key={link.label}>
+                    {link.href ? (
+                      <a
+                        href={link.href}
+                        className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.to!}
+                        className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
+
             </nav>
           ))}
         </div>

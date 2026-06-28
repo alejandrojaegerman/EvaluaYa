@@ -459,6 +459,9 @@ const es: Dict = {
   "footer.note":
     "Datos anónimos y abiertos · Proyecto comunitario de código abierto · Hecho con ❤️ para Venezuela 🇻🇪",
   "footer.evaluate": "Evaluar",
+  "footer.contact": "Contacto",
+  "contact.email": "contacto@evaluaya.app",
+  "contact.subject": "Consulta — EvalúaYa",
 
 
   "data.title": "Sala de datos",
@@ -586,6 +589,7 @@ const es: Dict = {
   "help.moreBody":
     "Escríbenos si tienes una duda que no aparece aquí, o conoce cómo calculamos los resultados.",
   "help.contactCta": "Enviar un comentario",
+  "help.emailUs": "Escríbenos por correo",
 
 
   "home.timePromise": "Gratis · 2 minutos · sin registro",
@@ -1735,6 +1739,9 @@ const en: Dict = {
   "footer.note":
     "Anonymized, open data · Community-built open-source project · Made with ❤️ for Venezuela 🇻🇪",
   "footer.evaluate": "Evaluate",
+  "footer.contact": "Contact",
+  "contact.email": "contacto@evaluaya.app",
+  "contact.subject": "Inquiry — EvalúaYa",
 
 
   "data.title": "Data room",
@@ -1862,6 +1869,7 @@ const en: Dict = {
   "help.moreBody":
     "Reach out if you have a question that isn't covered here, or learn how we calculate results.",
   "help.contactCta": "Send a message",
+  "help.emailUs": "Email us",
 
 
   "home.timePromise": "Free · 2 minutes · no sign-up",

@@ -5,6 +5,7 @@ import {
   ClipboardCheck,
   HelpCircle,
   LifeBuoy,
+  Mail,
   MessageSquareHeart,
   Share2,
   Sparkles,
@@ -19,7 +20,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { translate, useLang } from "@/lib/i18n";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, contactMailto } from "@/lib/site";
 
 const FAQ_KEYS = [
   "free",
@@ -197,6 +198,13 @@ function HelpPage() {
               {t("help.contactCta")}
             </Link>
           </Button>
+          <Button asChild variant="outline">
+            <a href={contactMailto(t("contact.subject"))}>
+              <Mail className="size-4" />
+              {t("help.emailUs")} · {t("contact.email")}
+            </a>
+          </Button>
+
           <Button asChild variant="outline">
             <Link to="/guia/que-hacer-despues-de-un-temblor">
               {t("help.tremorGuideLink")}
