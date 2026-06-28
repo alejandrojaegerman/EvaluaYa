@@ -122,7 +122,7 @@ function Index() {
           {t("home.startCta")}
           <ArrowRight className="size-5" />
         </Button>
-        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/80">
+        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/90">
           {t("home.timePromise")}
         </p>
         <div className="relative mt-4 flex items-start gap-2 rounded-xl bg-primary-foreground/10 px-3 py-2.5 text-left text-xs leading-relaxed text-primary-foreground/90">
