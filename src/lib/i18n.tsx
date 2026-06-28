@@ -2098,6 +2098,20 @@ const en: Dict = {
   "vol.email": "Email",
   "vol.emailHint":
     "We need it to send you your access link once you're validated.",
+  "vol.verifyTitle": "Professional verification",
+  "vol.verifyHint":
+    "To protect families, we validate every volunteer. Add your license number (CIV) and a document supporting your profession. It speeds up your approval.",
+  "vol.license": "License / CIV number (optional)",
+  "vol.licensePlaceholder": "e.g. CIV 123456",
+  "vol.credential": "Supporting document (optional)",
+  "vol.credentialCta": "Upload credential or degree",
+  "vol.credentialHint":
+    "PDF or image (CIV ID, degree, work proof). Max 6 MB. Only our validation team can see it.",
+  "vol.credentialUploading": "Uploading…",
+  "vol.credentialUploaded": "Document uploaded",
+  "vol.credentialCta2": "Change document",
+  "vol.credentialError": "Could not upload the document. Try again.",
+  "vol.credentialTooLarge": "The file exceeds 6 MB.",
   "vol.states": "States you can cover",
   "vol.statesHint": "Select one or more.",
   "vol.specialization": "Specialty (optional)",
