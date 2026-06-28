@@ -12,7 +12,7 @@ export function Footer() {
   const columns: Array<{
     heading: string;
     note?: string;
-    links: Array<{ to: string; label: string }>;
+    links: Array<{ to?: string; href?: string; label: string }>;
   }> = [
     {
       heading: t("footer.explore"),
@@ -40,7 +40,10 @@ export function Footer() {
     },
     {
       heading: t("footer.legal"),
-      links: [{ to: "/privacidad", label: t("nav.privacy") }],
+      links: [
+        { to: "/privacidad", label: t("nav.privacy") },
+        { href: contactMailto(t("contact.subject")), label: t("footer.contact") },
+      ],
     },
   ];
 
