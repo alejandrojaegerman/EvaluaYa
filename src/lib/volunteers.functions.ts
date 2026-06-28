@@ -552,24 +552,31 @@ const helpSchema = z.object({
 
 export const submitHelpRequest = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => helpSchema.parse(data))
-  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+  .handler(
+    async ({ data }): Promise<{ ok: boolean; residentToken?: string }> => {
     try {
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
-      const { error } = await supabaseAdmin.from("help_requests").insert({
-        assessment_public_id: data.assessmentPublicId || null,
-        state: data.state || null,
-        municipality: data.municipality || null,
-        risk_level: data.riskLevel ?? null,
-        resident_whatsapp: data.whatsapp,
-        note: data.note || null,
-        status: "open",
-      });
+      const { data: inserted, error } = await supabaseAdmin
+        .from("help_requests")
+        .insert({
+          assessment_public_id: data.assessmentPublicId || null,
+          state: data.state || null,
+          municipality: data.municipality || null,
+          risk_level: data.riskLevel ?? null,
+          resident_whatsapp: data.whatsapp,
+          note: data.note || null,
+          status: "open",
+        })
+        .select("resident_token")
+        .maybeSingle();
       if (error) {
         console.error("[volunteers] submitHelpRequest", error);
         return { ok: false };
       }
+      const residentToken =
+        (inserted?.resident_token as string | null) ?? undefined;
 
       // Notify approved engineers covering this estado (best-effort).
       try {
