@@ -218,12 +218,288 @@ function VolunteersPage() {
         </p>
       </section>
 
-      {/* Verified engineers — social proof, names + org only, no contact */}
-      <VerifiedEngineers engineers={engineers} />
+      {/* Compact trust line — social proof without burying the call to action */}
+      <VerifiedCount engineers={engineers} />
+
+      {/* Sign-up form — lead with the call to action */}
+      <form
+        onSubmit={onSubmit}
+        className="mt-5 rounded-2xl border border-border bg-card p-4 shadow-sm"
+      >
+        <h2 className="font-display text-base font-bold">{t("vol.formTitle")}</h2>
+
+        <div className="mt-4 space-y-4">
+          <div>
+            <Label>{t("vol.typeLabel")}</Label>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {(
+                [
+                  { value: "individual", icon: User2, label: t("vol.typeIndividual") },
+                  { value: "organization", icon: Building2, label: t("vol.typeOrg") },
+                ] as const
+              ).map((opt) => {
+                const active = volunteerType === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setVolunteerType(opt.value)}
+                    aria-pressed={active}
+                    className={cn(
+                      "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors",
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50",
+                    )}
+                  >
+                    <opt.icon className="size-4" aria-hidden />
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {isOrg ? (
+            <>
+              <div>
+                <Label htmlFor="vol-org">{t("vol.orgName")}</Label>
+                <Input
+                  id="vol-org"
+                  value={org}
+                  onChange={(e) => setOrg(e.target.value)}
+                  placeholder={t("vol.orgNamePlaceholder")}
+                  required
+                  maxLength={160}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vol-name">{t("vol.contactName")}</Label>
+                <Input
+                  id="vol-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("vol.contactNamePlaceholder")}
+                  required
+                  maxLength={120}
+                  className="mt-1.5"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <Label htmlFor="vol-name">{t("vol.name")}</Label>
+                <Input
+                  id="vol-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("vol.namePlaceholder")}
+                  required
+                  maxLength={120}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vol-org">{t("vol.org")}</Label>
+                <Input
+                  id="vol-org"
+                  value={org}
+                  onChange={(e) => setOrg(e.target.value)}
+                  placeholder={t("vol.orgPlaceholder")}
+                  maxLength={160}
+                  className="mt-1.5"
+                />
+              </div>
+            </>
+          )}
+
+          <div>
+            <Label htmlFor="vol-wa">{t("vol.whatsapp")}</Label>
+            <Input
+              id="vol-wa"
+              type="tel"
+              inputMode="tel"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+              placeholder={t("connect.whatsappPlaceholder")}
+              required
+              maxLength={40}
+              className="mt-1.5"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="vol-email">{t("vol.email")}</Label>
+            <Input
+              id="vol-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              maxLength={255}
+              className="mt-1.5"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("vol.emailHint")}
+            </p>
+          </div>
+
+          {/* Validation: CIV/license + credential upload */}
+          <div className="rounded-xl border border-primary/20 bg-secondary/30 p-3.5">
+            <div className="flex items-center gap-2">
+              <BadgeCheck className="size-4 text-primary" aria-hidden />
+              <p className="text-sm font-semibold">{t("vol.verifyTitle")}</p>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("vol.verifyHint")}
+            </p>
+
+            <div className="mt-3">
+              <Label htmlFor="vol-license">{t("vol.license")}</Label>
+              <Input
+                id="vol-license"
+                value={licenseNumber}
+                onChange={(e) => setLicenseNumber(e.target.value)}
+                placeholder={t("vol.licensePlaceholder")}
+                maxLength={40}
+                className="mt-1.5"
+              />
+            </div>
+
+            <div className="mt-3">
+              <Label htmlFor="vol-credential">{t("vol.credential")}</Label>
+              <div className="mt-1.5">
+                <input
+                  id="vol-credential"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
+                  onChange={onCredentialChange}
+                  className="sr-only"
+                  disabled={uploading}
+                />
+                <Label
+                  htmlFor="vol-credential"
+                  className={cn(
+                    "flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-background px-3 py-2.5 text-sm font-medium transition-colors hover:border-primary/50",
+                    uploading && "pointer-events-none opacity-70",
+                  )}
+                >
+                  {uploading ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : credentialPath ? (
+                    <CheckCircle2 className="size-4 text-risk-green" aria-hidden />
+                  ) : (
+                    <FileUp className="size-4" aria-hidden />
+                  )}
+                  {uploading
+                    ? t("vol.credentialUploading")
+                    : credentialPath
+                      ? credentialName || t("vol.credentialUploaded")
+                      : t("vol.credentialCta")}
+                </Label>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("vol.credentialHint")}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <Label>{t("vol.states")}</Label>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("vol.statesHint")}
+            </p>
+            {(() => {
+              const groups = splitFeatured(
+                ESTADO_NAMES,
+                ranking.featuredStates,
+              );
+              const renderChip = (s: string, featured: boolean) => {
+                const active = states.includes(s);
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => toggleState(s)}
+                    aria-pressed={active}
+                    className={cn(
+                      "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : featured
+                          ? "border-orange-400/60 bg-orange-50 text-orange-700 hover:border-orange-500 dark:bg-orange-950/40 dark:text-orange-300"
+                          : "border-border bg-background text-muted-foreground hover:border-primary/50",
+                    )}
+                  >
+                    {featured && !active ? "🔴 " : ""}
+                    {s}
+                  </button>
+                );
+              };
+              return (
+                <>
+                  {groups.featured.length > 0 && (
+                    <div className="mt-2">
+                      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-orange-600 dark:text-orange-400">
+                        {t("picker.mostAffected")}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {groups.featured.map((s) => renderChip(s, true))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    {groups.featured.length > 0 && (
+                      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t("picker.allAreas")}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-1.5">
+                      {groups.rest.map((s) => renderChip(s, false))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+
+          <div>
+            <Label htmlFor="vol-spec">
+              {isOrg ? t("vol.orgSpecialization") : t("vol.specialization")}
+            </Label>
+            <Input
+              id="vol-spec"
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+              placeholder={t("vol.specializationPlaceholder")}
+              maxLength={160}
+              className="mt-1.5"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="vol-note">{t("vol.note")}</Label>
+            <Textarea
+              id="vol-note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              maxLength={1000}
+              rows={3}
+              className="mt-1.5"
+            />
+          </div>
+        </div>
+
+        <Button type="submit" size="lg" disabled={busy} className="mt-5 w-full">
+          {busy ? t("vol.sending") : t("vol.submit")}
+        </Button>
+      </form>
 
       {/* Three pillars: recruit → validate → connect (the page that owns the story) */}
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
         {[
           { title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
           { title: t("engineers.validate"), desc: t("engineers.validateDesc") },
