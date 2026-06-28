@@ -50,6 +50,17 @@ export type EngineerRequest = {
 };
 
 
+export type RecognitionTier = "none" | "bronze" | "silver" | "gold";
+
+/** Impact + recognition stats shown on the engineer panel. */
+export type EngineerStats = {
+  resolved: number;
+  claimedActive: number;
+  openInArea: number;
+  avgResponseSeconds: number | null;
+  tier: RecognitionTier;
+};
+
 export type EngineerPanel = {
   engineer: {
     name: string;
@@ -57,6 +68,7 @@ export type EngineerPanel = {
     states: string[];
     specialization: string | null;
   };
+  stats: EngineerStats;
   requests: EngineerRequest[];
 };
 
@@ -65,6 +77,26 @@ export type EngineerPanelResult =
   | EngineerPanel
   | { expired: true }
   | null;
+
+/** Public, non-sensitive view of a resident's own help request. */
+export type ResidentRequestStatus = {
+  state: string | null;
+  municipality: string | null;
+  riskLevel: RiskLevel | null;
+  status: "open" | "claimed" | "closed";
+  progressStage: ProgressStage | null;
+  progressUpdatedAt: string | null;
+  createdAt: string;
+  claimedAt: string | null;
+  engineerName: string | null;
+  engineerNote: string | null;
+  assessmentPublicId: string | null;
+  residentConfirmedAt: string | null;
+  aiRiskLevel: RiskLevel | null;
+  priorRiskLevel: RiskLevel | null;
+  reportType: string | null;
+  engineerVerdict: "agree" | "adjust" | null;
+};
 
 export type AdminEngineer = {
   id: string;
