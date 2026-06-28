@@ -166,7 +166,11 @@ function VolunteersPage() {
         </p>
       </section>
 
+      {/* Verified engineers — social proof, names + org only, no contact */}
+      <VerifiedEngineers engineers={engineers} />
+
       {/* Three pillars: recruit → validate → connect (the page that owns the story) */}
+
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         {[
           { title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
