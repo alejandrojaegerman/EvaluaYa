@@ -126,7 +126,6 @@ export function splitFeatured(
   const feat: string[] = [];
   for (const name of featured ?? []) {
     if (optionSet.has(name) && !seen.has(name)) {
-      feat.add ? null : null; // no-op guard for older lint configs
       feat.push(name);
       seen.add(name);
     }
