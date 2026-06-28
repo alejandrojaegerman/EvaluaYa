@@ -58,6 +58,12 @@ export const Route = createFileRoute("/assess/property")({
         : undefined;
     return { ...(estado ? { estado } : {}), ...(eng ? { eng } : {}) };
   },
+  // Public, anonymized impact ranking so the hardest-hit areas surface first.
+  // Best-effort: failures fall back to the alphabetical list.
+  loader: async (): Promise<ImpactRanking> =>
+    getImpactRanking().catch(() => EMPTY_IMPACT_RANKING),
+  errorComponent: () => null,
+  notFoundComponent: () => null,
   component: PropertyStep,
 });
 
