@@ -83,19 +83,31 @@ export async function runAdminHelpDigest(): Promise<{
     });
 
   const stalledCount = p?.stalled ?? stalledItems.length;
-  const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-  const res = await sendSystemEmail({
-    templateName: "admin-help-digest",
-    idempotencyKey: `admin-help-digest:${day}`,
-    templateData: {
-      openCount,
-      claimedCount,
-      stalledCount,
-      resolvedToday,
-      stalledItems,
-      adminUrl: ADMIN_URL,
-    },
+  const stalledSummary =
+    stalledItems
+      .slice(0, 8)
+      .map(
+        (s) =>
+          `• ${riskTag(s.riskLevel)} — ${[s.municipality, s.state]
+            .filter(Boolean)
+            .join(", ") || "—"} (${s.stage}, ${Math.round(s.ageHours)}h)`,
+      )
+      .join("\n") || "Ninguna 🎉";
+
+  const res = await sendSlackNotification({
+    emoji: "📋",
+    title: "Resumen diario de solicitudes de ayuda",
+    fields: [
+      { label: "Abiertas", value: String(openCount) },
+      { label: "Reclamadas", value: String(claimedCount) },
+      { label: "Estancadas", value: String(stalledCount) },
+      { label: "Resueltas hoy", value: String(resolvedToday) },
+      { label: "Estancadas (detalle)", value: stalledSummary },
+    ],
+    url: "/admin/voluntarios",
+    buttonLabel: "Abrir triaje",
+    urgent: stalledCount > 0,
   });
 
   return { ok: res.ok, sent: res.ok ? 1 : 0 };
