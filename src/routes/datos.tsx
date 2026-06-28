@@ -4,6 +4,8 @@ import {
   BookOpen,
   ChevronDown,
   ChevronRight,
+  Code2,
+  Copy,
   Download,
   HardHat,
   ImageDown,
