@@ -24,10 +24,16 @@ import type {
   StructuralType,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
+import { splitFeatured } from "@/lib/impact";
 import { trackStep } from "@/lib/track";
 import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
+import {
+  getImpactRanking,
+  EMPTY_IMPACT_RANKING,
+  type ImpactRanking,
+} from "@/lib/stats.functions";
 import { cn } from "@/lib/utils";
 import {
   ESTADO_NAMES,
@@ -52,6 +58,12 @@ export const Route = createFileRoute("/assess/property")({
         : undefined;
     return { ...(estado ? { estado } : {}), ...(eng ? { eng } : {}) };
   },
+  // Public, anonymized impact ranking so the hardest-hit areas surface first.
+  // Best-effort: failures fall back to the alphabetical list.
+  loader: async (): Promise<ImpactRanking> =>
+    getImpactRanking().catch(() => EMPTY_IMPACT_RANKING),
+  errorComponent: () => null,
+  notFoundComponent: () => null,
   component: PropertyStep,
 });
 
@@ -79,6 +91,7 @@ function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
   const { estado: estadoParam, eng: engParam } = Route.useSearch();
+  const ranking = Route.useLoaderData();
 
   const [address, setAddress] = useState("");
   const [buildingName, setBuildingName] = useState("");
@@ -212,6 +225,12 @@ function PropertyStep() {
   }
 
   const municipioOptions = municipiosFor(state);
+  // Impact-ordered grouping: most-affected areas first, full list below.
+  const stateGroups = splitFeatured(ESTADO_NAMES, ranking.featuredStates);
+  const muniGroups = splitFeatured(
+    municipioOptions,
+    state ? ranking.featuredMunicipios[state] : undefined,
+  );
   // Required: either a real municipio is selected, or the resident chose "not sure".
   const municipalitySatisfied = municipality.trim() !== "" || municipalityUnsure;
 
@@ -316,11 +335,30 @@ function PropertyStep() {
                 className="mt-2 h-12 w-full rounded-xl border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="">{t("property.statePlaceholder")}</option>
-                {ESTADO_NAMES.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                {stateGroups.featured.length > 0 ? (
+                  <>
+                    <optgroup label={t("picker.mostAffected")}>
+                      {stateGroups.featured.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label={t("picker.allAreas")}>
+                      {stateGroups.rest.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </>
+                ) : (
+                  stateGroups.rest.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
             <div>
@@ -349,11 +387,30 @@ function PropertyStep() {
                     ? t("property.municipalitySelectState")
                     : t("property.municipalityPlaceholder")}
                 </option>
-                {municipioOptions.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                {muniGroups.featured.length > 0 ? (
+                  <>
+                    <optgroup label={t("picker.mostAffected")}>
+                      {muniGroups.featured.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label={t("picker.allAreas")}>
+                      {muniGroups.rest.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </>
+                ) : (
+                  muniGroups.rest.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))
+                )}
                 {state.trim() !== "" && (
                   <option value={UNSURE_MUNICIPIO}>
                     {t("property.municipalityUnsure")}

@@ -49,10 +49,13 @@ import {
   type RiskFactors,
   type TimeseriesPoint,
 } from "@/lib/stats.functions";
+import { rankMunicipios, rankStates } from "@/lib/impact";
 import {
+  ESTADO_NAMES,
   ESTADOS,
   estadoSlug,
   getEstado,
+  municipiosFor,
   outlinePath,
   projectToSvg,
   resolveMunicipio,
@@ -241,6 +244,15 @@ function DataRoomPage() {
       active = false;
     };
   }, [filters]);
+
+  // Severity-weighted ranking so the hardest-hit areas surface first in filters.
+  const impactRanking = useMemo(
+    () => ({
+      featuredStates: rankStates(areas, ESTADO_NAMES),
+      featuredMunicipios: rankMunicipios(areas, municipiosFor),
+    }),
+    [areas],
+  );
 
   const stateBubbles = useMemo(() => {
     const byState = new Map<
@@ -661,6 +673,8 @@ function DataRoomPage() {
           onChange={setFilters}
           availableStates={availableStates}
           availableMunicipios={availableMunicipios}
+          featuredStates={impactRanking.featuredStates}
+          featuredMunicipios={impactRanking.featuredMunicipios}
         />
         <p className="mt-2 text-xs text-muted-foreground">
           {t("data.activeScope")}: <span className="font-semibold">{scopeLabel}</span>

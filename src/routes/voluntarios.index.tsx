@@ -25,7 +25,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useLang } from "@/lib/i18n";
+import { splitFeatured } from "@/lib/impact";
 import { absoluteUrl } from "@/lib/site";
+import {
+  getImpactRanking,
+  EMPTY_IMPACT_RANKING,
+  type ImpactRanking,
+} from "@/lib/stats.functions";
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
@@ -59,17 +65,18 @@ export const Route = createFileRoute("/voluntarios/")({
     };
   },
   loader: async () => {
-    const engineers = await getAllApprovedEngineers().catch(
-      () => [] as VerifiedEngineer[],
-    );
-    return { engineers };
+    const [engineers, ranking] = await Promise.all([
+      getAllApprovedEngineers().catch(() => [] as VerifiedEngineer[]),
+      getImpactRanking().catch(() => EMPTY_IMPACT_RANKING as ImpactRanking),
+    ]);
+    return { engineers, ranking };
   },
   component: VolunteersPage,
 });
 
 function VolunteersPage() {
   const { t } = useLang();
-  const { engineers } = Route.useLoaderData();
+  const { engineers, ranking } = Route.useLoaderData();
   const submit = useServerFn(submitEngineerSignup);
 
 
@@ -464,8 +471,12 @@ function VolunteersPage() {
             <p className="mt-0.5 text-xs text-muted-foreground">
               {t("vol.statesHint")}
             </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {ESTADO_NAMES.map((s) => {
+            {(() => {
+              const groups = splitFeatured(
+                ESTADO_NAMES,
+                ranking.featuredStates,
+              );
+              const renderChip = (s: string, featured: boolean) => {
                 const active = states.includes(s);
                 return (
                   <button
@@ -477,14 +488,41 @@ function VolunteersPage() {
                       "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                       active
                         ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/50",
+                        : featured
+                          ? "border-orange-400/60 bg-orange-50 text-orange-700 hover:border-orange-500 dark:bg-orange-950/40 dark:text-orange-300"
+                          : "border-border bg-background text-muted-foreground hover:border-primary/50",
                     )}
                   >
+                    {featured && !active ? "🔴 " : ""}
                     {s}
                   </button>
                 );
-              })}
-            </div>
+              };
+              return (
+                <>
+                  {groups.featured.length > 0 && (
+                    <div className="mt-2">
+                      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-orange-600 dark:text-orange-400">
+                        {t("picker.mostAffected")}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {groups.featured.map((s) => renderChip(s, true))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    {groups.featured.length > 0 && (
+                      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t("picker.allAreas")}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-1.5">
+                      {groups.rest.map((s) => renderChip(s, false))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           <div>

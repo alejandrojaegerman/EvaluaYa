@@ -1,65 +1,38 @@
-# Slack alerts for EvalúaYa
+# Impact-ordered location pickers
 
-Route loud, deep-linked Slack messages for every key event to a single channel, and move the internal/admin notifications off email and onto Slack. Resident- and engineer-facing emails stay exactly as they are.
+Use the real damage data to surface the hardest-hit states and municipios first across every place people pick a location — the assessment flow, the volunteer signup, and the data room — while keeping the full, inclusive list one tap away.
 
-## What you'll get
+## Ranking definition (severity-weighted)
 
-One Slack channel that lights up on:
-
-- **New high-risk assessments** (Red/Orange) — a neighbor finished a self-evaluation that flagged danger. Red gets an `@channel` ping so it's impossible to miss. Links straight to the report.
-- **Help requests** — a resident requested an engineer, and again when a request is marked resolved. Links to the admin triage panel.
-- **Volunteers** — a new engineer/organization signed up, and when one is approved. Links to volunteer review.
-- **Feedback + funnel alerts** — new feedback submissions, and the existing hourly conversion-drop watchdog. Links to the admin dashboard.
-
-Every message is formatted with a colored risk tag, location, any note, and a button that opens the exact right page in the app.
-
-## Channel & connection
+A pure scoring helper ranks each area:
 
 ```text
-Event happens  ->  sendSlackNotification()  ->  Slack connector gateway  ->  #your-channel
-                         |
-                         +-- builds a Block Kit message with a deep-link button
+impactScore = red×4 + orange×2 + yellow×1 + (total × 0.25)
 ```
 
-- Connect the **Slack** connector (you'll pick which workspace/connection to use).
-- You tell me the channel name (e.g. `#evaluaya-alertas`); I store it as config. The Slack bot is already present in all public channels, so no manual invite is needed for a public channel. (For a private channel, you'd invite the bot once.)
+Red/Orange dominate so danger hotspots rise even with few total reports (e.g. La Guaira: 8 reports but 7 red ranks above busier-but-safer areas). Total adds a small tiebreaker. Areas with `score = 0` are never "featured", only listed.
 
-## Events → message → destination
+"Featured" = the top areas with a non-zero score, capped at 6 states (and top 5 municipios per state). Everything else stays available in a full, alphabetical list.
 
-| Event | Where it fires | Slack links to |
-|---|---|---|
-| High-risk assessment (Red/Orange) | `analyzeAssessment` (new hook) | `/a/{publicId}` (the report) |
-| New help request | `createHelpRequest` (replaces admin email) | `/admin/voluntarios` |
-| Help request resolved | `updateRequestProgress` (replaces admin email) | `/admin/voluntarios` |
-| New volunteer signup | volunteer signup (replaces admin email) | `/admin/voluntarios` |
-| Volunteer approved | approve flow (new FYI post) | `/admin/voluntarios` |
-| New feedback | `submitFeedback` (replaces admin email) | `/admin` |
-| Funnel/conversion drop | hourly funnel watchdog (replaces admin email) | `/admin` |
+## Presentation: featured group + full list
 
-## Email behavior
+- **Dropdowns** (assessment + data room): two `<optgroup>`s — `Zonas más afectadas / Most-affected areas` for the featured set, then `Todos los estados / All states` (alphabetical) for the rest. Municipio dropdown groups the same way for the chosen state.
+- **Volunteer chips**: a highlighted "most-affected" row of chips at the top (subtle accent ring + a small flame/alert marker), then the full chip list below under a muted "Otras zonas / Other areas" label. Selection logic is unchanged — volunteers can still pick anywhere.
+- Graceful fallback: if impact data fails to load (offline/SSR error), everything falls back to today's alphabetical list — no blank pickers.
 
-- **Admin-only emails become Slack-only**: new help request, help resolved, volunteer signup, feedback, funnel alert, and the daily admin help digest.
-- **Untouched (still email)**: resident magic links/reports, engineer request notifications, engineer approval email, engineer digests, and all auth emails.
+## Where it applies
 
-This means the admin inbox goes quiet and Slack becomes the live ops feed, exactly as requested.
+1. `/assess/property` — estado + municipio selects (the priority surface for affected residents).
+2. `/voluntarios` — state coverage chips.
+3. `DataRoomFilters` (`/datos`) — estado + municipio filter selects.
 
-## Technical details
+## Technical notes
 
-- New helper `src/lib/slack-notify.server.ts`:
-  - `sendSlackNotification({ kind, title, fields, url, urgent })` posts via the Lovable connector gateway (`POST https://connector-gateway.lovable.dev/slack/api/chat.postMessage`) with `Authorization: Bearer ${LOVABLE_API_KEY}` and `X-Connection-Api-Key: ${SLACK_API_KEY}`.
-  - Reads target channel from a `SLACK_NOTIFY_CHANNEL` config value.
-  - Builds Block Kit blocks: header with emoji, a fields section (risk tag with 🟢🟡🟠🔴, location, note), and an actions block with a URL button. `urgent` (Red) prepends `<!channel>` and sets `link_names`.
-  - Fully fail-safe: missing env or gateway errors are logged and swallowed, never blocking the user flow (mirrors the existing best-effort email pattern).
-  - Links built from the existing `APP_ROOT`/`absoluteUrl` helpers with `utm_source=slack`.
-- Wire-up points (all wrapped in try/catch, awaited best-effort):
-  - `src/lib/assessment.functions.ts` — after a successful insert, if `finalRisk` is `red`/`orange`, post to Slack.
-  - `src/lib/volunteers.functions.ts` — swap the three admin `sendSystemEmail` calls (`admin-help-new`, `admin-help-resolved`, `volunteer-signup-notification`) for `sendSlackNotification`; add an FYI post in the approve flow (keep the engineer-facing `volunteer-approved` email).
-  - `src/lib/feedback.functions.ts` — swap `feedback-notification` admin email for Slack.
-  - `src/lib/funnel-alert.server.ts` — swap `funnel-alert` admin email for Slack.
-  - `src/lib/admin-help-digest.server.ts` — post the daily digest summary to Slack instead of email.
-- No new tables, no schema changes, no client-side code. All work runs in existing server functions / cron-driven server helpers, so it's same-origin and low-bandwidth-safe.
-- Build verified with a typecheck.
-
-## Open item I'll confirm during build
-
-The exact channel name to post to (e.g. `#evaluaya-alertas`). I'll connect Slack first, then wire the channel in.
+- **Scoring helper** (new, in `src/lib/venezuela.ts` or a small `src/lib/impact.ts`): pure functions `scoreArea(counts)`, `rankStates(aggregates)`, `rankMunicipios(aggregates, state)` returning `{ featured: string[], rest: string[] }`. Unit-tested.
+- **Data source**: reuse the existing public, anonymized `getDamageAggregates` server fn (state + municipality + red/orange/yellow/total). No DB or schema changes.
+- **New server fn** `getImpactRanking` in `src/lib/stats.functions.ts` (public GET): calls `get_damage_aggregates`, returns `{ states: { featured, rest }, municipiosByState: Record<state, { featured, rest }> }`. One round-trip, anonymized counts only.
+- **Assessment route**: add a `loader` that calls `getImpactRanking` (public, SSR-safe — no auth) with `errorComponent`/`notFoundComponent`; feed the grouped lists into the selects. Geo auto-detect, drafts, and `?estado=` preselect behavior stay intact.
+- **Volunteers route**: extend the existing loader (already loads engineers) to also fetch the ranking; render featured vs. rest chips.
+- **DataRoomFilters**: accept an optional ranking prop (passed from `/datos`, which already loads aggregates) and reorder/group the `ESTADO_NAMES` and municipio lists; keep `availableStates`/`availableMunicipios` filtering behavior.
+- Bilingual i18n keys added for the new group labels (`picker.mostAffected`, `picker.allAreas`, `picker.otherAreas`).
+- Typecheck + unit tests for the scoring helper before finishing.
