@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { sendSystemEmail } from "./notify-email.server";
+import { sendSlackNotification, riskTag } from "./slack-notify.server";
 
 type AdminRequestRow = {
   id: string;
