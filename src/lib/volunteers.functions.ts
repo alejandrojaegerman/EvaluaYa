@@ -468,6 +468,9 @@ export type VerifiedEngineer = {
   organization: string | null;
   states: string[];
   volunteerType: VolunteerType;
+  /** Lifetime resolved help requests (powers recognition badges). */
+  resolved: number;
+  tier: RecognitionTier;
 };
 
 export const getAllApprovedEngineers = createServerFn({ method: "GET" })
@@ -476,11 +479,9 @@ export const getAllApprovedEngineers = createServerFn({ method: "GET" })
       const { supabaseAdmin } = await import(
         "@/integrations/supabase/client.server"
       );
-      const { data: rows, error } = await supabaseAdmin
-        .from("volunteer_engineers")
-        .select("id, name, organization, states, volunteer_type")
-        .eq("status", "approved")
-        .order("created_at", { ascending: true });
+      const { data: rows, error } = await supabaseAdmin.rpc(
+        "get_verified_engineers_public",
+      );
       if (error || !rows) {
         if (error) console.error("[volunteers] getAllApprovedEngineers", error);
         return [];
@@ -492,6 +493,8 @@ export const getAllApprovedEngineers = createServerFn({ method: "GET" })
         states: r.states ?? [],
         volunteerType:
           (r.volunteer_type as VolunteerType | null) ?? "individual",
+        resolved: r.resolved ?? 0,
+        tier: (r.tier as RecognitionTier) ?? "none",
       }));
     } catch (e) {
       console.error("[volunteers] getAllApprovedEngineers failed", e);
