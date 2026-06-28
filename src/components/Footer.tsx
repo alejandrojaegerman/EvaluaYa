@@ -37,6 +37,10 @@ export function Footer() {
         { to: "/feedback", label: t("nav.feedback") },
       ],
     },
+    {
+      heading: t("footer.legal"),
+      links: [{ to: "/privacidad", label: t("nav.privacy") }],
+    },
   ];
 
   return (

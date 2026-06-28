@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
@@ -52,6 +53,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MisReportesRoute = MisReportesRouteImport.update({
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
@@ -344,6 +353,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/privacidad'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/a/$publicId'
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/privacidad'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/a/$publicId'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
+    | '/privacidad'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/a/$publicId'
@@ -453,6 +465,7 @@ export interface RootRouteChildren {
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   MisReportesRoute: typeof MisReportesRoute
+  PrivacidadRoute: typeof PrivacidadRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   APublicIdRoute: typeof APublicIdRoute
@@ -496,6 +509,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mis-reportes': {
@@ -733,6 +753,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   MisReportesRoute: MisReportesRoute,
+  PrivacidadRoute: PrivacidadRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   APublicIdRoute: APublicIdRoute,
