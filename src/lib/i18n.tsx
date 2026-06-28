@@ -1644,7 +1644,7 @@ const en: Dict = {
     "Answer simple Yes / No / Unsure questions area by area and, if you can, add a photo.",
   "help.step3Title": "3. AI analysis",
   "help.step3Desc":
-    "Get a risk level (Green / Yellow / Red) with a plain-language explanation and next steps.",
+    "Get a risk level (Green / Yellow / Orange / Red) with a plain-language explanation and next steps.",
   "help.step4Title": "4. Save & share",
   "help.step4Desc":
     "Download a PDF, share it on WhatsApp, or save it to reference later.",
@@ -1655,12 +1655,18 @@ const en: Dict = {
   "help.faq.signupQ": "Do I need to sign up?",
   "help.faq.signupA":
     "No. You can assess your home without creating an account. If you'd like to save your reports for later, you can create an optional account with your email.",
+  "help.faq.behalfQ": "Can I assess on behalf of someone else?",
+  "help.faq.behalfA":
+    "Yes. You can complete an assessment on behalf of a neighbor or relative (for example, someone staying in a shelter) using what you can observe or photos they send you.",
   "help.faq.offlineQ": "Does it work offline or with a weak signal?",
   "help.faq.offlineA":
     "Yes. You can fill out the checklist with low signal; your progress is saved on your device and the analysis is sent once you're back online.",
   "help.faq.resultsQ": "What do the result colors mean?",
   "help.faq.resultsA":
-    "Green: no obvious structural risk detected. Yellow: use the building with caution and seek a professional review. Red: possible serious danger; evacuate and contact the authorities.",
+    "Green: no obvious structural risk detected. Yellow: use the building with caution and seek a professional review. Orange: serious damage; limit use and seek a professional review soon. Red: possible serious danger; evacuate and contact the authorities.",
+  "help.faq.engineerQ": "Can I ask an engineer to review my case?",
+  "help.faq.engineerA":
+    "Yes. When you finish your assessment you can send a free request. A verified volunteer engineer is notified and may contact you on WhatsApp to confirm or adjust the result, at no cost.",
   "help.faq.privacyQ": "Is my data private?",
   "help.faq.privacyA":
     "Yes. The assessment is anonymous. We don't ask for your name or personal details to use the app.",
@@ -1670,6 +1676,9 @@ const en: Dict = {
   "help.faq.photosQ": "Are photos required?",
   "help.faq.photosA":
     "No. Photos are optional, but they help make the analysis more accurate.",
+  "help.faq.newDamageQ": "Which damage should I report?",
+  "help.faq.newDamageA":
+    "Report only new damage caused by the recent earthquake, not cracks or issues that existed before. This keeps the result focused on the current risk.",
   "help.faq.officialQ": "Does this replace an official inspection?",
   "help.faq.officialA":
     "No. EvalúaYa offers preliminary guidance and does not replace an inspection by a licensed structural engineer or Civil Protection.",
