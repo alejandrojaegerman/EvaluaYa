@@ -1,6 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import {
+  rankMunicipios,
+  rankStates,
+  type AreaRow,
+} from "@/lib/impact";
+import { ESTADO_NAMES, municipiosFor } from "@/lib/venezuela";
+
 export type AreaAggregate = {
   state: string;
   municipality: string;
