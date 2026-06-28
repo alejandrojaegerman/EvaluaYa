@@ -1,37 +1,22 @@
-# Update Ayuda (Help Center) content
+# Make EvalúaYa MIT open source (repo-only)
 
-The help center copy predates several shipped features. Goal: bring it current without redesigning the page. All changes are copy-only, in `src/lib/i18n.tsx` (ES + EN `help.*` keys) plus one small array edit in `src/routes/ayuda.tsx`.
-
-## What's out of date
-
-1. **Risk colors show only 3 tiers.** `help.faq.resultsA` and `help.step3Desc` still say "Verde / Amarillo / Rojo". The app now uses a 4-tier taxonomy including 🟠 **Naranja / Orange (Serious)**.
-2. **No mention of requesting a verified engineer.** The app now lets residents send a help request after their assessment and get contacted by a verified volunteer engineer at no cost. There's no FAQ explaining this.
-3. **No "report only NEW damage" guidance**, which is now part of the assessment framing.
-4. **No guidance on assessing on behalf of someone else** (a neighbor or relative in a shelter), which onboarding now supports.
+Goal: license the codebase under MIT so anyone can reuse it, with **no visible change** to the running app or its UI.
 
 ## Changes
 
-### A. Fix risk-level copy (existing keys)
-- `help.faq.resultsA` (ES/EN): rewrite to 4 tiers — Verde (sin riesgo evidente), Amarillo (precaución, busca revisión), Naranja (daño serio, limita el uso y busca revisión pronto), Rojo (peligro grave, evacúa y contacta autoridades).
-- `help.step3Desc` (ES/EN): change "(Verde / Amarillo / Rojo)" to "(Verde / Amarillo / Naranja / Rojo)".
+1. **Add `LICENSE`** — Standard MIT license text in the project root, copyright `2026 EvalúaYa`. (No repo URL was provided, so the license stays generic; we can add the GitHub URL later once a repo exists.)
 
-### B. Add new FAQ entries (new keys + render list)
-Add three new FAQ pairs to both language blocks in `src/lib/i18n.tsx`:
-- `help.faq.engineerQ/A` — "¿Puedo pedir que un ingeniero revise mi caso?" → after the assessment you can send a free request; a verified volunteer engineer is notified and may contact you by WhatsApp to confirm or adjust the result. Links conceptually to the results screen.
-- `help.faq.newDamageQ/A` — "¿Qué daños debo reportar?" → report only NEW damage caused by the recent quake, not pre-existing cracks, so results stay accurate.
-- `help.faq.behalfQ/A` — "¿Puedo evaluar por otra persona?" → yes, you can complete an assessment on behalf of a neighbor or relative (e.g. someone in a shelter) using what you can observe or photos they send.
+2. **Add `README.md`** — Concise project README: what EvalúaYa is (post-earthquake structural self-assessment PWA for Venezuela, bilingual ES/EN), tech stack (TanStack Start, Tailwind v4, Lovable Cloud/Supabase), local dev commands, and an MIT license note. This is the standard place a license is surfaced for open source — it does not touch the app UI.
 
-Then update `FAQ_KEYS` and the `faqs` array in `src/routes/ayuda.tsx` to include `engineer`, `newDamage`, `behalf` so they render in the page and in the FAQ JSON-LD schema. Order: place `engineer` after `results`, `newDamage` after `photos`, `behalf` after `signup`.
+3. **Update `package.json`** — Set `"license": "MIT"`. Leave `"private": true` as-is unless you intend to publish the package to npm (open source ≠ npm-published; the GitHub repo being public is what makes it open source). I'll note this but not flip it without your say.
 
-### C. Light wording refresh
-- `help.faq.officialA`: keep, already accurate (mentions licensed engineer + Civil Protection).
-- Verify all engineer references say "verified" (not geographic proximity), consistent with prior copy decisions.
+4. **Update `public/llms.txt`** — Add a one-line note that the project is MIT-licensed (machine-readable surface only, not user-facing UI).
 
-## Out of scope
-- No layout/visual changes to the page.
-- No changes to the actual assessment, results, or engineer-request logic — copy only.
-- `public/llms.txt` already lists `/ayuda`; no change needed there.
+## Explicitly NOT changed
+- No footer link, badge, banner, or any other on-screen UI element.
+- No changes to routes, components, styles, or copy in `src/lib/i18n.tsx`.
+- No new dependencies.
 
-## Technical notes
-- `src/lib/i18n.tsx` has two parallel maps (ES around lines 533–577, EN around 1626–1670). Every new key must be added to BOTH or the typed `t()` lookups break.
-- `FAQ_KEYS` in `ayuda.tsx` drives both the rendered accordion and the `FAQPage` JSON-LD, so the new keys must exist before referencing them.
+## Notes
+- Making the code "open source" in practice also requires the **GitHub repo to be public** (Plus menu → GitHub). The files above make the license intent explicit; repo visibility is a separate toggle on GitHub you control.
+- If you later want the standard subtle "MIT" link in the footer, that's a one-line follow-up.
