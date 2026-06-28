@@ -530,6 +530,33 @@ function initials(label: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+const TIER_STYLE: Record<
+  Exclude<RecognitionTier, "none">,
+  { label: string; className: string }
+> = {
+  gold: { label: "Oro", className: "bg-amber-100 text-amber-800" },
+  silver: { label: "Plata", className: "bg-slate-200 text-slate-700" },
+  bronze: { label: "Bronce", className: "bg-orange-100 text-orange-800" },
+};
+
+/** Recognition badge shown next to engineers who have resolved requests. */
+function TierBadge({ tier }: { tier: RecognitionTier }) {
+  if (tier === "none") return null;
+  const s = TIER_STYLE[tier];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+        s.className,
+      )}
+    >
+      <Award className="size-3" aria-hidden />
+      {s.label}
+    </span>
+  );
+}
+
+
 function VerifiedEngineers({
   engineers,
 }: {
