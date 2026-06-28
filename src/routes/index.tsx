@@ -46,7 +46,18 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:url", content: SITE_URL },
     ],
-    links: [{ rel: "canonical", href: SITE_URL }],
+    links: [
+      { rel: "canonical", href: SITE_URL },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroEngineer,
+        fetchpriority: "high",
+        // Image is hidden below sm; only preload where it actually renders so
+        // low-bandwidth mobile users don't pay for an offscreen asset.
+        media: "(min-width: 640px)",
+      },
+    ],
   }),
   component: Index,
 });
