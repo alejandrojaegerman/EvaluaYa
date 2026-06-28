@@ -23,8 +23,6 @@ type ProgressRow = {
   stalled: number | null;
 };
 
-const ADMIN_URL =
-  "https://evaluaya.app/admin/voluntarios?utm_source=email&utm_medium=email&utm_campaign=admin_help_digest";
 
 /**
  * Sends the once-daily admin matching digest: open/claimed/stalled/resolved
