@@ -902,44 +902,24 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       });
 
 
-      // Recognition + impact stats. Resolved/response data lives on closed
-      // rows we didn't fetch above, so query the engineer's full history.
-      const { data: mineRows } = await supabaseAdmin
-        .from("help_requests")
-        .select("status, progress_stage, claimed_at, progress_updated_at")
-        .eq("claimed_by", engineer.id)
-        .limit(1000);
-
-      let resolved = 0;
-      const responseSpans: number[] = [];
-      for (const r of mineRows ?? []) {
-        const isResolved =
-          r.status === "closed" || r.progress_stage === "resolved";
-        if (isResolved) resolved += 1;
-        if (r.claimed_at && r.progress_updated_at) {
-          const span =
-            (new Date(r.progress_updated_at).getTime() -
-              new Date(r.claimed_at).getTime()) /
-            1000;
-          if (span > 0) responseSpans.push(span);
-        }
-      }
-      const avgResponseSeconds =
-        responseSpans.length > 0
-          ? Math.round(
-              responseSpans.reduce((s, v) => s + v, 0) / responseSpans.length,
-            )
-          : null;
-
-      const stats: EngineerStats = {
-        resolved,
-        claimedActive: requests.filter(
-          (r) => r.claimedByMe && r.status === "claimed",
-        ).length,
-        openInArea: requests.filter((r) => r.status === "open").length,
-        avgResponseSeconds,
-        tier: recognitionTier(resolved),
-      };
+      // Recognition + impact stats, computed atomically in the database so the
+      // tier thresholds stay consistent with the public verified roster.
+      const { data: statRows } = await supabaseAdmin.rpc("get_engineer_stats", {
+        _engineer_id: engineer.id,
+      });
+      const s = Array.isArray(statRows) ? statRows[0] : statRows;
+      const stats: EngineerStats = s
+        ? {
+            resolved: s.resolved ?? 0,
+            claimedActive: s.claimed_active ?? 0,
+            openInArea: s.open_in_area ?? 0,
+            avgResponseSeconds:
+              s.avg_response_seconds != null
+                ? Math.round(s.avg_response_seconds)
+                : null,
+            tier: (s.tier as RecognitionTier) ?? "none",
+          }
+        : emptyEngineerStats();
 
       return { engineer: mapEng(engineer), stats, requests };
     } catch (e) {
@@ -950,11 +930,12 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
 
 /** Recognition tier thresholds based on lifetime resolved requests. */
 export function recognitionTier(resolved: number): RecognitionTier {
-  if (resolved >= 15) return "gold";
-  if (resolved >= 5) return "silver";
+  if (resolved >= 10) return "gold";
+  if (resolved >= 4) return "silver";
   if (resolved >= 1) return "bronze";
   return "none";
 }
+
 
 function emptyEngineerStats(): EngineerStats {
   return {
