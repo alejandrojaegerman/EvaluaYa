@@ -633,12 +633,92 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] admin new-request notify failed", notifyErr);
       }
 
-      return { ok: true };
+      return { ok: true, residentToken };
     } catch (e) {
       console.error("[volunteers] submitHelpRequest failed", e);
       return { ok: false };
     }
   });
+
+// ---------------------------------------------------------------------------
+// Resident self-service request tracking (public, token-gated, non-sensitive)
+// ---------------------------------------------------------------------------
+
+const residentTokenSchema = z.object({
+  token: z.string().trim().uuid(),
+});
+
+export const getResidentRequestStatus = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => residentTokenSchema.parse(data))
+  .handler(async ({ data }): Promise<ResidentRequestStatus | null> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } = await supabaseAdmin.rpc(
+        "get_resident_request",
+        { _token: data.token },
+      );
+      if (error) {
+        console.error("[volunteers] getResidentRequestStatus", error);
+        return null;
+      }
+      const r = Array.isArray(rows) ? rows[0] : rows;
+      if (!r) return null;
+      return {
+        state: r.state ?? null,
+        municipality: r.municipality ?? null,
+        riskLevel: (r.risk_level as RiskLevel | null) ?? null,
+        status: (r.status as "open" | "claimed" | "closed") ?? "open",
+        progressStage: (r.progress_stage as ProgressStage | null) ?? null,
+        progressUpdatedAt: r.progress_updated_at ?? null,
+        createdAt: r.created_at,
+        claimedAt: r.claimed_at ?? null,
+        engineerName: r.engineer_name ?? null,
+        engineerNote: r.engineer_note ?? null,
+        assessmentPublicId: r.assessment_public_id ?? null,
+        residentConfirmedAt: r.resident_confirmed_at ?? null,
+        aiRiskLevel: (r.ai_risk_level as RiskLevel | null) ?? null,
+        priorRiskLevel: (r.prior_risk_level as RiskLevel | null) ?? null,
+        reportType: r.report_type ?? null,
+        engineerVerdict:
+          (r.engineer_verdict as "agree" | "adjust" | null) ?? null,
+      };
+    } catch (e) {
+      console.error("[volunteers] getResidentRequestStatus failed", e);
+      return null;
+    }
+  });
+
+const residentConfirmSchema = z.object({
+  token: z.string().trim().uuid(),
+  resolved: z.boolean(),
+  note: z.string().trim().max(600).optional().default(""),
+});
+
+export const residentConfirmRequest = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => residentConfirmSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { error } = await supabaseAdmin.rpc("resident_update_request", {
+        _token: data.token,
+        _resolved: data.resolved,
+        _note: data.note || null,
+      });
+      if (error) {
+        console.error("[volunteers] residentConfirmRequest", error);
+        return { ok: false };
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error("[volunteers] residentConfirmRequest failed", e);
+      return { ok: false };
+    }
+  });
+
 
 // ---------------------------------------------------------------------------
 // Engineer panel (gated by per-row access token)
