@@ -5,7 +5,7 @@ import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 
 type Entry = {
   loc: string;
-  changefreq: "daily" | "weekly" | "monthly";
+  changefreq: "daily" | "weekly" | "monthly" | "yearly";
   priority: string;
 };
 
