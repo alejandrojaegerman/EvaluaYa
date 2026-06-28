@@ -218,72 +218,13 @@ function VolunteersPage() {
         </p>
       </section>
 
-      {/* Verified engineers — social proof, names + org only, no contact */}
-      <VerifiedEngineers engineers={engineers} />
+      {/* Compact trust line — social proof without burying the call to action */}
+      <VerifiedCount engineers={engineers} />
 
-      {/* Three pillars: recruit → validate → connect (the page that owns the story) */}
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        {[
-          { title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
-          { title: t("engineers.validate"), desc: t("engineers.validateDesc") },
-          { title: t("engineers.connect"), desc: t("engineers.connectDesc") },
-        ].map((p, i) => (
-          <div
-            key={i}
-            className="rounded-2xl border border-border bg-card p-4 shadow-sm"
-          >
-            <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-              {i + 1}
-            </span>
-            <p className="mt-2 font-semibold leading-tight">{p.title}</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">{p.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <ol className="mt-5 space-y-3">
-        {steps.map((s, i) => (
-          <li
-            key={i}
-            className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-              <s.icon className="size-5" aria-hidden />
-            </span>
-            <p className="pt-1 text-sm leading-relaxed">{s.text}</p>
-          </li>
-        ))}
-      </ol>
-
-      {/* Residents connect only after completing an evaluation */}
-      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <ClipboardList className="size-5" aria-hidden />
-          </span>
-          <div>
-            <p className="font-semibold leading-tight">
-              {t("vol.residentNoteTitle")}
-            </p>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {t("vol.residentNoteBody")}
-            </p>
-          </div>
-        </div>
-        <Button asChild variant="outline" className="shrink-0">
-          <Link to="/assess/property">
-            {t("vol.residentNoteCta")}
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </div>
-
-
-
+      {/* Sign-up form — lead with the call to action */}
       <form
         onSubmit={onSubmit}
-        className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm"
+        className="mt-5 rounded-2xl border border-border bg-card p-4 shadow-sm"
       >
         <h2 className="font-display text-base font-bold">{t("vol.formTitle")}</h2>
 
@@ -465,7 +406,6 @@ function VolunteersPage() {
             </div>
           </div>
 
-
           <div>
             <Label>{t("vol.states")}</Label>
             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -556,6 +496,69 @@ function VolunteersPage() {
           {busy ? t("vol.sending") : t("vol.submit")}
         </Button>
       </form>
+
+      {/* Three pillars: recruit → validate → connect (the page that owns the story) */}
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        {[
+          { title: t("engineers.recruit"), desc: t("engineers.recruitDesc") },
+          { title: t("engineers.validate"), desc: t("engineers.validateDesc") },
+          { title: t("engineers.connect"), desc: t("engineers.connectDesc") },
+        ].map((p, i) => (
+          <div
+            key={i}
+            className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+          >
+            <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              {i + 1}
+            </span>
+            <p className="mt-2 font-semibold leading-tight">{p.title}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">{p.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <ol className="mt-5 space-y-3">
+        {steps.map((s, i) => (
+          <li
+            key={i}
+            className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+              <s.icon className="size-5" aria-hidden />
+            </span>
+            <p className="pt-1 text-sm leading-relaxed">{s.text}</p>
+          </li>
+        ))}
+      </ol>
+
+      {/* Residents connect only after completing an evaluation */}
+      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ClipboardList className="size-5" aria-hidden />
+          </span>
+          <div>
+            <p className="font-semibold leading-tight">
+              {t("vol.residentNoteTitle")}
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("vol.residentNoteBody")}
+            </p>
+          </div>
+        </div>
+        <Button asChild variant="outline" className="shrink-0">
+          <Link to="/assess/property">
+            {t("vol.residentNoteCta")}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </div>
+
+
+      {/* Verified engineers — social proof at the bottom, names + org only, no contact */}
+      <VerifiedEngineers engineers={engineers} />
+
     </AppShell>
   );
 }
@@ -595,7 +598,27 @@ function TierBadge({ tier }: { tier: RecognitionTier }) {
 }
 
 
+/** Compact one-line social proof shown under the hero; hidden when empty. */
+function VerifiedCount({ engineers }: { engineers: VerifiedEngineer[] }) {
+  const { t } = useLang();
+  const count = engineers.length;
+  if (count === 0) return null;
+
+  const label =
+    count === 1
+      ? t("vol.verifiedCountOne").replace("{n}", String(count))
+      : t("vol.verifiedCountMany").replace("{n}", String(count));
+
+  return (
+    <div className="mt-4 flex items-center gap-2 rounded-full border border-primary/20 bg-secondary/40 px-4 py-2 text-sm font-semibold text-primary">
+      <ShieldCheck className="size-4 shrink-0" aria-hidden />
+      <span>{label}</span>
+    </div>
+  );
+}
+
 function VerifiedEngineers({
+
   engineers,
 }: {
   engineers: VerifiedEngineer[];
