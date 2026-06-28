@@ -378,30 +378,33 @@ export const submitEngineerSignup = createServerFn({ method: "POST" })
         return { ok: false };
       }
 
-      // Notify the site owner (best-effort — never blocks the signup).
+      // Notify the site team in Slack (best-effort — never blocks the signup).
       try {
-        const { sendSystemEmail } = await import("./notify-email.server");
+        const { sendSlackNotification } = await import("./slack-notify.server");
         const stateNames = data.states
           .map((s) => ESTADO_NAMES.find((n) => n === s) ?? s)
           .join(", ");
-        await sendSystemEmail({
-          templateName: "volunteer-signup-notification",
-          templateData: {
-            volunteerType: data.volunteerType,
-            name: data.name,
-            organization: data.organization || "",
-            contactName: data.name,
-            whatsapp: data.whatsapp,
-            email: data.email || "",
-            license: data.licenseNumber || "",
-            trustScore: String(checks.score),
-            trustFlags: checks.flags.join(", "),
-            hasCredential: data.credentialPath ? "Sí" : "No",
-            states: stateNames || "—",
-            specialization: data.specialization || "",
-            note: data.note || "",
-            adminUrl: "https://evaluaya.app/admin/voluntarios",
-          },
+        await sendSlackNotification({
+          emoji: "🙋",
+          title:
+            data.volunteerType === "organization"
+              ? "Nueva organización voluntaria"
+              : "Nuevo ingeniero voluntario",
+          context: `Confianza: ${checks.score}${
+            checks.flags.length ? ` · ${checks.flags.join(", ")}` : ""
+          }`,
+          fields: [
+            { label: "Nombre", value: data.name },
+            { label: "Organización", value: data.organization || "—" },
+            { label: "WhatsApp", value: data.whatsapp },
+            { label: "Email", value: data.email || "—" },
+            { label: "Colegiatura (CIV)", value: data.licenseNumber || "—" },
+            { label: "Credencial", value: data.credentialPath ? "Sí" : "No" },
+            { label: "Estados", value: stateNames || "—" },
+            { label: "Especialización", value: data.specialization || "—" },
+          ],
+          url: "/admin/voluntarios",
+          buttonLabel: "Revisar voluntario",
         });
       } catch (notifyErr) {
         console.error("[volunteers] signup notification failed", notifyErr);
