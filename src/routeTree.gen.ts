@@ -32,6 +32,7 @@ import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LovableCronFunnelAlertRouteImport } from './routes/lovable/cron/funnel-alert'
 import { Route as LovableCronEngineerDigestRouteImport } from './routes/lovable/cron/engineer-digest'
+import { Route as LovableCronCompletionEngineRouteImport } from './routes/lovable/cron/completion-engine'
 import { Route as LovableCronAdminHelpDigestRouteImport } from './routes/lovable/cron/admin-help-digest'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -161,6 +162,12 @@ const LovableCronEngineerDigestRoute =
     path: '/lovable/cron/engineer-digest',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableCronCompletionEngineRoute =
+  LovableCronCompletionEngineRouteImport.update({
+    id: '/lovable/cron/completion-engine',
+    path: '/lovable/cron/completion-engine',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableCronAdminHelpDigestRoute =
   LovableCronAdminHelpDigestRouteImport.update({
     id: '/lovable/cron/admin-help-digest',
@@ -252,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
+  '/lovable/cron/completion-engine': typeof LovableCronCompletionEngineRoute
   '/lovable/cron/engineer-digest': typeof LovableCronEngineerDigestRoute
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -289,6 +297,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
+  '/lovable/cron/completion-engine': typeof LovableCronCompletionEngineRoute
   '/lovable/cron/engineer-digest': typeof LovableCronEngineerDigestRoute
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -327,6 +336,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
+  '/lovable/cron/completion-engine': typeof LovableCronCompletionEngineRoute
   '/lovable/cron/engineer-digest': typeof LovableCronEngineerDigestRoute
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -366,6 +376,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/voluntarios/'
     | '/lovable/cron/admin-help-digest'
+    | '/lovable/cron/completion-engine'
     | '/lovable/cron/engineer-digest'
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/voluntarios'
     | '/lovable/cron/admin-help-digest'
+    | '/lovable/cron/completion-engine'
     | '/lovable/cron/engineer-digest'
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
@@ -440,6 +452,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/voluntarios/'
     | '/lovable/cron/admin-help-digest'
+    | '/lovable/cron/completion-engine'
     | '/lovable/cron/engineer-digest'
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
@@ -478,6 +491,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
   LovableCronAdminHelpDigestRoute: typeof LovableCronAdminHelpDigestRoute
+  LovableCronCompletionEngineRoute: typeof LovableCronCompletionEngineRoute
   LovableCronEngineerDigestRoute: typeof LovableCronEngineerDigestRoute
   LovableCronFunnelAlertRoute: typeof LovableCronFunnelAlertRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -658,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableCronEngineerDigestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/cron/completion-engine': {
+      id: '/lovable/cron/completion-engine'
+      path: '/lovable/cron/completion-engine'
+      fullPath: '/lovable/cron/completion-engine'
+      preLoaderRoute: typeof LovableCronCompletionEngineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/cron/admin-help-digest': {
       id: '/lovable/cron/admin-help-digest'
       path: '/lovable/cron/admin-help-digest'
@@ -766,6 +787,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
   LovableCronAdminHelpDigestRoute: LovableCronAdminHelpDigestRoute,
+  LovableCronCompletionEngineRoute: LovableCronCompletionEngineRoute,
   LovableCronEngineerDigestRoute: LovableCronEngineerDigestRoute,
   LovableCronFunnelAlertRoute: LovableCronFunnelAlertRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
