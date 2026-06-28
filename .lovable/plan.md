@@ -1,38 +1,53 @@
-# Impact-ordered location pickers
+# Optimize the Volunteers page for sign-ups
 
-Use the real damage data to surface the hardest-hit states and municipios first across every place people pick a location — the assessment flow, the volunteer signup, and the data room — while keeping the full, inclusive list one tap away.
+## The problem
 
-## Ranking definition (severity-weighted)
-
-A pure scoring helper ranks each area:
+Right now `/voluntarios` makes people scroll through a lot before they can act. The current order is:
 
 ```text
-impactScore = red×4 + orange×2 + yellow×1 + (total × 0.25)
+1. Hero
+2. Full verified-engineer roster (cards w/ initials, tiers, states)  ← big block, top of page
+3. Three pillars (recruit → validate → connect)
+4. Three "how it works" steps
+5. Resident note ("connect after your evaluation")
+6. Sign-up form  ← the actual goal, all the way at the bottom
 ```
 
-Red/Orange dominate so danger hotspots rise even with few total reports (e.g. La Guaira: 8 reports but 7 red ranks above busier-but-safer areas). Total adds a small tiebreaker. Areas with `score = 0` are never "featured", only listed.
+The roster is the most "convoluted" piece — it's detailed social proof aimed at *residents*, but this page's job is to convert *engineers* into signing up. Pushing the form down and leading with a directory buries the call to action.
 
-"Featured" = the top areas with a non-zero score, capped at 6 states (and top 5 municipios per state). Everything else stays available in a full, alphabetical list.
+## Recommendation: keep it, but demote it
 
-## Presentation: featured group + full list
+Don't delete the roster entirely — a visible community of verified engineers is real trust ("others like me already joined"). Instead:
 
-- **Dropdowns** (assessment + data room): two `<optgroup>`s — `Zonas más afectadas / Most-affected areas` for the featured set, then `Todos los estados / All states` (alphabetical) for the rest. Municipio dropdown groups the same way for the chosen state.
-- **Volunteer chips**: a highlighted "most-affected" row of chips at the top (subtle accent ring + a small flame/alert marker), then the full chip list below under a muted "Otras zonas / Other areas" label. Selection logic is unchanged — volunteers can still pick anywhere.
-- Graceful fallback: if impact data fails to load (offline/SSR error), everything falls back to today's alphabetical list — no blank pickers.
+- Replace the big top block with a **single compact trust line** near the hero (e.g. "🛡️ 12 ingenieros y organizaciones ya verificados / 12 verified engineers & organizations already onboard"). One sentence, no cards.
+- Move the **full roster to the very bottom** of the page, after the form, as a showcase for anyone who scrolls.
+- When there are zero approved engineers, show nothing up top (no empty-state block) so a new community doesn't look empty — the bottom section keeps its existing empty state or is hidden.
 
-## Where it applies
+## New page order
 
-1. `/assess/property` — estado + municipio selects (the priority surface for affected residents).
-2. `/voluntarios` — state coverage chips.
-3. `DataRoomFilters` (`/datos`) — estado + municipio filter selects.
+```text
+1. Hero
+2. Compact trust line (count only; hidden when count = 0)
+3. Sign-up form  ← now high, right after the hero
+4. Three pillars (recruit → validate → connect)
+5. Three "how it works" steps
+6. Resident note ("connect after your evaluation")
+7. Full verified-engineer roster (social proof, at the bottom)
+```
 
-## Technical notes
+This puts the form in the first screen or two, keeps the explanatory context for people who want it, and preserves the roster as closing reassurance.
 
-- **Scoring helper** (new, in `src/lib/venezuela.ts` or a small `src/lib/impact.ts`): pure functions `scoreArea(counts)`, `rankStates(aggregates)`, `rankMunicipios(aggregates, state)` returning `{ featured: string[], rest: string[] }`. Unit-tested.
-- **Data source**: reuse the existing public, anonymized `getDamageAggregates` server fn (state + municipality + red/orange/yellow/total). No DB or schema changes.
-- **New server fn** `getImpactRanking` in `src/lib/stats.functions.ts` (public GET): calls `get_damage_aggregates`, returns `{ states: { featured, rest }, municipiosByState: Record<state, { featured, rest }> }`. One round-trip, anonymized counts only.
-- **Assessment route**: add a `loader` that calls `getImpactRanking` (public, SSR-safe — no auth) with `errorComponent`/`notFoundComponent`; feed the grouped lists into the selects. Geo auto-detect, drafts, and `?estado=` preselect behavior stay intact.
-- **Volunteers route**: extend the existing loader (already loads engineers) to also fetch the ranking; render featured vs. rest chips.
-- **DataRoomFilters**: accept an optional ranking prop (passed from `/datos`, which already loads aggregates) and reorder/group the `ESTADO_NAMES` and municipio lists; keep `availableStates`/`availableMunicipios` filtering behavior.
-- Bilingual i18n keys added for the new group labels (`picker.mostAffected`, `picker.allAreas`, `picker.otherAreas`).
-- Typecheck + unit tests for the scoring helper before finishing.
+## Implementation notes (technical)
+
+- File: `src/routes/voluntarios.index.tsx` only. No backend, schema, or server-fn changes — `getAllApprovedEngineers` / `getImpactRanking` loader stays the same.
+- Split the existing `VerifiedEngineers` component into two pieces:
+  - A small `VerifiedCount` inline element (icon + localized count) rendered right under the hero, returning `null` when `engineers.length === 0`.
+  - The existing roster grid (`<ul>` of cards) kept as `VerifiedEngineers`, rendered once at the bottom after the `</form>`.
+- Reorder the JSX in `VolunteersPage`: move the `<form>` block up to immediately follow the hero/trust line, and move `<VerifiedEngineers …>` to the end.
+- Reuse existing i18n keys (`vol.verifiedCountOne` / `vol.verifiedCountMany`, `vol.verifiedTitle`, `vol.verifiedSubtitle`). Add at most one new key pair if a distinct short trust-line label is needed (`vol.trustLine` ES/EN); otherwise reuse the count strings.
+- Keep all `TierBadge` / `initials` helpers; nothing about an individual card changes.
+- Verify with a typecheck and a quick mobile-viewport screenshot that the form now sits near the top and the roster renders at the bottom.
+
+## Open choice
+
+I recommend **demote + move to bottom** (above). If you'd rather **remove the roster entirely**, I'll drop both the top block and the bottom section and keep only the compact count line — say the word and I'll adjust the plan.
