@@ -48,7 +48,7 @@ export const Route = createFileRoute("/voluntarios/")({
   head: () => {
     const title = "Ingenieros voluntarios | EvalúaYa";
     const description =
-      "Iniciativa comunitaria sin fines de lucro. Súmate como ingeniero voluntario u organización en Venezuela: cuando una familia lo solicita tras su autoevaluación, la orientas por videollamada y, si hace falta, en persona.";
+      "Súmate como ingeniero voluntario u organización en Venezuela: cuando una familia lo solicita, la orientas por videollamada y, si hace falta, en persona.";
     const image = absoluteUrl("/og-voluntarios.jpg");
     return {
       meta: [
