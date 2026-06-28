@@ -468,6 +468,8 @@ const es: Dict = {
     "Estás viendo un resumen. Abre la sala de datos en una computadora para filtros, mapa ampliado y análisis completo.",
   "data.openMap": "Ver mapa completo",
   "data.filters": "Filtros",
+  "picker.mostAffected": "Zonas más afectadas",
+  "picker.allAreas": "Todas las zonas",
   "data.filterState": "Estado",
   "data.filterMunicipality": "Municipio",
   "data.filterAll": "Todos",
