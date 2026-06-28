@@ -92,7 +92,7 @@ function Index() {
   return (
     <AppShell>
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary/80 px-6 py-8 text-primary-foreground shadow-lg">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-[oklch(0.36_0.06_220)] px-6 py-8 text-primary-foreground shadow-lg">
         <img
           src={heroEngineer}
           alt=""
