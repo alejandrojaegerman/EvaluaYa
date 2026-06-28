@@ -99,20 +99,26 @@ export async function runFunnelAlert(): Promise<{
     }
   }
 
-  const lastHour = recent[recent.length - 1]?.hour ?? "";
-  const res = await sendSystemEmail({
-    templateName: "funnel-alert",
-    idempotencyKey: `funnel-alert:${lastHour}`,
-    templateData: {
-      recentStarted,
-      recentResult,
-      recentConversion: Math.round(recentConv * 100),
-      baselineConversion: Math.round(baselineConv * 100),
-      windowLabel: `últimas ${RECENT_HOURS} horas`,
-      worstStepLabel: worstStep ? STEP_LABEL_ES[worstStep] : null,
-      adminUrl: ADMIN_URL,
-    },
+  const worstStepLabel = worstStep ? STEP_LABEL_ES[worstStep] : null;
+  const res = await sendSlackNotification({
+    emoji: "📉",
+    title: "Caída de conversión detectada",
+    context: `Las ${RECENT_HOURS} últimas horas vs. promedio de 7 días`,
+    fields: [
+      {
+        label: "Conversión reciente",
+        value: `${Math.round(recentConv * 100)}% (${recentResult}/${recentStarted})`,
+      },
+      { label: "Conversión base", value: `${Math.round(baselineConv * 100)}%` },
+      ...(worstStepLabel
+        ? [{ label: "Paso más débil", value: worstStepLabel }]
+        : []),
+    ],
+    url: "/admin",
+    buttonLabel: "Abrir panel admin",
+    urgent: true,
   });
 
   return { ok: res.ok, alerted: res.ok };
+
 }
