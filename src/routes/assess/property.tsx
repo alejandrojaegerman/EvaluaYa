@@ -24,10 +24,16 @@ import type {
   StructuralType,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
+import { splitFeatured } from "@/lib/impact";
 import { trackStep } from "@/lib/track";
 import { useLang } from "@/lib/i18n";
 import { getSeismicIntensity } from "@/lib/shakemap.functions";
 import { spectralDemand, type SeismicReading } from "@/lib/shakemap";
+import {
+  getImpactRanking,
+  EMPTY_IMPACT_RANKING,
+  type ImpactRanking,
+} from "@/lib/stats.functions";
 import { cn } from "@/lib/utils";
 import {
   ESTADO_NAMES,
