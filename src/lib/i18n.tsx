@@ -2036,6 +2036,7 @@ const en: Dict = {
   "nav.methodology": "Methodology",
   "home.methodologyLink": "How the result is calculated",
   "help.tremorGuideLink": "What to do after a tremor",
+  "help.boconoGuideLink": "Boconó Fault: Venezuela's main fault",
 
   "methodology.title": "How EvalúaYa works",
   "methodology.subtitle":
