@@ -106,8 +106,8 @@ function Index() {
           src={heroEngineer}
           alt=""
           aria-hidden
-          width={816}
-          height={816}
+          width={400}
+          height={400}
           fetchPriority="high"
           decoding="async"
           className="pointer-events-none absolute -right-6 -top-2 hidden h-44 w-44 select-none opacity-90 sm:block"
