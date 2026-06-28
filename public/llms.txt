@@ -17,3 +17,7 @@ EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o loc
 ## Optional
 
 - [Zonas regionales](/zona/distrito-capital): Páginas regionales con estadísticas locales por estado.
+
+## License
+
+EvalúaYa es software de código abierto bajo licencia MIT. / EvalúaYa is open-source software under the MIT License.
