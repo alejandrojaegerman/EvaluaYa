@@ -589,6 +589,7 @@ const es: Dict = {
   "help.moreBody":
     "Escríbenos si tienes una duda que no aparece aquí, o conoce cómo calculamos los resultados.",
   "help.contactCta": "Enviar un comentario",
+  "help.emailUs": "Escríbenos por correo",
 
 
   "home.timePromise": "Gratis · 2 minutos · sin registro",
