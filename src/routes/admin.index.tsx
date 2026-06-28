@@ -26,6 +26,7 @@ import {
 } from "recharts";
 
 import { AppShell } from "@/components/AppShell";
+import { QualityWatchdog } from "@/components/admin/QualityWatchdog";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
 import { Button } from "@/components/ui/button";
