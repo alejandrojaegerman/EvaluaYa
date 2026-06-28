@@ -760,6 +760,7 @@ const es: Dict = {
   "nav.methodology": "Metodología",
   "home.methodologyLink": "Cómo se calcula el resultado",
   "help.tremorGuideLink": "Qué hacer después de un temblor",
+  "help.boconoGuideLink": "Falla de Boconó: la principal falla de Venezuela",
 
   "methodology.title": "Cómo funciona EvalúaYa",
   "methodology.subtitle":
