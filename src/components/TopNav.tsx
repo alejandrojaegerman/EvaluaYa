@@ -47,7 +47,7 @@ export function TopNav() {
           </span>
         </Link>
 
-        <nav className="ml-2 flex items-center gap-1">
+        <nav className="ml-2 flex items-center gap-0.5">
           <Link
             to="/"
             className={linkClass}
@@ -87,7 +87,7 @@ export function TopNav() {
             activeProps={{ "data-status": "active" }}
           >
             <HandHeart className="size-4" aria-hidden />
-            {t("nav.volunteers")}
+            {t("nav.volunteersShort")}
           </Link>
           <Link
             to="/metodologia"
