@@ -668,7 +668,7 @@ const es: Dict = {
   "map.subtitle":
     "Reportes anónimos y agregados por zona. Nunca se muestran direcciones ni fotos.",
   "map.totalAssessments": "Evaluaciones",
-  "map.areasLabel": "Zonas",
+  "map.areasLabel": "Municipios",
   "map.high": "Riesgo alto",
   "map.urgent": "Riesgo serio",
   "map.moderate": "Riesgo moderado",
@@ -1965,7 +1965,7 @@ const en: Dict = {
   "map.subtitle":
     "Anonymous reports aggregated by area. Addresses and photos are never shown.",
   "map.totalAssessments": "Assessments",
-  "map.areasLabel": "Areas",
+  "map.areasLabel": "Municipalities",
   "map.high": "High risk",
   "map.urgent": "Serious risk",
   "map.moderate": "Moderate risk",
