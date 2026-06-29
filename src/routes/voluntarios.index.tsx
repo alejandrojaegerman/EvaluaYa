@@ -70,7 +70,7 @@ export const Route = createFileRoute("/voluntarios/")({
 
 function VolunteersPage() {
   const { t } = useLang();
-  const { engineers, ranking } = Route.useLoaderData();
+  const { ranking } = Route.useLoaderData();
   const submit = useServerFn(submitEngineerSignup);
 
 
