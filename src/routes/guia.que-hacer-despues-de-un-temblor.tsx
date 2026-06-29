@@ -325,6 +325,11 @@ function GuidePage() {
           </Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
+          <Link to="/guia/grietas-peligrosas-despues-de-un-sismo">
+            {c.cracksLink}
+          </Link>
+        </Button>
+        <Button asChild variant="link" className="mt-1 w-full">
           <Link to="/metodologia">{c.moreLink}</Link>
         </Button>
       </section>
