@@ -163,6 +163,29 @@ function Index() {
         ))}
       </section>
 
+      {/* "Did it just shake?" — captures real-time quake intent and routes it
+          into an assessment. Links to the language-matched live page. */}
+      <section className="mt-4">
+        <Link
+          to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
+          className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 shadow-sm transition-colors hover:bg-secondary/60"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Waves className="size-5" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold leading-tight">{t("home.todayTitle")}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("home.todayDesc")}
+            </p>
+          </div>
+          <ChevronRight
+            className="size-4 shrink-0 text-muted-foreground"
+            aria-hidden
+          />
+        </Link>
+      </section>
+
       {/* Pending submission — offline-first resume card */}
       {pending && (
         <section className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-4 shadow-sm">
