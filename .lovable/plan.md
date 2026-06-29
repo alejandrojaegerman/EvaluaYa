@@ -1,19 +1,31 @@
 ## Goal
+Replace the single combined "casos urgentes" home counter with a category breakdown showing the **orange** and **red** counts separately, each labeled with the app's standard risk terminology.
 
-Strip social-proof clutter from `/voluntarios` and keep the page laser-focused on converting potential volunteers. Remove the volunteer count chip under the hero and the full verified-engineers roster at the bottom.
+## Universal terminology (reused from result cards)
+- Red → `result.red.tag` = "Riesgo alto" / "High risk"
+- Orange → `result.orange.tag` = "Riesgo serio" / "Serious risk"
 
-## Changes — `src/routes/voluntarios.index.tsx`
+No new strings invented — we reuse the same labels the result screen and PDF already use, so wording stays consistent app-wide.
 
-- **Remove the top count chip**: delete the `<VerifiedCount engineers={engineers} />` render (line ~222) and delete the `VerifiedCount` component definition (lines ~601–618).
-- **Remove the bottom roster**: delete the `<VerifiedEngineers engineers={engineers} />` render (line ~560) and delete the `VerifiedEngineers` component definition (lines ~620–717), plus the now-unused `initials`, `TIER_STYLE`, and `TierBadge` helpers.
-- **Clean up the loader**: drop `getAllApprovedEngineers` from the loader so the page no longer fetches the engineer list; keep `getImpactRanking` (still used for the featured-states chips in the form). Loader returns just `{ ranking }`, and the component reads only `ranking`.
-- **Prune imports** that become unused: `getAllApprovedEngineers`, `VerifiedEngineer`, `RecognitionTier`, `ShieldCheck`, `Award`, and any others left dangling after the deletions.
+## Layout
+Keep the existing two-card trust row. The right-hand card changes from one big number to a compact two-row breakdown:
 
-## Result
+```text
+┌────────────────────┐  ┌────────────────────┐
+│       1,234        │  │  ● Riesgo serio  18 │   (orange dot + count)
+│ evaluaciones       │  │  ● Riesgo alto   42 │   (red dot + count)
+│ realizadas         │  └────────────────────┘
+└────────────────────┘
+```
 
-The page flow becomes: hero → sign-up form (with featured-state chips) → the recruit/validate/connect pillars and how-it-works steps → resident note. No volunteer counts or roster anywhere, putting full emphasis on the call to action.
+- Orange row: `text-risk-orange` count + `result.orange.tag` label, small color dot.
+- Red row: `text-risk-red` count + `result.red.tag` label, small color dot.
+- Numbers come from existing `totals.orange` and `totals.red` (no backend change).
+
+## Changes
+- `src/routes/index.tsx` (lines ~209-216): swap the single `home.statUrgent` card for the two-row orange/red breakdown using `result.orange.tag` and `result.red.tag`.
+- `src/lib/i18n.tsx`: remove the now-unused `home.statUrgent` key in both ES and EN (or leave it — harmless; I'll remove it to keep things clean).
 
 ## Notes
-
-- The verified-engineers roster still exists in the admin panel (`/admin/voluntarios`) — this only removes it from the public recruiting page.
-- Pure presentation change; no backend or i18n changes required (leftover `vol.verified*` keys can stay unused).
+- Frontend/copy only; the `get_damage_totals` RPC and `totals` shape are unchanged.
+- This drops the alarmist "casos urgentes" framing entirely in favor of the neutral, consistent risk-tier labels.
