@@ -248,6 +248,32 @@ function DataRoomPage() {
     };
   }, [filters]);
 
+  // Photo documentation — anonymized counts only, respects active filters.
+  const [photoStats, setPhotoStats] = useState<PhotoStats | null>(null);
+  const [photoLoading, setPhotoLoading] = useState(false);
+  useEffect(() => {
+    let active = true;
+    setPhotoStats(null);
+    setPhotoLoading(true);
+    const { from, to } = rangeToDates(filters.range);
+    getPhotoStats({
+      data: {
+        state: filters.state ?? undefined,
+        municipality: filters.municipality ?? undefined,
+        from,
+        to,
+      },
+    })
+      .then((s) => active && setPhotoStats(s))
+      .catch(() => {})
+      .finally(() => active && setPhotoLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [filters]);
+
+
+
   // Severity-weighted ranking so the hardest-hit areas surface first in filters.
   const impactRanking = useMemo(
     () => ({
