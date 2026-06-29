@@ -70,6 +70,8 @@ import {
   type AdminHelpRequest,
   type AdminMatchingProgress,
 } from "@/lib/volunteers.functions";
+import { getPhotoStats, type PhotoStats } from "@/lib/stats.functions";
+import { PhotoEvidencePanel } from "@/components/PhotoEvidencePanel";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
