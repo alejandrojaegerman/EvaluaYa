@@ -15,6 +15,8 @@ export const Route = createFileRoute("/api/public/v1/timeseries.json")({
       GET: async ({ request }) => {
         const filters = parseFilters(request.url);
         const room = await getDataRoom({ data: filters });
+        const { logApiUsage } = await import("@/lib/api-usage.server");
+        await logApiUsage("timeseries", filters, request);
         return jsonResponse(
           envelope("timeseries", { filters, timeseries: room.timeseries }),
           600,

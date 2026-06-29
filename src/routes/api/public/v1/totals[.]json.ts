@@ -15,6 +15,8 @@ export const Route = createFileRoute("/api/public/v1/totals.json")({
       GET: async ({ request }) => {
         const filters = parseFilters(request.url);
         const room = await getDataRoom({ data: filters });
+        const { logApiUsage } = await import("@/lib/api-usage.server");
+        await logApiUsage("totals", filters, request);
         return jsonResponse(
           envelope("totals", { filters, totals: room.totals }),
           600,
