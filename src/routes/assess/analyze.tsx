@@ -251,7 +251,7 @@ function AnalyzeStep() {
     };
   }, []);
 
-
+  // Auto-retry when connection returns while waiting.
   useEffect(() => {
     if (online && phase === "waiting") run();
   }, [online, phase, run]);
