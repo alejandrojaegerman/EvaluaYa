@@ -183,6 +183,9 @@ function AdminDashboard() {
             if (f.ok) setFunnel(f.metrics);
           })
           .catch(() => {});
+        getPhotoStats({ data: {} })
+          .then((s) => setPhotoStats(s))
+          .catch(() => {});
       } else {
         toast.error(t("admin.wrong"));
       }
