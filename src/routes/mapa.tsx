@@ -475,7 +475,7 @@ function MapPage() {
           {t("map.subtitle")}
         </p>
         {!loading && hasData && (
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground/80">
+          <p className="mt-2 hidden text-xs leading-relaxed text-muted-foreground/80 md:block">
             {t("map.storyIntro")}
           </p>
         )}
@@ -500,7 +500,7 @@ function MapPage() {
       )}
 
       {!loading && hasData && (
-        <>
+        <div className="flex flex-col">
           {/* Headline counters */}
           <Reveal as="section" className="mt-6 grid grid-cols-2 gap-3">
             <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
@@ -570,7 +570,7 @@ function MapPage() {
           {/* Interactive map (Leaflet) with SVG bubble-map fallback */}
           <Reveal
             as="section"
-            className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+            className="order-first mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
             delayMs={60}
           >
             <p className="text-sm font-semibold">{t("map.geoTitle")}</p>
@@ -824,7 +824,7 @@ function MapPage() {
             </p>
           </Reveal>
 
-        </>
+        </div>
       )}
 
 
