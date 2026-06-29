@@ -18,6 +18,13 @@ export function Footer() {
       heading: t("footer.explore"),
       links: [
         { to: "/", label: t("nav.home") },
+        {
+          to:
+            lang === "es"
+              ? "/temblo-en-venezuela-hoy"
+              : "/earthquake-in-venezuela-today",
+          label: t("nav.today"),
+        },
         { to: "/mapa", label: t("nav.map") },
         { to: "/datos", label: t("nav.data") },
       ],
