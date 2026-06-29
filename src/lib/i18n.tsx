@@ -601,7 +601,7 @@ const es: Dict = {
   "home.seoTagline":
     "Sabe en 2 minutos si tu vivienda es segura para entrar tras el sismo.",
   "home.statBuildings": "evaluaciones realizadas",
-  "home.statUrgent": "casos urgentes detectados",
+  
   "home.pendingTitle": "Tienes una evaluación sin enviar",
   "home.pendingBody": "Completaste el cuestionario sin conexión. Envíalo ahora para recibir tu resultado.",
   "home.pendingOffline": "Sin conexión. Se enviará automáticamente cuando vuelva la señal.",
@@ -1882,7 +1882,7 @@ const en: Dict = {
   "home.seoTagline":
     "Know in 2 minutes whether your home is safe to enter after the quake.",
   "home.statBuildings": "assessments",
-  "home.statUrgent": "urgent cases flagged",
+  
   "home.pendingTitle": "You have an unsent assessment",
   "home.pendingBody": "You finished the checklist offline. Submit it now to get your result.",
   "home.pendingOffline": "Offline. It will be sent automatically when the signal returns.",
