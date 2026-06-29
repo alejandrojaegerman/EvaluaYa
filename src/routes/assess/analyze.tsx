@@ -236,7 +236,22 @@ function AnalyzeStep() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-retry when connection returns while waiting.
+  // Community credibility signal: how many photos the AI has analyzed so far.
+  useEffect(() => {
+    let active = true;
+    getDamageTotals()
+      .then((totals) => {
+        if (active) setImagesAnalyzed(totals.images ?? 0);
+      })
+      .catch(() => {
+        /* non-critical; just hide the line */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+
   useEffect(() => {
     if (online && phase === "waiting") run();
   }, [online, phase, run]);
