@@ -131,6 +131,14 @@ const FAQS: Record<"es" | "en", { q: string; a: string }[]> = {
       q: "How does EvalúaYa complement FUNVISIS's work?",
       a: "FUNVISIS provides the official science of the earthquake at the national level. EvalúaYa brings that information down to your home: with a guided self-assessment you review columns, beams, walls, and stairs, get a risk level, and if needed, we connect you with verified volunteer engineers.",
     },
+    {
+      q: "How do I see recent earthquakes in Venezuela?",
+      a: "In EvalúaYa you can see a list of recent earthquakes near Venezuela on the “Earthquake in Venezuela today?” page, with magnitude, epicenter and time based on public USGS data. For the official Venezuelan report, check FUNVISIS. If you felt the movement, it's worth checking your home.",
+    },
+    {
+      q: "FUNVISIS shows a quake happened today. What now?",
+      a: "First make sure you're safe. Then, even if the magnitude seems low, check your home: the FUNVISIS magnitude doesn't determine the damage to your specific house. A free, guided self-assessment in EvalúaYa takes a few minutes and tells you whether it's safe to stay, limit use, or evacuate.",
+    },
   ],
 };
 
