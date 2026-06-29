@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { absoluteUrl } from "@/lib/site";
+import { getMunicipioSitemapEntries } from "@/lib/stats.functions";
 import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 
 type Entry = {
