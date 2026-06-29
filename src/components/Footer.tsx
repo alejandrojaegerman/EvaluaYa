@@ -7,7 +7,7 @@ import { contactMailto } from "@/lib/site";
 
 /** Site footer. On mobile it adds extra bottom padding so it clears the fixed BottomNav. */
 export function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const columns: Array<{
     heading: string;
