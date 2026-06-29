@@ -1965,7 +1965,7 @@ const en: Dict = {
   "map.subtitle":
     "Anonymous reports aggregated by area. Addresses and photos are never shown.",
   "map.totalAssessments": "Assessments",
-  "map.areasLabel": "Areas",
+  "map.areasLabel": "Municipalities",
   "map.high": "High risk",
   "map.urgent": "Serious risk",
   "map.moderate": "Moderate risk",
