@@ -692,6 +692,33 @@ export function municipiosFor(state: string | null | undefined): string[] {
 }
 
 /**
+ * URL-safe slug for a municipio name (accent-stripped, lowercase, hyphenated).
+ * Shares the exact slugify rules used for estados so links stay consistent.
+ * e.g. "Simón Bolívar" -> "simon-bolivar", "El Hatillo" -> "el-hatillo".
+ */
+export function municipioSlug(name: string): string {
+  return estadoSlug(name);
+}
+
+/**
+ * Resolve a (state name, municipio slug) pair back to its curated Municipio.
+ * Only matches the curated MUNICIPIOS subset (those that have centroids and are
+ * the canonical targets of resolveMunicipio), scoped to the given estado.
+ * Returns undefined for unknown states or slugs.
+ */
+export function getMunicipioBySlug(
+  stateName: string | null | undefined,
+  slug: string | null | undefined,
+): Municipio | undefined {
+  if (!stateName || !slug) return undefined;
+  const wantState = stateName.trim();
+  const wantSlug = slug.trim().toLowerCase();
+  return MUNICIPIOS.find(
+    (m) => m.state === wantState && municipioSlug(m.name) === wantSlug,
+  );
+}
+
+/**
  * Snap a coordinate to the closest curated municipio centroid WITHIN a given
  * state, returning its canonical name only when it's reasonably close and the
  * name exists in the official MUNICIPIOS_BY_STATE list (so it's selectable in
