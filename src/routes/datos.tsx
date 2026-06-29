@@ -4,11 +4,14 @@ import {
   BookOpen,
   ChevronDown,
   ChevronRight,
+  Clock,
   Code2,
   Copy,
   Download,
   HardHat,
   ImageDown,
+  LayoutDashboard,
+  Lightbulb,
   Map as MapIcon,
   MapPin,
 } from "lucide-react";
@@ -37,6 +40,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
@@ -109,6 +118,45 @@ function rgb(level: RiskKey): string {
   const [r, g, b] = RISK_HEX[level];
   return `rgb(${r}, ${g}, ${b})`;
 }
+
+type Translate = (key: string) => string;
+
+/** Human relative-time label for the most recent report, e.g. "hace 2 h". */
+function formatUpdated(t: Translate, ts: number): string {
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return t("dataroom.updatedJustNow");
+  if (min < 60) return t("dataroom.updatedMinutes").replace("{n}", String(min));
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return t("dataroom.updatedHours").replace("{n}", String(hr));
+  const d = Math.floor(hr / 24);
+  return t("dataroom.updatedDays").replace("{n}", String(d));
+}
+
+/** Media-friendly one-line narrative built from the live totals in scope. */
+function buildNarrative(
+  t: Translate,
+  totals: DamageTotals | null,
+  topArea: string | null,
+): string {
+  if (!totals || totals.total === 0) return "";
+  const serious = totals.red + totals.orange;
+  const pct = Math.round((serious / totals.total) * 100);
+  if (pct < 20) {
+    return t("dataroom.narrativeLow").replace("{total}", String(totals.total));
+  }
+  if (topArea) {
+    return t("dataroom.narrativeArea")
+      .replace("{total}", String(totals.total))
+      .replace("{pct}", String(pct))
+      .replace("{area}", topArea);
+  }
+  return t("dataroom.narrative")
+    .replace("{total}", String(totals.total))
+    .replace("{pct}", String(pct));
+}
+
+
 
 function isUnspecified(value: string | null | undefined): boolean {
   if (!value) return true;
@@ -438,6 +486,17 @@ function DataRoomPage() {
 
   const hasData = !!totals && totals.total > 0;
 
+  // Most recent report timestamp across the active scope (for "last updated").
+  const lastUpdated = useMemo(() => {
+    let max = 0;
+    for (const a of areas) {
+      if (!a.lastReport) continue;
+      const ms = new Date(a.lastReport).getTime();
+      if (!Number.isNaN(ms) && ms > max) max = ms;
+    }
+    return max || null;
+  }, [areas]);
+
   // Per-area "why" drill-down.
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const [factorsCache, setFactorsCache] = useState<Record<string, RiskFactors>>(
@@ -545,6 +604,14 @@ function DataRoomPage() {
   const scopeLabel =
     [filters.municipality, filters.state].filter(Boolean).join(", ") ||
     t("data.scopeNational");
+
+  const lastUpdatedLabel =
+    lastUpdated != null
+      ? `${t("dataroom.updated")} ${formatUpdated(t, lastUpdated)}`
+      : null;
+  const narrative = buildNarrative(t, totals, topAreas[0]?.title ?? null);
+
+
 
   const mapFallback = (
     <svg
@@ -674,7 +741,10 @@ function DataRoomPage() {
   return (
     <AppShell wide>
       <header className="mt-2">
-        <h1 className="font-display text-2xl font-extrabold tracking-tight md:text-3xl">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+          {t("dataroom.eyebrow.briefing")}
+        </span>
+        <h1 className="mt-1 font-display text-2xl font-extrabold tracking-tight md:text-3xl">
           {t("data.title")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
@@ -693,21 +763,6 @@ function DataRoomPage() {
             {t("data.openMap")}
           </Link>
         </Button>
-      </div>
-
-      {/* Desktop filter bar */}
-      <div className="mt-5 hidden md:block">
-        <DataRoomFilters
-          filters={filters}
-          onChange={setFilters}
-          availableStates={availableStates}
-          availableMunicipios={availableMunicipios}
-          featuredStates={impactRanking.featuredStates}
-          featuredMunicipios={impactRanking.featuredMunicipios}
-        />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {t("data.activeScope")}: <span className="font-semibold">{scopeLabel}</span>
-        </p>
       </div>
 
       {loading && (
@@ -729,52 +784,106 @@ function DataRoomPage() {
       )}
 
       {!loading && hasData && (
-        <>
-          {/* Headline counters */}
-          <section className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat value={totals!.total} label={t("map.totalAssessments")} />
-            <Stat value={totals!.areas} label={t("map.areasLabel")} />
-            <Stat
-              value={totals!.red + totals!.orange}
-              label={t("map.seriousOrHigh")}
-              color={rgb("red")}
-            />
-            <Stat
-              value={totals!.verified}
-              label={t("map.verified")}
-              color={rgb("green")}
-            />
-          </section>
-
-          {/* Desktop dashboard: map + charts side by side */}
-          <section className="mt-5 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <p className="text-sm font-semibold">{t("data.mapTitle")}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("map.interactiveHint")}
-              </p>
-              <div className="mt-3">
-                <DamageMap
-                  bubbles={mapBubbles}
-                  onSelectState={(slug) =>
-                    navigate({ to: "/zona/$estado", params: { estado: slug } })
-                  }
-                  fallback={mapFallback}
-                />
-              </div>
-              <div className="mt-3 space-y-1.5 rounded-xl bg-muted/40 p-3 text-[11px]">
-                <p className="font-semibold text-foreground">
-                  {t("map.legendTitle")}
-                </p>
-                <LegendRow color={rgb("green")} label={t("map.legendGreen")} />
-                <LegendRow color={rgb("yellow")} label={t("map.legendYellow")} />
-                <LegendRow color={rgb("orange")} label={t("map.legendOrange")} />
-                <LegendRow color={rgb("red")} label={t("map.legendRed")} />
-              </div>
+        <Tabs defaultValue="summary" className="mt-5">
+          {/* Executive summary band */}
+          <section className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/5 via-card to-card p-5 shadow-sm md:p-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-background/70 px-3 py-1 text-xs font-semibold text-foreground ring-1 ring-border">
+                <MapPin className="size-3.5 text-primary" aria-hidden />
+                {scopeLabel}
+              </span>
+              {lastUpdatedLabel && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border">
+                  <Clock className="size-3.5" aria-hidden />
+                  {lastUpdatedLabel}
+                </span>
+              )}
             </div>
 
-            <div className="flex flex-col gap-4">
+            {narrative && (
+              <p className="mt-3 max-w-3xl font-display text-lg font-bold leading-snug md:text-xl">
+                {narrative}
+              </p>
+            )}
+
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <Button onClick={shareStats} disabled={cardBusy} className="sm:flex-none">
+                <ImageDown className="size-4" />
+                {cardBusy ? t("share.generating") : t("share.shareStats")}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={downloadCsv}
+                className="sm:flex-none"
+              >
+                <Download className="size-4" />
+                {t("map.download")}
+              </Button>
+            </div>
+
+            {/* Headline counters */}
+            <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+              <Stat value={totals!.total} label={t("map.totalAssessments")} />
+              <Stat value={totals!.areas} label={t("map.areasLabel")} />
+              <Stat
+                value={totals!.red + totals!.orange}
+                label={t("map.seriousOrHigh")}
+                color={rgb("red")}
+              />
+              <Stat
+                value={totals!.verified}
+                label={t("map.verified")}
+                color={rgb("green")}
+              />
+            </div>
+          </section>
+
+          {/* Sticky filters + tab navigation */}
+          <div className="sticky top-14 z-20 -mx-4 mt-5 mb-2 border-b border-border/60 bg-background/90 px-4 py-3 backdrop-blur md:-mx-6 md:px-6">
+            <div className="hidden md:block">
+              <DataRoomFilters
+                filters={filters}
+                onChange={setFilters}
+                availableStates={availableStates}
+                availableMunicipios={availableMunicipios}
+                featuredStates={impactRanking.featuredStates}
+                featuredMunicipios={impactRanking.featuredMunicipios}
+              />
+            </div>
+            <div className="overflow-x-auto md:mt-3">
+              <TabsList className="h-auto w-max gap-1 bg-muted/60 p-1">
+                <TabsTrigger value="summary" className="gap-1.5">
+                  <LayoutDashboard className="size-4" aria-hidden />
+                  {t("dataroom.tab.summary")}
+                </TabsTrigger>
+                <TabsTrigger value="map" className="gap-1.5">
+                  <MapIcon className="size-4" aria-hidden />
+                  {t("dataroom.tab.map")}
+                </TabsTrigger>
+                <TabsTrigger value="areas" className="gap-1.5">
+                  <MapPin className="size-4" aria-hidden />
+                  {t("dataroom.tab.areas")}
+                </TabsTrigger>
+                <TabsTrigger value="evidence" className="gap-1.5">
+                  <Lightbulb className="size-4" aria-hidden />
+                  {t("dataroom.tab.evidence")}
+                </TabsTrigger>
+                <TabsTrigger value="open" className="gap-1.5">
+                  <Code2 className="size-4" aria-hidden />
+                  {t("dataroom.tab.open")}
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+
+          {/* Resumen */}
+          <TabsContent value="summary" className="mt-4 space-y-4">
+            <div className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                <SectionEyebrow
+                  eyebrow={t("dataroom.eyebrow.severity")}
+                  title={t("map.seriousOrHigh")}
+                />
                 <SeveritySpotlight
                   total={totals!.total}
                   green={totals!.green}
@@ -785,102 +894,124 @@ function DataRoomPage() {
                 />
               </div>
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                <p className="text-sm font-semibold">{t("map.distribution")}</p>
-                <div className="mt-3">
-                  <RiskGauge
-                    green={totals!.green}
-                    yellow={totals!.yellow}
-                    orange={totals!.orange}
-                    red={totals!.red}
-                    label={t("map.totalAssessments")}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Trend over time */}
-          <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <p className="text-sm font-semibold">{t("map.trendTitle")}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("map.trendSubtitle")}
-            </p>
-            <div className="mt-3">
-              <TrendChart points={timeseries} />
-            </div>
-          </section>
-
-          {/* Top areas + why */}
-          <section className="mt-6 grid gap-4 lg:grid-cols-2">
-            <div>
-              <h2 className="font-display text-lg font-bold">
-                {t("map.topAreas")}
-              </h2>
-              {topAreasList}
-            </div>
-            <div>
-              <h2 className="font-display text-lg font-bold">
-                {t("map.whyTitle")}
-              </h2>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("map.whySubtitle")}
-              </p>
-              <div className="mt-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-                <RiskFactorsPanel
-                  factors={nationalFactors}
-                  loading={whyLoading}
+                <SectionEyebrow
+                  eyebrow={t("dataroom.eyebrow.distribution")}
+                  title={t("map.distribution")}
+                />
+                <RiskGauge
+                  green={totals!.green}
+                  yellow={totals!.yellow}
+                  orange={totals!.orange}
+                  red={totals!.red}
+                  label={t("map.totalAssessments")}
                 />
               </div>
             </div>
-          </section>
 
-          {/* Photo documentation */}
-          <section className="mt-6">
-            <h2 className="font-display text-lg font-bold">
-              {t("photos.title")}
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("photos.subtitle")}
-            </p>
-            <PhotoEvidencePanel stats={photoStats} loading={photoLoading} />
-          </section>
-
-
-
-          {/* Data dictionary */}
-          <DataDictionary />
-
-          {/* Export & share */}
-          <section className="mt-6">
-            <h2 className="font-display text-lg font-bold">{t("data.export")}</h2>
-            <div className="mt-3 flex flex-col gap-3 sm:flex-row">
-              <Button
-                className="flex-1"
-                onClick={shareStats}
-                disabled={cardBusy}
-              >
-                <ImageDown className="size-4" />
-                {cardBusy ? t("share.generating") : t("share.shareStats")}
-              </Button>
-              <Button variant="outline" className="flex-1" onClick={downloadCsv}>
-                <Download className="size-4" />
-                {t("map.download")}
-              </Button>
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <SectionEyebrow
+                eyebrow={t("dataroom.eyebrow.trend")}
+                title={t("map.trendTitle")}
+                hint={t("map.trendSubtitle")}
+              />
+              <TrendChart points={timeseries} />
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {t("map.dataNote")}
-            </p>
-          </section>
-        </>
-      )}
+          </TabsContent>
 
-      {/* Open data API */}
-      <OpenDataSection />
+          {/* Mapa */}
+          <TabsContent value="map" className="mt-4">
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <SectionEyebrow
+                eyebrow={t("dataroom.eyebrow.map")}
+                title={t("data.mapTitle")}
+                hint={t("map.interactiveHint")}
+              />
+              <DamageMap
+                bubbles={mapBubbles}
+                onSelectState={(slug) =>
+                  navigate({ to: "/zona/$estado", params: { estado: slug } })
+                }
+                fallback={mapFallback}
+              />
+              <div className="mt-3 grid gap-1.5 rounded-xl bg-muted/40 p-3 text-[11px] sm:grid-cols-2">
+                <p className="font-semibold text-foreground sm:col-span-2">
+                  {t("map.legendTitle")}
+                </p>
+                <LegendRow color={rgb("green")} label={t("map.legendGreen")} />
+                <LegendRow color={rgb("yellow")} label={t("map.legendYellow")} />
+                <LegendRow color={rgb("orange")} label={t("map.legendOrange")} />
+                <LegendRow color={rgb("red")} label={t("map.legendRed")} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Zonas */}
+          <TabsContent value="areas" className="mt-4">
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <SectionEyebrow
+                eyebrow={t("dataroom.eyebrow.areas")}
+                title={t("map.topAreas")}
+              />
+              {topAreasList}
+            </div>
+          </TabsContent>
+
+          {/* Evidencia */}
+          <TabsContent value="evidence" className="mt-4 space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <SectionEyebrow
+                eyebrow={t("dataroom.eyebrow.why")}
+                title={t("map.whyTitle")}
+                hint={t("map.whySubtitle")}
+              />
+              <RiskFactorsPanel factors={nationalFactors} loading={whyLoading} />
+            </div>
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <SectionEyebrow
+                eyebrow={t("dataroom.eyebrow.photos")}
+                title={t("photos.title")}
+                hint={t("photos.subtitle")}
+              />
+              <PhotoEvidencePanel stats={photoStats} loading={photoLoading} />
+            </div>
+          </TabsContent>
+
+          {/* Datos abiertos */}
+          <TabsContent value="open" className="mt-4 space-y-4">
+            <DataDictionary />
+
+            <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <SectionEyebrow
+                eyebrow={t("dataroom.eyebrow.export")}
+                title={t("data.export")}
+              />
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button className="flex-1" onClick={shareStats} disabled={cardBusy}>
+                  <ImageDown className="size-4" />
+                  {cardBusy ? t("share.generating") : t("share.shareStats")}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={downloadCsv}
+                >
+                  <Download className="size-4" />
+                  {t("map.download")}
+                </Button>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {t("map.dataNote")}
+              </p>
+            </section>
+
+            <OpenDataSection />
+          </TabsContent>
+        </Tabs>
+      )}
 
       {/* Closing band: share + CTA */}
       <section className="mt-10">
         <div className="flex flex-col gap-4">
-
           <ShareApp />
           <Button asChild size="lg" className="w-full">
             <Link to="/assess/property">
@@ -895,6 +1026,26 @@ function DataRoomPage() {
         </div>
       </section>
     </AppShell>
+  );
+}
+
+function SectionEyebrow({
+  eyebrow,
+  title,
+  hint,
+}: {
+  eyebrow: string;
+  title: string;
+  hint?: string;
+}) {
+  return (
+    <div className="mb-3">
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+        {eyebrow}
+      </span>
+      <h2 className="font-display text-lg font-bold leading-tight">{title}</h2>
+      {hint && <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>}
+    </div>
   );
 }
 
