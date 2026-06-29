@@ -11,6 +11,7 @@ import {
   Map,
   MessageSquareHeart,
   MoreHorizontal,
+  Waves,
   Wifi,
   WifiOff,
 } from "lucide-react";
