@@ -742,6 +742,12 @@ function AdminDashboard() {
             {/* Quality, completeness & verification (Goal 1) */}
             <QualityWatchdog secret={secret} />
 
+            {/* Photo evidence — anonymized counts only */}
+            <SectionTitle icon={Database} title={t("photos.title")} />
+            <PhotoEvidencePanel stats={photoStats} loading={!photoStats} />
+
+
+
             {/* Saved accounts (optional passwordless "Save my reports") */}
             {accounts && (
               <>
