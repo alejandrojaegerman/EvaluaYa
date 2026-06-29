@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   rankMunicipios,
   rankStates,
+  scoreArea,
   type AreaRow,
 } from "@/lib/impact";
 import {
