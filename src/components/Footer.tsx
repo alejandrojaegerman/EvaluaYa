@@ -78,11 +78,6 @@ export function Footer() {
               <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {col.heading}
               </h2>
-              {col.note && (
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {col.note}
-                </p>
-              )}
               <ul className="mt-3 space-y-2">
                 {col.links.map((link) => (
                   <li key={link.label}>
@@ -104,7 +99,6 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-
             </nav>
           ))}
         </div>
