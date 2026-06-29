@@ -58,6 +58,14 @@ export function TopNav() {
             {t("nav.home")}
           </Link>
           <Link
+            to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
+            className={linkClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <Waves className="size-4" aria-hidden />
+            {t("nav.today")}
+          </Link>
+          <Link
             to="/mapa"
             className={linkClass}
             activeProps={{ "data-status": "active" }}
