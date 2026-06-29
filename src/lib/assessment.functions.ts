@@ -429,6 +429,8 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       report_type: reportType,
       verified_by_engineer: verifiedByEngineer,
       answers: storedAnswers,
+      photo_count: photoCount,
+      photo_counts: photoCounts,
       ai_result: aiResult,
       risk_level: finalRisk,
       status: "analyzed",
