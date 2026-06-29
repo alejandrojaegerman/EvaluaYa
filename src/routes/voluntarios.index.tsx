@@ -212,9 +212,6 @@ function VolunteersPage() {
         </p>
       </section>
 
-      {/* Compact trust line — social proof without burying the call to action */}
-      <VerifiedCount engineers={engineers} />
-
       {/* Sign-up form — lead with the call to action */}
       <form
         onSubmit={onSubmit}
