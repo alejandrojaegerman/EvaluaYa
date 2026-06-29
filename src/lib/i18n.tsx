@@ -351,6 +351,7 @@ const es: Dict = {
   "analyze.title": "Analizando",
   "analyze.uploading": "Procesando fotos…",
   "analyze.thinking": "Evaluando el riesgo estructural…",
+  "analyze.imagesAnalyzed": "{n} imágenes analizadas en la comunidad",
   "analyze.savedHint":
     "Tus respuestas están guardadas. Puedes esperar aunque la señal sea lenta.",
   "analyze.waitingTitle": "Esperando conexión",
