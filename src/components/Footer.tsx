@@ -11,7 +11,6 @@ export function Footer() {
 
   const columns: Array<{
     heading: string;
-    note?: string;
     links: Array<{ to?: string; href?: string; label: string }>;
   }> = [
     {
@@ -69,6 +68,9 @@ export function Footer() {
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               {t("footer.tagline")}
+            </p>
+            <p className="mt-2 max-w-xs text-xs leading-relaxed text-muted-foreground">
+              {t("engineers.footerDesc")}
             </p>
           </div>
 
