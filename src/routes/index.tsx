@@ -206,13 +206,25 @@ function Index() {
               {t("home.statBuildings")}
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
-            <p className="font-display text-2xl font-extrabold text-risk-red">
-              {(totals!.red + totals!.orange).toLocaleString()}
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {t("home.statUrgent")}
-            </p>
+          <div className="flex flex-col justify-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full bg-risk-orange" />
+              <span className="font-display text-lg font-extrabold text-risk-orange">
+                {totals!.orange.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {t("result.orange.tag")}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full bg-risk-red" />
+              <span className="font-display text-lg font-extrabold text-risk-red">
+                {totals!.red.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {t("result.red.tag")}
+              </span>
+            </div>
           </div>
         </section>
       )}
