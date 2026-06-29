@@ -1,11 +1,3 @@
-import { useMemo } from "react";
-import {
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
-  ResponsiveContainer,
-} from "recharts";
-
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 
@@ -15,9 +7,11 @@ function rgb(level: "red" | "orange" | "yellow" | "green"): string {
 }
 
 /**
- * Radial gauge that renders the high / urgent / moderate / low risk split as
- * concentric rings with the total in the center. Colors come from RISK_HEX (no
- * hardcoded color literals). SSR-safe — pure derivation from props.
+ * Ranked horizontal severity bars. Each tier (high / urgent / moderate / low)
+ * gets a full-width track with a colored fill proportional to its share of the
+ * total, ordered most-severe → least-severe so the tiers compare on a shared
+ * baseline. Colors come from RISK_HEX (no hardcoded color literals). SSR-safe —
+ * pure derivation from props.
  */
 export function RiskGauge({
   green,
@@ -34,117 +28,74 @@ export function RiskGauge({
 }) {
   const { t } = useLang();
   const total = green + yellow + orange + red;
+  const safeTotal = Math.max(1, total);
 
-  // Outer ring = red (high), then orange, yellow, inner = green. Each ring fills
-  // proportionally to its share of the total via a shared 0..total angle axis.
-  const data = useMemo(
-    () => [
-      { name: "red", value: red, fill: rgb("red") },
-      { name: "orange", value: orange, fill: rgb("orange") },
-      { name: "yellow", value: yellow, fill: rgb("yellow") },
-      { name: "green", value: green, fill: rgb("green") },
-    ],
-    [red, orange, yellow, green],
-  );
+  const rows: Array<{
+    level: "red" | "orange" | "yellow" | "green";
+    name: string;
+    value: number;
+  }> = [
+    { level: "red", name: t("map.high"), value: red },
+    { level: "orange", name: t("map.urgent"), value: orange },
+    { level: "yellow", name: t("map.moderate"), value: yellow },
+    { level: "green", name: t("map.low"), value: green },
+  ];
 
   const pct = (n: number) => (total > 0 ? Math.round((n / total) * 100) : 0);
 
   return (
-    <div className="flex flex-col items-center sm:flex-row sm:items-center sm:gap-4">
-      <div className="relative h-40 w-40 shrink-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadialBarChart
-            data={data}
-            innerRadius="34%"
-            outerRadius="100%"
-            startAngle={90}
-            endAngle={-270}
-            barSize={9}
-          >
-            <PolarAngleAxis
-              type="number"
-              domain={[0, Math.max(1, total)]}
-              angleAxisId={0}
-              tick={false}
-            />
-            <RadialBar
-              background={{ fill: "var(--muted)" }}
-              dataKey="value"
-              cornerRadius={6}
-              isAnimationActive
-              animationDuration={900}
-            />
-          </RadialBarChart>
-        </ResponsiveContainer>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+    <div>
+      {/* Total */}
+      <div className="mb-6 flex items-end justify-end">
+        <div className="text-right leading-none">
           <span className="font-display text-3xl font-extrabold tabular-nums text-foreground">
             {total.toLocaleString()}
           </span>
           {label && (
-            <span className="max-w-[6rem] text-center text-[10px] font-medium leading-tight text-muted-foreground">
+            <p className="mt-1 text-xs font-medium text-muted-foreground">
               {label}
-            </span>
+            </p>
           )}
         </div>
       </div>
 
-      <ul className="mt-3 grid w-full grid-cols-2 gap-2 text-center text-xs sm:mt-0 sm:grid-cols-1 sm:text-left">
-        <GaugeLegend
-          color={rgb("red")}
-          name={t("map.high")}
-          value={red}
-          pct={pct(red)}
-        />
-        <GaugeLegend
-          color={rgb("orange")}
-          name={t("map.urgent")}
-          value={orange}
-          pct={pct(orange)}
-        />
-        <GaugeLegend
-          color={rgb("yellow")}
-          name={t("map.moderate")}
-          value={yellow}
-          pct={pct(yellow)}
-        />
-        <GaugeLegend
-          color={rgb("green")}
-          name={t("map.low")}
-          value={green}
-          pct={pct(green)}
-        />
+      {/* Ranked bars */}
+      <ul className="space-y-4">
+        {rows.map((r) => {
+          const color = rgb(r.level);
+          const width = total > 0 ? (r.value / safeTotal) * 100 : 0;
+          return (
+            <li key={r.level} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: color }}
+                    aria-hidden
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    {r.name}
+                  </span>
+                </span>
+                <span className="text-sm">
+                  <span className="font-bold tabular-nums text-foreground">
+                    {r.value.toLocaleString()}
+                  </span>
+                  <span className="ml-1 font-medium tabular-nums text-muted-foreground">
+                    {pct(r.value)}%
+                  </span>
+                </span>
+              </div>
+              <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full transition-[width] duration-700"
+                  style={{ width: `${width}%`, backgroundColor: color }}
+                />
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
-  );
-}
-
-function GaugeLegend({
-  color,
-  name,
-  value,
-  pct,
-}: {
-  color: string;
-  name: string;
-  value: number;
-  pct: number;
-}) {
-  return (
-    <li className="flex flex-col items-center gap-0.5 sm:flex-row sm:items-center sm:gap-2">
-      <span className="flex items-center gap-1.5">
-        <span
-          className="size-2.5 shrink-0 rounded-full"
-          style={{ backgroundColor: color }}
-          aria-hidden
-        />
-        <span className="font-display text-base font-bold tabular-nums" style={{ color }}>
-          {value.toLocaleString()}
-        </span>
-      </span>
-      <span className="text-muted-foreground">
-        {name}
-        <span className="ml-1 tabular-nums opacity-70">{pct}%</span>
-      </span>
-    </li>
   );
 }

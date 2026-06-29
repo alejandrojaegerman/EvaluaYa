@@ -1,62 +1,32 @@
-# Add contacto@evaluaya.app contact email
+## Goal
+Replace the hard-to-read concentric-arc donut in the "Distribución de riesgo" card with the chosen **ranked horizontal progress bars**, so the four risk tiers can be compared on a shared baseline at a glance.
 
-Two parts: a one-time DNS setup you do at Cloudflare (I guide, you click), and the in-app changes (I build).
+## Scope
+Rewrite only the internals of `src/components/RiskGauge.tsx`. Its props stay identical (`green`, `yellow`, `orange?`, `red`, `label?`), so all four call sites work unchanged with no other edits:
+- `src/routes/mapa.tsx`
+- `src/routes/datos.tsx`
+- `src/routes/admin.index.tsx`
+- `src/routes/zona.$estado.tsx`
 
-## Part 1 — Email forwarding (you do this, I guide)
+## New layout (per selected prototype)
+- **Header row**: title is supplied by the parent card already, so inside the component show the total count prominently on the right (large, bold, `tabular-nums`) with the `label` (e.g. "Evaluaciones") as a small muted caption beneath it.
+- **Four ranked bars**, ordered most-severe → least-severe (red → orange → yellow → green):
+  - Row top line: colored dot + tier name on the left; bold count + muted percent on the right.
+  - Row bottom: a full-width track (`bg-muted`) with a colored fill whose width = that tier's share of the total.
+- Drop the Recharts `RadialBarChart` entirely (remove the `recharts` import from this file).
 
-Lovable only *sends* email (via `notify.evaluaya.app`). To *receive* mail at `contacto@evaluaya.app`, set up free forwarding with Cloudflare Email Routing. This touches the **root `evaluaya.app`** zone and does not conflict with Lovable's `notify.` subdomain.
+## Colors & labels (reuse existing system)
+- Keep using `RISK_HEX` via the existing `rgb()` helper for dots and bar fills — no hardcoded color utilities, consistent with the rest of the app.
+- Keep the current i18n tier labels already wired in this component: `map.high` (red), `map.urgent` (orange), `map.moderate` (yellow), `map.low` (green). The prototype's English/placeholder names are not used.
+- Track background uses the `bg-muted` token; text uses `text-foreground` / `text-muted-foreground` tokens (the prototype's slate/white literals are mapped to these so light/dark mode stays correct).
 
-Steps:
-```text
-1. Ensure evaluaya.app is on Cloudflare (domain added as a zone).
-   - If your registrar manages DNS, you'd move DNS to Cloudflare (free)
-     or instead use your registrar's own forwarding / ImprovMX.
-2. Cloudflare dashboard → evaluaya.app → Email → Email Routing → Enable.
-3. Cloudflare auto-adds the required MX + TXT (SPF) records. Approve them.
-4. Under "Routing rules", add a custom address:
-      contacto@evaluaya.app  →  Destination: your-personal@inbox.com
-5. Cloudflare emails your personal inbox a verification link — click it.
-6. Send a test from another account to contacto@evaluaya.app to confirm.
-```
-Notes:
-- Keep Lovable's existing `notify.evaluaya.app` NS records untouched — Email Routing on the root zone is independent.
-- Cloudflare Email Routing is receive/forward only (inbound). Outbound app mail keeps going through Lovable. Replies you send from your personal inbox will come from your personal address unless you also configure "Send as" in your mail client.
+## Edge cases
+- `total === 0`: render every bar at 0% width with `0` / `0%` so the card never shows a divide-by-zero or a misleading full bar.
+- Percentages rounded to whole numbers (matching current behavior).
+- Component stays SSR-safe and a pure function of props (no chart lib, no client-only APIs).
 
-## Part 2 — Surface the address in the app (I build)
+## Out of scope
+No data, query, filter, or surrounding-page-layout changes; no new dependencies; the "Ver detalles" footer link from the prototype is omitted since these cards already live inside pages with their own navigation.
 
-Present `contacto@evaluaya.app` as a clickable link that opens the user's mail app pre-addressed with a subject, in two places.
-
-### Footer (site-wide)
-Add a small "Contact" entry to the existing Legal column (or a short contact line in the bottom bar) in `src/components/Footer.tsx`:
-```text
-Legal
-  Privacidad
-  contacto@evaluaya.app   ← mailto with prefilled subject
-```
-
-### Help / Ayuda page
-In the existing "still need help" section of `src/routes/ayuda.tsx`, add a direct email option alongside the feedback button:
-```text
-[ Enviar comentarios ]  (existing)
-[ Escríbenos: contacto@evaluaya.app ]  ← new, mailto link
-```
-
-### Mailto format
-```
-mailto:contacto@evaluaya.app?subject=Consulta%20%E2%80%94%20Eval%C3%BAaYa
-```
-- ES subject: `Consulta — EvalúaYa`
-- EN subject: `Inquiry — EvalúaYa`
-
-### Bilingual strings
-Add keys to `src/lib/i18n.tsx` (ES + EN), e.g.:
-- `footer.contact` → "Contacto" / "Contact"
-- `help.emailUs` → "Escríbenos por correo" / "Email us"
-- `contact.subject` → "Consulta — EvalúaYa" / "Inquiry — EvalúaYa"
-
-The existing Privacy page references stay as-is (already correct).
-
-## Technical notes
-- No backend or schema changes; pure presentation + i18n.
-- A reusable subject-building helper keeps the mailto consistent across both spots.
-- Address is rendered as a normal `<a href="mailto:...">`, styled to match existing footer/help links.
+## Verification
+Build, then capture the card on `/datos` (and spot-check `/admin`) at mobile width to confirm bars render with correct proportions, colors, counts, and the zero-state.
