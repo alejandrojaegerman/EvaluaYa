@@ -751,6 +751,7 @@ export type Database = {
         Returns: {
           areas: number
           green: number
+          images: number
           orange: number
           red: number
           total: number
