@@ -235,6 +235,38 @@ function ZonaPage() {
         </section>
       )}
 
+      {/* Municipios with reports — drill-down links */}
+      {municipios.length > 0 && (
+        <section className="mt-6">
+          <h2 className="font-display text-base font-bold">
+            {t("zona.municipiosWithReports")}
+          </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("zona.municipiosWithReportsHint")}
+          </p>
+          <div className="mt-3 grid gap-2">
+            {municipios.map((m) => (
+              <Link
+                key={m.slug}
+                to="/zona/$estado/$municipio"
+                params={{ estado: estadoSlug(estadoName), municipio: m.slug }}
+                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-sm transition-colors hover:border-primary/40"
+              >
+                <span className="flex items-center gap-2 font-medium">
+                  <MapPin className="size-4 text-primary" aria-hidden />
+                  {m.municipality}
+                </span>
+                <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                  {m.total.toLocaleString()}
+                  <ChevronRight className="size-4" aria-hidden />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+
       {/* About / data note */}
       <section className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
         <h2 className="font-display text-base font-bold">{t("zona.aboutTitle")}</h2>
