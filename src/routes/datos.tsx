@@ -834,6 +834,19 @@ function DataRoomPage() {
             </div>
           </section>
 
+          {/* Photo documentation */}
+          <section className="mt-6">
+            <h2 className="font-display text-lg font-bold">
+              {t("photos.title")}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("photos.subtitle")}
+            </p>
+            <PhotoEvidencePanel stats={photoStats} loading={photoLoading} />
+          </section>
+
+
+
           {/* Data dictionary */}
           <DataDictionary />
 
