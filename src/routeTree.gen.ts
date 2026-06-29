@@ -10,12 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as TembloEnVenezuelaHoyRouteImport } from './routes/temblo-en-venezuela-hoy'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as EarthquakeInVenezuelaTodayRouteImport } from './routes/earthquake-in-venezuela-today'
 import { Route as DatosRouteImport } from './routes/datos'
 import { Route as AyudaRouteImport } from './routes/ayuda'
 import { Route as IndexRouteImport } from './routes/index'
@@ -56,6 +58,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TembloEnVenezuelaHoyRoute = TembloEnVenezuelaHoyRouteImport.update({
+  id: '/temblo-en-venezuela-hoy',
+  path: '/temblo-en-venezuela-hoy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -86,6 +93,12 @@ const FeedbackRoute = FeedbackRouteImport.update({
   path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EarthquakeInVenezuelaTodayRoute =
+  EarthquakeInVenezuelaTodayRouteImport.update({
+    id: '/earthquake-in-venezuela-today',
+    path: '/earthquake-in-venezuela-today',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DatosRoute = DatosRouteImport.update({
   id: '/datos',
   path: '/datos',
@@ -275,12 +288,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
   '/datos': typeof DatosRoute
+  '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
   '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/temblo-en-venezuela-hoy': typeof TembloEnVenezuelaHoyRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
@@ -318,12 +333,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
   '/datos': typeof DatosRoute
+  '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
   '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/temblo-en-venezuela-hoy': typeof TembloEnVenezuelaHoyRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
@@ -362,12 +379,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
   '/datos': typeof DatosRoute
+  '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
   '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/temblo-en-venezuela-hoy': typeof TembloEnVenezuelaHoyRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/a/$publicId': typeof APublicIdRoute
   '/admin/voluntarios': typeof AdminVoluntariosRoute
@@ -407,12 +426,14 @@ export interface FileRouteTypes {
     | '/'
     | '/ayuda'
     | '/datos'
+    | '/earthquake-in-venezuela-today'
     | '/feedback'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
     | '/privacidad'
     | '/sitemap.xml'
+    | '/temblo-en-venezuela-hoy'
     | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
@@ -450,12 +471,14 @@ export interface FileRouteTypes {
     | '/'
     | '/ayuda'
     | '/datos'
+    | '/earthquake-in-venezuela-today'
     | '/feedback'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
     | '/privacidad'
     | '/sitemap.xml'
+    | '/temblo-en-venezuela-hoy'
     | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
@@ -493,12 +516,14 @@ export interface FileRouteTypes {
     | '/'
     | '/ayuda'
     | '/datos'
+    | '/earthquake-in-venezuela-today'
     | '/feedback'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
     | '/privacidad'
     | '/sitemap.xml'
+    | '/temblo-en-venezuela-hoy'
     | '/unsubscribe'
     | '/a/$publicId'
     | '/admin/voluntarios'
@@ -537,12 +562,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AyudaRoute: typeof AyudaRoute
   DatosRoute: typeof DatosRoute
+  EarthquakeInVenezuelaTodayRoute: typeof EarthquakeInVenezuelaTodayRoute
   FeedbackRoute: typeof FeedbackRoute
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   MisReportesRoute: typeof MisReportesRoute
   PrivacidadRoute: typeof PrivacidadRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TembloEnVenezuelaHoyRoute: typeof TembloEnVenezuelaHoyRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   APublicIdRoute: typeof APublicIdRoute
   AdminVoluntariosRoute: typeof AdminVoluntariosRoute
@@ -585,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/temblo-en-venezuela-hoy': {
+      id: '/temblo-en-venezuela-hoy'
+      path: '/temblo-en-venezuela-hoy'
+      fullPath: '/temblo-en-venezuela-hoy'
+      preLoaderRoute: typeof TembloEnVenezuelaHoyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -625,6 +659,13 @@ declare module '@tanstack/react-router' {
       path: '/feedback'
       fullPath: '/feedback'
       preLoaderRoute: typeof FeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/earthquake-in-venezuela-today': {
+      id: '/earthquake-in-venezuela-today'
+      path: '/earthquake-in-venezuela-today'
+      fullPath: '/earthquake-in-venezuela-today'
+      preLoaderRoute: typeof EarthquakeInVenezuelaTodayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/datos': {
@@ -884,12 +925,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AyudaRoute: AyudaRoute,
   DatosRoute: DatosRoute,
+  EarthquakeInVenezuelaTodayRoute: EarthquakeInVenezuelaTodayRoute,
   FeedbackRoute: FeedbackRoute,
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   MisReportesRoute: MisReportesRoute,
   PrivacidadRoute: PrivacidadRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TembloEnVenezuelaHoyRoute: TembloEnVenezuelaHoyRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   APublicIdRoute: APublicIdRoute,
   AdminVoluntariosRoute: AdminVoluntariosRoute,

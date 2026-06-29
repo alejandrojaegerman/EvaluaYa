@@ -451,6 +451,10 @@ const es: Dict = {
   "nav.feedback": "Enviar comentarios",
   "nav.data": "Datos",
   "nav.dataDesc": "Mapa y datos abiertos para autoridades y medios",
+  "nav.today": "¿Tembló hoy?",
+  "nav.todayDesc": "Sismos recientes cerca de Venezuela",
+  "home.todayTitle": "¿Acaba de temblar?",
+  "home.todayDesc": "Mira los sismos recientes cerca de Venezuela.",
 
   "footer.tagline":
     "Autoevaluación de daños estructurales tras un sismo. Gratis y sin registro.",
@@ -1830,6 +1834,10 @@ const en: Dict = {
   "nav.feedback": "Send feedback",
   "nav.data": "Data",
   "nav.dataDesc": "Map and open data for authorities and media",
+  "nav.today": "Quake today?",
+  "nav.todayDesc": "Recent earthquakes near Venezuela",
+  "home.todayTitle": "Did it just shake?",
+  "home.todayDesc": "See recent earthquakes near Venezuela.",
 
   "footer.tagline":
     "Post-earthquake structural damage self-assessment. Free, no sign-up.",

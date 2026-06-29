@@ -11,6 +11,7 @@ import {
   Map,
   MessageSquareHeart,
   MoreHorizontal,
+  Waves,
   Wifi,
   WifiOff,
 } from "lucide-react";
@@ -95,6 +96,23 @@ export function BottomNav() {
             </SheetHeader>
 
             <div className="mt-4 grid gap-1">
+              <SheetClose asChild>
+                <Link
+                  to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
+                  className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-secondary/60"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Waves className="size-4.5" aria-hidden />
+                  </span>
+                  <span className="flex-1">
+                    {t("nav.today")}
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {t("nav.todayDesc")}
+                    </span>
+                  </span>
+                </Link>
+              </SheetClose>
+
               {hasReports && (
                 <SheetClose asChild>
                   <Link

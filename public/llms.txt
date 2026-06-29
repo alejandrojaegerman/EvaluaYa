@@ -7,6 +7,8 @@ EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o loc
 ## Pages
 
 - [Inicio](/): Qué es EvalúaYa y cómo empezar una evaluación.
+- [¿Tembló en Venezuela hoy?](/temblo-en-venezuela-hoy): Sismos recientes cerca de Venezuela (datos de USGS) con magnitud, epicentro y hora; respuesta directa a "¿tembló hoy?" y enlace a la autoevaluación.
+- [Earthquake in Venezuela today (EN)](/earthquake-in-venezuela-today): Recent earthquakes near Venezuela (USGS data) with magnitude, epicenter and time; English version of the live quake page.
 - [Iniciar evaluación](/assess/property): Comienza la autoevaluación de daños estructurales (información de la propiedad).
 - [Mapa de daños](/mapa): Mapa interactivo con evaluaciones reportadas por municipio.
 - [Voluntarios](/voluntarios): Ingenieros y organizaciones que quieran ayudar pueden registrarse.
@@ -14,6 +16,8 @@ EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o loc
 - [Ayuda](/ayuda): Centro de ayuda para usar la aplicación.
 - [Guía: qué hacer después de un temblor](/guia/que-hacer-despues-de-un-temblor): Pasos de seguridad inmediatos tras un sismo.
 - [Guía: grietas peligrosas](/guia/grietas-peligrosas-despues-de-un-sismo): Cómo distinguir una grieta superficial de una estructural, con ejemplos visuales.
+- [Guía: FUNVISIS](/guia/funvisis-que-es-y-como-funciona): Qué es FUNVISIS, cómo leer sus reportes de magnitud y epicentro, y cómo EvalúaYa lo complementa.
+- [Guía: Falla de Boconó](/guia/falla-de-bocono): La principal falla activa de Venezuela y su relación con el riesgo sísmico.
 - [Comentarios](/feedback): Envía sugerencias o reporta problemas.
 - [Privacidad](/privacidad): Política de privacidad. Contacto: contacto@evaluaya.app.
 

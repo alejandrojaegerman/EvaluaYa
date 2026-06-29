@@ -6,7 +6,7 @@ import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 
 type Entry = {
   loc: string;
-  changefreq: "daily" | "weekly" | "monthly" | "yearly";
+  changefreq: "hourly" | "daily" | "weekly" | "monthly" | "yearly";
   priority: string;
 };
 
@@ -20,6 +20,16 @@ async function buildSitemap(): Promise<string> {
     },
     { loc: absoluteUrl("/mapa"), changefreq: "daily", priority: "0.8" },
     { loc: absoluteUrl("/datos"), changefreq: "daily", priority: "0.8" },
+    {
+      loc: absoluteUrl("/temblo-en-venezuela-hoy"),
+      changefreq: "hourly",
+      priority: "0.9",
+    },
+    {
+      loc: absoluteUrl("/earthquake-in-venezuela-today"),
+      changefreq: "hourly",
+      priority: "0.7",
+    },
     {
       loc: absoluteUrl("/voluntarios"),
       changefreq: "weekly",

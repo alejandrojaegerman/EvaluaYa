@@ -105,6 +105,14 @@ const FAQS: Record<"es" | "en", { q: string; a: string }[]> = {
       q: "¿Cómo complementa EvalúaYa el trabajo de FUNVISIS?",
       a: "FUNVISIS aporta la ciencia oficial del sismo a nivel nacional. EvalúaYa lleva esa información al nivel de tu vivienda: con una autoevaluación guiada revisas columnas, vigas, muros y escaleras, obtienes un nivel de riesgo y, si hace falta, te conectamos con ingenieros voluntarios verificados.",
     },
+    {
+      q: "¿Cómo veo los sismos recientes en Venezuela?",
+      a: "En EvalúaYa puedes ver una lista de sismos recientes cerca de Venezuela en la página “¿Tembló en Venezuela hoy?”, con magnitud, epicentro y hora a partir de datos públicos del USGS. Para el reporte oficial venezolano, consulta FUNVISIS. Si sentiste el movimiento, conviene revisar tu vivienda.",
+    },
+    {
+      q: "Vi en FUNVISIS que tembló hoy. ¿Y ahora qué hago?",
+      a: "Primero confirma que estás a salvo. Luego, aunque la magnitud parezca baja, revisa tu vivienda: la magnitud de FUNVISIS no determina el daño en tu casa específica. Una autoevaluación guiada y gratuita en EvalúaYa toma pocos minutos y te dice si es seguro quedarte, limitar el uso o evacuar.",
+    },
   ],
   en: [
     {
@@ -123,6 +131,14 @@ const FAQS: Record<"es" | "en", { q: string; a: string }[]> = {
       q: "How does EvalúaYa complement FUNVISIS's work?",
       a: "FUNVISIS provides the official science of the earthquake at the national level. EvalúaYa brings that information down to your home: with a guided self-assessment you review columns, beams, walls, and stairs, get a risk level, and if needed, we connect you with verified volunteer engineers.",
     },
+    {
+      q: "How do I see recent earthquakes in Venezuela?",
+      a: "In EvalúaYa you can see a list of recent earthquakes near Venezuela on the “Earthquake in Venezuela today?” page, with magnitude, epicenter and time based on public USGS data. For the official Venezuelan report, check FUNVISIS. If you felt the movement, it's worth checking your home.",
+    },
+    {
+      q: "FUNVISIS shows a quake happened today. What now?",
+      a: "First make sure you're safe. Then, even if the magnitude seems low, check your home: the FUNVISIS magnitude doesn't determine the damage to your specific house. A free, guided self-assessment in EvalúaYa takes a few minutes and tells you whether it's safe to stay, limit use, or evacuate.",
+    },
   ],
 };
 
@@ -139,6 +155,7 @@ const COPY = {
     ctaButton: "Iniciar autoevaluación",
     tremorLink: "Qué hacer después de un temblor",
     boconoLink: "Falla de Boconó: la principal falla activa",
+    liveLink: "¿Tembló en Venezuela hoy? Sismos recientes",
     faqTitle: "Preguntas frecuentes",
     sourceNote:
       "Información de referencia educativa. Los reportes oficiales de sismos y estudios de peligro sísmico los publica FUNVISIS.",
@@ -155,6 +172,7 @@ const COPY = {
     ctaButton: "Start self-assessment",
     tremorLink: "What to do after a tremor",
     boconoLink: "Boconó Fault: the main active fault",
+    liveLink: "Earthquake in Venezuela today? Recent quakes",
     faqTitle: "Frequently asked questions",
     sourceNote:
       "Educational reference information. Official earthquake reports and seismic hazard studies are published by FUNVISIS.",
@@ -268,6 +286,17 @@ function FunvisisPage() {
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
           <Link to="/guia/falla-de-bocono">{c.boconoLink}</Link>
+        </Button>
+        <Button asChild variant="link" className="mt-1 w-full">
+          <Link
+            to={
+              lang === "es"
+                ? "/temblo-en-venezuela-hoy"
+                : "/earthquake-in-venezuela-today"
+            }
+          >
+            {c.liveLink}
+          </Link>
         </Button>
       </section>
 

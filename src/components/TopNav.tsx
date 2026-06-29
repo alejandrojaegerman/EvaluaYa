@@ -10,6 +10,7 @@ import {
   Map,
   MessageSquareHeart,
   ShieldCheck,
+  Waves,
   Wifi,
   WifiOff,
 } from "lucide-react";
@@ -30,7 +31,7 @@ const linkClass =
 
 /** Desktop-only top navigation. Hidden on mobile (BottomNav takes over). */
 export function TopNav() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const online = useOnline();
   const hasReports = useHasReports();
 
@@ -55,6 +56,14 @@ export function TopNav() {
           >
             <Home className="size-4" aria-hidden />
             {t("nav.home")}
+          </Link>
+          <Link
+            to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
+            className={linkClass}
+            activeProps={{ "data-status": "active" }}
+          >
+            <Waves className="size-4" aria-hidden />
+            {t("nav.today")}
           </Link>
           <Link
             to="/mapa"
