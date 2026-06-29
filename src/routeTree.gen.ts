@@ -23,6 +23,7 @@ import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
 import { Route as GuiaQueHacerDespuesDeUnTemblorRouteImport } from './routes/guia.que-hacer-despues-de-un-temblor'
+import { Route as GuiaGrietasPeligrosasDespuesDeUnSismoRouteImport } from './routes/guia.grietas-peligrosas-despues-de-un-sismo'
 import { Route as GuiaFallaDeBoconoRouteImport } from './routes/guia.falla-de-bocono'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AssessPropertyRouteImport } from './routes/assess/property'
@@ -118,6 +119,12 @@ const GuiaQueHacerDespuesDeUnTemblorRoute =
   GuiaQueHacerDespuesDeUnTemblorRouteImport.update({
     id: '/guia/que-hacer-despues-de-un-temblor',
     path: '/guia/que-hacer-despues-de-un-temblor',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuiaGrietasPeligrosasDespuesDeUnSismoRoute =
+  GuiaGrietasPeligrosasDespuesDeUnSismoRouteImport.update({
+    id: '/guia/grietas-peligrosas-despues-de-un-sismo',
+    path: '/guia/grietas-peligrosas-despues-de-un-sismo',
     getParentRoute: () => rootRouteImport,
   } as any)
 const GuiaFallaDeBoconoRoute = GuiaFallaDeBoconoRouteImport.update({
@@ -275,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
+  '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -316,6 +324,7 @@ export interface FileRoutesByTo {
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
+  '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin': typeof AdminIndexRoute
@@ -358,6 +367,7 @@ export interface FileRoutesById {
   '/assess/property': typeof AssessPropertyRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
+  '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/assess/property'
     | '/email/unsubscribe'
     | '/guia/falla-de-bocono'
+    | '/guia/grietas-peligrosas-despues-de-un-sismo'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
@@ -442,6 +453,7 @@ export interface FileRouteTypes {
     | '/assess/property'
     | '/email/unsubscribe'
     | '/guia/falla-de-bocono'
+    | '/guia/grietas-peligrosas-despues-de-un-sismo'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin'
@@ -483,6 +495,7 @@ export interface FileRouteTypes {
     | '/assess/property'
     | '/email/unsubscribe'
     | '/guia/falla-de-bocono'
+    | '/guia/grietas-peligrosas-despues-de-un-sismo'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
@@ -525,6 +538,7 @@ export interface RootRouteChildren {
   AssessPropertyRoute: typeof AssessPropertyRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   GuiaFallaDeBoconoRoute: typeof GuiaFallaDeBoconoRoute
+  GuiaGrietasPeligrosasDespuesDeUnSismoRoute: typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
   ZonaEstadoRoute: typeof ZonaEstadoRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -646,6 +660,13 @@ declare module '@tanstack/react-router' {
       path: '/guia/que-hacer-despues-de-un-temblor'
       fullPath: '/guia/que-hacer-despues-de-un-temblor'
       preLoaderRoute: typeof GuiaQueHacerDespuesDeUnTemblorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/grietas-peligrosas-despues-de-un-sismo': {
+      id: '/guia/grietas-peligrosas-despues-de-un-sismo'
+      path: '/guia/grietas-peligrosas-despues-de-un-sismo'
+      fullPath: '/guia/grietas-peligrosas-despues-de-un-sismo'
+      preLoaderRoute: typeof GuiaGrietasPeligrosasDespuesDeUnSismoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guia/falla-de-bocono': {
@@ -856,6 +877,8 @@ const rootRouteChildren: RootRouteChildren = {
   AssessPropertyRoute: AssessPropertyRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   GuiaFallaDeBoconoRoute: GuiaFallaDeBoconoRoute,
+  GuiaGrietasPeligrosasDespuesDeUnSismoRoute:
+    GuiaGrietasPeligrosasDespuesDeUnSismoRoute,
   GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
   ZonaEstadoRoute: ZonaEstadoRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,

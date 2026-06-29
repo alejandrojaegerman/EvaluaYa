@@ -5,9 +5,6 @@ import {
   ClipboardCheck,
   HelpCircle,
   Ruler,
-  ShieldAlert,
-  ShieldCheck,
-  TriangleAlert,
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
