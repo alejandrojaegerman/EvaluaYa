@@ -2512,6 +2512,26 @@ const en: Dict = {
   "vadmin.coversState": "covers state",
   "vadmin.noCoverage": "no coverage",
 
+  // Unified admin tabs + follow-through
+  "admin.tab.seguimiento": "Follow-through",
+  "admin.tab.resumen": "Overview",
+  "admin.tab.voluntarios": "Volunteers",
+  "admin.tab.datos": "Data",
+  "seg.title": "Request follow-through",
+  "seg.hint":
+    "Urgent cases first (🔴/🟠). Assign an engineer or push to drive them to completion.",
+  "seg.empty": "No requests need action right now.",
+  "seg.openUnclaimed": "Unclaimed",
+  "seg.needsPush": "Needs a push",
+  "seg.urgent": "Urgent",
+  "seg.others": "Others",
+  "seg.assign": "Assign to…",
+  "seg.assigned": "Assigned",
+  "seg.waitingHours": "waiting",
+  "seg.hoursShort": "h",
+
+
+
 
   // Save / access reports (passwordless account)
   "account.saveTitle": "Save your reports",
