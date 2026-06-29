@@ -269,6 +269,7 @@ export type Database = {
           claimed_by: string | null
           created_at: string
           engineer_note: string | null
+          escalated_at: string | null
           id: string
           last_reminder_at: string | null
           municipality: string | null
@@ -292,6 +293,7 @@ export type Database = {
           claimed_by?: string | null
           created_at?: string
           engineer_note?: string | null
+          escalated_at?: string | null
           id?: string
           last_reminder_at?: string | null
           municipality?: string | null
@@ -315,6 +317,7 @@ export type Database = {
           claimed_by?: string | null
           created_at?: string
           engineer_note?: string | null
+          escalated_at?: string | null
           id?: string
           last_reminder_at?: string | null
           municipality?: string | null
@@ -807,6 +810,18 @@ export type Database = {
         }[]
       }
       get_funnel_metrics: { Args: { _window_hours?: number }; Returns: Json }
+      get_open_requests_to_escalate: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          municipality: string
+          note: string
+          public_id: string
+          risk_level: string
+          state: string
+        }[]
+      }
       get_requests_needing_action: {
         Args: never
         Returns: {
@@ -889,6 +904,7 @@ export type Database = {
           volunteer_type: string
         }[]
       }
+      mark_request_escalated: { Args: { _id: string }; Returns: undefined }
       mark_request_reminded: { Args: { _id: string }; Returns: undefined }
       move_to_dlq: {
         Args: {
