@@ -1,7 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 
 import { sendSystemEmail } from "./notify-email.server";
+import { sendSlackNotification, riskTag } from "./slack-notify.server";
 import { engineerPanelUrl } from "./volunteer-links";
+
+type EscalateRow = {
+  id: string;
+  public_id: string | null;
+  state: string | null;
+  municipality: string | null;
+  risk_level: string | null;
+  note: string | null;
+  created_at: string | null;
+};
 
 type ActionRow = {
   id: string;
