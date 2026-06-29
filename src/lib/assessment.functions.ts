@@ -439,7 +439,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       language: data.language,
       property: data.property,
       state: data.property.state?.trim() || null,
-      municipality: data.property.municipality?.trim() || null,
+      municipality: canonicalMunicipality(data.property.state, data.property.municipality),
       building_name: building?.name ?? null,
       building_key: building?.key ?? null,
       building_inferred: buildingInferred,
