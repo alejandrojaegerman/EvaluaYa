@@ -1925,6 +1925,21 @@ const en: Dict = {
   "zona.viewMap": "View the full map",
   "zona.otherStates": "Other states",
   "zona.notFound": "We couldn't find that state.",
+  "zona.municipiosWithReports": "Municipalities with reports",
+  "zona.municipiosWithReportsHint":
+    "Tap a municipality to see its reports in detail.",
+
+  "municipio.eyebrow": "Municipality report",
+  "municipio.h1Prefix": "Structural damage in",
+  "municipio.intro":
+    "Anonymous community reports in {municipio}, {estado}. Assess your home for free, with no sign-up, in just a few minutes.",
+  "municipio.ctaPrefix": "Assess my home in",
+  "municipio.totalReports": "Reports in the municipality",
+  "municipio.lastReport": "Last report",
+  "municipio.notEnough":
+    "There aren't enough reports in {municipio} yet to show a summary. Be among the first to assess your home and help your community.",
+  "municipio.backToState": "See the full analysis for {estado}",
+  "municipio.notFound": "We couldn't find that municipality.",
 
 
   "property.state": "State",
