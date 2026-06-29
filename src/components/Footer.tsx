@@ -31,7 +31,6 @@ export function Footer() {
     },
     {
       heading: t("footer.participate"),
-      note: t("engineers.footerDesc"),
       links: [
         { to: "/voluntarios", label: t("nav.volunteers") },
         { to: "/assess/property", label: t("footer.evaluate") },
