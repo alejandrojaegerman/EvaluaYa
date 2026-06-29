@@ -1,3 +1,4 @@
+import { queryOptions } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   Activity,
@@ -22,7 +23,18 @@ import {
 } from "@/components/ui/accordion";
 import { useLang } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/datetime";
-import { SIGNIFICANT_24H_MAG, type QuakeFeed } from "@/lib/quakes.functions";
+import {
+  getRecentVenezuelaQuakes,
+  SIGNIFICANT_24H_MAG,
+  type QuakeFeed,
+} from "@/lib/quakes.functions";
+
+/** Shared query for both language routes. Short stale time keeps it fresh. */
+export const quakeFeedQuery = queryOptions({
+  queryKey: ["venezuela-quakes"],
+  queryFn: () => getRecentVenezuelaQuakes(),
+  staleTime: 5 * 60 * 1000,
+});
 
 export const ES_PATH = "/temblo-en-venezuela-hoy";
 export const EN_PATH = "/earthquake-in-venezuela-today";
