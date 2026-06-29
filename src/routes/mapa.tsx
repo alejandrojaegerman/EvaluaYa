@@ -513,8 +513,9 @@ function MapPage() {
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
               <p className="font-display text-2xl font-extrabold text-primary">
-                <CountUp value={totals!.areas} />
+                <CountUp value={municipioCount} />
               </p>
+
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("map.areasLabel")}
               </p>
