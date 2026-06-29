@@ -119,6 +119,45 @@ function rgb(level: RiskKey): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+type Translate = (key: string) => string;
+
+/** Human relative-time label for the most recent report, e.g. "hace 2 h". */
+function formatUpdated(t: Translate, ts: number): string {
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return t("dataroom.updatedJustNow");
+  if (min < 60) return t("dataroom.updatedMinutes").replace("{n}", String(min));
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return t("dataroom.updatedHours").replace("{n}", String(hr));
+  const d = Math.floor(hr / 24);
+  return t("dataroom.updatedDays").replace("{n}", String(d));
+}
+
+/** Media-friendly one-line narrative built from the live totals in scope. */
+function buildNarrative(
+  t: Translate,
+  totals: DamageTotals | null,
+  topArea: string | null,
+): string {
+  if (!totals || totals.total === 0) return "";
+  const serious = totals.red + totals.orange;
+  const pct = Math.round((serious / totals.total) * 100);
+  if (pct < 20) {
+    return t("dataroom.narrativeLow").replace("{total}", String(totals.total));
+  }
+  if (topArea) {
+    return t("dataroom.narrativeArea")
+      .replace("{total}", String(totals.total))
+      .replace("{pct}", String(pct))
+      .replace("{area}", topArea);
+  }
+  return t("dataroom.narrative")
+    .replace("{total}", String(totals.total))
+    .replace("{pct}", String(pct));
+}
+
+
+
 function isUnspecified(value: string | null | undefined): boolean {
   if (!value) return true;
   return value.trim().toLowerCase() === "desconocido";
