@@ -46,6 +46,11 @@ async function buildSitemap(): Promise<string> {
       changefreq: "monthly",
       priority: "0.7",
     },
+    {
+      loc: absoluteUrl("/guia/funvisis-que-es-y-como-funciona"),
+      changefreq: "monthly",
+      priority: "0.7",
+    },
     { loc: absoluteUrl("/feedback"), changefreq: "monthly", priority: "0.5" },
     { loc: absoluteUrl("/privacidad"), changefreq: "yearly", priority: "0.3" },
     // Regional landing pages — one per estado.
