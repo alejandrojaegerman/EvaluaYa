@@ -942,6 +942,7 @@ const es: Dict = {
 
   // ----- Volunteer engineers (ES) -----
   "nav.volunteers": "Ingenieros voluntarios",
+  "nav.volunteersShort": "Voluntarios",
 
   // Result page connect section
   "connect.title": "Pide ayuda de un ingeniero voluntario",
@@ -2325,6 +2326,7 @@ const en: Dict = {
 
   // ----- Volunteer engineers (EN) -----
   "nav.volunteers": "Volunteer engineers",
+  "nav.volunteersShort": "Volunteers",
 
   "connect.title": "Request a volunteer engineer",
   "connect.subtitleRed":

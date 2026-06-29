@@ -27,7 +27,7 @@ import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 
 const linkClass =
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground data-[status=active]:bg-accent/60 data-[status=active]:text-foreground";
+  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground data-[status=active]:bg-accent/60 data-[status=active]:text-foreground";
 
 /** Desktop-only top navigation. Hidden on mobile (BottomNav takes over). */
 export function TopNav() {
@@ -47,7 +47,7 @@ export function TopNav() {
           </span>
         </Link>
 
-        <nav className="ml-2 flex items-center gap-1">
+        <nav className="ml-2 flex items-center gap-0.5">
           <Link
             to="/"
             className={linkClass}
@@ -87,7 +87,7 @@ export function TopNav() {
             activeProps={{ "data-status": "active" }}
           >
             <HandHeart className="size-4" aria-hidden />
-            {t("nav.volunteers")}
+            {t("nav.volunteersShort")}
           </Link>
           <Link
             to="/metodologia"
@@ -132,7 +132,7 @@ export function TopNav() {
 
         <div className="ml-auto flex items-center gap-3">
           <span
-            className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground"
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-muted-foreground"
             title={online ? t("common.online") : t("common.offline")}
           >
             {online ? (
