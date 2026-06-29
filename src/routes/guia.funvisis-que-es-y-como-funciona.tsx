@@ -105,6 +105,14 @@ const FAQS: Record<"es" | "en", { q: string; a: string }[]> = {
       q: "¿Cómo complementa EvalúaYa el trabajo de FUNVISIS?",
       a: "FUNVISIS aporta la ciencia oficial del sismo a nivel nacional. EvalúaYa lleva esa información al nivel de tu vivienda: con una autoevaluación guiada revisas columnas, vigas, muros y escaleras, obtienes un nivel de riesgo y, si hace falta, te conectamos con ingenieros voluntarios verificados.",
     },
+    {
+      q: "¿Cómo veo los sismos recientes en Venezuela?",
+      a: "En EvalúaYa puedes ver una lista de sismos recientes cerca de Venezuela en la página “¿Tembló en Venezuela hoy?”, con magnitud, epicentro y hora a partir de datos públicos del USGS. Para el reporte oficial venezolano, consulta FUNVISIS. Si sentiste el movimiento, conviene revisar tu vivienda.",
+    },
+    {
+      q: "Vi en FUNVISIS que tembló hoy. ¿Y ahora qué hago?",
+      a: "Primero confirma que estás a salvo. Luego, aunque la magnitud parezca baja, revisa tu vivienda: la magnitud de FUNVISIS no determina el daño en tu casa específica. Una autoevaluación guiada y gratuita en EvalúaYa toma pocos minutos y te dice si es seguro quedarte, limitar el uso o evacuar.",
+    },
   ],
   en: [
     {
