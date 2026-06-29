@@ -6,7 +6,14 @@ import {
   rankStates,
   type AreaRow,
 } from "@/lib/impact";
-import { ESTADO_NAMES, municipiosFor } from "@/lib/venezuela";
+import {
+  ESTADO_NAMES,
+  ESTADOS,
+  estadoSlug,
+  municipioSlug,
+  municipiosFor,
+  resolveMunicipio,
+} from "@/lib/venezuela";
 
 export type AreaAggregate = {
   state: string;
