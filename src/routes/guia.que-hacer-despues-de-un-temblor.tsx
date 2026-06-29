@@ -188,6 +188,7 @@ const COPY = {
       "Run a free, guided self-assessment in a few minutes. No sign-up, works on low bandwidth.",
     ctaButton: "Start self-assessment",
     faqTitle: "Frequently asked questions",
+    cracksLink: "How to identify dangerous cracks",
     moreLink: "How the methodology works",
   },
 };
