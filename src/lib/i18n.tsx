@@ -601,7 +601,7 @@ const es: Dict = {
   "home.seoTagline":
     "Sabe en 2 minutos si tu vivienda es segura para entrar tras el sismo.",
   "home.statBuildings": "evaluaciones realizadas",
-  "home.statUrgent": "casos urgentes detectados",
+  
   "home.pendingTitle": "Tienes una evaluación sin enviar",
   "home.pendingBody": "Completaste el cuestionario sin conexión. Envíalo ahora para recibir tu resultado.",
   "home.pendingOffline": "Sin conexión. Se enviará automáticamente cuando vuelva la señal.",
