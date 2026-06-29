@@ -155,6 +155,7 @@ const COPY = {
     ctaButton: "Iniciar autoevaluación",
     tremorLink: "Qué hacer después de un temblor",
     boconoLink: "Falla de Boconó: la principal falla activa",
+    liveLink: "¿Tembló en Venezuela hoy? Sismos recientes",
     faqTitle: "Preguntas frecuentes",
     sourceNote:
       "Información de referencia educativa. Los reportes oficiales de sismos y estudios de peligro sísmico los publica FUNVISIS.",
@@ -171,6 +172,7 @@ const COPY = {
     ctaButton: "Start self-assessment",
     tremorLink: "What to do after a tremor",
     boconoLink: "Boconó Fault: the main active fault",
+    liveLink: "Earthquake in Venezuela today? Recent quakes",
     faqTitle: "Frequently asked questions",
     sourceNote:
       "Educational reference information. Official earthquake reports and seismic hazard studies are published by FUNVISIS.",
