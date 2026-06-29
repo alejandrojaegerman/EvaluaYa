@@ -115,6 +115,7 @@ function AdminDashboard() {
   const [clusters, setClusters] = useState<BuildingCluster[]>([]);
   const [funnel, setFunnel] = useState<FunnelMetrics | null>(null);
   const [accounts, setAccounts] = useState<AdminAccounts | null>(null);
+  const [photoStats, setPhotoStats] = useState<PhotoStats | null>(null);
 
   // Volunteer + help-request state (shared by Seguimiento and Voluntarios tabs).
   const [engineers, setEngineers] = useState<AdminEngineer[]>([]);
