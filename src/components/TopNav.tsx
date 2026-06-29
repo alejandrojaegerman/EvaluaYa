@@ -10,6 +10,7 @@ import {
   Map,
   MessageSquareHeart,
   ShieldCheck,
+  Waves,
   Wifi,
   WifiOff,
 } from "lucide-react";
@@ -30,7 +31,7 @@ const linkClass =
 
 /** Desktop-only top navigation. Hidden on mobile (BottomNav takes over). */
 export function TopNav() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const online = useOnline();
   const hasReports = useHasReports();
 
