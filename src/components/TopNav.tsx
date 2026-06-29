@@ -132,7 +132,7 @@ export function TopNav() {
 
         <div className="ml-auto flex items-center gap-3">
           <span
-            className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground"
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-muted-foreground"
             title={online ? t("common.online") : t("common.offline")}
           >
             {online ? (
