@@ -61,7 +61,7 @@ const es: Dict = {
   "engineers.connect": "Conectamos",
   "engineers.connectDesc":
     "Cuando una familia lo solicita tras su autoevaluación, la enlazamos con un ingeniero voluntario verificado que la orienta por videollamada y, si hace falta, en persona. Sin costo.",
-  "engineers.learnMore": "Conoce la red de ingenieros",
+  "engineers.learnMore": "Únete como ingeniero voluntario",
   "engineers.mapNote":
     "Tras una evaluación, los residentes pueden pedir apoyo de un ingeniero voluntario verificado.",
   "engineers.footerDesc": "Reclutamos, validamos y conectamos ingenieros.",
@@ -1346,7 +1346,7 @@ const en: Dict = {
   "engineers.connect": "We connect",
   "engineers.connectDesc":
     "When a family asks after their self-assessment, we link them with a verified volunteer engineer who guides them over a video call — and in person if needed. At no cost.",
-  "engineers.learnMore": "Meet the engineer network",
+  "engineers.learnMore": "Become a volunteer engineer",
   "engineers.mapNote":
     "After an assessment, residents can request support from a verified volunteer engineer.",
   "engineers.footerDesc": "We recruit, validate and connect engineers.",
