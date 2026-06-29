@@ -44,9 +44,11 @@ import { API_BASE, DATA_LICENSE } from "@/lib/open-data";
 import { absoluteUrl, withUtm } from "@/lib/site";
 import {
   getDataRoom,
+  getPhotoStats,
   getRiskFactorsFiltered,
   type AreaAggregate,
   type DamageTotals,
+  type PhotoStats,
   type RiskFactors,
   type TimeseriesPoint,
 } from "@/lib/stats.functions";
