@@ -37,7 +37,10 @@ export async function logApiUsage(
         : {};
     await supabaseAdmin.from("api_usage_events").insert({
       endpoint,
-      filters: Object.keys(clean).length > 0 ? clean : null,
+      filters:
+        Object.keys(clean).length > 0
+          ? (clean as Record<string, string>)
+          : null,
       referer_host: refererHost(request),
       user_agent: ua,
     });
