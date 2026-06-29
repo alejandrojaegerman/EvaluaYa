@@ -12,6 +12,8 @@ EvalúaYa (AssessNow) ayuda a las personas a revisar su vivienda, edificio o loc
 - [Voluntarios](/voluntarios): Ingenieros y organizaciones que quieran ayudar pueden registrarse.
 - [Metodología](/metodologia): Cómo se determinan los niveles de riesgo y la lógica de seguridad.
 - [Ayuda](/ayuda): Centro de ayuda para usar la aplicación.
+- [Guía: qué hacer después de un temblor](/guia/que-hacer-despues-de-un-temblor): Pasos de seguridad inmediatos tras un sismo.
+- [Guía: grietas peligrosas](/guia/grietas-peligrosas-despues-de-un-sismo): Cómo distinguir una grieta superficial de una estructural, con ejemplos visuales.
 - [Comentarios](/feedback): Envía sugerencias o reporta problemas.
 - [Privacidad](/privacidad): Política de privacidad. Contacto: contacto@evaluaya.app.
 

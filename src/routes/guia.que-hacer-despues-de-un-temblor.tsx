@@ -171,6 +171,7 @@ const COPY = {
       "Haz una autoevaluación guiada y gratuita en pocos minutos. Sin registro y funciona con poca señal.",
     ctaButton: "Iniciar autoevaluación",
     faqTitle: "Preguntas frecuentes",
+    cracksLink: "Cómo identificar grietas peligrosas",
     moreLink: "Cómo funciona la metodología",
   },
   en: {
@@ -187,6 +188,7 @@ const COPY = {
       "Run a free, guided self-assessment in a few minutes. No sign-up, works on low bandwidth.",
     ctaButton: "Start self-assessment",
     faqTitle: "Frequently asked questions",
+    cracksLink: "How to identify dangerous cracks",
     moreLink: "How the methodology works",
   },
 };
@@ -320,6 +322,11 @@ function GuidePage() {
           <Link to="/assess/property">
             {c.ctaButton}
             <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+        <Button asChild variant="link" className="mt-1 w-full">
+          <Link to="/guia/grietas-peligrosas-despues-de-un-sismo">
+            {c.cracksLink}
           </Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
