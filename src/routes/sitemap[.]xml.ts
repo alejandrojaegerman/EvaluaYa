@@ -37,6 +37,11 @@ async function buildSitemap(): Promise<string> {
       priority: "0.8",
     },
     {
+      loc: absoluteUrl("/guia/grietas-peligrosas-despues-de-un-sismo"),
+      changefreq: "weekly",
+      priority: "0.8",
+    },
+    {
       loc: absoluteUrl("/guia/falla-de-bocono"),
       changefreq: "monthly",
       priority: "0.7",
