@@ -268,6 +268,21 @@ function MapPage() {
       .sort((x, y) => y.total - x.total);
   }, [areas]);
 
+  // Distinct normalized municipios with at least one report. Excludes
+  // "Desconocido"/unspecified and merges typos/casing via resolveMunicipio.
+  const municipioCount = useMemo(() => {
+    const seen = new Set<string>();
+    for (const a of areas) {
+      const resolved = resolveMunicipio(a.state, a.municipality);
+      if (resolved && resolved.level === "municipio") {
+        seen.add(`${resolved.stateName}|${resolved.name}`);
+      }
+    }
+    return seen.size;
+  }, [areas]);
+
+
+
 
 
   const topAreas = useMemo<DisplayArea[]>(() => {
