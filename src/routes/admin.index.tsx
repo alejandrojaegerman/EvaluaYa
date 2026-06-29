@@ -27,6 +27,7 @@ import {
 } from "recharts";
 
 import { AppShell } from "@/components/AppShell";
+import { ApiUsagePanel } from "@/components/admin/ApiUsagePanel";
 import { QualityWatchdog } from "@/components/admin/QualityWatchdog";
 import { SeguimientoPanel } from "@/components/admin/SeguimientoPanel";
 import { VolunteersPanel } from "@/components/admin/VolunteersPanel";
@@ -745,6 +746,10 @@ function AdminDashboard() {
             {/* Photo evidence — anonymized counts only */}
             <SectionTitle icon={Database} title={t("photos.title")} />
             <PhotoEvidencePanel stats={photoStats} loading={!photoStats} />
+
+            {/* Open-data API usage */}
+            <ApiUsagePanel secret={secret} />
+
 
 
 
