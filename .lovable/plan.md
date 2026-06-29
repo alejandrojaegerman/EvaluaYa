@@ -1,25 +1,40 @@
-## Goal
+# Fix: checklist content cut off behind the fixed action bar
 
-Generate a new strong admin passphrase, store it as the backend secret that gates the admin panel, and give you the value so you can share it with Rodrigo.
+## The problem
+On the `/assess/*` flow, the Back / Analizar daños bar is rendered with `position: fixed` at the bottom of the screen (the `StepFooter` component). To stop content from hiding behind it, `AppShell` reserves bottom space on the scrolling `<main>`.
 
-## How admin access works today
+But the reserved space is wrong at wider viewports:
 
-The admin dashboard (`/admin`) is protected by a single **shared passphrase** stored in the backend secret `VOLUNTEER_ADMIN_SECRET`. There are no individual admin accounts — anyone with the panel enters the same value. Every admin server function (analytics, volunteers, request triage, accounts, funnel, API usage) checks the request value against this one secret.
+```text
+main classes:  ... md:pb-12  pb-28 ...
+```
 
-This means: rotating it gives Rodrigo access, but also **replaces the passphrase you currently use** — you'll both use the new one, and the old value stops working immediately.
+- `pb-28` = 112px (intended clearance, applies on phones)
+- `md:pb-12` = 48px (applies at ≥768px and, because it's a more specific breakpoint variant, wins)
 
-## What I'll do
+The fixed action bar is ~65px tall. At ≥768px the page only reserves 48px, so the bottom of the last checklist item (e.g. item 13) is hidden behind the bar and the scroll can't reveal it. This was confirmed live: at 897px wide, computed `padding-bottom` was `48px` vs a 65px bar.
 
-1. Generate a strong, human-shareable passphrase (random, high-entropy but copy/paste friendly).
-2. Rotate the `VOLUNTEER_ADMIN_SECRET` backend secret to that new value (replace the existing one — no code changes needed; all admin functions already read this secret).
-3. Show you the new passphrase in chat so you can pass it to Rodrigo through a secure channel (e.g. a password manager share, not plain email).
+## The fix
+In `src/components/AppShell.tsx`, change the `<main>` padding logic so that when `hideFooter` is set (the assessment flow that shows the fixed `StepFooter`), the bottom clearance stays large enough at **every** breakpoint instead of being shrunk to `md:pb-12`.
 
-## Notes
+Current:
+```tsx
+"mx-auto w-full flex-1 px-4 pt-5 md:pb-12",
+hideFooter ? "pb-28" : "pb-4",
+```
 
-- No code changes — this is purely a secret rotation. The login form, gating logic, and all admin server functions stay exactly as they are.
-- After rotation, you (and anyone else previously using the old value) must re-enter the new passphrase the next time you open `/admin`.
-- If you'd later prefer true per-person admin accounts (so you can revoke Rodrigo individually without rotating everyone), that's a larger auth change we can scope separately — out of scope here.
+Updated approach: move the desktop `md:pb-12` into the non-`hideFooter` branch only, so flow pages keep their full bottom padding across breakpoints:
+```tsx
+"mx-auto w-full flex-1 px-4 pt-5",
+hideFooter ? "pb-28" : "pb-4 md:pb-12",
+```
 
-## Technical detail
+This keeps normal pages unchanged (`pb-4` on mobile, `pb-12` on desktop) while guaranteeing the assessment flow always reserves 112px — comfortably clearing the ~65px fixed bar.
 
-- Rotate `VOLUNTEER_ADMIN_SECRET` to the newly generated value via the secrets tooling, then surface the value once so it can be shared.
+## Verification
+- Re-check computed `padding-bottom` on `<main>` at 897px: should be 112px.
+- Scroll the `/assess/checklist` page to the very bottom and confirm the last item and its helper text are fully visible above the action bar.
+- Spot-check `/assess/property` (same `StepFooter`) at mobile and desktop widths.
+
+## Scope
+- One file: `src/components/AppShell.tsx` (a single className change). No logic, data, or component-structure changes.
