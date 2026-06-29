@@ -605,6 +605,14 @@ function DataRoomPage() {
     [filters.municipality, filters.state].filter(Boolean).join(", ") ||
     t("data.scopeNational");
 
+  const lastUpdatedLabel =
+    lastUpdated != null
+      ? `${t("dataroom.updated")} ${formatUpdated(t, lastUpdated)}`
+      : null;
+  const narrative = buildNarrative(t, totals, topAreas[0]?.title ?? null);
+
+
+
   const mapFallback = (
     <svg
       viewBox={`0 0 ${MAP_W} ${MAP_H}`}
