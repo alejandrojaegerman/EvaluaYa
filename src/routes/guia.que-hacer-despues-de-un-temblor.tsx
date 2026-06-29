@@ -171,6 +171,7 @@ const COPY = {
       "Haz una autoevaluación guiada y gratuita en pocos minutos. Sin registro y funciona con poca señal.",
     ctaButton: "Iniciar autoevaluación",
     faqTitle: "Preguntas frecuentes",
+    cracksLink: "Cómo identificar grietas peligrosas",
     moreLink: "Cómo funciona la metodología",
   },
   en: {
