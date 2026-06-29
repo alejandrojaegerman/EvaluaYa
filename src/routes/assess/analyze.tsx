@@ -395,6 +395,15 @@ function AnalyzeStep() {
         <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
           {t("analyze.savedHint")}
         </p>
+        {imagesAnalyzed > 0 && (
+          <p className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+            <ScanSearch className="size-3.5" aria-hidden />
+            {t("analyze.imagesAnalyzed").replace(
+              "{n}",
+              imagesAnalyzed.toLocaleString(),
+            )}
+          </p>
+        )}
       </>
     );
   }
