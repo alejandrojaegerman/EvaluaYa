@@ -40,6 +40,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { useLang } from "@/lib/i18n";
 import { RISK_HEX } from "@/lib/risk";
 import { generateStatsCard, shareImageBlob } from "@/lib/share-card";
