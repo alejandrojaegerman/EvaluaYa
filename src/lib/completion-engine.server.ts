@@ -165,5 +165,79 @@ export async function runCompletionEngine(): Promise<{
     }
   }
 
-  return { ok: true, reclaimed, reminded, total: rows.length };
+  // 3) Escalate OPEN red/orange requests that nobody claimed within 6h.
+  let escalated = 0;
+  const { data: openRows, error: openErr } = await supabase.rpc(
+    "get_open_requests_to_escalate",
+  );
+  if (openErr) {
+    console.error("[completion-engine] escalate rpc failed", openErr);
+  } else {
+    for (const r of (openRows ?? []) as EscalateRow[]) {
+      try {
+        const location =
+          [r.municipality, r.state].filter(Boolean).join(", ") || "—";
+
+        // Urgent Slack ping linking the admin to the follow-through worklist.
+        await sendSlackNotification({
+          emoji: "⏰",
+          title: "Solicitud urgente sin atender",
+          context: `Sin reclamar por más de 6 horas — necesita seguimiento`,
+          fields: [
+            { label: "Riesgo", value: riskTag(r.risk_level) },
+            { label: "Zona", value: location },
+            { label: "Nota", value: r.note ?? "" },
+          ],
+          url: "/admin",
+          buttonLabel: "Atender en EvalúaYa",
+          urgent: true,
+        }).catch((e) =>
+          console.error("[completion-engine] escalate slack failed", e),
+        );
+
+        // Email approved engineers covering that state so someone steps in.
+        const { data: engineers } = await supabase.rpc(
+          "get_engineers_to_notify",
+          { _state: r.state ?? "" },
+        );
+        for (const eng of (engineers ?? []) as Array<{
+          name: string | null;
+          email: string | null;
+          access_token: string | null;
+        }>) {
+          if (!eng.email?.trim() || !eng.access_token) continue;
+          await sendSystemEmail({
+            templateName: "help-request-notification",
+            recipientEmail: eng.email,
+            idempotencyKey: `escalate:${r.id}:${eng.email}`,
+            templateData: {
+              engineerName: eng.name ?? "",
+              riskLevel: r.risk_level ?? "",
+              location,
+              note: r.note || "",
+              panelUrl: engineerPanelUrl(eng.access_token, "help_reminder"),
+            },
+          }).catch((e) =>
+            console.error("[completion-engine] escalate email failed", e),
+          );
+        }
+
+        await supabase
+          .rpc("mark_request_escalated", { _id: r.id })
+          .then(({ error: mErr }) => {
+            if (mErr)
+              console.error(
+                "[completion-engine] mark_request_escalated failed",
+                r.id,
+                mErr,
+              );
+          });
+        escalated += 1;
+      } catch (e) {
+        console.error("[completion-engine] escalate row failed", r.id, e);
+      }
+    }
+  }
+
+  return { ok: true, reclaimed, reminded, escalated, total: rows.length };
 }
