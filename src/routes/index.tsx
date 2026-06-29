@@ -207,11 +207,11 @@ function Index() {
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
-            <p className="font-display text-2xl font-extrabold text-primary">
-              {totals!.areas.toLocaleString()}
+            <p className="font-display text-2xl font-extrabold text-risk-red">
+              {(totals!.red + totals!.orange).toLocaleString()}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {t("home.statAreas")}
+              {t("home.statUrgent")}
             </p>
           </div>
         </section>
