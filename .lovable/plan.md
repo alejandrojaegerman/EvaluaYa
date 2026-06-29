@@ -1,64 +1,49 @@
-# Photo Evidence Tracking & Analytics
+# World-class Data Room — `/datos`
 
-## Goal
-Reliably quantify the inspection photos we've collected — overall, per checklist question, per area, and over time — and surface those counts (never the actual images) in the admin Datos tab and the public data room.
+Reorganize the existing data room from one ~6,500px scroll into a polished, tabbed experience led by a media/public-friendly executive summary. This is a **frontend reorganization only** — all data sources, server functions, filters, and widgets stay exactly as they are; we change layout, hierarchy, and add one narrative header.
 
-## The problem today
-- Photos live only inside the `assessments.answers` JSONB, in two shapes: the current `photoPaths` (array) and a legacy `photoPath` (single string from older records).
-- The only place that counts "images" reads just `photoPaths`, so legacy photos are **undercounted**.
-- Nothing tracks how many photos came in **per question** (foundation, walls, columns, roof…) or **per area**, so we can't report evidence depth.
-- Current data: 142 analyzed reports, 116 with photos, 164 files in storage.
+## What changes
 
-## Approach
-Denormalize photo counts onto each assessment so analytics are clean, fast, and shape-agnostic, then build aggregation functions and UI on top.
+### 1. Executive summary header band (new)
+A credibility-forward band directly under the page title:
+- **Scope chip** — current selection ("Todo el país" or "Miranda · Sucre") with a small map-pin icon.
+- **Last-updated timestamp** — derived from the most recent `lastReport` across areas, formatted in US Eastern (matches the app's existing standard), e.g. "Actualizado hace 2 h".
+- **One-line auto narrative** — generated from the live totals for the active scope, media-friendly, e.g. *"De 142 evaluaciones, el 70% reporta daños que requieren atención de un ingeniero; Libertador es la zona más afectada."*
+- **Primary actions** inline: "Compartir resumen" (the existing stat-card share) and "Descargar CSV".
+- KPIs (Evaluaciones / Municipios / Riesgo serio o alto / Verificado) move into this band as a clean 4-up strip so the top of the page reads as an at-a-glance briefing.
+
+### 2. Sticky filter + tab bar
+- The existing `DataRoomFilters` (Estado / Municipio / Período) plus the active-scope label stay, made **sticky** to the top on desktop so filters persist while moving between tabs.
+- Below it, a **sticky tab bar** (using the existing `Tabs` UI component) with horizontal scroll on mobile.
+
+### 3. Tabbed sections (replaces the long stack)
+Filters apply across all tabs (single shared state — switching tabs never refetches differently). Proposed tabs, ordered for a media/public audience:
 
 ```text
-answers JSONB (source of truth)
-   │  normalize photoPaths[] + legacy photoPath
-   ▼
-photo_count (int)  +  photo_counts (jsonb: { foundation: 2, roof: 1, ... })
-   │
-   ▼
-analytics RPCs ──► Admin Datos tab  +  Public /datos page
+Resumen   Mapa   Zonas   Evidencia   Datos abiertos
 ```
 
-## 1. Schema enhancement (migration)
-Add two denormalized columns to `public.assessments`:
-- `photo_count` (integer, default 0) — total photos across all items.
-- `photo_counts` (jsonb, default `{}`) — per checklist-item-id counts.
+- **Resumen** — the narrative recap, severity spotlight ("Qué tan serio es"), risk distribution gauge, and the trend-over-time chart. The shareable stat card lives here as the hero action.
+- **Mapa** — the interactive `DamageMap` + color legend, full-width with more breathing room than today's half-column.
+- **Zonas** — "Zonas con más reportes" list with the per-area "Ver por qué" drill-downs (unchanged behavior, more room).
+- **Evidencia** — national "Por qué se ven así los datos" risk factors + the photo-documentation coverage panel together (both are "the evidence behind the numbers").
+- **Datos abiertos** — data dictionary, CSV export + share, and the open-data API section, grouped as the rigor/credibility tab.
 
-Backfill both from existing `answers`, counting **both** `photoPaths` entries and legacy `photoPath`, so historical records are accurate. No new table is needed; the JSONB stays the source of truth and these columns are a maintained projection.
-
-## 2. Keep counts in sync on write
-In `src/lib/assessment.functions.ts` (submit handler), after building `storedAnswers`, compute the per-item map and total and persist them to the new columns alongside the assessment. This means every new report self-maintains its counts.
-
-## 3. Analytics functions (SECURITY DEFINER, locked down)
-New/updated RPCs, all anonymized (counts only, no paths/addresses/report ids):
-- `get_photo_coverage_filtered(state, municipality, from, to)` — per checklist item: total photos, # reports with a photo for that item, # reports total, coverage %.
-- `get_photo_aggregates_filtered(state, municipality, from, to)` — per state/municipio: total photos, reports with photos, total reports.
-- `get_photo_timeseries_filtered(state, municipality, from, to)` — photos submitted per day.
-- Fix existing `get_damage_totals` / `get_damage_totals_filtered` `images` to use the accurate `photo_count` column, and add `reports_with_photos` + average photos/report.
-
-Grants/security follow the existing pattern (public read-only aggregates exposed to the same role the other `get_damage_*` functions use; admin-only ones restricted to service_role), consistent with how the data room and admin already call these.
-
-## 4. UI — counts only, never images
-**Public data room (`/datos`):** new "Documentación fotográfica / Photo documentation" section:
-- Headline cards: total photos, % of reports with at least one photo, avg photos per report.
-- Per-question coverage bars (which structural elements are best documented).
-- Photos-over-time mini chart, honoring the page's existing state/municipio/date filters.
-
-**Admin Datos tab (`admin.index.tsx` / `QualityWatchdog`):** add per-question photo coverage and per-area photo totals to the quality view, so low-evidence areas/questions are visible for follow-up.
-
-**Map/state pages:** keep using the corrected total (accurate `images`/photo count) — no new surface, just correct numbers.
-
-## 5. Bilingual copy
-Add Spanish-primary / English i18n keys for all new labels (e.g. "Fotos recibidas", "Cobertura por elemento", "Reportes con foto", "Fotos por día").
-
-## Technical notes
-- `photo_counts` keys are checklist item ids already defined in `assessment-types.ts`, so the UI can label them via existing translations.
-- Backfill runs once in the migration; the write-path change keeps it current. A guard handles malformed/empty `answers`.
-- No actual photos, signed URLs, or storage paths are ever returned by the analytics functions or shown in any of these surfaces.
+### 4. Visual polish (consistent "data room" system)
+- Consistent **section eyebrows** (small uppercase label + title) on every panel.
+- Uniform card treatment, spacing rhythm, and a subtle header gradient band so it reads as a designed product, not a stack of boxes.
+- Empty/loading states preserved; the mobile "open map" nudge stays.
 
 ## Out of scope
-- Viewing or browsing the actual photos in analytics.
-- Changing how photos are uploaded, rationed, or sent to the AI.
+- No changes to server functions, RPCs, filters logic, the database, or any data shown. The "Sucre" merge and all metrics behave identically.
+- No new dependencies (reuses existing `Tabs`, icons, and components).
+
+## Technical notes
+- All work in `src/routes/datos.tsx`: extract the existing JSX blocks (KPIs, map, spotlight, gauge, trend, top areas, risk factors, photos, dictionary, export, API) into a `Tabs`/`TabsContent` structure and add the header band + sticky wrapper. The heavy logic (`useMemo`/`useEffect` data fetching) is untouched — only the render tree is reorganized.
+- Add bilingual i18n keys (ES + EN) for the new tab labels, eyebrows, "Actualizado", and the narrative template strings in `src/lib/i18n.tsx`.
+- New small presentational helpers (`SectionEyebrow`, narrative builder) kept local to the route file.
+- Sticky bars use `position: sticky` with appropriate `top` offset and `z-index` below the global nav; verified on mobile (390px) and desktop.
+
+## Verification
+- Playwright screenshots at 390px and 1280px across each tab.
+- Confirm filters update all tabs, last-updated/narrative reflect totals, share + CSV still work, and no console errors.
