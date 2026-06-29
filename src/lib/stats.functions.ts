@@ -37,7 +37,10 @@ export type DamageTotals = {
   red: number;
   verified: number;
   areas: number;
+  /** total inspection photos attached across all reports */
   images: number;
+  /** number of reports that include at least one photo */
+  reportsWithPhotos: number;
 };
 
 const EMPTY_TOTALS: DamageTotals = {
@@ -49,6 +52,7 @@ const EMPTY_TOTALS: DamageTotals = {
   verified: 0,
   areas: 0,
   images: 0,
+  reportsWithPhotos: 0,
 };
 
 /**
