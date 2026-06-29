@@ -720,6 +720,24 @@ const es: Dict = {
     "Evaluaciones por día (últimos 90 días), divididas por nivel de riesgo.",
   "map.trendEmpty": "Aún no hay suficientes datos para mostrar la tendencia.",
   "map.trendTotalReports": "reportes en el período",
+
+  // Photo documentation
+  "photos.title": "Documentación fotográfica",
+  "photos.subtitle":
+    "Cuántas fotos respaldan los reportes. Solo conteos — nunca se muestran las fotos.",
+  "photos.total": "Fotos recibidas",
+  "photos.withPhoto": "Reportes con foto",
+  "photos.avgPerReport": "Fotos por reporte",
+  "photos.coverageTitle": "Cobertura por elemento",
+  "photos.coverageSubtitle":
+    "Qué elementos estructurales están mejor documentados con fotos.",
+  "photos.byAreaTitle": "Fotos por zona",
+  "photos.overTimeTitle": "Fotos por día",
+  "photos.reportsWord": "reportes",
+  "photos.photosWord": "fotos",
+  "photos.empty": "Aún no hay fotos en este alcance.",
+  "photos.coverageOf": "de",
+
   "map.whyTitle": "Por qué se ven así los datos",
   "map.whySubtitle":
     "Los factores que más se repiten en las evaluaciones a nivel nacional: daños marcados, antigüedad y tipo de construcción, intensidad sísmica y reglas de seguridad activadas.",
