@@ -398,6 +398,9 @@ export const getDataRoom = createServerFn({ method: "GET" })
               areas: totalsRes.data[0].areas ?? 0,
               images:
                 (totalsRes.data[0] as { images?: number }).images ?? 0,
+              reportsWithPhotos:
+                (totalsRes.data[0] as { reports_with_photos?: number })
+                  .reports_with_photos ?? 0,
             };
 
       const areas: AreaAggregate[] = areasRes.error
