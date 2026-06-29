@@ -29,6 +29,7 @@ export type DamageTotals = {
   red: number;
   verified: number;
   areas: number;
+  images: number;
 };
 
 const EMPTY_TOTALS: DamageTotals = {
@@ -39,6 +40,7 @@ const EMPTY_TOTALS: DamageTotals = {
   red: 0,
   verified: 0,
   areas: 0,
+  images: 0,
 };
 
 /**
