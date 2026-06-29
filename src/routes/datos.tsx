@@ -486,6 +486,17 @@ function DataRoomPage() {
 
   const hasData = !!totals && totals.total > 0;
 
+  // Most recent report timestamp across the active scope (for "last updated").
+  const lastUpdated = useMemo(() => {
+    let max = 0;
+    for (const a of areas) {
+      if (!a.lastReport) continue;
+      const ms = new Date(a.lastReport).getTime();
+      if (!Number.isNaN(ms) && ms > max) max = ms;
+    }
+    return max || null;
+  }, [areas]);
+
   // Per-area "why" drill-down.
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const [factorsCache, setFactorsCache] = useState<Record<string, RiskFactors>>(
