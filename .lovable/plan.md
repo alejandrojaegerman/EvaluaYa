@@ -1,23 +1,19 @@
 ## Goal
 
-Swap the obscure **"Zonas con reportes"** counter on the home trust banner for a concrete, meaningful one: **"Casos urgentes detectados"** — the number of assessments flagged red or orange (homes needing urgent attention).
+Strip social-proof clutter from `/voluntarios` and keep the page laser-focused on converting potential volunteers. Remove the volunteer count chip under the hero and the full verified-engineers roster at the bottom.
 
-No backend changes needed — `getDamageTotals` already returns `red` and `orange` counts in the same payload the home page loads.
+## Changes — `src/routes/voluntarios.index.tsx`
 
-## Changes
+- **Remove the top count chip**: delete the `<VerifiedCount engineers={engineers} />` render (line ~222) and delete the `VerifiedCount` component definition (lines ~601–618).
+- **Remove the bottom roster**: delete the `<VerifiedEngineers engineers={engineers} />` render (line ~560) and delete the `VerifiedEngineers` component definition (lines ~620–717), plus the now-unused `initials`, `TIER_STYLE`, and `TierBadge` helpers.
+- **Clean up the loader**: drop `getAllApprovedEngineers` from the loader so the page no longer fetches the engineer list; keep `getImpactRanking` (still used for the featured-states chips in the form). Loader returns just `{ ranking }`, and the component reads only `ranking`.
+- **Prune imports** that become unused: `getAllApprovedEngineers`, `VerifiedEngineer`, `RecognitionTier`, `ShieldCheck`, `Award`, and any others left dangling after the deletions.
 
-**`src/lib/i18n.tsx`**
-- Replace the `home.statAreas` strings with new urgent-cases labels (keep the key or rename to `home.statUrgent`):
-  - ES: `"casos urgentes detectados"`
-  - EN: `"urgent cases flagged"`
+## Result
 
-**`src/routes/index.tsx`** (home trust counters block)
-- Change the second counter to show `totals.red + totals.orange` instead of `totals.areas`.
-- Use the new label key.
-- Style the urgent number with the risk-red token (e.g. `text-risk-red`) so it reads as a meaningful signal rather than a neutral stat, while keeping the first counter (evaluaciones realizadas) on the primary color.
-- Leave the existing `hasTotals` gate (`totals.total > 0`) as-is. When zero homes are urgent, the counter shows `0`, which is accurate and reassuring.
+The page flow becomes: hero → sign-up form (with featured-state chips) → the recruit/validate/connect pillars and how-it-works steps → resident note. No volunteer counts or roster anywhere, putting full emphasis on the call to action.
 
-## Notes / technical detail
+## Notes
 
-- `DamageTotals` already includes `red`, `orange`, `yellow`, `green`, `verified`, `areas` — so this is a pure presentation change.
-- The `areas` field stays in the type and is still used by the data room / map; only the home banner stops surfacing it.
+- The verified-engineers roster still exists in the admin panel (`/admin/voluntarios`) — this only removes it from the public recruiting page.
+- Pure presentation change; no backend or i18n changes required (leftover `vol.verified*` keys can stay unused).

@@ -10,11 +10,9 @@ import {
   ArrowRight,
   User2,
   Building2,
-  ShieldCheck,
   BadgeCheck,
   FileUp,
   Loader2,
-  Award,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -35,11 +33,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
-  getAllApprovedEngineers,
   submitEngineerSignup,
   uploadEngineerCredential,
-  type RecognitionTier,
-  type VerifiedEngineer,
   type VolunteerType,
 } from "@/lib/volunteers.functions";
 
@@ -65,18 +60,17 @@ export const Route = createFileRoute("/voluntarios/")({
     };
   },
   loader: async () => {
-    const [engineers, ranking] = await Promise.all([
-      getAllApprovedEngineers().catch(() => [] as VerifiedEngineer[]),
-      getImpactRanking().catch(() => EMPTY_IMPACT_RANKING as ImpactRanking),
-    ]);
-    return { engineers, ranking };
+    const ranking = await getImpactRanking().catch(
+      () => EMPTY_IMPACT_RANKING as ImpactRanking,
+    );
+    return { ranking };
   },
   component: VolunteersPage,
 });
 
 function VolunteersPage() {
   const { t } = useLang();
-  const { engineers, ranking } = Route.useLoaderData();
+  const { ranking } = Route.useLoaderData();
   const submit = useServerFn(submitEngineerSignup);
 
 
@@ -217,9 +211,6 @@ function VolunteersPage() {
           {t("vol.subtitle")}
         </p>
       </section>
-
-      {/* Compact trust line — social proof without burying the call to action */}
-      <VerifiedCount engineers={engineers} />
 
       {/* Sign-up form — lead with the call to action */}
       <form
@@ -555,164 +546,7 @@ function VolunteersPage() {
         </Button>
       </div>
 
-
-      {/* Verified engineers — social proof at the bottom, names + org only, no contact */}
-      <VerifiedEngineers engineers={engineers} />
-
     </AppShell>
-  );
-}
-
-/** Two-letter initials from a name or organization. */
-function initials(label: string): string {
-  const parts = label.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-const TIER_STYLE: Record<
-  Exclude<RecognitionTier, "none">,
-  { label: string; className: string }
-> = {
-  gold: { label: "Oro", className: "bg-amber-100 text-amber-800" },
-  silver: { label: "Plata", className: "bg-slate-200 text-slate-700" },
-  bronze: { label: "Bronce", className: "bg-orange-100 text-orange-800" },
-};
-
-/** Recognition badge shown next to engineers who have resolved requests. */
-function TierBadge({ tier }: { tier: RecognitionTier }) {
-  if (tier === "none") return null;
-  const s = TIER_STYLE[tier];
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-        s.className,
-      )}
-    >
-      <Award className="size-3" aria-hidden />
-      {s.label}
-    </span>
-  );
-}
-
-
-/** Compact one-line social proof shown under the hero; hidden when empty. */
-function VerifiedCount({ engineers }: { engineers: VerifiedEngineer[] }) {
-  const { t } = useLang();
-  const count = engineers.length;
-  if (count === 0) return null;
-
-  const label =
-    count === 1
-      ? t("vol.verifiedCountOne").replace("{n}", String(count))
-      : t("vol.verifiedCountMany").replace("{n}", String(count));
-
-  return (
-    <div className="mt-4 flex items-center gap-2 rounded-full border border-primary/20 bg-secondary/40 px-4 py-2 text-sm font-semibold text-primary">
-      <ShieldCheck className="size-4 shrink-0" aria-hidden />
-      <span>{label}</span>
-    </div>
-  );
-}
-
-function VerifiedEngineers({
-
-  engineers,
-}: {
-  engineers: VerifiedEngineer[];
-}) {
-  const { t } = useLang();
-  const count = engineers.length;
-
-  const heading =
-    count === 1
-      ? t("vol.verifiedCountOne").replace("{n}", String(count))
-      : t("vol.verifiedCountMany").replace("{n}", String(count));
-
-  return (
-    <section className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center gap-2">
-        <ShieldCheck className="size-5 text-primary" aria-hidden />
-        <h2 className="font-display text-base font-bold">
-          {t("vol.verifiedTitle")}
-        </h2>
-      </div>
-
-      {count === 0 ? (
-        <div className="mt-3 rounded-xl border border-dashed border-border bg-background p-4 text-center">
-          <p className="font-semibold">{t("vol.verifiedEmptyTitle")}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("vol.verifiedEmptyBody")}
-          </p>
-        </div>
-      ) : (
-        <>
-          <p className="mt-1 text-sm font-semibold text-primary">{heading}</p>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {t("vol.verifiedSubtitle")}
-          </p>
-          <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
-            {engineers.map((e) => {
-              const isOrg = e.volunteerType === "organization";
-              const primary = isOrg && e.organization ? e.organization : e.name;
-              const secondary =
-                isOrg && e.organization
-                  ? e.name
-                  : e.organization || null;
-              const TypeIcon = isOrg ? Building2 : User2;
-              return (
-                <li
-                  key={e.id}
-                  className="flex items-start gap-3 rounded-xl border border-border bg-background p-3"
-                >
-                  <span
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary"
-                    aria-hidden
-                  >
-                    {initials(primary)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold leading-tight">
-                      {primary}
-                    </p>
-                    {secondary && (
-                      <p className="truncate text-xs text-muted-foreground">
-                        {secondary}
-                      </p>
-                    )}
-                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground/70">
-                        <TypeIcon className="size-3" aria-hidden />
-                        {isOrg
-                          ? t("vol.organizationLabel")
-                          : t("vol.individualLabel")}
-                      </span>
-                      <TierBadge tier={e.tier} />
-
-                      {e.states.slice(0, 3).map((s) => (
-                        <span
-                          key={s}
-                          className="rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
-                        >
-                          {s}
-                        </span>
-                      ))}
-                      {e.states.length > 3 && (
-                        <span className="text-[11px] font-medium text-muted-foreground">
-                          +{e.states.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
-    </section>
   );
 }
 
