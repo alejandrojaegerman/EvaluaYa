@@ -25,6 +25,7 @@ import {
   type DataFilters,
 } from "@/components/DataRoomFilters";
 
+import { PhotoEvidencePanel } from "@/components/PhotoEvidencePanel";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
 import { SeveritySpotlight } from "@/components/SeveritySpotlight";
