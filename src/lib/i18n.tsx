@@ -745,6 +745,26 @@ const es: Dict = {
   "map.trendEmpty": "Aún no hay suficientes datos para mostrar la tendencia.",
   "map.trendTotalReports": "reportes en el período",
 
+  // Open data API usage
+  "apiUsage.title": "API de datos abiertos",
+  "apiUsage.subtitle":
+    "Uso de la API pública de datos. Solicitudes que llegan al servidor — los datos servidos desde caché no se cuentan, así que es un mínimo.",
+  "apiUsage.live": "Operativa",
+  "apiUsage.down": "Sin respuesta",
+  "apiUsage.total7d": "Llamadas (7 días)",
+  "apiUsage.today": "Hoy",
+  "apiUsage.endpoints": "Endpoints usados",
+  "apiUsage.lastCall": "Última llamada",
+  "apiUsage.never": "Aún sin uso",
+  "apiUsage.byEndpoint": "Por endpoint",
+  "apiUsage.byReferer": "Orígenes principales",
+  "apiUsage.byState": "Estados más consultados",
+  "apiUsage.empty": "Aún no se ha consultado la API.",
+  "apiUsage.emptyHint":
+    "Cuando alguien use la API de datos abiertos, el uso aparecerá aquí.",
+  "apiUsage.calls": "llamadas",
+  "apiUsage.docsCta": "Ver la API",
+
   // Photo documentation
   "photos.title": "Documentación fotográfica",
   "photos.subtitle":
@@ -2103,6 +2123,26 @@ const en: Dict = {
     "Assessments per day (last 90 days), split by risk level.",
   "map.trendEmpty": "Not enough data yet to show the trend.",
   "map.trendTotalReports": "reports in this period",
+
+  // Open data API usage
+  "apiUsage.title": "Open data API",
+  "apiUsage.subtitle":
+    "Usage of the public data API. Requests reaching the server — cached responses aren't counted, so this is a lower bound.",
+  "apiUsage.live": "Live",
+  "apiUsage.down": "No response",
+  "apiUsage.total7d": "Calls (7 days)",
+  "apiUsage.today": "Today",
+  "apiUsage.endpoints": "Endpoints used",
+  "apiUsage.lastCall": "Last call",
+  "apiUsage.never": "No usage yet",
+  "apiUsage.byEndpoint": "By endpoint",
+  "apiUsage.byReferer": "Top referrers",
+  "apiUsage.byState": "Most-queried states",
+  "apiUsage.empty": "The API hasn't been queried yet.",
+  "apiUsage.emptyHint":
+    "When someone uses the open data API, usage will show up here.",
+  "apiUsage.calls": "calls",
+  "apiUsage.docsCta": "View the API",
 
   // Photo documentation
   "photos.title": "Photo documentation",

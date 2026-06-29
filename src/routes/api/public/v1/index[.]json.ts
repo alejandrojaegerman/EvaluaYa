@@ -53,7 +53,11 @@ export const Route = createFileRoute("/api/public/v1/index.json")({
   server: {
     handlers: {
       OPTIONS: () => corsPreflight(),
-      GET: () => jsonResponse(buildManifest(), 3600),
+      GET: async ({ request }) => {
+        const { logApiUsage } = await import("@/lib/api-usage.server");
+        await logApiUsage("index", null, request);
+        return jsonResponse(buildManifest(), 3600);
+      },
     },
   },
 });
