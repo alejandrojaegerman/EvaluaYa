@@ -15,6 +15,7 @@ import {
   EyeOff,
   Users,
   HardHat,
+  Waves,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const navigate = useNavigate();
   const online = useOnline();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
