@@ -287,6 +287,17 @@ function FunvisisPage() {
         <Button asChild variant="link" className="mt-1 w-full">
           <Link to="/guia/falla-de-bocono">{c.boconoLink}</Link>
         </Button>
+        <Button asChild variant="link" className="mt-1 w-full">
+          <Link
+            to={
+              lang === "es"
+                ? "/temblo-en-venezuela-hoy"
+                : "/earthquake-in-venezuela-today"
+            }
+          >
+            {c.liveLink}
+          </Link>
+        </Button>
       </section>
 
       {/* FAQ */}
