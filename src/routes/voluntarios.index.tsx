@@ -10,11 +10,9 @@ import {
   ArrowRight,
   User2,
   Building2,
-  ShieldCheck,
   BadgeCheck,
   FileUp,
   Loader2,
-  Award,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
