@@ -56,30 +56,35 @@ function waitingLabel(since: string | null): string {
  * 1. Auto-reclaims requests claimed >48h ago that never moved past "claimed",
  *    returning them to the open pool so another volunteer can step in.
  * 2. Sends staged reminders (up to 3, at least 24h apart) to engineers whose
- *    claimed requests have stalled at their current stage for >24h.
+ *    claimed requests have stalled at their current stage. Red/orange requests
+ *    are nudged after 6h; lower-risk after 24h.
+ * 3. Escalates OPEN red/orange requests left unclaimed past 6h: posts an urgent
+ *    Slack alert and emails every approved engineer covering that state, so
+ *    urgent cases that nobody picked up still get a push. Fired once per
+ *    request (tracked by `escalated_at`).
  *
- * All work is driven by the `get_requests_needing_action` RPC and is idempotent
- * per request+reminder so re-runs within the hour won't double-send or
- * double-reclaim.
+ * All work is idempotent per request+reminder/escalation so re-runs within the
+ * hour won't double-send, double-reclaim, or double-escalate.
  */
 export async function runCompletionEngine(): Promise<{
   ok: boolean;
   reclaimed: number;
   reminded: number;
+  escalated: number;
   total: number;
 }> {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) {
     console.error("[completion-engine] missing supabase env");
-    return { ok: false, reclaimed: 0, reminded: 0, total: 0 };
+    return { ok: false, reclaimed: 0, reminded: 0, escalated: 0, total: 0 };
   }
 
   const supabase = createClient(supabaseUrl, serviceKey);
   const { data, error } = await supabase.rpc("get_requests_needing_action");
   if (error) {
     console.error("[completion-engine] rpc failed", error);
-    return { ok: false, reclaimed: 0, reminded: 0, total: 0 };
+    return { ok: false, reclaimed: 0, reminded: 0, escalated: 0, total: 0 };
   }
 
   const rows = (data ?? []) as ActionRow[];
