@@ -48,6 +48,7 @@ function AnalyzeStep() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [provisional, setProvisional] = useState<ProvisionalResult | null>(null);
+  const [imagesAnalyzed, setImagesAnalyzed] = useState<number>(0);
   const draftRef = useRef<AssessmentDraft | null>(null);
   const outboxIdRef = useRef<string | null>(null);
   const runningRef = useRef(false);
