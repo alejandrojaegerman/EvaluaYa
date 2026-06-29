@@ -229,6 +229,8 @@ export const getDamageTotals = createServerFn({ method: "GET" }).handler(
         verified: r.verified ?? 0,
         areas: r.areas ?? 0,
         images: (r as { images?: number }).images ?? 0,
+        reportsWithPhotos:
+          (r as { reports_with_photos?: number }).reports_with_photos ?? 0,
       };
     } catch (e) {
       console.error("[stats] getDamageTotals failed", e);
