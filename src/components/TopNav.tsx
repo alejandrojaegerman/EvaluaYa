@@ -27,7 +27,7 @@ import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 
 const linkClass =
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground data-[status=active]:bg-accent/60 data-[status=active]:text-foreground";
+  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground data-[status=active]:bg-accent/60 data-[status=active]:text-foreground";
 
 /** Desktop-only top navigation. Hidden on mobile (BottomNav takes over). */
 export function TopNav() {
