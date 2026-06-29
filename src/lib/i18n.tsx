@@ -2055,6 +2055,24 @@ const en: Dict = {
     "Assessments per day (last 90 days), split by risk level.",
   "map.trendEmpty": "Not enough data yet to show the trend.",
   "map.trendTotalReports": "reports in this period",
+
+  // Photo documentation
+  "photos.title": "Photo documentation",
+  "photos.subtitle":
+    "How much photo evidence backs the reports. Counts only — the photos are never shown.",
+  "photos.total": "Photos received",
+  "photos.withPhoto": "Reports with a photo",
+  "photos.avgPerReport": "Photos per report",
+  "photos.coverageTitle": "Coverage by element",
+  "photos.coverageSubtitle":
+    "Which structural elements are best documented with photos.",
+  "photos.byAreaTitle": "Photos by area",
+  "photos.overTimeTitle": "Photos per day",
+  "photos.reportsWord": "reports",
+  "photos.photosWord": "photos",
+  "photos.empty": "No photos in this scope yet.",
+  "photos.coverageOf": "of",
+
   "map.whyTitle": "Why the data looks this way",
   "map.whySubtitle":
     "The factors that show up most across assessments nationwide: flagged damage, building age and type, seismic intensity, and triggered safety rules.",
