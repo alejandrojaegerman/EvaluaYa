@@ -1882,7 +1882,7 @@ const en: Dict = {
   "home.seoTagline":
     "Know in 2 minutes whether your home is safe to enter after the quake.",
   "home.statBuildings": "assessments",
-  "home.statUrgent": "urgent cases flagged",
+  
   "home.pendingTitle": "You have an unsent assessment",
   "home.pendingBody": "You finished the checklist offline. Submit it now to get your result.",
   "home.pendingOffline": "Offline. It will be sent automatically when the signal returns.",
