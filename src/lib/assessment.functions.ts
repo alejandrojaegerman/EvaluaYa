@@ -13,6 +13,23 @@ import {
 } from "./assessment-types";
 import { translate, type Lang } from "./i18n";
 import { evaluateSafetyRules, maxRisk } from "./safety-rules";
+import { resolveMunicipio } from "./venezuela";
+
+/**
+ * Normalize a free-text municipality to its canonical casing/spelling when it
+ * matches a known Venezuelan municipio, so case/typo variants (e.g. "sucre" vs
+ * "Sucre") don't fragment analytics. Falls back to the trimmed input.
+ */
+function canonicalMunicipality(
+  state: string | null | undefined,
+  municipality: string | null | undefined,
+): string | null {
+  const trimmed = municipality?.trim() || "";
+  if (!trimmed) return null;
+  const resolved = resolveMunicipio(state, trimmed);
+  if (resolved && resolved.level === "municipio") return resolved.name;
+  return trimmed;
+}
 
 const BUCKET = "assessment-photos";
 const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
@@ -422,7 +439,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       language: data.language,
       property: data.property,
       state: data.property.state?.trim() || null,
-      municipality: data.property.municipality?.trim() || null,
+      municipality: canonicalMunicipality(data.property.state, data.property.municipality),
       building_name: building?.name ?? null,
       building_key: building?.key ?? null,
       building_inferred: buildingInferred,
