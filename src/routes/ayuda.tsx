@@ -211,6 +211,11 @@ function HelpPage() {
             </Link>
           </Button>
           <Button asChild variant="outline">
+            <Link to="/guia/grietas-peligrosas-despues-de-un-sismo">
+              {t("help.cracksGuideLink")}
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/guia/falla-de-bocono">
               {t("help.boconoGuideLink")}
             </Link>
