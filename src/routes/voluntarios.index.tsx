@@ -33,11 +33,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ESTADO_NAMES } from "@/lib/venezuela";
 import {
-  getAllApprovedEngineers,
   submitEngineerSignup,
   uploadEngineerCredential,
-  type RecognitionTier,
-  type VerifiedEngineer,
   type VolunteerType,
 } from "@/lib/volunteers.functions";
 
