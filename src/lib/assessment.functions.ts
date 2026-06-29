@@ -291,6 +291,20 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       storedAnswers.push({ id: answer.id, value: answer.value, photoPaths });
     }
 
+    // Denormalized photo counters kept in sync on write so analytics stay
+    // clean and shape-agnostic (counts only — never the photos themselves).
+    const photoCounts: Record<string, number> = {};
+    let photoCount = 0;
+    for (const a of storedAnswers) {
+      const n = a.photoPaths?.length ?? 0;
+      if (n > 0) {
+        photoCounts[a.id] = n;
+        photoCount += n;
+      }
+    }
+
+
+
 
     // Prefer the building / tower name the user typed explicitly; otherwise
     // fall back to detecting one from the free-text address so we can still
@@ -415,6 +429,8 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       report_type: reportType,
       verified_by_engineer: verifiedByEngineer,
       answers: storedAnswers,
+      photo_count: photoCount,
+      photo_counts: photoCounts,
       ai_result: aiResult,
       risk_level: finalRisk,
       status: "analyzed",

@@ -720,6 +720,24 @@ const es: Dict = {
     "Evaluaciones por día (últimos 90 días), divididas por nivel de riesgo.",
   "map.trendEmpty": "Aún no hay suficientes datos para mostrar la tendencia.",
   "map.trendTotalReports": "reportes en el período",
+
+  // Photo documentation
+  "photos.title": "Documentación fotográfica",
+  "photos.subtitle":
+    "Cuántas fotos respaldan los reportes. Solo conteos — nunca se muestran las fotos.",
+  "photos.total": "Fotos recibidas",
+  "photos.withPhoto": "Reportes con foto",
+  "photos.avgPerReport": "Fotos por reporte",
+  "photos.coverageTitle": "Cobertura por elemento",
+  "photos.coverageSubtitle":
+    "Qué elementos estructurales están mejor documentados con fotos.",
+  "photos.byAreaTitle": "Fotos por zona",
+  "photos.overTimeTitle": "Fotos por día",
+  "photos.reportsWord": "reportes",
+  "photos.photosWord": "fotos",
+  "photos.empty": "Aún no hay fotos en este alcance.",
+  "photos.coverageOf": "de",
+
   "map.whyTitle": "Por qué se ven así los datos",
   "map.whySubtitle":
     "Los factores que más se repiten en las evaluaciones a nivel nacional: daños marcados, antigüedad y tipo de construcción, intensidad sísmica y reglas de seguridad activadas.",
@@ -2037,6 +2055,24 @@ const en: Dict = {
     "Assessments per day (last 90 days), split by risk level.",
   "map.trendEmpty": "Not enough data yet to show the trend.",
   "map.trendTotalReports": "reports in this period",
+
+  // Photo documentation
+  "photos.title": "Photo documentation",
+  "photos.subtitle":
+    "How much photo evidence backs the reports. Counts only — the photos are never shown.",
+  "photos.total": "Photos received",
+  "photos.withPhoto": "Reports with a photo",
+  "photos.avgPerReport": "Photos per report",
+  "photos.coverageTitle": "Coverage by element",
+  "photos.coverageSubtitle":
+    "Which structural elements are best documented with photos.",
+  "photos.byAreaTitle": "Photos by area",
+  "photos.overTimeTitle": "Photos per day",
+  "photos.reportsWord": "reports",
+  "photos.photosWord": "photos",
+  "photos.empty": "No photos in this scope yet.",
+  "photos.coverageOf": "of",
+
   "map.whyTitle": "Why the data looks this way",
   "map.whySubtitle":
     "The factors that show up most across assessments nationwide: flagged damage, building age and type, seismic intensity, and triggered safety rules.",

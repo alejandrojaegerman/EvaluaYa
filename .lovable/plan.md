@@ -1,63 +1,64 @@
-# Follow-through for help requests — unified admin
+# Photo Evidence Tracking & Analytics
 
 ## Goal
-Make it easy for you to push every help request to resolution from a single `/admin`, with priority on RED/ORANGE. Today the actionable triage list lives in `/admin/voluntarios`, the main `/admin` shows only aggregate counts, idle cases stay invisible for 24h, and nothing escalates requests that are never claimed.
+Reliably quantify the inspection photos we've collected — overall, per checklist question, per area, and over time — and surface those counts (never the actual images) in the admin Datos tab and the public data room.
 
-## What changes (your choices)
-- Levers: **assign/push a specific engineer** + **auto-escalation alerts** (no resident-WhatsApp or admin-records-progress for now).
-- Idle threshold for RED/ORANGE: **6 hours** (lower-risk stays at 24h).
-- **Unify everything under `/admin`** — fold the volunteer + triage management into the main dashboard.
+## The problem today
+- Photos live only inside the `assessments.answers` JSONB, in two shapes: the current `photoPaths` (array) and a legacy `photoPath` (single string from older records).
+- The only place that counts "images" reads just `photoPaths`, so legacy photos are **undercounted**.
+- Nothing tracks how many photos came in **per question** (foundation, walls, columns, roof…) or **per area**, so we can't report evidence depth.
+- Current data: 142 analyzed reports, 116 with photos, 164 files in storage.
 
----
-
-## 1. Unify the admin under `/admin` (tabs)
-Restructure `/admin` into tabbed sections behind the single existing passcode gate:
+## Approach
+Denormalize photo counts onto each assessment so analytics are clean, fast, and shape-agnostic, then build aggregation functions and UI on top.
 
 ```text
-/admin
- ├─ Seguimiento (Follow-through)   ← NEW default tab: the worklist
- ├─ Resumen (Overview)            ← current analytics/quality/matching stats
- ├─ Voluntarios (Volunteers)      ← approvals (moved from /admin/voluntarios)
- └─ Datos (Data)                  ← building clusters, accounts, funnel
+answers JSONB (source of truth)
+   │  normalize photoPaths[] + legacy photoPath
+   ▼
+photo_count (int)  +  photo_counts (jsonb: { foundation: 2, roof: 1, ... })
+   │
+   ▼
+analytics RPCs ──► Admin Datos tab  +  Public /datos page
 ```
 
-- One passcode unlock for all tabs (currently you re-enter it on `/admin/voluntarios`).
-- `/admin/voluntarios` stays as a thin redirect to `/admin` (Volunteers tab) so existing links/emails keep working.
+## 1. Schema enhancement (migration)
+Add two denormalized columns to `public.assessments`:
+- `photo_count` (integer, default 0) — total photos across all items.
+- `photo_counts` (jsonb, default `{}`) — per checklist-item-id counts.
 
-## 2. "Seguimiento" worklist — the core of follow-through
-A single prioritized list of every request that needs a push:
-- **Includes:** all `open` (never claimed) + all `claimed` that are idle past their threshold. Excludes resolved/closed.
-- **Sort:** RED → ORANGE → YELLOW → GREEN, then oldest first. RED/ORANGE pinned to the top with a clear "needs follow-up" treatment.
-- **Per card shows:** location, risk tag, age, who claimed it (or "Sin asignar"), current progress stage, time idle, resident note, linked report.
-- **Actions per card:**
-  - **Assign/push engineer** — dropdown ranked by state coverage; assigns and emails them (existing `adminReassignRequest`).
-  - **Remind** the current engineer (existing `adminRemindEngineer`).
-  - **Return to pool** (existing `adminReclaimRequest`).
-- **Top summary strip:** counts of "Sin asignar (rojo/naranja)", "Estancadas", "En progreso", "Resueltas", each clicking through to filter the list.
+Backfill both from existing `answers`, counting **both** `photoPaths` entries and legacy `photoPath`, so historical records are accurate. No new table is needed; the JSONB stays the source of truth and these columns are a maintained projection.
 
-## 3. 6-hour idle flag for RED/ORANGE
-Update the matching RPCs so "needs follow-up" is risk-aware:
-- A `claimed` request with no progress is flagged when idle > **6h for RED/ORANGE**, > 24h otherwise.
-- `open` RED/ORANGE requests are flagged as soon as they pass 6h unclaimed.
-- The Overview "Estancadas" stat and the worklist both use this new logic, so urgent cases surface same-day instead of after a full day.
+## 2. Keep counts in sync on write
+In `src/lib/assessment.functions.ts` (submit handler), after building `storedAnswers`, compute the per-item map and total and persist them to the new columns alongside the assessment. This means every new report self-maintains its counts.
 
-## 4. Auto-escalation alerts
-Extend the existing hourly completion engine so nothing slips:
-- **Unclaimed RED/ORANGE > 6h:** send a Slack alert (existing Slack wiring) linking to `/admin` + an email to engineers covering that state. Today only *claimed* requests get nudged — open ones are escalated to no one.
-- **Claimed RED/ORANGE idle > 6h:** send the staged engineer reminder earlier than the current 24h.
-- **De-dup:** each escalation fires once per request per stage (tracked with a new `escalated_at` column) so you and the engineers don't get spammed.
-- Lower-risk requests keep the current 24h cadence.
+## 3. Analytics functions (SECURITY DEFINER, locked down)
+New/updated RPCs, all anonymized (counts only, no paths/addresses/report ids):
+- `get_photo_coverage_filtered(state, municipality, from, to)` — per checklist item: total photos, # reports with a photo for that item, # reports total, coverage %.
+- `get_photo_aggregates_filtered(state, municipality, from, to)` — per state/municipio: total photos, reports with photos, total reports.
+- `get_photo_timeseries_filtered(state, municipality, from, to)` — photos submitted per day.
+- Fix existing `get_damage_totals` / `get_damage_totals_filtered` `images` to use the accurate `photo_count` column, and add `reports_with_photos` + average photos/report.
 
----
+Grants/security follow the existing pattern (public read-only aggregates exposed to the same role the other `get_damage_*` functions use; admin-only ones restricted to service_role), consistent with how the data room and admin already call these.
+
+## 4. UI — counts only, never images
+**Public data room (`/datos`):** new "Documentación fotográfica / Photo documentation" section:
+- Headline cards: total photos, % of reports with at least one photo, avg photos per report.
+- Per-question coverage bars (which structural elements are best documented).
+- Photos-over-time mini chart, honoring the page's existing state/municipio/date filters.
+
+**Admin Datos tab (`admin.index.tsx` / `QualityWatchdog`):** add per-question photo coverage and per-area photo totals to the quality view, so low-evidence areas/questions are visible for follow-up.
+
+**Map/state pages:** keep using the corrected total (accurate `images`/photo count) — no new surface, just correct numbers.
+
+## 5. Bilingual copy
+Add Spanish-primary / English i18n keys for all new labels (e.g. "Fotos recibidas", "Cobertura por elemento", "Reportes con foto", "Fotos por día").
 
 ## Technical notes
-- **DB migration:**
-  - Add `escalated_at timestamptz` to `public.help_requests` (de-dup for escalation).
-  - Update `get_admin_help_requests`, `get_admin_matching_progress`, and `get_requests_needing_action` to compute a risk-aware idle/`stalled` flag (6h for red/orange, 24h otherwise) and add `open red/orange unclaimed` detection + a `needs_followup` flag.
-- **Server functions** (`src/lib/volunteers.functions.ts`): reuse existing `adminListHelpRequests`, `adminReassignRequest`, `adminRemindEngineer`, `adminReclaimRequest`. Add escalation logic to `src/lib/completion-engine.server.ts` (Slack via `src/lib/slack-notify.server.ts`, email via covering-engineer lookup like `get_engineers_to_notify`). No new public endpoints; the hourly cron already drives the engine.
-- **UI:** convert `src/routes/admin.index.tsx` to a tabbed shell; move the triage worklist + volunteer approval blocks from `src/routes/admin.voluntarios.tsx` into tab components; lift the passcode to the shell. Replace `src/routes/admin.voluntarios.tsx` with a redirect.
-- **i18n:** add ES/EN strings for the new tab labels, summary strip, and escalation states in `src/lib/i18n.tsx`.
-- Resident PII (`resident_whatsapp`) stays unexposed, consistent with current behavior.
+- `photo_counts` keys are checklist item ids already defined in `assessment-types.ts`, so the UI can label them via existing translations.
+- Backfill runs once in the migration; the write-path change keeps it current. A guard handles malformed/empty `answers`.
+- No actual photos, signed URLs, or storage paths are ever returned by the analytics functions or shown in any of these surfaces.
 
 ## Out of scope
-Resident-direct WhatsApp from admin and admin-records-progress-on-behalf (not selected). Easy to add later if you want to handle cases personally.
+- Viewing or browsing the actual photos in analytics.
+- Changing how photos are uploaded, rationed, or sent to the AI.

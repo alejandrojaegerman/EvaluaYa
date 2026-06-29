@@ -25,6 +25,7 @@ import {
   type DataFilters,
 } from "@/components/DataRoomFilters";
 
+import { PhotoEvidencePanel } from "@/components/PhotoEvidencePanel";
 import { RiskFactorsPanel } from "@/components/RiskFactorsPanel";
 import { RiskGauge } from "@/components/RiskGauge";
 import { SeveritySpotlight } from "@/components/SeveritySpotlight";
@@ -43,9 +44,11 @@ import { API_BASE, DATA_LICENSE } from "@/lib/open-data";
 import { absoluteUrl, withUtm } from "@/lib/site";
 import {
   getDataRoom,
+  getPhotoStats,
   getRiskFactorsFiltered,
   type AreaAggregate,
   type DamageTotals,
+  type PhotoStats,
   type RiskFactors,
   type TimeseriesPoint,
 } from "@/lib/stats.functions";
@@ -244,6 +247,32 @@ function DataRoomPage() {
       active = false;
     };
   }, [filters]);
+
+  // Photo documentation — anonymized counts only, respects active filters.
+  const [photoStats, setPhotoStats] = useState<PhotoStats | null>(null);
+  const [photoLoading, setPhotoLoading] = useState(false);
+  useEffect(() => {
+    let active = true;
+    setPhotoStats(null);
+    setPhotoLoading(true);
+    const { from, to } = rangeToDates(filters.range);
+    getPhotoStats({
+      data: {
+        state: filters.state ?? undefined,
+        municipality: filters.municipality ?? undefined,
+        from,
+        to,
+      },
+    })
+      .then((s) => active && setPhotoStats(s))
+      .catch(() => {})
+      .finally(() => active && setPhotoLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [filters]);
+
+
 
   // Severity-weighted ranking so the hardest-hit areas surface first in filters.
   const impactRanking = useMemo(
@@ -804,6 +833,19 @@ function DataRoomPage() {
               </div>
             </div>
           </section>
+
+          {/* Photo documentation */}
+          <section className="mt-6">
+            <h2 className="font-display text-lg font-bold">
+              {t("photos.title")}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("photos.subtitle")}
+            </p>
+            <PhotoEvidencePanel stats={photoStats} loading={photoLoading} />
+          </section>
+
+
 
           {/* Data dictionary */}
           <DataDictionary />

@@ -37,7 +37,10 @@ export type DamageTotals = {
   red: number;
   verified: number;
   areas: number;
+  /** total inspection photos attached across all reports */
   images: number;
+  /** number of reports that include at least one photo */
+  reportsWithPhotos: number;
 };
 
 const EMPTY_TOTALS: DamageTotals = {
@@ -49,6 +52,7 @@ const EMPTY_TOTALS: DamageTotals = {
   verified: 0,
   areas: 0,
   images: 0,
+  reportsWithPhotos: 0,
 };
 
 /**
@@ -225,6 +229,8 @@ export const getDamageTotals = createServerFn({ method: "GET" }).handler(
         verified: r.verified ?? 0,
         areas: r.areas ?? 0,
         images: (r as { images?: number }).images ?? 0,
+        reportsWithPhotos:
+          (r as { reports_with_photos?: number }).reports_with_photos ?? 0,
       };
     } catch (e) {
       console.error("[stats] getDamageTotals failed", e);
@@ -392,6 +398,9 @@ export const getDataRoom = createServerFn({ method: "GET" })
               areas: totalsRes.data[0].areas ?? 0,
               images:
                 (totalsRes.data[0] as { images?: number }).images ?? 0,
+              reportsWithPhotos:
+                (totalsRes.data[0] as { reports_with_photos?: number })
+                  .reports_with_photos ?? 0,
             };
 
       const areas: AreaAggregate[] = areasRes.error
@@ -453,6 +462,137 @@ export const getRiskFactorsFiltered = createServerFn({ method: "GET" })
       return EMPTY_RISK_FACTORS;
     }
   });
+
+// ---------------------------------------------------------------------------
+// Photo documentation — anonymized counts only (never the actual photos,
+// storage paths or report ids). Tracks how much photographic evidence backs
+// the reports, per checklist question, per area and over time.
+// ---------------------------------------------------------------------------
+
+/** Photo coverage for a single checklist question. */
+export type PhotoCoverageRow = {
+  itemId: string;
+  /** total photos attached for this question across all reports */
+  photos: number;
+  /** number of reports with at least one photo for this question */
+  reportsWithPhoto: number;
+  /** total reports in scope (denominator for coverage %) */
+  reportsTotal: number;
+};
+
+/** Photo totals for a single state / municipio. */
+export type PhotoAreaRow = {
+  state: string;
+  municipality: string;
+  photos: number;
+  reportsWithPhotos: number;
+  reportsTotal: number;
+};
+
+/** Photos submitted on a single day. */
+export type PhotoTsPoint = {
+  day: string;
+  photos: number;
+  reportsWithPhotos: number;
+};
+
+export type PhotoStats = {
+  /** total inspection photos in scope */
+  totalPhotos: number;
+  /** total reports in scope */
+  reportsTotal: number;
+  /** reports with at least one photo */
+  reportsWithPhotos: number;
+  /** per checklist question */
+  coverage: PhotoCoverageRow[];
+  /** per state / municipio */
+  byArea: PhotoAreaRow[];
+  /** photos per day */
+  timeseries: PhotoTsPoint[];
+};
+
+const EMPTY_PHOTO_STATS: PhotoStats = {
+  totalPhotos: 0,
+  reportsTotal: 0,
+  reportsWithPhotos: 0,
+  coverage: [],
+  byArea: [],
+  timeseries: [],
+};
+
+/**
+ * Anonymized photo-documentation stats, date/area filterable. Counts only —
+ * never the actual photos, storage paths or report ids. Brokered through the
+ * service role so the locked base table stays private.
+ */
+export const getPhotoStats = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => dataRoomFilterSchema.parse(data ?? {}))
+  .handler(async ({ data }): Promise<PhotoStats> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const args = {
+        _state: data.state ?? undefined,
+        _municipality: data.municipality ?? undefined,
+        _from: data.from ?? undefined,
+        _to: data.to ?? undefined,
+      };
+      const [coverageRes, areaRes, tsRes] = await Promise.all([
+        supabaseAdmin.rpc("get_photo_coverage_filtered", args),
+        supabaseAdmin.rpc("get_photo_aggregates_filtered", args),
+        supabaseAdmin.rpc("get_photo_timeseries_filtered", args),
+      ]);
+
+      const coverage: PhotoCoverageRow[] = coverageRes.error
+        ? []
+        : (coverageRes.data ?? []).map((r) => ({
+            itemId: r.item_id,
+            photos: r.photos ?? 0,
+            reportsWithPhoto: r.reports_with_photo ?? 0,
+            reportsTotal: r.reports_total ?? 0,
+          }));
+
+      const byArea: PhotoAreaRow[] = areaRes.error
+        ? []
+        : (areaRes.data ?? []).map((r) => ({
+            state: r.state,
+            municipality: r.municipality,
+            photos: r.photos ?? 0,
+            reportsWithPhotos: r.reports_with_photos ?? 0,
+            reportsTotal: r.reports_total ?? 0,
+          }));
+
+      const timeseries: PhotoTsPoint[] = tsRes.error
+        ? []
+        : (tsRes.data ?? []).map((r) => ({
+            day: typeof r.day === "string" ? r.day : String(r.day),
+            photos: r.photos ?? 0,
+            reportsWithPhotos: r.reports_with_photos ?? 0,
+          }));
+
+      // Each report belongs to exactly one area, so area sums are exact totals.
+      const totalPhotos = byArea.reduce((s, a) => s + a.photos, 0);
+      const reportsTotal = byArea.reduce((s, a) => s + a.reportsTotal, 0);
+      const reportsWithPhotos = byArea.reduce(
+        (s, a) => s + a.reportsWithPhotos,
+        0,
+      );
+
+      return {
+        totalPhotos,
+        reportsTotal,
+        reportsWithPhotos,
+        coverage,
+        byArea,
+        timeseries,
+      };
+    } catch (e) {
+      console.error("[stats] getPhotoStats failed", e);
+      return EMPTY_PHOTO_STATS;
+    }
+  });
+
 
 
 const leadSchema = z.object({

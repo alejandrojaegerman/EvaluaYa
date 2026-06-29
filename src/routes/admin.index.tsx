@@ -70,6 +70,8 @@ import {
   type AdminHelpRequest,
   type AdminMatchingProgress,
 } from "@/lib/volunteers.functions";
+import { getPhotoStats, type PhotoStats } from "@/lib/stats.functions";
+import { PhotoEvidencePanel } from "@/components/PhotoEvidencePanel";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -113,6 +115,7 @@ function AdminDashboard() {
   const [clusters, setClusters] = useState<BuildingCluster[]>([]);
   const [funnel, setFunnel] = useState<FunnelMetrics | null>(null);
   const [accounts, setAccounts] = useState<AdminAccounts | null>(null);
+  const [photoStats, setPhotoStats] = useState<PhotoStats | null>(null);
 
   // Volunteer + help-request state (shared by Seguimiento and Voluntarios tabs).
   const [engineers, setEngineers] = useState<AdminEngineer[]>([]);
@@ -182,6 +185,9 @@ function AdminDashboard() {
           .then((f) => {
             if (f.ok) setFunnel(f.metrics);
           })
+          .catch(() => {});
+        getPhotoStats({ data: {} })
+          .then((s) => setPhotoStats(s))
           .catch(() => {});
       } else {
         toast.error(t("admin.wrong"));
@@ -735,6 +741,12 @@ function AdminDashboard() {
           <>
             {/* Quality, completeness & verification (Goal 1) */}
             <QualityWatchdog secret={secret} />
+
+            {/* Photo evidence — anonymized counts only */}
+            <SectionTitle icon={Database} title={t("photos.title")} />
+            <PhotoEvidencePanel stats={photoStats} loading={!photoStats} />
+
+
 
             {/* Saved accounts (optional passwordless "Save my reports") */}
             {accounts && (

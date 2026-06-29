@@ -54,6 +54,8 @@ export type Database = {
           id: string
           language: string
           municipality: string | null
+          photo_count: number
+          photo_counts: Json
           prior_risk_level: string | null
           property: Json
           public_id: string
@@ -79,6 +81,8 @@ export type Database = {
           id?: string
           language?: string
           municipality?: string | null
+          photo_count?: number
+          photo_counts?: Json
           prior_risk_level?: string | null
           property?: Json
           public_id: string
@@ -104,6 +108,8 @@ export type Database = {
           id?: string
           language?: string
           municipality?: string | null
+          photo_count?: number
+          photo_counts?: Json
           prior_risk_level?: string | null
           property?: Json
           public_id?: string
@@ -757,6 +763,7 @@ export type Database = {
           images: number
           orange: number
           red: number
+          reports_with_photos: number
           total: number
           verified: number
           yellow: number
@@ -772,8 +779,10 @@ export type Database = {
         Returns: {
           areas: number
           green: number
+          images: number
           orange: number
           red: number
+          reports_with_photos: number
           total: number
           verified: number
           yellow: number
@@ -820,6 +829,48 @@ export type Database = {
           public_id: string
           risk_level: string
           state: string
+        }[]
+      }
+      get_photo_aggregates_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
+        Returns: {
+          municipality: string
+          photos: number
+          reports_total: number
+          reports_with_photos: number
+          state: string
+        }[]
+      }
+      get_photo_coverage_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
+        Returns: {
+          item_id: string
+          photos: number
+          reports_total: number
+          reports_with_photo: number
+        }[]
+      }
+      get_photo_timeseries_filtered: {
+        Args: {
+          _from?: string
+          _municipality?: string
+          _state?: string
+          _to?: string
+        }
+        Returns: {
+          day: string
+          photos: number
+          reports_with_photos: number
         }[]
       }
       get_requests_needing_action: {
