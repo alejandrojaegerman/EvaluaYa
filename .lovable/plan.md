@@ -1,49 +1,52 @@
-# World-class Data Room — `/datos`
+# Open-Data API usage tracking + admin visibility
 
-Reorganize the existing data room from one ~6,500px scroll into a polished, tabbed experience led by a media/public-friendly executive summary. This is a **frontend reorganization only** — all data sources, server functions, filters, and widgets stay exactly as they are; we change layout, hierarchy, and add one narrative header.
+## Goal
+Confirm the public open-data API works, start recording when/how it's used, and show that usage cleanly in the admin dashboard. Today the API (`/api/public/v1/*`) responds correctly (verified: `index.json` returns HTTP 200 with the full manifest), but **no usage is logged anywhere**, so "has it been used?" is currently unanswerable. This adds privacy-safe tracking and an admin panel.
 
-## What changes
+## What we'll track
+For every successful request to the v1 endpoints (`index`, `aggregates`, `totals`, `timeseries`, `risk-factors`, `methodology`):
+- which endpoint
+- timestamp
+- which filters were used (state / municipality / date range) — useful to see what data consumers care about
+- coarse caller hints: referer host and a truncated/normalized user-agent (no IPs, no PII)
 
-### 1. Executive summary header band (new)
-A credibility-forward band directly under the page title:
-- **Scope chip** — current selection ("Todo el país" or "Miranda · Sucre") with a small map-pin icon.
-- **Last-updated timestamp** — derived from the most recent `lastReport` across areas, formatted in US Eastern (matches the app's existing standard), e.g. "Actualizado hace 2 h".
-- **One-line auto narrative** — generated from the live totals for the active scope, media-friendly, e.g. *"De 142 evaluaciones, el 70% reporta daños que requieren atención de un ingeniero; Libertador es la zona más afectada."*
-- **Primary actions** inline: "Compartir resumen" (the existing stat-card share) and "Descargar CSV".
-- KPIs (Evaluaciones / Municipios / Riesgo serio o alto / Verificado) move into this band as a clean 4-up strip so the top of the page reads as an at-a-glance briefing.
+No personal data is stored — this is anonymous API-consumer telemetry, consistent with how `funnel_events` already works.
 
-### 2. Sticky filter + tab bar
-- The existing `DataRoomFilters` (Estado / Municipio / Período) plus the active-scope label stay, made **sticky** to the top on desktop so filters persist while moving between tabs.
-- Below it, a **sticky tab bar** (using the existing `Tabs` UI component) with horizontal scroll on mobile.
+## Approach
 
-### 3. Tabbed sections (replaces the long stack)
-Filters apply across all tabs (single shared state — switching tabs never refetches differently). Proposed tabs, ordered for a media/public audience:
+### 1. Database (migration)
+- New table `public.api_usage_events`:
+  - `id uuid pk`, `endpoint text`, `filters jsonb`, `referer_host text`, `user_agent text`, `created_at timestamptz default now()`
+  - Locked down like `funnel_events`: `ENABLE ROW LEVEL SECURITY`, **no anon/authenticated grants**, `GRANT ALL ... TO service_role` only. Writes happen via service role inside route handlers; reads via a security-definer RPC.
+- New RPC `get_api_usage_metrics(_window_hours int)` (`SECURITY DEFINER`, `search_path = public`) returning a single `jsonb`:
+  - total calls in window, calls per endpoint, calls per day (sparkline), top referer hosts, most-used filters, and last-call timestamp.
 
-```text
-Resumen   Mapa   Zonas   Evidencia   Datos abiertos
-```
+### 2. Logging helper (server-only)
+- New `src/lib/api-usage.server.ts` with `logApiUsage(endpoint, filters, request)`:
+  - fire-and-forget insert via `supabaseAdmin` (loaded inside the function), wrapped in try/catch so it can never break or slow the API response (same pattern as `trackFunnelStep`).
+  - Extracts referer host + a trimmed user-agent from request headers.
+- Call it from each handler in `src/routes/api/public/v1/*.ts` right before returning (skipped for `OPTIONS` preflight).
 
-- **Resumen** — the narrative recap, severity spotlight ("Qué tan serio es"), risk distribution gauge, and the trend-over-time chart. The shareable stat card lives here as the hero action.
-- **Mapa** — the interactive `DamageMap` + color legend, full-width with more breathing room than today's half-column.
-- **Zonas** — "Zonas con más reportes" list with the per-area "Ver por qué" drill-downs (unchanged behavior, more room).
-- **Evidencia** — national "Por qué se ven así los datos" risk factors + the photo-documentation coverage panel together (both are "the evidence behind the numbers").
-- **Datos abiertos** — data dictionary, CSV export + share, and the open-data API section, grouped as the rigor/credibility tab.
+### 3. Admin read path
+- Add `getApiUsageMetrics` server function in `src/lib/funnel.functions.ts` (or a small new `stats` companion), gated by the existing `VOLUNTEER_ADMIN_SECRET` exactly like `getFunnelMetrics`, calling the RPC.
 
-### 4. Visual polish (consistent "data room" system)
-- Consistent **section eyebrows** (small uppercase label + title) on every panel.
-- Uniform card treatment, spacing rhythm, and a subtle header gradient band so it reads as a designed product, not a stack of boxes.
-- Empty/loading states preserved; the mobile "open map" nudge stays.
+### 4. Admin UI (elegant, in the existing "Datos" tab)
+- New `src/components/admin/ApiUsagePanel.tsx`, rendered in the `tab === "datos"` block of `src/routes/admin.index.tsx`, under a `SectionTitle` ("API de datos abiertos" / "Open data API"):
+  - Stat row: total calls (last 7 days), calls today, unique endpoints used, last call (relative time, US Eastern).
+  - A compact per-endpoint list with call counts + share bars (reusing the existing bar/`Stat` visual language so it matches the rest of the dashboard).
+  - Small "Estado: operativo / Status: live" badge confirming the API is reachable.
+  - Empty state: "Aún no se ha consultado la API" / "The API hasn't been queried yet" so a zero reads clearly rather than looking broken.
+- Bilingual i18n keys added to `src/lib/i18n.tsx`.
+
+## Important caveat (called out in the panel)
+The API responses are CDN-cached (`Cache-Control: s-maxage`). Repeated identical requests can be served from cache without reaching the origin, so logged counts are a **lower bound** on real usage. The panel will note this in small print so the numbers aren't misread. (We keep caching — it's the right behavior for a public API; we just label the metric honestly as "requests reaching the server".)
 
 ## Out of scope
-- No changes to server functions, RPCs, filters logic, the database, or any data shown. The "Sucre" merge and all metrics behave identically.
-- No new dependencies (reuses existing `Tabs`, icons, and components).
-
-## Technical notes
-- All work in `src/routes/datos.tsx`: extract the existing JSX blocks (KPIs, map, spotlight, gauge, trend, top areas, risk factors, photos, dictionary, export, API) into a `Tabs`/`TabsContent` structure and add the header band + sticky wrapper. The heavy logic (`useMemo`/`useEffect` data fetching) is untouched — only the render tree is reorganized.
-- Add bilingual i18n keys (ES + EN) for the new tab labels, eyebrows, "Actualizado", and the narrative template strings in `src/lib/i18n.tsx`.
-- New small presentational helpers (`SectionEyebrow`, narrative builder) kept local to the route file.
-- Sticky bars use `position: sticky` with appropriate `top` offset and `z-index` below the global nav; verified on mobile (390px) and desktop.
+- No API keys, rate-limit dashboards, or per-consumer identity.
+- No changes to the API responses, schemas, or the public data itself.
+- No changes to the existing funnel/photo/quality panels.
 
 ## Verification
-- Playwright screenshots at 390px and 1280px across each tab.
-- Confirm filters update all tabs, last-updated/narrative reflect totals, share + CSV still work, and no console errors.
+- Curl each `/api/public/v1/*` endpoint locally, confirm rows land in `api_usage_events`.
+- Load `/admin`, enter the secret, open the Datos tab, confirm the API usage panel shows the test calls with correct per-endpoint counts and last-call time.
+- Confirm an unauthenticated/empty state renders cleanly and that logging failures never affect API responses.

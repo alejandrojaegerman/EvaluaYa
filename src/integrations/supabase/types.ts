@@ -38,6 +38,33 @@ export type Database = {
         }
         Relationships: []
       }
+      api_usage_events: {
+        Row: {
+          created_at: string
+          endpoint: string
+          filters: Json | null
+          id: string
+          referer_host: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          filters?: Json | null
+          id?: string
+          referer_host?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          filters?: Json | null
+          id?: string
+          referer_host?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           ai_result: Json | null
@@ -671,6 +698,7 @@ export type Database = {
           total: number
         }[]
       }
+      get_api_usage_metrics: { Args: { _window_hours?: number }; Returns: Json }
       get_approved_engineers: {
         Args: { _state: string }
         Returns: {
