@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { absoluteUrl } from "@/lib/site";
+import { getMunicipioSitemapEntries } from "@/lib/stats.functions";
 import { ESTADOS, estadoSlug } from "@/lib/venezuela";
 
 type Entry = {
@@ -9,7 +10,7 @@ type Entry = {
   priority: string;
 };
 
-function buildSitemap(): string {
+async function buildSitemap(): Promise<string> {
   const entries: Entry[] = [
     { loc: absoluteUrl("/"), changefreq: "daily", priority: "1.0" },
     {
@@ -50,6 +51,20 @@ function buildSitemap(): string {
     })),
   ];
 
+  // Municipio drill-down pages — only those with enough reports for a page.
+  try {
+    const municipios = await getMunicipioSitemapEntries();
+    for (const m of municipios) {
+      entries.push({
+        loc: absoluteUrl(`/zona/${m.stateSlug}/${m.muniSlug}`),
+        changefreq: "daily",
+        priority: "0.6",
+      });
+    }
+  } catch {
+    // Non-fatal: fall back to the static entries above.
+  }
+
   const urls = entries
     .map(
       (e) =>
@@ -63,8 +78,8 @@ function buildSitemap(): string {
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: () =>
-        new Response(buildSitemap(), {
+      GET: async () =>
+        new Response(await buildSitemap(), {
           headers: {
             "Content-Type": "application/xml; charset=utf-8",
             "Cache-Control": "public, max-age=3600",

@@ -4,9 +4,17 @@ import { z } from "zod";
 import {
   rankMunicipios,
   rankStates,
+  scoreArea,
   type AreaRow,
 } from "@/lib/impact";
-import { ESTADO_NAMES, municipiosFor } from "@/lib/venezuela";
+import {
+  ESTADO_NAMES,
+  ESTADOS,
+  estadoSlug,
+  municipioSlug,
+  municipiosFor,
+  resolveMunicipio,
+} from "@/lib/venezuela";
 
 export type AreaAggregate = {
   state: string;
@@ -525,6 +533,206 @@ export const getImpactRanking = createServerFn({ method: "GET" }).handler(
     } catch (e) {
       console.error("[stats] getImpactRanking failed", e);
       return EMPTY_IMPACT_RANKING;
+    }
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Municipio drill-down — per-municipio anonymized stats for the public
+// /zona/{estado}/{municipio} pages. Free-text municipality names are normalized
+// to canonical official municipios via resolveMunicipio (same logic the
+// location pickers use), so typos/parroquia variants merge into one page. Only
+// municipios with >= MUNICIPIO_MIN_REPORTS evaluations are surfaced publicly so
+// thin, near-identifying pages are never exposed. Counts only — never
+// addresses, photos or report ids. Brokered through the service role.
+// ---------------------------------------------------------------------------
+
+/** Minimum completed evaluations before a municipio gets a public page/link. */
+export const MUNICIPIO_MIN_REPORTS = 3;
+
+export type MunicipioStats = {
+  state: string;
+  /** canonical municipio display name */
+  municipality: string;
+  /** url slug for the canonical municipio */
+  slug: string;
+  total: number;
+  green: number;
+  yellow: number;
+  orange: number;
+  red: number;
+  verified: number;
+  lastReport: string | null;
+};
+
+type RawAggRow = {
+  state: string | null;
+  municipality: string | null;
+  total: number | null;
+  green: number | null;
+  yellow: number | null;
+  orange: number | null;
+  red: number | null;
+  verified: number | null;
+  last_report: string | null;
+};
+
+/**
+ * Fold free-text aggregate rows for one estado into canonical municipios.
+ * Rows that don't resolve to a curated municipio (level "estado") are dropped —
+ * they keep rolling up to the state page instead. Returns a map keyed by
+ * canonical municipio name.
+ */
+function foldMunicipios(
+  stateName: string,
+  rows: RawAggRow[],
+): Map<string, MunicipioStats> {
+  const byMuni = new Map<string, MunicipioStats>();
+  const wanted = stateName.trim().toLowerCase();
+  for (const r of rows) {
+    if ((r.state ?? "").trim().toLowerCase() !== wanted) continue;
+    const resolved = resolveMunicipio(stateName, r.municipality);
+    if (!resolved || resolved.level !== "municipio") continue;
+    const canonical = resolved.name;
+    const cur =
+      byMuni.get(canonical) ??
+      ({
+        state: stateName,
+        municipality: canonical,
+        slug: municipioSlug(canonical),
+        total: 0,
+        green: 0,
+        yellow: 0,
+        orange: 0,
+        red: 0,
+        verified: 0,
+        lastReport: null,
+      } satisfies MunicipioStats);
+    cur.total += r.total ?? 0;
+    cur.green += r.green ?? 0;
+    cur.yellow += r.yellow ?? 0;
+    cur.orange += r.orange ?? 0;
+    cur.red += r.red ?? 0;
+    cur.verified += r.verified ?? 0;
+    if (r.last_report && (!cur.lastReport || r.last_report > cur.lastReport)) {
+      cur.lastReport = r.last_report;
+    }
+    byMuni.set(canonical, cur);
+  }
+  return byMuni;
+}
+
+/**
+ * Municipios in one estado that have enough reports for a public page, ordered
+ * most-affected first (severity-weighted). Below-threshold municipios are
+ * omitted and keep rolling up to the state page.
+ */
+export const getStateMunicipios = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) =>
+    z.object({ state: z.string().trim().min(1).max(120) }).parse(data),
+  )
+  .handler(async ({ data }): Promise<MunicipioStats[]> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } =
+        await supabaseAdmin.rpc("get_damage_aggregates");
+      if (error || !rows) {
+        if (error) console.error("[stats] getStateMunicipios", error);
+        return [];
+      }
+      const folded = foldMunicipios(data.state, rows as RawAggRow[]);
+      return [...folded.values()]
+        .filter((m) => m.total >= MUNICIPIO_MIN_REPORTS)
+        .sort(
+          (a, b) =>
+            scoreArea(b) - scoreArea(a) || b.total - a.total,
+        );
+    } catch (e) {
+      console.error("[stats] getStateMunicipios failed", e);
+      return [];
+    }
+  });
+
+/**
+ * Stats for a single canonical municipio. Returns zeros (total 0) when the
+ * municipio is below the public threshold or has no reports, so the page can
+ * show an honest "not enough reports yet" state.
+ */
+export const getMunicipioStats = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        state: z.string().trim().min(1).max(120),
+        municipality: z.string().trim().min(1).max(120),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }): Promise<MunicipioStats> => {
+    const empty: MunicipioStats = {
+      state: data.state,
+      municipality: data.municipality,
+      slug: municipioSlug(data.municipality),
+      total: 0,
+      green: 0,
+      yellow: 0,
+      orange: 0,
+      red: 0,
+      verified: 0,
+      lastReport: null,
+    };
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } =
+        await supabaseAdmin.rpc("get_damage_aggregates");
+      if (error || !rows) {
+        if (error) console.error("[stats] getMunicipioStats", error);
+        return empty;
+      }
+      const folded = foldMunicipios(data.state, rows as RawAggRow[]);
+      const hit = folded.get(data.municipality.trim());
+      if (!hit || hit.total < MUNICIPIO_MIN_REPORTS) return empty;
+      return hit;
+    } catch (e) {
+      console.error("[stats] getMunicipioStats failed", e);
+      return empty;
+    }
+  });
+
+/**
+ * Every (state slug, municipio slug) pair with enough reports for a public
+ * page — used to extend the sitemap. Counts only, no PII.
+ */
+export const getMunicipioSitemapEntries = createServerFn({
+  method: "GET",
+}).handler(
+  async (): Promise<Array<{ stateSlug: string; muniSlug: string }>> => {
+    try {
+      const { supabaseAdmin } = await import(
+        "@/integrations/supabase/client.server"
+      );
+      const { data: rows, error } =
+        await supabaseAdmin.rpc("get_damage_aggregates");
+      if (error || !rows) {
+        if (error) console.error("[stats] getMunicipioSitemapEntries", error);
+        return [];
+      }
+      const out: Array<{ stateSlug: string; muniSlug: string }> = [];
+      for (const est of ESTADOS) {
+        const folded = foldMunicipios(est.name, rows as RawAggRow[]);
+        for (const m of folded.values()) {
+          if (m.total >= MUNICIPIO_MIN_REPORTS) {
+            out.push({ stateSlug: estadoSlug(est.name), muniSlug: m.slug });
+          }
+        }
+      }
+      return out;
+    } catch (e) {
+      console.error("[stats] getMunicipioSitemapEntries failed", e);
+      return [];
     }
   },
 );
