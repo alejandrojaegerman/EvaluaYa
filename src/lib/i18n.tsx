@@ -629,6 +629,21 @@ const es: Dict = {
   "zona.viewMap": "Ver el mapa completo",
   "zona.otherStates": "Otros estados",
   "zona.notFound": "No encontramos ese estado.",
+  "zona.municipiosWithReports": "Municipios con reportes",
+  "zona.municipiosWithReportsHint":
+    "Toca un municipio para ver sus reportes en detalle.",
+
+  "municipio.eyebrow": "Reporte por municipio",
+  "municipio.h1Prefix": "Daños estructurales en",
+  "municipio.intro":
+    "Reportes anónimos de la comunidad en {municipio}, {estado}. Evalúa tu vivienda gratis, sin registro y en pocos minutos.",
+  "municipio.ctaPrefix": "Evaluar mi vivienda en",
+  "municipio.totalReports": "Reportes en el municipio",
+  "municipio.lastReport": "Último reporte",
+  "municipio.notEnough":
+    "Aún no hay suficientes reportes en {municipio} para mostrar un resumen. Sé parte de los primeros en evaluar tu vivienda y ayudar a tu comunidad.",
+  "municipio.backToState": "Ver el análisis completo de {estado}",
+  "municipio.notFound": "No encontramos ese municipio.",
 
   "property.state": "Estado",
   "property.statePlaceholder": "Selecciona",
