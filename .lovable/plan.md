@@ -1,32 +1,23 @@
 ## Goal
-Replace the hard-to-read concentric-arc donut in the "Distribución de riesgo" card with the chosen **ranked horizontal progress bars**, so the four risk tiers can be compared on a shared baseline at a glance.
 
-## Scope
-Rewrite only the internals of `src/components/RiskGauge.tsx`. Its props stay identical (`green`, `yellow`, `orange?`, `red`, `label?`), so all four call sites work unchanged with no other edits:
-- `src/routes/mapa.tsx`
-- `src/routes/datos.tsx`
-- `src/routes/admin.index.tsx`
-- `src/routes/zona.$estado.tsx`
+Swap the obscure **"Zonas con reportes"** counter on the home trust banner for a concrete, meaningful one: **"Casos urgentes detectados"** — the number of assessments flagged red or orange (homes needing urgent attention).
 
-## New layout (per selected prototype)
-- **Header row**: title is supplied by the parent card already, so inside the component show the total count prominently on the right (large, bold, `tabular-nums`) with the `label` (e.g. "Evaluaciones") as a small muted caption beneath it.
-- **Four ranked bars**, ordered most-severe → least-severe (red → orange → yellow → green):
-  - Row top line: colored dot + tier name on the left; bold count + muted percent on the right.
-  - Row bottom: a full-width track (`bg-muted`) with a colored fill whose width = that tier's share of the total.
-- Drop the Recharts `RadialBarChart` entirely (remove the `recharts` import from this file).
+No backend changes needed — `getDamageTotals` already returns `red` and `orange` counts in the same payload the home page loads.
 
-## Colors & labels (reuse existing system)
-- Keep using `RISK_HEX` via the existing `rgb()` helper for dots and bar fills — no hardcoded color utilities, consistent with the rest of the app.
-- Keep the current i18n tier labels already wired in this component: `map.high` (red), `map.urgent` (orange), `map.moderate` (yellow), `map.low` (green). The prototype's English/placeholder names are not used.
-- Track background uses the `bg-muted` token; text uses `text-foreground` / `text-muted-foreground` tokens (the prototype's slate/white literals are mapped to these so light/dark mode stays correct).
+## Changes
 
-## Edge cases
-- `total === 0`: render every bar at 0% width with `0` / `0%` so the card never shows a divide-by-zero or a misleading full bar.
-- Percentages rounded to whole numbers (matching current behavior).
-- Component stays SSR-safe and a pure function of props (no chart lib, no client-only APIs).
+**`src/lib/i18n.tsx`**
+- Replace the `home.statAreas` strings with new urgent-cases labels (keep the key or rename to `home.statUrgent`):
+  - ES: `"casos urgentes detectados"`
+  - EN: `"urgent cases flagged"`
 
-## Out of scope
-No data, query, filter, or surrounding-page-layout changes; no new dependencies; the "Ver detalles" footer link from the prototype is omitted since these cards already live inside pages with their own navigation.
+**`src/routes/index.tsx`** (home trust counters block)
+- Change the second counter to show `totals.red + totals.orange` instead of `totals.areas`.
+- Use the new label key.
+- Style the urgent number with the risk-red token (e.g. `text-risk-red`) so it reads as a meaningful signal rather than a neutral stat, while keeping the first counter (evaluaciones realizadas) on the primary color.
+- Leave the existing `hasTotals` gate (`totals.total > 0`) as-is. When zero homes are urgent, the counter shows `0`, which is accurate and reassuring.
 
-## Verification
-Build, then capture the card on `/datos` (and spot-check `/admin`) at mobile width to confirm bars render with correct proportions, colors, counts, and the zero-state.
+## Notes / technical detail
+
+- `DamageTotals` already includes `red`, `orange`, `yellow`, `green`, `verified`, `areas` — so this is a pure presentation change.
+- The `areas` field stays in the type and is still used by the data room / map; only the home banner stops surfacing it.
