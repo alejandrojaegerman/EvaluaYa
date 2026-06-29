@@ -1632,6 +1632,7 @@ const en: Dict = {
   "analyze.title": "Analyzing",
   "analyze.uploading": "Processing photos…",
   "analyze.thinking": "Assessing structural risk…",
+  "analyze.imagesAnalyzed": "{n} images analyzed across the community",
   "analyze.savedHint":
     "Your answers are saved. You can wait even if the signal is slow.",
   "analyze.waitingTitle": "Waiting for connection",
