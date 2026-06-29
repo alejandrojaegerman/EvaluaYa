@@ -19,7 +19,9 @@ import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
 import {
   getRiskFactors,
+  getStateMunicipios,
   getStateStats,
+  type MunicipioStats,
   type RiskFactors,
   type StateStats,
 } from "@/lib/stats.functions";

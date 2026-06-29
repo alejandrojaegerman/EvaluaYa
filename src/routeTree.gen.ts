@@ -30,6 +30,7 @@ import { Route as AssessChecklistRouteImport } from './routes/assess/checklist'
 import { Route as AssessAnalyzeRouteImport } from './routes/assess/analyze'
 import { Route as AdminVoluntariosRouteImport } from './routes/admin.voluntarios'
 import { Route as APublicIdRouteImport } from './routes/a/$publicId'
+import { Route as ZonaEstadoMunicipioRouteImport } from './routes/zona.$estado.$municipio'
 import { Route as VoluntariosPanelTokenRouteImport } from './routes/voluntarios.panel.$token'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LovableCronFunnelAlertRouteImport } from './routes/lovable/cron/funnel-alert'
@@ -154,6 +155,11 @@ const APublicIdRoute = APublicIdRouteImport.update({
   path: '/a/$publicId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ZonaEstadoMunicipioRoute = ZonaEstadoMunicipioRouteImport.update({
+  id: '/$municipio',
+  path: '/$municipio',
+  getParentRoute: () => ZonaEstadoRoute,
+} as any)
 const VoluntariosPanelTokenRoute = VoluntariosPanelTokenRouteImport.update({
   id: '/voluntarios/panel/$token',
   path: '/voluntarios/panel/$token',
@@ -270,7 +276,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
-  '/zona/$estado': typeof ZonaEstadoRoute
+  '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/zona/$estado/$municipio': typeof ZonaEstadoMunicipioRoute
   '/api/public/v1/aggregates.json': typeof ApiPublicV1AggregatesDotjsonRoute
   '/api/public/v1/index.json': typeof ApiPublicV1IndexDotjsonRoute
   '/api/public/v1/methodology.json': typeof ApiPublicV1MethodologyDotjsonRoute
@@ -310,7 +317,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
-  '/zona/$estado': typeof ZonaEstadoRoute
+  '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/zona/$estado/$municipio': typeof ZonaEstadoMunicipioRoute
   '/api/public/v1/aggregates.json': typeof ApiPublicV1AggregatesDotjsonRoute
   '/api/public/v1/index.json': typeof ApiPublicV1IndexDotjsonRoute
   '/api/public/v1/methodology.json': typeof ApiPublicV1MethodologyDotjsonRoute
@@ -351,7 +359,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
-  '/zona/$estado': typeof ZonaEstadoRoute
+  '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
@@ -360,6 +368,7 @@ export interface FileRoutesById {
   '/lovable/cron/funnel-alert': typeof LovableCronFunnelAlertRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/voluntarios/panel/$token': typeof VoluntariosPanelTokenRoute
+  '/zona/$estado/$municipio': typeof ZonaEstadoMunicipioRoute
   '/api/public/v1/aggregates.json': typeof ApiPublicV1AggregatesDotjsonRoute
   '/api/public/v1/index.json': typeof ApiPublicV1IndexDotjsonRoute
   '/api/public/v1/methodology.json': typeof ApiPublicV1MethodologyDotjsonRoute
@@ -402,6 +411,7 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
+    | '/zona/$estado/$municipio'
     | '/api/public/v1/aggregates.json'
     | '/api/public/v1/index.json'
     | '/api/public/v1/methodology.json'
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
+    | '/zona/$estado/$municipio'
     | '/api/public/v1/aggregates.json'
     | '/api/public/v1/index.json'
     | '/api/public/v1/methodology.json'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/lovable/cron/funnel-alert'
     | '/lovable/email/suppression'
     | '/voluntarios/panel/$token'
+    | '/zona/$estado/$municipio'
     | '/api/public/v1/aggregates.json'
     | '/api/public/v1/index.json'
     | '/api/public/v1/methodology.json'
@@ -514,7 +526,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   GuiaFallaDeBoconoRoute: typeof GuiaFallaDeBoconoRoute
   GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
-  ZonaEstadoRoute: typeof ZonaEstadoRoute
+  ZonaEstadoRoute: typeof ZonaEstadoRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
   LovableCronAdminHelpDigestRoute: typeof LovableCronAdminHelpDigestRoute
@@ -685,6 +697,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof APublicIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/zona/$estado/$municipio': {
+      id: '/zona/$estado/$municipio'
+      path: '/$municipio'
+      fullPath: '/zona/$estado/$municipio'
+      preLoaderRoute: typeof ZonaEstadoMunicipioRouteImport
+      parentRoute: typeof ZonaEstadoRoute
+    }
     '/voluntarios/panel/$token': {
       id: '/voluntarios/panel/$token'
       path: '/voluntarios/panel/$token'
@@ -807,6 +826,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ZonaEstadoRouteChildren {
+  ZonaEstadoMunicipioRoute: typeof ZonaEstadoMunicipioRoute
+}
+
+const ZonaEstadoRouteChildren: ZonaEstadoRouteChildren = {
+  ZonaEstadoMunicipioRoute: ZonaEstadoMunicipioRoute,
+}
+
+const ZonaEstadoRouteWithChildren = ZonaEstadoRoute._addFileChildren(
+  ZonaEstadoRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AyudaRoute: AyudaRoute,
@@ -826,7 +857,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   GuiaFallaDeBoconoRoute: GuiaFallaDeBoconoRoute,
   GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
-  ZonaEstadoRoute: ZonaEstadoRoute,
+  ZonaEstadoRoute: ZonaEstadoRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
   LovableCronAdminHelpDigestRoute: LovableCronAdminHelpDigestRoute,
