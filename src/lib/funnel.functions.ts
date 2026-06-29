@@ -113,3 +113,80 @@ export const getFunnelMetrics = createServerFn({ method: "POST" })
       }
     },
   );
+
+// ---------------------------------------------------------------------------
+// Open-data API usage. Admin-only (gated by VOLUNTEER_ADMIN_SECRET) read of
+// anonymized usage counts recorded by `logApiUsage` into `api_usage_events`.
+// ---------------------------------------------------------------------------
+
+export type ApiUsageMetrics = {
+  windowHours: number;
+  total: number;
+  today: number;
+  lastCall: string | null;
+  byEndpoint: { endpoint: string; calls: number }[];
+  byDay: { day: string; calls: number }[];
+  byReferer: { host: string; calls: number }[];
+  byState: { state: string; calls: number }[];
+};
+
+const EMPTY_API_USAGE: ApiUsageMetrics = {
+  windowHours: 168,
+  total: 0,
+  today: 0,
+  lastCall: null,
+  byEndpoint: [],
+  byDay: [],
+  byReferer: [],
+  byState: [],
+};
+
+const apiUsageSchema = z.object({
+  adminSecret: z.string().min(1),
+  windowHours: z.number().int().min(1).max(2160).optional(),
+});
+
+export const getApiUsageMetrics = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => apiUsageSchema.parse(data))
+  .handler(
+    async ({
+      data,
+    }): Promise<
+      { ok: true; metrics: ApiUsageMetrics } | { ok: false; error: string }
+    > => {
+      const expected = process.env.VOLUNTEER_ADMIN_SECRET;
+      if (!expected || data.adminSecret !== expected) {
+        return { ok: false, error: "unauthorized" };
+      }
+      try {
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const { data: raw, error } = await supabaseAdmin.rpc(
+          "get_api_usage_metrics",
+          { _window_hours: data.windowHours ?? 168 },
+        );
+        if (error || !raw) {
+          if (error) console.error("[api-usage] getApiUsageMetrics", error);
+          return { ok: true, metrics: EMPTY_API_USAGE };
+        }
+        const parsed = raw as unknown as ApiUsageMetrics;
+        return {
+          ok: true,
+          metrics: {
+            windowHours: parsed.windowHours ?? 168,
+            total: parsed.total ?? 0,
+            today: parsed.today ?? 0,
+            lastCall: parsed.lastCall ?? null,
+            byEndpoint: Array.isArray(parsed.byEndpoint) ? parsed.byEndpoint : [],
+            byDay: Array.isArray(parsed.byDay) ? parsed.byDay : [],
+            byReferer: Array.isArray(parsed.byReferer) ? parsed.byReferer : [],
+            byState: Array.isArray(parsed.byState) ? parsed.byState : [],
+          },
+        };
+      } catch (e) {
+        console.error("[api-usage] getApiUsageMetrics failed", e);
+        return { ok: true, metrics: EMPTY_API_USAGE };
+      }
+    },
+  );
