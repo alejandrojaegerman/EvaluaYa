@@ -110,9 +110,10 @@ export const Route = createFileRoute("/zona/$estado")({
 });
 
 function ZonaPage() {
-  const { estadoName, stats } = Route.useLoaderData() as {
+  const { estadoName, stats, municipios } = Route.useLoaderData() as {
     estadoName: string;
     stats: StateStats;
+    municipios: MunicipioStats[];
   };
   const { t, lang } = useLang();
   const hasData = stats.total > 0;
