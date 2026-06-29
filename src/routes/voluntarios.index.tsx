@@ -60,11 +60,10 @@ export const Route = createFileRoute("/voluntarios/")({
     };
   },
   loader: async () => {
-    const [engineers, ranking] = await Promise.all([
-      getAllApprovedEngineers().catch(() => [] as VerifiedEngineer[]),
-      getImpactRanking().catch(() => EMPTY_IMPACT_RANKING as ImpactRanking),
-    ]);
-    return { engineers, ranking };
+    const ranking = await getImpactRanking().catch(
+      () => EMPTY_IMPACT_RANKING as ImpactRanking,
+    );
+    return { ranking };
   },
   component: VolunteersPage,
 });
