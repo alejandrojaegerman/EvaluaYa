@@ -15,6 +15,7 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/hooks/use-online";
 import { analyzeAssessment } from "@/lib/assessment.functions";
+import { getDamageTotals } from "@/lib/stats.functions";
 import { getDeviceId } from "@/lib/device-id";
 import { clearDraft, loadDraft, type AssessmentDraft } from "@/lib/draft-store";
 import { addHistory } from "@/lib/history";
@@ -47,6 +48,7 @@ function AnalyzeStep() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [provisional, setProvisional] = useState<ProvisionalResult | null>(null);
+  const [imagesAnalyzed, setImagesAnalyzed] = useState<number>(0);
   const draftRef = useRef<AssessmentDraft | null>(null);
   const outboxIdRef = useRef<string | null>(null);
   const runningRef = useRef(false);
@@ -234,6 +236,21 @@ function AnalyzeStep() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Community credibility signal: how many photos the AI has analyzed so far.
+  useEffect(() => {
+    let active = true;
+    getDamageTotals()
+      .then((totals) => {
+        if (active) setImagesAnalyzed(totals.images ?? 0);
+      })
+      .catch(() => {
+        /* non-critical; just hide the line */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   // Auto-retry when connection returns while waiting.
   useEffect(() => {
     if (online && phase === "waiting") run();
@@ -378,6 +395,15 @@ function AnalyzeStep() {
         <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
           {t("analyze.savedHint")}
         </p>
+        {imagesAnalyzed > 0 && (
+          <p className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+            <ScanSearch className="size-3.5" aria-hidden />
+            {t("analyze.imagesAnalyzed").replace(
+              "{n}",
+              imagesAnalyzed.toLocaleString(),
+            )}
+          </p>
+        )}
       </>
     );
   }

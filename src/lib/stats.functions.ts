@@ -29,6 +29,7 @@ export type DamageTotals = {
   red: number;
   verified: number;
   areas: number;
+  images: number;
 };
 
 const EMPTY_TOTALS: DamageTotals = {
@@ -39,6 +40,7 @@ const EMPTY_TOTALS: DamageTotals = {
   red: 0,
   verified: 0,
   areas: 0,
+  images: 0,
 };
 
 /**
@@ -214,6 +216,7 @@ export const getDamageTotals = createServerFn({ method: "GET" }).handler(
         red: r.red ?? 0,
         verified: r.verified ?? 0,
         areas: r.areas ?? 0,
+        images: (r as { images?: number }).images ?? 0,
       };
     } catch (e) {
       console.error("[stats] getDamageTotals failed", e);
@@ -379,6 +382,8 @@ export const getDataRoom = createServerFn({ method: "GET" })
               red: totalsRes.data[0].red ?? 0,
               verified: totalsRes.data[0].verified ?? 0,
               areas: totalsRes.data[0].areas ?? 0,
+              images:
+                (totalsRes.data[0] as { images?: number }).images ?? 0,
             };
 
       const areas: AreaAggregate[] = areasRes.error

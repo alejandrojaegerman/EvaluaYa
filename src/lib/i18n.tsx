@@ -351,6 +351,7 @@ const es: Dict = {
   "analyze.title": "Analizando",
   "analyze.uploading": "Procesando fotos…",
   "analyze.thinking": "Evaluando el riesgo estructural…",
+  "analyze.imagesAnalyzed": "{n} imágenes analizadas en la comunidad",
   "analyze.savedHint":
     "Tus respuestas están guardadas. Puedes esperar aunque la señal sea lenta.",
   "analyze.waitingTitle": "Esperando conexión",
@@ -1631,6 +1632,7 @@ const en: Dict = {
   "analyze.title": "Analyzing",
   "analyze.uploading": "Processing photos…",
   "analyze.thinking": "Assessing structural risk…",
+  "analyze.imagesAnalyzed": "{n} images analyzed across the community",
   "analyze.savedHint":
     "Your answers are saved. You can wait even if the signal is slow.",
   "analyze.waitingTitle": "Waiting for connection",
