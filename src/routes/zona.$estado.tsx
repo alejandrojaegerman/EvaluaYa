@@ -37,8 +37,11 @@ export const Route = createFileRoute("/zona/$estado")({
   loader: async ({ params }) => {
     const est = getEstadoBySlug(params.estado);
     if (!est) throw notFound();
-    const stats = await getStateStats({ data: { state: est.name } });
-    return { estadoName: est.name, stats };
+    const [stats, municipios] = await Promise.all([
+      getStateStats({ data: { state: est.name } }),
+      getStateMunicipios({ data: { state: est.name } }),
+    ]);
+    return { estadoName: est.name, stats, municipios };
   },
   head: ({ params, loaderData }) => {
     const name = loaderData?.estadoName ?? "Venezuela";
