@@ -104,6 +104,46 @@ const es: Dict = {
   "legal.ack":
     "Entiendo que esto es una orientación preliminar de voluntarios no remunerados y que no reemplaza una inspección oficial.",
 
+  // ── Blocking legal + data-consent gate (Doc #1, lawyer) ──
+  "gate.title": "Antes de continuar",
+  "gate.subtitle":
+    "EvalúaYa es una iniciativa privada, comunitaria y sin fines de lucro. Lee y acepta para usar la herramienta.",
+  "gate.c1.title": "No es un organismo oficial",
+  "gate.c1.body":
+    "Iniciativa independiente y comunitaria, sin vinculación con FUNVISIS, Protección Civil, Bomberos ni ningún organismo gubernamental.",
+  "gate.c2.title": "No emite dictámenes técnicos",
+  "gate.c2.body":
+    "La herramienta procesa solo hallazgos visuales preliminares y referenciales. No emite certificados de habitabilidad, dictámenes estructurales ni autorizaciones de ingreso.",
+  "gate.c3.title": "Fuerza mayor y factores ambientales",
+  "gate.c3.body":
+    "No nos responsabilizamos por daños derivados de réplicas sísmicas, factores ambientales o eventos posteriores. El uso de la información es bajo riesgo del usuario.",
+  "gate.accept":
+    "He leído y acepto el aviso legal y la exención de responsabilidad.",
+  "gate.consent":
+    "Autorizo el tratamiento de mis datos personales exclusivamente para la gestión de reportes de esta plataforma.",
+  "gate.cta": "Aceptar y continuar",
+  "gate.readFull": "Leer el aviso legal completo",
+  "gate.mustAccept": "Debes aceptar ambas casillas para continuar.",
+
+  // ── Resident contact + parroquia (Doc #1, minimal contact data) ──
+  "property.sectionContact": "Datos de contacto",
+  "property.contactHint":
+    "Solo para que un evaluador voluntario pueda comunicarse contigo sobre este reporte. No se publican.",
+  "property.residentName": "Nombre y apellido",
+  "property.residentNamePlaceholder": "Tu nombre",
+  "property.contactType": "¿Cómo prefieres que te contacten?",
+  "property.contactWhatsapp": "WhatsApp",
+  "property.contactPhone": "Teléfono",
+  "property.contactEmail": "Correo",
+  "property.residentContactPhonePlaceholder": "Ej. 0414 123 4567",
+  "property.residentContactEmailPlaceholder": "tucorreo@ejemplo.com",
+  "property.parroquia": "Parroquia",
+  "property.parroquiaPlaceholder": "Ej. El Recreo",
+  "property.miss.residentName": "tu nombre",
+  "property.miss.residentContact": "un medio de contacto",
+
+
+
   "property.title": "Datos de la propiedad",
   "property.subtitle": "Esta información ayuda a interpretar los hallazgos.",
   "property.address": "Dirección / sector",
