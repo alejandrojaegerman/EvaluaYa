@@ -209,6 +209,10 @@ function PropertyStep() {
       }
       if (p.floors) setFloors(p.floors);
       if (typeof p.basements === "number") setBasements(p.basements);
+      if (typeof p.livesInBuilding === "boolean")
+        setLivesInBuilding(p.livesInBuilding);
+      if (typeof p.condoBoardMember === "boolean")
+        setCondoBoard(p.condoBoardMember);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
         const sa: SeismicReading["sa"] = {};
