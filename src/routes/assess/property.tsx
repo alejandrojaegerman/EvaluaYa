@@ -669,11 +669,11 @@ function PropertyStep() {
                 aria-label={t("property.countryCode")}
                 value={dialCode}
                 onChange={(e) => setDialCode(e.target.value)}
-                className="h-12 w-32 shrink-0 rounded-xl border border-input bg-card px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-12 w-20 shrink-0 rounded-xl border border-input bg-card px-2 text-center text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {COUNTRY_CODES.map((c) => (
-                  <option key={c.label} value={c.code}>
-                    {c.label}
+                  <option key={c.code} value={c.code} title={`${c.name} (${c.code})`}>
+                    {c.flag}
                   </option>
                 ))}
               </select>
