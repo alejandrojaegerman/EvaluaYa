@@ -16,6 +16,7 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as MisReportesRouteImport } from './routes/mis-reportes'
 import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MapaRouteImport } from './routes/mapa'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as EarthquakeInVenezuelaTodayRouteImport } from './routes/earthquake-in-venezuela-today'
 import { Route as DatosRouteImport } from './routes/datos'
@@ -86,6 +87,11 @@ const MetodologiaRoute = MetodologiaRouteImport.update({
 const MapaRoute = MapaRouteImport.update({
   id: '/mapa',
   path: '/mapa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedbackRoute = FeedbackRouteImport.update({
@@ -290,6 +296,7 @@ export interface FileRoutesByFullPath {
   '/datos': typeof DatosRoute
   '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
+  '/legal': typeof LegalRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
@@ -335,6 +342,7 @@ export interface FileRoutesByTo {
   '/datos': typeof DatosRoute
   '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
+  '/legal': typeof LegalRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
@@ -381,6 +389,7 @@ export interface FileRoutesById {
   '/datos': typeof DatosRoute
   '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
+  '/legal': typeof LegalRoute
   '/mapa': typeof MapaRoute
   '/metodologia': typeof MetodologiaRoute
   '/mis-reportes': typeof MisReportesRoute
@@ -428,6 +437,7 @@ export interface FileRouteTypes {
     | '/datos'
     | '/earthquake-in-venezuela-today'
     | '/feedback'
+    | '/legal'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
@@ -473,6 +483,7 @@ export interface FileRouteTypes {
     | '/datos'
     | '/earthquake-in-venezuela-today'
     | '/feedback'
+    | '/legal'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
@@ -518,6 +529,7 @@ export interface FileRouteTypes {
     | '/datos'
     | '/earthquake-in-venezuela-today'
     | '/feedback'
+    | '/legal'
     | '/mapa'
     | '/metodologia'
     | '/mis-reportes'
@@ -564,6 +576,7 @@ export interface RootRouteChildren {
   DatosRoute: typeof DatosRoute
   EarthquakeInVenezuelaTodayRoute: typeof EarthquakeInVenezuelaTodayRoute
   FeedbackRoute: typeof FeedbackRoute
+  LegalRoute: typeof LegalRoute
   MapaRoute: typeof MapaRoute
   MetodologiaRoute: typeof MetodologiaRoute
   MisReportesRoute: typeof MisReportesRoute
@@ -652,6 +665,13 @@ declare module '@tanstack/react-router' {
       path: '/mapa'
       fullPath: '/mapa'
       preLoaderRoute: typeof MapaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feedback': {
@@ -927,6 +947,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatosRoute: DatosRoute,
   EarthquakeInVenezuelaTodayRoute: EarthquakeInVenezuelaTodayRoute,
   FeedbackRoute: FeedbackRoute,
+  LegalRoute: LegalRoute,
   MapaRoute: MapaRoute,
   MetodologiaRoute: MetodologiaRoute,
   MisReportesRoute: MisReportesRoute,
@@ -969,13 +990,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

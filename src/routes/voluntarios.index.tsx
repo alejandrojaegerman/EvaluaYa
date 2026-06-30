@@ -210,6 +210,15 @@ function VolunteersPage() {
         <p className="mt-3 text-sm leading-relaxed text-primary-foreground/85">
           {t("vol.subtitle")}
         </p>
+        <p className="mt-3 text-xs leading-relaxed text-primary-foreground/75">
+          {t("legal.short")}{" "}
+          <Link
+            to="/legal"
+            className="font-semibold underline underline-offset-2 hover:opacity-90"
+          >
+            {t("legal.readMore")}
+          </Link>
+        </p>
       </section>
 
       {/* Sign-up form — lead with the call to action */}

@@ -73,6 +73,37 @@ const es: Dict = {
   "disclaimer.body":
     "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inminente, evacúa y llama a emergencias.",
 
+  // ----- Legal / responsabilidad (ES) -----
+  "nav.legal": "Aviso legal",
+  "legal.title": "Aviso legal y responsabilidad",
+  "legal.subtitle": "Cómo usar EvalúaYa y los límites de responsabilidad.",
+  "legal.updated": "Última actualización: junio de 2026",
+  "legal.intro":
+    "EvalúaYa es una iniciativa comunitaria sin fines de lucro. Antes de usar la herramienta o de conectarte con un ingeniero voluntario, lee cómo funciona y cuáles son sus límites.",
+  "legal.s1.title": "No reemplaza una visita oficial",
+  "legal.s1.body":
+    "Ni esta herramienta ni el contacto con un ingeniero voluntario reemplazan la inspección formal de un ingeniero estructural colegiado, de FUNVISIS o de Protección Civil. El resultado es solo informativo y no constituye un certificado de habitabilidad ni un dictamen oficial.",
+  "legal.s2.title": "Es una orientación técnica preliminar",
+  "legal.s2.body":
+    "Cualquier evaluación —automática o realizada por un ingeniero voluntario— es una orientación preliminar basada en lo que se reporta y observa a simple vista. No analiza elementos ocultos, fundaciones enterradas ni el interior de los muros, y no sustituye un estudio estructural detallado.",
+  "legal.s3.title": "Ingenieros voluntarios",
+  "legal.s3.body":
+    "Los ingenieros y organizaciones que participan lo hacen de forma voluntaria y gratuita. EvalúaYa no les paga ni mantiene una relación laboral o comercial con ellos; actúan a título personal. Verificamos sus credenciales con la información que nos suministran, pero no garantizamos sus servicios ni el resultado de sus recomendaciones.",
+  "legal.s4.title": "Limitación de responsabilidad",
+  "legal.s4.body":
+    "EvalúaYa, sus colaboradores y los ingenieros voluntarios no se hacen responsables por las recomendaciones dadas, las decisiones tomadas a partir de ellas, ni por daños o perjuicios derivados del uso de la aplicación. La decisión final y la responsabilidad sobre el inmueble corresponden a su propietario u ocupante y a las autoridades competentes.",
+  "legal.s5.title": "Emergencias",
+  "legal.s5.body":
+    "Ante peligro inminente, no esperes una evaluación: evacúa de inmediato y llama a Protección Civil o a los servicios de emergencia.",
+  "legal.contact.title": "Contacto",
+  "legal.contact.body":
+    "¿Dudas sobre este aviso? Escríbenos a contacto@evaluaya.app. Consulta también nuestra Política de privacidad.",
+  "legal.short":
+    "Orientación preliminar de voluntarios; no reemplaza una inspección oficial. Los ingenieros son voluntarios no remunerados y EvalúaYa no se responsabiliza por sus recomendaciones.",
+  "legal.readMore": "Leer el aviso legal completo",
+  "legal.ack":
+    "Entiendo que esto es una orientación preliminar de voluntarios no remunerados y que no reemplaza una inspección oficial.",
+
   "property.title": "Datos de la propiedad",
   "property.subtitle": "Esta información ayuda a interpretar los hallazgos.",
   "property.address": "Dirección / sector",
@@ -1461,6 +1492,37 @@ const en: Dict = {
   "disclaimer.title": "Important notice",
   "disclaimer.body":
     "This tool gives preliminary guidance and is not a substitute for inspection by a licensed structural engineer or Civil Protection. If there is imminent danger, evacuate and call emergency services.",
+
+  // ----- Legal / liability (EN) -----
+  "nav.legal": "Legal notice",
+  "legal.title": "Legal notice & liability",
+  "legal.subtitle": "How to use EvalúaYa and the limits of responsibility.",
+  "legal.updated": "Last updated: June 2026",
+  "legal.intro":
+    "EvalúaYa is a non-profit, community-built initiative. Before using the tool or connecting with a volunteer engineer, please read how it works and what its limits are.",
+  "legal.s1.title": "It does not replace an official inspection",
+  "legal.s1.body":
+    "Neither this tool nor contact with a volunteer engineer replaces a formal inspection by a licensed structural engineer, FUNVISIS or Civil Protection. The result is informational only and is not a certificate of habitability or an official ruling.",
+  "legal.s2.title": "It is preliminary technical guidance",
+  "legal.s2.body":
+    "Any assessment — automated or carried out by a volunteer engineer — is preliminary guidance based on what is reported and visible to the naked eye. It does not analyze hidden elements, buried foundations or the inside of walls, and does not replace a detailed structural study.",
+  "legal.s3.title": "Volunteer engineers",
+  "legal.s3.body":
+    "The engineers and organizations that take part do so voluntarily and free of charge. EvalúaYa does not pay them and has no employment or commercial relationship with them; they act in a personal capacity. We verify their credentials with the information they provide, but we do not guarantee their services or the outcome of their recommendations.",
+  "legal.s4.title": "Limitation of liability",
+  "legal.s4.body":
+    "EvalúaYa, its collaborators and the volunteer engineers are not liable for the recommendations given, the decisions made based on them, or any damages arising from use of the application. The final decision and the responsibility over the building rest with its owner or occupant and the competent authorities.",
+  "legal.s5.title": "Emergencies",
+  "legal.s5.body":
+    "If there is imminent danger, do not wait for an assessment: evacuate immediately and call Civil Protection or emergency services.",
+  "legal.contact.title": "Contact",
+  "legal.contact.body":
+    "Questions about this notice? Write to us at contacto@evaluaya.app. See also our Privacy Policy.",
+  "legal.short":
+    "Preliminary volunteer guidance; it does not replace an official inspection. Engineers are unpaid volunteers and EvalúaYa is not liable for their recommendations.",
+  "legal.readMore": "Read the full legal notice",
+  "legal.ack":
+    "I understand this is preliminary guidance from unpaid volunteers and does not replace an official inspection.",
 
   "property.title": "Property details",
   "property.subtitle": "This information helps interpret the findings.",

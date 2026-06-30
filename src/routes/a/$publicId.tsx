@@ -509,7 +509,13 @@ function ResultPage() {
       <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-border bg-muted/50 p-4">
         <Info className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
         <p className="text-xs leading-relaxed text-muted-foreground">
-          {t("result.disclaimerShort")}
+          {t("legal.short")}{" "}
+          <Link
+            to="/legal"
+            className="font-semibold text-primary underline-offset-2 hover:underline"
+          >
+            {t("legal.readMore")}
+          </Link>
         </p>
       </div>
     </AppShell>

@@ -1,44 +1,62 @@
-# Tidy desktop top nav + footer
+# Aviso legal y responsabilidad — EvalúaYa
 
-Two presentation-only fixes. No backend, data, or logic changes.
+Goal: bulletproof the app legally by adding a complete legal/liability section and surfacing short, non-intrusive versions of it where users actually make decisions — without adding friction that causes drop-off.
 
-## 1. Top nav — every item on one line
+## What exists today
 
-Currently two labels wrap to two lines on desktop because flex items shrink and the labels are long:
-- `¿Tembló hoy?` → wraps
-- `Ingenieros voluntarios` → wraps
+- No dedicated legal/terms route. The footer "Legal" column only has **Privacidad** + **Contacto**.
+- Scattered disclaimers already exist: `disclaimer.body` (home), `result.disclaimerShort` (saved report + PDF), `help.faq.officialQ/A`, `methodology.limitsTitle` ("Límites y responsabilidad compartida"), `privacy.disclaimer`.
+- Nothing currently states that volunteer engineers are **verified volunteers, unpaid, and that EvalúaYa is not responsible for their recommendations.**
 
-Fix in `src/components/TopNav.tsx` only (mobile/bottom nav and footer keep their full labels):
+## 1. New `/legal` page (`src/routes/legal.tsx`)
 
-- Add `whitespace-nowrap` to the shared `linkClass` so no nav item ever breaks across lines.
-- Use shorter desktop-only labels for the two long items so the row stays compact and balanced:
-  - `¿Tembló hoy?` → `¿Tembló hoy?` kept as-is but forced to one line (single line, no wrap).
-  - `Ingenieros voluntarios` → `Voluntarios` (EN: `Volunteers`).
-- Tighten inter-item spacing slightly (`gap-0.5`) so all items + status + language toggle fit comfortably at common desktop widths.
+A bilingual "Aviso legal y responsabilidad" route (ES primary / EN secondary), styled like `privacidad.tsx` / `metodologia.tsx` (AppShell, sectioned cards, lucide icons, JSON-LD, canonical + OG meta). Sections:
 
-Implementation detail: add two new i18n keys (`nav.volunteersShort` ES `Voluntarios` / EN `Volunteers`) used exclusively by the desktop top nav. All other surfaces keep `nav.volunteers` ("Ingenieros voluntarios" / "Volunteer engineers").
+1. **No reemplaza una visita oficial** — this tool and any volunteer contact do **not** replace inspection by a licensed/colegiado structural engineer, FUNVISIS, or Protección Civil.
+2. **Visita técnica preliminar** — any volunteer assessment is a *preliminary, informational orientation*, not a structural certification or official report.
+3. **Ingenieros voluntarios** — engineers/organizations are **verified volunteers** who participate freely; EvalúaYa **does not pay them** and they act in a personal/voluntary capacity.
+4. **Limitación de responsabilidad** — EvalúaYa and its volunteers are **not liable** for recommendations given, decisions taken, or damages; the final decision and responsibility rest with the property owner/occupant and the official authorities.
+5. **Emergencias** — imminent danger → evacuate and call emergency services.
+6. **Contacto** — `contacto@evaluaya.app` + link to Privacidad.
 
-## 2. Footer — tidy alignment
+## 2. Footer
 
-In `src/components/Footer.tsx`:
+Add **Aviso legal** (`/legal`) link to the footer "Legal" column (`src/components/Footer.tsx`), next to Privacidad and Contacto.
 
-- The `PARTICIPAR` column has a descriptive note ("Reclutamos, validamos y conectamos ingenieros.") that pushes its links down, so link rows no longer align across the four columns. Move that note out of the column grid: drop it into the brand block (under the tagline) or remove it, so all four link columns start their lists at the same baseline.
-- Let long link labels stay on one line where they fit; allow natural wrap only when unavoidable, with consistent `space-y` so wrapped items don't look ragged.
-- Keep the existing columns, headings, brand block, and bottom row (note + language toggle) — just align the link lists to a shared top edge for a clean grid.
+## 3. Brief disclaimers at decision points
 
-```text
-EXPLORAR        PARTICIPAR      RECURSOS        LEGAL
-Inicio          Voluntarios     Metodología     Privacidad
-¿Tembló hoy?    Evaluar         Ayuda           Contacto
-Mapa                            Comentarios
-Datos
-```
+- **Result screen** (`src/routes/assess/analyze.tsx` provisional card + `src/routes/a/$publicId.tsx` saved report): show `result.disclaimerShort` with a short "Leer aviso legal" link to `/legal`. (`/a/$publicId` already shows the short line — add the legal link.)
+- **Volunteers page** (`src/routes/voluntarios.index.tsx`): add a concise note that engineers are verified, unpaid volunteers and that contact is a preliminary orientation, with a link to `/legal`.
+- **Engineer connection point** (`src/components/ConnectEngineers.tsx`): brief inline note before/at the point a resident connects with a volunteer — "preliminary technical visit, not an official inspection; volunteers are unpaid and not liable" + link to `/legal`.
+- **PDF export** (`src/lib/pdf.ts`): append the volunteer/liability line under the existing `result.disclaimerShort` footer so the printed summary an engineer or authority sees carries the disclaimer.
 
-## Verification
+## 4. One-time acknowledgement
 
-- Run a Playwright check at desktop widths (e.g. 1069px and 1280px) to confirm no top-nav item wraps and the footer columns align, capturing a screenshot for each.
+A lightweight, low-friction acknowledgement shown **once** (persisted in `localStorage`, following the existing device-id/draft-store pattern):
 
-## Technical notes
+- Trigger point: at the **start of an assessment** (`assess/property`) OR at the **engineer connection point** — shown as a small inline checkbox/confirm ("Entiendo que esto es una orientación preliminar y no reemplaza una inspección oficial"), with the link to `/legal`.
+- Once acknowledged, it does not reappear (no repeated interruptions → avoids drop-off).
+- Recommendation: place the acknowledgement at the engineer connection step (highest legal exposure) and keep the assessment-start version purely passive. Final placement can be tuned during build.
 
-- Files touched: `src/components/TopNav.tsx`, `src/components/Footer.tsx`, and `src/lib/i18n.tsx` (one new short label key per language).
-- Pure frontend/presentation; no routes, schema, or server functions affected.
+## 5. i18n
+
+Add new keys under both `es` and `en` blocks in `src/lib/i18n.tsx`:
+- `legal.*` (title, subtitle, updated, intro, the 6 section titles/bodies, contact).
+- `legal.short` (one-line volunteer/liability summary reused in result, volunteers, connect, PDF).
+- `legal.ack` (acknowledgement label) + `nav.legal` / `footer.legal` link label ("Aviso legal" / "Legal notice").
+
+## 6. SEO
+
+Add `/legal` to `src/routes/sitemap[.]xml.ts` with appropriate priority.
+
+---
+
+### Technical notes
+
+- New route follows TanStack file-based routing: `src/routes/legal.tsx` → `createFileRoute("/legal")`, with `head()` for meta/canonical/JSON-LD (Article or WebPage schema), mirroring `privacidad.tsx`.
+- All copy lives in `src/lib/i18n.tsx` (ES + EN) and is read via `t()` — no hardcoded strings in components.
+- Acknowledgement state stored client-side only (`localStorage`), no schema/backend changes.
+- Pure frontend/presentation + content. No database, RLS, or server-function changes.
+- Files touched: `src/routes/legal.tsx` (new), `src/components/Footer.tsx`, `src/routes/assess/analyze.tsx`, `src/routes/a/$publicId.tsx`, `src/routes/voluntarios.index.tsx`, `src/components/ConnectEngineers.tsx`, `src/lib/pdf.ts`, `src/lib/i18n.tsx`, `src/routes/sitemap[.]xml.ts`.
+
+> Note: this is app-owner legal copy, not legal advice or independent certification. The wording is drafted to be informative and protective, but you should have it reviewed by a Venezuelan attorney before relying on it.

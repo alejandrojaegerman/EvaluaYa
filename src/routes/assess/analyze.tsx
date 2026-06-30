@@ -355,6 +355,17 @@ function AnalyzeStep() {
           </section>
         )}
 
+        <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
+          {t("legal.short")}{" "}
+          <Link
+            to="/legal"
+            className="font-semibold text-primary underline-offset-2 hover:underline"
+          >
+            {t("legal.readMore")}
+          </Link>
+        </p>
+
+
         <div className="mt-8 flex flex-col gap-2">
           <Button asChild size="lg" variant="outline">
             <Link to="/mis-reportes">

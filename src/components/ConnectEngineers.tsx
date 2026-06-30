@@ -5,11 +5,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
+import { hasLegalAck, setLegalAck } from "@/lib/legal-ack";
 import { cn } from "@/lib/utils";
 import { submitHelpRequest } from "@/lib/volunteers.functions";
 
@@ -45,6 +47,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  // One-time legal acknowledgement: ask once, then never interrupt again.
+  const [alreadyAcked] = useState(hasLegalAck);
+  const [acked, setAcked] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,6 +67,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
         },
       });
       if (res.ok) {
+        setLegalAck();
         setSent(true);
         toast.success(t("connect.requestDone"));
       } else {
@@ -150,7 +156,31 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               />
             </div>
 
-            <Button type="submit" disabled={busy} className="mt-3 w-full">
+            {!alreadyAcked && (
+              <label className="mt-3 flex items-start gap-2.5 rounded-xl border border-border bg-muted/40 p-3">
+                <Checkbox
+                  checked={acked}
+                  onCheckedChange={(v) => setAcked(v === true)}
+                  className="mt-0.5"
+                  aria-label={t("legal.ack")}
+                />
+                <span className="text-[11px] leading-relaxed text-muted-foreground">
+                  {t("legal.ack")}{" "}
+                  <Link
+                    to="/legal"
+                    className="font-semibold text-primary underline-offset-2 hover:underline"
+                  >
+                    {t("legal.readMore")}
+                  </Link>
+                </span>
+              </label>
+            )}
+
+            <Button
+              type="submit"
+              disabled={busy || (!alreadyAcked && !acked)}
+              className="mt-3 w-full"
+            >
               {busy ? t("connect.requestSending") : t("connect.requestCta")}
             </Button>
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
