@@ -1895,19 +1895,48 @@ const en: Dict = {
   "checklist.required": "Required",
   "checklist.photosTitle": "Photos (required)",
   "checklist.photosIntro":
-    "Photos are the most important part. Without them, an engineer can't help you. They are required.",
-  "checklist.facadeTitle": "Facade photo",
+    "Photos are the most important part — they are the engineer's eyes. Without them they can't help you. Take sharp, well-lit, well-focused photos.",
+  "checklist.facadeTitle": "Facade photos",
   "checklist.facadeHelp":
-    "Take a photo of the whole building from the outside. It lets us see if it's leaning without going inside.",
+    "Add 1 to 5 photos of the whole building from the outside. If it doesn't fit in one shot, take it from several angles. It lets us see if it's leaning without going inside.",
+  "checklist.facadeCount": "{n} of {max} photos",
   "checklist.damageTitle": "Damage photos",
   "checklist.damageHelp":
-    "Add clear photos of what you saw (cracks, columns, walls, roofs). At least {min}, up to {max}.",
+    "Add clear photos of what you saw. For each damage, one wide shot (the whole element) and one close-up. At least {min}, up to {max}.",
   "checklist.damageCount": "{n} of {max} photos",
-  "checklist.missingFacade": "The building facade photo is missing.",
+  "checklist.missingFacade": "At least one building facade photo is missing.",
   "checklist.missingDamage": "Add at least {n} damage photos to continue.",
+  // Per-photo classification (dropdown)
+  "checklist.photoCategoryLabel": "What does this photo show?",
+  "checklist.cat.walls": "Walls",
+  "checklist.cat.columns_beams": "Columns & beams",
+  "checklist.cat.doors_windows": "Doors & windows",
+  "checklist.cat.roof": "Roof",
+  "checklist.cat.stairs": "Stairs",
+  "checklist.cat.foundation": "Foundation",
+  "checklist.cat.plumbing": "Plumbing / gas",
+  "checklist.cat.other": "Other / general",
+  // "Which photos help the engineer" guide
+  "checklist.usefulToggle": "Which photos help the engineer?",
+  "checklist.usefulIntro": "Take them thinking about what the engineer needs to see:",
+  "checklist.useful.1":
+    "Cracks: in focus, with something for scale next to them (a hand, a coin, a ruler) so the width is clear.",
+  "checklist.useful.2":
+    "Columns and beams: show spalled concrete and exposed rebar, from far and up close.",
+  "checklist.useful.3":
+    "Joints and corners: where walls, columns and roofs meet is where real damage usually shows.",
+  "checklist.useful.4":
+    "Each damage from 2 angles: a wide shot to locate it and a close-up of the detail.",
+  "checklist.useful.5":
+    "Good light and no motion blur: if it comes out blurry or too dark, retake it.",
+  // Lightbox / view full photo
+  "checklist.viewPhoto": "View full photo",
+  // Image validation
+  "checklist.invalidFile": "Only images are allowed (JPG, PNG).",
+  "checklist.unreadableImage": "We couldn't read that image. Try another one.",
   "checklist.commentsTitle": "Additional comments (optional)",
   "checklist.commentsPlaceholder":
-    "Write here any detail the photos don't show.",
+    "E.g.: When did the cracks appear? Did they grow after an aftershock? What floor do you live on? Is the structure concrete or block? Any damage in common areas (stairs, parking)? Did the building move oddly?",
   // Photo-carrier labels (used by the AI prompt)
   "item.facade.area": "Facade",
   "item.facade.q": "Photo of the whole building from outside.",
