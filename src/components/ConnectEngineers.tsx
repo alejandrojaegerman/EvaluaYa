@@ -47,6 +47,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  // One-time legal acknowledgement: ask once, then never interrupt again.
+  const [alreadyAcked] = useState(hasLegalAck);
+  const [acked, setAcked] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
