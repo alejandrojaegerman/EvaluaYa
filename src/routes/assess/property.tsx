@@ -349,7 +349,7 @@ function PropertyStep() {
       property: {
         address: address.trim(),
         buildingName: buildingName.trim(),
-        state: state.trim(),
+        state: normalizeCaracasLocation(state, municipality),
         municipality: municipality.trim(),
         parroquia: parroquia.trim(),
         buildingType,
