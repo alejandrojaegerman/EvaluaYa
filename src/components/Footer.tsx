@@ -46,6 +46,7 @@ export function Footer() {
     {
       heading: t("footer.legal"),
       links: [
+        { to: "/legal", label: t("nav.legal") },
         { to: "/privacidad", label: t("nav.privacy") },
         { href: contactMailto(t("contact.subject")), label: t("footer.contact") },
       ],
