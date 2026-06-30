@@ -1141,7 +1141,7 @@ const es: Dict = {
   "panel.noLocation": "Ubicación sin especificar",
   "panel.refresh": "Actualizar",
   "panel.waResident":
-    "Hola, soy ingeniero voluntario de EvalúaYa. Vi tu solicitud de orientación tras tu evaluación. ¿En qué puedo ayudarte?",
+    "Hola, soy evaluador voluntario de la comunidad en EvalúaYa. Vi tu solicitud de orientación tras tu evaluación. ¿En qué puedo ayudarte?",
 
   // Admin
   "admin.title": "Administración de voluntarios",
