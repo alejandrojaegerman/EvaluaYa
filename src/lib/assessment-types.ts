@@ -27,6 +27,9 @@ export type ChecklistItemId =
   | "columns"
   | "openings"
   | "tilt"
+  // consolidated photo carriers (single photo section at the end)
+  | "facade"
+  | "damage_photos"
   // sub-signals captured by the "señales graves" multi-select
   | "foundation"
   | "liquefaction"
