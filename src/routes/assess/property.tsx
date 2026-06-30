@@ -158,6 +158,8 @@ function PropertyStep() {
   const [floors, setFloors] = useState(1);
   const [basements, setBasements] = useState(0);
   const [age, setAge] = useState<BuildingAge | null>(null);
+  const [livesInBuilding, setLivesInBuilding] = useState<boolean | null>(null);
+  const [condoBoard, setCondoBoard] = useState<boolean | null>(null);
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
