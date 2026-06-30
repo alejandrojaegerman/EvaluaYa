@@ -1822,48 +1822,48 @@ const en: Dict = {
   "rule.urm.finding":
     "Unreinforced masonry building: highly vulnerable after strong shaking.",
   "rule.urm.step":
-    "Do not consider it safe to enter. Wait for an engineer or Civil Protection to assess it.",
+    "Suggestion: as a precaution, avoid staying inside until a licensed engineer or Civil Protection assess the building.",
   "rule.liquefaction.finding":
     "Soil liquefaction signs: the ground lost its bearing capacity.",
   "rule.liquefaction.step":
-    "Do not enter. The structure may settle or tilt. Evacuate and report to authorities.",
+    "Suggestion: the structure may settle or tilt; consider stepping out and reporting it to authorities for review.",
   "rule.pounding.finding":
     "Pounding with an adjacent building: possible severe structural damage.",
-  "rule.pounding.step": "Do not enter; evacuate the contact area between buildings.",
+  "rule.pounding.step": "Suggestion: as a precaution, avoid the contact area between the buildings.",
   "rule.plumbing.finding":
     "Severe plumbing damage or possible gas leak: immediate hazard.",
   "rule.plumbing.step":
-    "Shut off the main gas and water valves, avoid lights or flames, and evacuate.",
+    "Suggestion: if you suspect a leak, shut off the main gas and water valves, avoid lights or flames, and consider stepping out.",
   "rule.intensity.finding":
     "Moderate shaking (intensity VI or acceleration ≥0.25g) at this location.",
   "rule.intensity.step":
-    "Increase caution: inspect more carefully and prioritize a professional assessment.",
+    "Suggestion: increase caution, inspect more carefully, and prioritize a professional assessment.",
   "rule.intensity_severe.finding":
     "Very strong shaking (intensity VIII+ or acceleration ≥0.50g) at this location.",
   "rule.intensity_severe.step":
-    "This area received some of the strongest shaking from the quake. Treat any damage with maximum caution.",
+    "Suggestion: this area received some of the strongest shaking from the quake; treat any damage with maximum caution.",
   "rule.spectral.finding":
     "Seismic demand for buildings of this height was high (spectral acceleration ≥0.40g).",
   "rule.spectral.step":
-    "Buildings of this height felt the shaking especially hard. Prioritize a professional review.",
+    "Suggestion: buildings of this height felt the shaking especially hard; prioritize a professional review.",
   "rule.softsoil.finding":
     "Soft soil: amplifies shaking and raises liquefaction risk.",
   "rule.softsoil.step":
-    "Watch for ground or building settlement and tilting.",
+    "Suggestion: watch for ground or building settlement and tilting.",
   "rule.softsoil_severe.finding":
     "Very soft soil: strong shaking amplification and high liquefaction risk.",
   "rule.softsoil_severe.step":
-    "Inspect the ground and foundations carefully; prioritize a professional assessment.",
+    "Suggestion: inspect the ground and foundations carefully and prioritize a professional assessment.",
   "rule.combo_shaking.finding":
     "Very strong shaking combined with reported structural damage: critical life-safety risk.",
   "rule.combo_shaking.step":
-    "Do not consider it safe. Evacuate and wait for an engineer or Civil Protection to confirm.",
+    "Suggestion: as a precaution, avoid staying inside until a licensed engineer or Civil Protection confirm it.",
   "rule.floors.finding": "Building over 7 floors: extra caution required.",
   "rule.floors.step":
-    "Limit use until an engineer confirms the upper floors are safe.",
+    "Suggestion: limit use until an engineer confirms the upper floors are safe.",
   "rule.structure.finding":
     "This building's structural system requires extra caution.",
-  "rule.structure.step": "Limit use and prioritize a professional assessment.",
+  "rule.structure.step": "Suggestion: limit use and prioritize a professional assessment.",
 
   "soil.rock": "Firm soil / rock",
   "soil.stiff": "Stiff soil",
