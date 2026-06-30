@@ -2122,6 +2122,7 @@ const en: Dict = {
   "data.filters": "Filters",
   "picker.mostAffected": "Most-affected areas",
   "picker.allAreas": "All areas",
+  "picker.granCaracas": "Greater Caracas",
   "data.filterState": "State",
   "data.filterMunicipality": "Municipality",
   "data.filterAll": "All",
