@@ -662,6 +662,7 @@ export const getAssessment = createServerFn({ method: "GET" })
         (row.report_type as "resident" | "professional" | null) ?? "resident",
       createdAt: row.created_at,
       photoUrls,
+      photoCaptions,
       building,
     };
   });
