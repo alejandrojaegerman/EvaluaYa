@@ -1,6 +1,7 @@
 import type { ChecklistItemId } from "@/lib/assessment-types";
 
 import foundation from "@/assets/checklist/foundation.jpg";
+import tilt from "@/assets/checklist/tilt.jpg";
 import liquefaction from "@/assets/checklist/liquefaction.jpg";
 import exterior_walls from "@/assets/checklist/exterior_walls.jpg";
 import pounding from "@/assets/checklist/pounding.jpg";
@@ -24,7 +25,7 @@ export const CHECKLIST_ILLUSTRATIONS: Record<ChecklistItemId, string> = {
   walls: interior_walls,
   columns: columns_beams,
   openings: doors_windows,
-  tilt: foundation,
+  tilt,
   facade: exterior_walls,
   damage_photos: interior_walls,
   foundation,
