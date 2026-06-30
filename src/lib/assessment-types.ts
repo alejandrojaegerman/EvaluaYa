@@ -268,6 +268,8 @@ export type AssessmentRecord = {
   createdAt: string;
   /** signed urls per item id; may contain multiple photos per item */
   photoUrls: Record<string, string[]>;
+  /** per-photo captions per item id, aligned by index to photoUrls */
+  photoCaptions?: Record<string, (string | null)[]>;
   /**
    * Anonymized "same building" context — null when no building name was
    * detected. Counts only; never addresses, photos or report ids.
