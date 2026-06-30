@@ -79,7 +79,7 @@ function ChecklistStep() {
   const [draft, setDraft] = useState<AssessmentDraft | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [loading, setLoading] = useState(true);
-  const [showOptional, setShowOptional] = useState(false);
+  
 
   useEffect(() => {
     trackStep("checklist_started");
