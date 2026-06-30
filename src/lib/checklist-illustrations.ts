@@ -25,6 +25,8 @@ export const CHECKLIST_ILLUSTRATIONS: Record<ChecklistItemId, string> = {
   columns: columns_beams,
   openings: doors_windows,
   tilt: foundation,
+  facade: exterior_walls,
+  damage_photos: interior_walls,
   foundation,
   liquefaction,
   exterior_walls,
