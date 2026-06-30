@@ -161,6 +161,8 @@ export type PropertyInfo = {
   livesInBuilding?: boolean;
   /** whether the person submitting is part of the condo board (junta de condominio) */
   condoBoardMember?: boolean;
+  /** free-text additional comments from the resident (step 2, optional) */
+  comments?: string;
   /** auto-detected ShakeMap MMI value at the building's location */
   seismicIntensity?: number;
   /** Roman-numeral label for the MMI (e.g. "VII") */
