@@ -43,11 +43,13 @@ import {
 import { cn } from "@/lib/utils";
 import {
   ESTADO_NAMES,
+  GRAN_CARACAS_MUNICIPIOS,
   getEstado,
   getEstadoBySlug,
   municipiosFor,
   nearestEstado,
   nearestMunicipio,
+  normalizeCaracasLocation,
 } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
