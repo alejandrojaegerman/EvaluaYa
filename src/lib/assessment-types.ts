@@ -78,6 +78,8 @@ export type PropertyInfo = {
   /** Coarse location only — estado / municipio. Drives the public map. */
   state?: string;
   municipality?: string;
+  /** Parroquia / parish — finer location below municipio (optional). */
+  parroquia?: string;
   /**
    * Optional building / tower name (never the apartment number). Lets multiple
    * evaluations of the same structure be grouped in the community map.
