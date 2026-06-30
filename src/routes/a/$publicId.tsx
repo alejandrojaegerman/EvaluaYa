@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { ConnectEngineers } from "@/components/ConnectEngineers";
 import { RiskBadge } from "@/components/RiskBadge";
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { SaveReportsCard } from "@/components/SaveReportsCard";
 import { SameBuildingCard } from "@/components/SameBuildingCard";
 import { Button } from "@/components/ui/button";
