@@ -256,7 +256,7 @@ const es: Dict = {
   "item.foundation.q": "¿Hay grietas visibles o hundimientos en los cimientos?",
   "item.liquefaction.area": "Suelo / licuefacción",
   "item.liquefaction.q":
-    "¿Hay señales de licuefacción del suelo? (agua y arena brotando, charcos donde no había agua, grietas grandes en suelo inclinado, tuberías o tanques que salieron a la superficie, o estructuras hundidas o inclinadas)",
+    "¿Salió agua o arena del suelo, se formaron charcos donde antes no había, o aparecieron grietas en el terreno?",
   "item.exterior_walls.area": "Muros exteriores",
   "item.exterior_walls.q":
     "¿Hay grietas diagonales o separación respecto a edificios vecinos?",
@@ -1797,7 +1797,7 @@ const en: Dict = {
   "item.foundation.q": "Are there visible cracks or shifts in the foundation?",
   "item.liquefaction.area": "Ground / liquefaction",
   "item.liquefaction.q":
-    "Are there signs of soil liquefaction? (water and sand bubbling up, pooling water where there was none, large fissures on sloping ground, pipes or tanks pushed to the surface, or sunken/tilted structures)",
+    "Did water or sand come up from the ground, did pools form where there were none, or did cracks appear in the soil?",
   "item.exterior_walls.area": "Exterior walls",
   "item.exterior_walls.q":
     "Are there diagonal cracks or separation from neighboring buildings?",
