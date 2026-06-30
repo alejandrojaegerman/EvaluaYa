@@ -29,7 +29,7 @@ import {
 export const Route = createFileRoute("/voluntarios/panel/$token")({
   head: () => ({
     meta: [
-      { title: "Panel de ingeniero — EvalúaYa" },
+      { title: "Panel del evaluador voluntario — EvalúaYa" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
