@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { RiskLevel } from "@/lib/assessment-types";
 import { formatDateTime } from "@/lib/datetime";
 import { useLang } from "@/lib/i18n";
-import { RISK_THEME } from "@/lib/risk";
+
 import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import type {
