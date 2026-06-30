@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
