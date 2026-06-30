@@ -72,6 +72,8 @@ export type Database = {
           building_inferred: boolean
           building_key: string | null
           building_name: string | null
+          consent_at: string | null
+          consent_version: string | null
           created_at: string
           device_id: string | null
           engineer_notes: string | null
@@ -80,13 +82,19 @@ export type Database = {
           geo_inferred: boolean
           id: string
           language: string
+          legal_ack_at: string | null
+          legal_version: string | null
           municipality: string | null
+          parroquia: string | null
           photo_count: number
           photo_counts: Json
           prior_risk_level: string | null
           property: Json
           public_id: string
           report_type: string
+          resident_contact: string | null
+          resident_contact_type: string | null
+          resident_name: string | null
           risk_level: string | null
           state: string | null
           status: string
@@ -99,6 +107,8 @@ export type Database = {
           building_inferred?: boolean
           building_key?: string | null
           building_name?: string | null
+          consent_at?: string | null
+          consent_version?: string | null
           created_at?: string
           device_id?: string | null
           engineer_notes?: string | null
@@ -107,13 +117,19 @@ export type Database = {
           geo_inferred?: boolean
           id?: string
           language?: string
+          legal_ack_at?: string | null
+          legal_version?: string | null
           municipality?: string | null
+          parroquia?: string | null
           photo_count?: number
           photo_counts?: Json
           prior_risk_level?: string | null
           property?: Json
           public_id: string
           report_type?: string
+          resident_contact?: string | null
+          resident_contact_type?: string | null
+          resident_name?: string | null
           risk_level?: string | null
           state?: string | null
           status?: string
@@ -126,6 +142,8 @@ export type Database = {
           building_inferred?: boolean
           building_key?: string | null
           building_name?: string | null
+          consent_at?: string | null
+          consent_version?: string | null
           created_at?: string
           device_id?: string | null
           engineer_notes?: string | null
@@ -134,13 +152,19 @@ export type Database = {
           geo_inferred?: boolean
           id?: string
           language?: string
+          legal_ack_at?: string | null
+          legal_version?: string | null
           municipality?: string | null
+          parroquia?: string | null
           photo_count?: number
           photo_counts?: Json
           prior_risk_level?: string | null
           property?: Json
           public_id?: string
           report_type?: string
+          resident_contact?: string | null
+          resident_contact_type?: string | null
+          resident_name?: string | null
           risk_level?: string | null
           state?: string | null
           status?: string
