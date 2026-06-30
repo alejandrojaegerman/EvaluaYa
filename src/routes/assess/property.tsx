@@ -842,6 +842,38 @@ function PropertyStep() {
             )}
           </div>
 
+          {/* Basements (sótanos) */}
+          <div>
+            <p className="text-sm font-semibold">{t("property.basements")}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("property.basements.help")}
+            </p>
+            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-2">
+              <button
+                type="button"
+                onClick={() => setBasements((b) => Math.max(0, b - 1))}
+                disabled={basements <= 0}
+                aria-label="-"
+                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70 disabled:opacity-40"
+              >
+                <Minus className="size-5" />
+              </button>
+              <span className="flex-1 text-center font-display text-2xl font-bold tabular-nums">
+                {basements}
+              </span>
+              <button
+                type="button"
+                onClick={() => setBasements((b) => Math.min(20, b + 1))}
+                aria-label="+"
+                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70"
+              >
+                <Plus className="size-5" />
+              </button>
+            </div>
+          </div>
+
+
+
           {/* Age */}
           <div>
             <p className="text-sm font-semibold">{t("property.age")}</p>
