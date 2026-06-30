@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { ConnectEngineers } from "@/components/ConnectEngineers";
 import { RiskBadge } from "@/components/RiskBadge";
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { SaveReportsCard } from "@/components/SaveReportsCard";
 import { SameBuildingCard } from "@/components/SameBuildingCard";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,19 @@ function ResultPage() {
 
   const theme = RISK_THEME[record.riskLevel];
   const [cardBusy, setCardBusy] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Flatten all photos into a single ordered list for the gallery + lightbox,
+  // so the engineer can open any photo and swipe through the whole case.
+  const photoItems = record.answers
+    .filter((a) => record.photoUrls[a.id]?.length)
+    .flatMap((a) =>
+      record.photoUrls[a.id].map((url) => ({
+        id: a.id,
+        url,
+        caption: t(`item.${a.id}.area`),
+      })),
+    );
 
   // Funnel: resident reached the final result — the completed conversion.
   useEffect(() => {
@@ -359,31 +373,41 @@ function ResultPage() {
 
 
       {/* Photos */}
-      {Object.keys(record.photoUrls).length > 0 && (
+      {photoItems.length > 0 && (
         <Section title={t("result.photos")}>
+          <p className="mb-2 text-xs text-muted-foreground">
+            {t("result.photosHint")}
+          </p>
           <div className="grid grid-cols-2 gap-2">
-            {record.answers
-              .filter((a) => record.photoUrls[a.id]?.length)
-              .flatMap((a) =>
-                record.photoUrls[a.id].map((url, i) => (
-                  <figure
-                    key={`${a.id}-${i}`}
-                    className="overflow-hidden rounded-xl border border-border"
-                  >
-                    <img
-                      src={url}
-                      alt={t(`item.${a.id}.area`)}
-                      loading="lazy"
-                      className="h-28 w-full object-cover"
-                    />
-                    <figcaption className="bg-card px-2 py-1 text-[11px] font-medium text-muted-foreground">
-                      {t(`item.${a.id}.area`)}
-                    </figcaption>
-                  </figure>
-                )),
-              )}
+            {photoItems.map((photo, i) => (
+              <button
+                key={`${photo.id}-${i}`}
+                type="button"
+                onClick={() => setLightboxIndex(i)}
+                className="group overflow-hidden rounded-xl border border-border text-left"
+              >
+                <img
+                  src={photo.url}
+                  alt={photo.caption}
+                  loading="lazy"
+                  className="h-28 w-full object-cover transition-transform group-hover:scale-105"
+                />
+                <span className="block bg-card px-2 py-1 text-[11px] font-medium text-muted-foreground">
+                  {photo.caption}
+                </span>
+              </button>
+            ))}
           </div>
         </Section>
+      )}
+
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={photoItems.map((p) => ({ url: p.url, caption: p.caption }))}
+          index={lightboxIndex}
+          onIndexChange={setLightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
 
 

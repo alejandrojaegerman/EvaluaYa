@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,6 +65,7 @@ export function EngineerRequestCard({
   const [reviewing, setReviewing] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [verdictNote, setVerdictNote] = useState("");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const curStage = stageIndex(r.progressStage);
 
@@ -96,6 +98,47 @@ export function EngineerRequestCard({
 
       {r.note && (
         <p className="mt-2 rounded-lg bg-muted/60 p-2 text-sm">{r.note}</p>
+      )}
+
+      {/* Photo evidence preview — the core triage signal, so the engineer can
+          prioritize without opening each case. Tap to inspect full screen. */}
+      {r.thumbnails.length > 0 && (
+        <div className="mt-3">
+          <div className="flex gap-2 overflow-x-auto">
+            {r.thumbnails.map((url, i) => (
+              <button
+                key={`${r.id}-thumb-${i}`}
+                type="button"
+                onClick={() => setLightboxIndex(i)}
+                className="relative shrink-0 overflow-hidden rounded-lg border border-border"
+                aria-label={t("lightbox.title")}
+              >
+                <img
+                  src={url}
+                  alt=""
+                  loading="lazy"
+                  className="h-16 w-16 object-cover"
+                />
+                {/* Show "+N more" overlay on the last thumb when extra photos exist. */}
+                {i === r.thumbnails.length - 1 &&
+                  r.photoCount > r.thumbnails.length && (
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-xs font-semibold text-white">
+                      +{r.photoCount - r.thumbnails.length}
+                    </span>
+                  )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={r.thumbnails.map((url) => ({ url, caption: "" }))}
+          index={lightboxIndex}
+          onIndexChange={setLightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
 
       {/* Progress tracker (only after the engineer claims the request) */}

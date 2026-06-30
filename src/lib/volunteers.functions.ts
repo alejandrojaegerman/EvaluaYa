@@ -47,6 +47,11 @@ export type EngineerRequest = {
   priorRiskLevel: RiskLevel | null;
   verified: boolean;
   engineerVerdict: "agree" | "adjust" | null;
+  /** Signed thumbnail URLs (first few photos) so the engineer can filter
+   * the list without opening each case. Photos are the core triage signal. */
+  thumbnails: string[];
+  /** Total number of photos attached to the linked assessment. */
+  photoCount: number;
 };
 
 
@@ -867,16 +872,51 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
           prior_risk_level: string | null;
           report_type: string | null;
           engineer_verdict: string | null;
+          thumbnails: string[];
+          photo_count: number;
         }
       >();
       if (assessmentIds.length > 0) {
         const { data: aRows } = await supabaseAdmin
           .from("assessments")
           .select(
-            "public_id, risk_level, prior_risk_level, report_type, engineer_verdict",
+            "public_id, risk_level, prior_risk_level, report_type, engineer_verdict, answers, photo_count",
           )
           .in("public_id", assessmentIds);
-        for (const a of aRows ?? []) assessmentMap.set(a.public_id, a);
+        const PHOTO_BUCKET = "assessment-photos";
+        const THUMB_TTL = 60 * 60; // 1 hour
+        const MAX_THUMBS = 4;
+        for (const a of aRows ?? []) {
+          // Collect the first few photo paths across all answers, in order.
+          const answers = (a.answers as
+            | { photoPaths?: string[]; photoPath?: string }[]
+            | null) ?? [];
+          const paths: string[] = [];
+          for (const ans of answers) {
+            for (const p of [
+              ...(ans.photoPaths ?? []),
+              ...(ans.photoPath ? [ans.photoPath] : []),
+            ]) {
+              if (p && paths.length < MAX_THUMBS) paths.push(p);
+            }
+            if (paths.length >= MAX_THUMBS) break;
+          }
+          const thumbnails: string[] = [];
+          for (const path of paths) {
+            const { data: signed } = await supabaseAdmin.storage
+              .from(PHOTO_BUCKET)
+              .createSignedUrl(path, THUMB_TTL);
+            if (signed?.signedUrl) thumbnails.push(signed.signedUrl);
+          }
+          assessmentMap.set(a.public_id, {
+            risk_level: a.risk_level,
+            prior_risk_level: a.prior_risk_level,
+            report_type: a.report_type,
+            engineer_verdict: a.engineer_verdict,
+            thumbnails,
+            photo_count: (a.photo_count as number | null) ?? 0,
+          });
+        }
       }
 
       const requests: EngineerRequest[] = relevant.map((r) => {
@@ -907,6 +947,8 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
           verified: a ? a.report_type === "professional" : false,
           engineerVerdict:
             (a?.engineer_verdict as "agree" | "adjust" | null) ?? null,
+          thumbnails: a?.thumbnails ?? [],
+          photoCount: a?.photo_count ?? 0,
         };
       });
 
