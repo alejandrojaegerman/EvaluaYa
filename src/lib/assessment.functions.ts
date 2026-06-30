@@ -326,7 +326,11 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
 
     for (const answer of data.answers) {
       const photos = (answer.photoDataUrls ?? []).filter(Boolean);
+      const labels = answer.photoLabels ?? [];
       const photoPaths: string[] = [];
+      // Captions kept index-aligned with photoPaths (a photo may be skipped
+      // by the budget, so we can't reuse the original index).
+      const photoLabels: (string | null)[] = [];
 
       for (let i = 0; i < photos.length; i++) {
         const dataUrl = photos[i];
@@ -347,11 +351,17 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
           });
         if (!uploadError) {
           photoPaths.push(path);
+          photoLabels.push(labels[i] ?? null);
           if (isKey) imageDataUrls.push(dataUrl);
         }
       }
 
-      storedAnswers.push({ id: answer.id, value: answer.value, photoPaths });
+      storedAnswers.push({
+        id: answer.id,
+        value: answer.value,
+        photoPaths,
+        ...(photoLabels.some(Boolean) ? { photoLabels } : {}),
+      });
     }
 
     // Denormalized photo counters kept in sync on write so analytics stay
