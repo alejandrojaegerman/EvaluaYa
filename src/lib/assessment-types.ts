@@ -149,7 +149,12 @@ export type PropertyInfo = {
   floors: number;
   /** number of basement / below-grade levels (sótanos) */
   basements?: number;
-  age: BuildingAge;
+  /** approximate building age — optional (resident may not know it) */
+  age?: BuildingAge;
+  /** whether the person submitting lives in the building */
+  livesInBuilding?: boolean;
+  /** whether the person submitting is part of the condo board (junta de condominio) */
+  condoBoardMember?: boolean;
   /** auto-detected ShakeMap MMI value at the building's location */
   seismicIntensity?: number;
   /** Roman-numeral label for the MMI (e.g. "VII") */
