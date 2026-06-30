@@ -343,6 +343,7 @@ function PropertyStep() {
         buildingType,
         structuralType,
         floors,
+        basements,
         age,
         ...(intensity
           ? (() => {
