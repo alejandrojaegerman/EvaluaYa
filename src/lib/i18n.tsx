@@ -1224,6 +1224,7 @@ const es: Dict = {
   "panel.reviewDescargo":
     "Declaro que mis observaciones son orientativas y voluntarias, que no constituyen un dictamen oficial ni un certificado de habitabilidad, y que la decisión sobre la seguridad corresponde a una inspección formal de un ingeniero estructural colegiado, FUNVISIS o Protección Civil.",
   "panel.reviewSubmit": "Guardar observaciones",
+  "panel.reviewSaved": "Observaciones registradas. Gracias por tu apoyo.",
   "panel.reviewedByYou": "Revisado por ti",
   "panel.cancel": "Cancelar",
   "panel.noReportToValidate": "Esta solicitud no tiene una evaluación vinculada.",
