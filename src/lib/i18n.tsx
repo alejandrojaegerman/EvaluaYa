@@ -317,11 +317,29 @@ const es: Dict = {
   "item.tilt.example.no":
     "La edificación sigue recta y a nivel, igual que antes del sismo.",
 
-  // Señales graves (multi-select Q5)
-  "checklist.severeTitle": "Señales graves",
+  // Otras señales a revisar (multi-select, opcional)
+  "checklist.severeTitle": "Otras señales a revisar",
   "checklist.severeSubtitle":
-    "Marca solo lo que viste con este sismo. Cualquiera de estas es una alerta de seguridad.",
+    "Opcional. Si viste alguna de estas con este sismo, márcala. Nos ayuda a entender mejor el caso. Si no viste ninguna, continúa.",
   "checklist.severeNoneHint": "Si no viste ninguna, déjalas sin marcar y continúa.",
+
+  // Sección de fotos (obligatoria) — todo en un solo lugar
+  "checklist.required": "Obligatoria",
+  "checklist.photosTitle": "Fotos (obligatorias)",
+  "checklist.photosIntro":
+    "Las fotos son lo más importante. Sin ellas, un ingeniero no puede ayudarte. Son obligatorias.",
+  "checklist.facadeTitle": "Foto de la fachada",
+  "checklist.facadeHelp":
+    "Toma una foto del edificio completo desde afuera. Permite ver si quedó inclinado sin tener que entrar.",
+  "checklist.damageTitle": "Fotos de los daños",
+  "checklist.damageHelp":
+    "Agrega fotos claras de lo que viste (grietas, columnas, paredes, techos). Mínimo {min}, hasta {max}.",
+  "checklist.damageCount": "{n} de {max} fotos",
+  "checklist.missingFacade": "Falta la foto de la fachada del edificio.",
+  "checklist.missingDamage": "Agrega al menos {n} fotos de los daños para continuar.",
+  "checklist.commentsTitle": "Comentarios adicionales (opcional)",
+  "checklist.commentsPlaceholder":
+    "Escribe aquí cualquier detalle que las fotos no muestren.",
 
 
   "checklist.exampleToggle": "¿Cómo se ve?",
