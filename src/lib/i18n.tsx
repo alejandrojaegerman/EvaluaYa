@@ -290,9 +290,9 @@ const es: Dict = {
   // --- 4+1 simplified flow (preguntas principales) ---
   "item.walls.area": "Paredes",
   "item.walls.q":
-    "¿Aparecieron grietas nuevas en las paredes (en diagonal, en X, o más anchas que una moneda de canto)?",
+    "¿Aparecieron grietas nuevas en las paredes (en diagonal, en X, o más anchas que tu dedo meñique)?",
   "item.walls.example.yes":
-    "Grietas nuevas en diagonal o en forma de X, o tan anchas que cabe una moneda de canto o un lápiz.",
+    "Grietas nuevas en diagonal o en forma de X, o tan anchas que entra tu dedo meñique.",
   "item.walls.example.no":
     "Solo líneas finas como un cabello, o ninguna grieta nueva.",
   "item.columns.area": "Columnas y vigas",
@@ -359,7 +359,7 @@ const es: Dict = {
   "item.exterior_walls.example.no": "Las paredes de afuera siguen rectas y pegadas, sin grietas nuevas.",
   "item.pounding.example.yes": "Tu edificio chocó con el vecino: hay marcas, golpes o material caído entre ambos.",
   "item.pounding.example.no": "Hay separación normal con el edificio vecino, sin señales de choque.",
-  "item.interior_walls.example.yes": "Grietas por las que cabe un lápiz o una moneda de canto (más de 1 cm).",
+  "item.interior_walls.example.yes": "Grietas por las que entra tu dedo meñique (más de 1 cm).",
   "item.interior_walls.example.no": "Solo líneas finas, como un cabello, o ninguna grieta nueva.",
   "item.flooring.example.yes": "El piso se levantó, baldosas saltadas o se abrió un espacio junto al rodapié.",
   "item.flooring.example.no": "El piso sigue plano y firme al pisar.",
@@ -1830,9 +1830,9 @@ const en: Dict = {
   // --- 4+1 simplified flow (primary questions) ---
   "item.walls.area": "Walls",
   "item.walls.q":
-    "Did new cracks appear in the walls (diagonal, X-shaped, or wider than a coin on edge)?",
+    "Did new cracks appear in the walls (diagonal, X-shaped, or wider than your pinky finger)?",
   "item.walls.example.yes":
-    "New diagonal or X-shaped cracks, or wide enough to fit a coin on edge or a pencil.",
+    "New diagonal or X-shaped cracks, or wide enough to fit your pinky finger.",
   "item.walls.example.no": "Only hairline lines, or no new cracks at all.",
   "item.columns.area": "Columns and beams",
   "item.columns.q":
