@@ -36,6 +36,15 @@ const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
 
 const answerSchema = z.object({
   id: z.enum([
+    // 4+1 simplified flow
+    "walls",
+    "columns",
+    "openings",
+    "tilt",
+    // consolidated photo carriers (single photo section)
+    "facade",
+    "damage_photos",
+    // severe-sign + legacy ids
     "foundation",
     "liquefaction",
     "exterior_walls",
@@ -51,10 +60,11 @@ const answerSchema = z.object({
     "stairs",
   ]),
   value: z.enum(["yes", "no", "unsure"]),
-  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 3 photos per item.
+  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 10 photos per item
+  // (the consolidated damage gallery allows up to 10).
   photoDataUrls: z
     .array(z.string().max(3_600_000))
-    .max(3)
+    .max(10)
     .optional()
     .default([]),
 });
