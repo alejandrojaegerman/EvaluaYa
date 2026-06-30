@@ -6,9 +6,10 @@ import {
   ImageOff,
   ImagePlus,
   ChevronDown,
-  Plus,
   Info,
   HelpCircle,
+  AlertTriangle,
+  Check,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +18,8 @@ import { AppShell } from "@/components/AppShell";
 import { StepHeader, StepFooter } from "./property";
 import {
   CHECKLIST_ITEMS,
+  PRIMARY_QUESTION_IDS,
+  SEVERE_SIGN_IDS,
   MAX_PHOTOS_PER_ITEM,
   type AnswerValue,
   type ChecklistItemId,
@@ -31,8 +34,12 @@ import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { cn } from "@/lib/utils";
 
-const STRUCTURE_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "structure");
-const UTILITY_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "utilities");
+// The 4 direct yes/no/unsure photo questions, plus the "señales graves"
+// multi-select. Both persist as individual checklist answers so the
+// engineer-validated deterministic rules + AI prompt + analytics keep working
+// unchanged for new AND historical records.
+const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
+const SEVERE_ITEMS = SEVERE_SIGN_IDS;
 
 export const Route = createFileRoute("/assess/checklist")({
   component: ChecklistStep,
