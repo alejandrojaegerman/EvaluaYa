@@ -130,12 +130,25 @@ function ChecklistStep() {
     });
   }
 
-  const requiredAnswered = STRUCTURE_ITEMS.filter(
-    (i) => answers[i.id]?.value,
+  // A severe sign is "on" when stored as a "yes" answer; toggling off removes it.
+  function toggleSevere(id: ChecklistItemId) {
+    setAnswers((prev) => {
+      if (prev[id]?.value === "yes") {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      }
+      return { ...prev, [id]: { value: "yes", photoDataUrls: [] } };
+    });
+  }
+
+  const requiredAnswered = PRIMARY_ITEMS.filter(
+    (id) => answers[id]?.value,
   ).length;
-  const allRequired = requiredAnswered === STRUCTURE_ITEMS.length;
-  const hasUtilityAnswers = UTILITY_ITEMS.some((i) => answers[i.id]?.value);
-  const optionalVisible = showOptional || hasUtilityAnswers;
+  const allRequired = requiredAnswered === PRIMARY_ITEMS.length;
+  const severeCount = SEVERE_ITEMS.filter(
+    (id) => answers[id]?.value === "yes",
+  ).length;
 
   async function persist(map: AnswerMap, ready: boolean) {
     if (!draft) return;
