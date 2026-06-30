@@ -3,13 +3,12 @@ import {
   Camera,
   Loader2,
   X,
-  ImageOff,
   ImagePlus,
   ChevronDown,
-  Info,
   HelpCircle,
-  AlertTriangle,
   Check,
+  Building2,
+  Images,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -20,7 +19,8 @@ import {
   CHECKLIST_ITEMS,
   PRIMARY_QUESTION_IDS,
   SEVERE_SIGN_IDS,
-  MAX_PHOTOS_PER_ITEM,
+  MAX_DAMAGE_PHOTOS,
+  MIN_DAMAGE_PHOTOS,
   type AnswerValue,
   type ChecklistItemId,
   type DraftAnswer,
@@ -34,34 +34,32 @@ import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { cn } from "@/lib/utils";
 
-// The 4 direct yes/no/unsure photo questions, plus the "señales graves"
-// multi-select. Both persist as individual checklist answers so the
-// engineer-validated deterministic rules + AI prompt + analytics keep working
-// unchanged for new AND historical records.
+// The 4 direct yes/no/unsure questions, plus the "señales graves" multi-select,
+// plus a single consolidated photo section (facade + damage gallery). Each of
+// these persists as an individual checklist answer so the engineer-validated
+// deterministic rules + AI prompt + analytics keep working unchanged.
 const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
 const SEVERE_ITEMS = SEVERE_SIGN_IDS;
+
+// Reserved photo-carrier ids for the consolidated photo section.
+const FACADE_ID: ChecklistItemId = "facade";
+const DAMAGE_ID: ChecklistItemId = "damage_photos";
 
 export const Route = createFileRoute("/assess/checklist")({
   component: ChecklistStep,
 });
 
-type AnswerEntry = { value: AnswerValue; photoDataUrls: string[] };
+type AnswerEntry = { value: AnswerValue };
 type AnswerMap = Record<string, AnswerEntry>;
 
-const ANSWER_OPTIONS: { value: AnswerValue; tone: string; active: string }[] = [
-  {
-    value: "yes",
-    tone: "text-risk-red",
-    active: "border-risk-red bg-risk-red-soft text-risk-red",
-  },
+const ANSWER_OPTIONS: { value: AnswerValue; active: string }[] = [
+  { value: "yes", active: "border-risk-red bg-risk-red-soft text-risk-red" },
   {
     value: "no",
-    tone: "text-risk-green",
     active: "border-risk-green bg-risk-green-soft text-risk-green",
   },
   {
     value: "unsure",
-    tone: "text-muted-foreground",
     active: "border-muted-foreground bg-muted text-foreground",
   },
 ];
@@ -78,8 +76,10 @@ function ChecklistStep() {
 
   const [draft, setDraft] = useState<AssessmentDraft | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
+  const [facadePhoto, setFacadePhoto] = useState<string | null>(null);
+  const [damagePhotos, setDamagePhotos] = useState<string[]>([]);
+  const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
     trackStep("checklist_started");
@@ -93,12 +93,19 @@ function ChecklistStep() {
       setDraft(d);
       const initial: AnswerMap = {};
       for (const a of d.answers) {
-        initial[a.id] = {
-          value: a.value,
-          photoDataUrls: normalizePhotos(a),
-        };
+        if (a.id === FACADE_ID) {
+          const photos = normalizePhotos(a);
+          if (photos[0]) setFacadePhoto(photos[0]);
+          continue;
+        }
+        if (a.id === DAMAGE_ID) {
+          setDamagePhotos(normalizePhotos(a));
+          continue;
+        }
+        initial[a.id] = { value: a.value };
       }
       setAnswers(initial);
+      setComments(d.property.comments ?? "");
       setLoading(false);
     });
     return () => {
@@ -107,27 +114,7 @@ function ChecklistStep() {
   }, [navigate]);
 
   function setAnswer(id: ChecklistItemId, value: AnswerValue) {
-    setAnswers((prev) => ({
-      ...prev,
-      [id]: { value, photoDataUrls: prev[id]?.photoDataUrls ?? [] },
-    }));
-  }
-
-  function addPhoto(id: ChecklistItemId, photoDataUrl: string) {
-    setAnswers((prev) => {
-      const cur = prev[id] ?? { value: "unsure" as AnswerValue, photoDataUrls: [] };
-      const next = [...cur.photoDataUrls, photoDataUrl].slice(0, MAX_PHOTOS_PER_ITEM);
-      return { ...prev, [id]: { ...cur, photoDataUrls: next } };
-    });
-  }
-
-  function removePhoto(id: ChecklistItemId, index: number) {
-    setAnswers((prev) => {
-      const cur = prev[id];
-      if (!cur) return prev;
-      const next = cur.photoDataUrls.filter((_, i) => i !== index);
-      return { ...prev, [id]: { ...cur, photoDataUrls: next } };
-    });
+    setAnswers((prev) => ({ ...prev, [id]: { value } }));
   }
 
   // A severe sign is "on" when stored as a "yes" answer; toggling off removes it.
@@ -138,7 +125,7 @@ function ChecklistStep() {
         delete next[id];
         return next;
       }
-      return { ...prev, [id]: { value: "yes", photoDataUrls: [] } };
+      return { ...prev, [id]: { value: "yes" } };
     });
   }
 
@@ -146,21 +133,36 @@ function ChecklistStep() {
     (id) => answers[id]?.value,
   ).length;
   const allRequired = requiredAnswered === PRIMARY_ITEMS.length;
-  const severeCount = SEVERE_ITEMS.filter(
-    (id) => answers[id]?.value === "yes",
-  ).length;
+  const hasFacade = !!facadePhoto;
+  const enoughDamage = damagePhotos.length >= MIN_DAMAGE_PHOTOS;
+  const canContinue = allRequired && hasFacade && enoughDamage;
 
-  async function persist(map: AnswerMap, ready: boolean) {
+  async function persist(ready: boolean) {
     if (!draft) return;
     const draftAnswers: DraftAnswer[] = CHECKLIST_ITEMS.filter(
-      (i) => map[i.id]?.value,
+      (i) => answers[i.id]?.value,
     ).map((i) => ({
       id: i.id,
-      value: map[i.id].value,
-      photoDataUrls: map[i.id].photoDataUrls,
+      value: answers[i.id].value,
+      photoDataUrls: [],
     }));
+    if (facadePhoto) {
+      draftAnswers.push({
+        id: FACADE_ID,
+        value: "yes",
+        photoDataUrls: [facadePhoto],
+      });
+    }
+    if (damagePhotos.length) {
+      draftAnswers.push({
+        id: DAMAGE_ID,
+        value: "yes",
+        photoDataUrls: damagePhotos,
+      });
+    }
     await saveDraft({
       ...draft,
+      property: { ...draft.property, comments: comments.trim() || undefined },
       answers: draftAnswers,
       language: lang,
       status: ready ? "ready_to_send" : "in_progress",
@@ -172,14 +174,23 @@ function ChecklistStep() {
       toast.warning(t("checklist.answerAll"));
       return;
     }
-    await persist(answers, true);
+    if (!hasFacade) {
+      toast.warning(t("checklist.missingFacade"));
+      return;
+    }
+    if (!enoughDamage) {
+      toast.warning(
+        t("checklist.missingDamage").replace("{n}", String(MIN_DAMAGE_PHOTOS)),
+      );
+      return;
+    }
+    await persist(true);
     navigate({ to: "/assess/analyze" });
   }
 
   if (loading) {
     return (
       <AppShell hideBottomNav hideFooter>
-
         <div className="flex min-h-[50vh] items-center justify-center">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
@@ -187,143 +198,89 @@ function ChecklistStep() {
     );
   }
 
-  const renderCard = (id: ChecklistItemId, index: number) => (
-    <ChecklistCard
-      key={id}
-      index={index}
-      id={id}
-      value={answers[id]?.value ?? null}
-      photos={answers[id]?.photoDataUrls ?? []}
-      onAnswer={(v) => setAnswer(id, v)}
-      onAddPhoto={(p) => addPhoto(id, p)}
-      onRemovePhoto={(i) => removePhoto(id, i)}
-    />
-  );
-
   return (
     <AppShell hideBottomNav hideFooter>
-      <StepHeader step={2} title={t("checklist.title")} subtitle={t("checklist.subtitle")} />
+      <StepHeader
+        step={2}
+        title={t("checklist.title")}
+        subtitle={t("checklist.subtitle")}
+      />
 
-      {/* Required-progress bar — the 4 main questions gate submission. */}
-      <div className="mt-4">
-        <div className="flex items-center justify-between text-xs font-semibold">
-          <span className="text-muted-foreground">
-            {requiredAnswered} / {PRIMARY_ITEMS.length}{" "}
-            {t("checklist.coreProgress")}
-          </span>
-          {allRequired && <span className="text-risk-green">✓</span>}
-        </div>
-        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-border">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{
-              width: `${(requiredAnswered / PRIMARY_ITEMS.length) * 100}%`,
-            }}
-          />
-        </div>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          {t("checklist.photosOptional")}
-        </p>
-      </div>
-
-      {/* Report NEW damage only (feedback #7) */}
-      <div className="mt-4 flex gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 p-3.5 dark:border-amber-500/30 dark:bg-amber-500/10">
-        <Info className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
-        <div>
-          <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
-            {t("checklist.newDamageTitle")}
-          </p>
-          <p className="mt-0.5 text-xs leading-relaxed text-amber-800/90 dark:text-amber-200/80">
-            {t("checklist.newDamageBody")}
-          </p>
-        </div>
-      </div>
-
-      {/* The four main structural questions (each with photo upload) */}
+      {/* The four main structural questions (no per-item photos) */}
       <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
         {t("checklist.sectionStructure")}
       </h2>
       <div className="mt-3 space-y-4">
-        {PRIMARY_ITEMS.map((id, idx) => renderCard(id, idx + 1))}
+        {PRIMARY_ITEMS.map((id, idx) => (
+          <QuestionCard
+            key={id}
+            index={idx + 1}
+            id={id}
+            value={answers[id]?.value ?? null}
+            onAnswer={(v) => setAnswer(id, v)}
+          />
+        ))}
       </div>
 
-      {/* Q5 — "Señales graves" multi-select. Each selection maps to an
-          engineer-validated deterministic rule behind the scenes. */}
-      <div className="mt-6 rounded-2xl border-2 border-risk-red/30 bg-risk-red-soft/40 p-4">
-        <div className="flex items-start gap-2.5">
-          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-risk-red" />
-          <div className="min-w-0">
-            <h2 className="font-display text-base font-bold text-risk-red">
-              {t("checklist.severeTitle")}
-            </h2>
-            <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
-              {t("checklist.severeSubtitle")}
-            </p>
-          </div>
-        </div>
+      {/* "Otras señales" multi-select — softened styling, optional, with
+          examples. Each selection maps to an engineer-validated rule. */}
+      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <h2 className="font-display text-base font-bold">
+          {t("checklist.severeTitle")}
+        </h2>
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+          {t("checklist.severeSubtitle")}
+        </p>
         <div className="mt-3 space-y-2">
-          {SEVERE_ITEMS.map((id) => {
-            const checked = answers[id]?.value === "yes";
-            return (
-              <button
-                key={id}
-                type="button"
-                role="checkbox"
-                aria-checked={checked}
-                onClick={() => toggleSevere(id)}
-                className={cn(
-                  "flex w-full items-start gap-3 rounded-xl border-2 bg-card p-3 text-left transition-colors",
-                  checked
-                    ? "border-risk-red bg-risk-red-soft"
-                    : "border-border hover:border-risk-red/40",
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors",
-                    checked
-                      ? "border-risk-red bg-risk-red text-white"
-                      : "border-muted-foreground/40",
-                  )}
-                >
-                  {checked && <Check className="size-3.5" strokeWidth={3} />}
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold">
-                    {t(`item.${id}.area`)}
-                  </span>
-                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
-                    {t(`item.${id}.q`)}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
+          {SEVERE_ITEMS.map((id) => (
+            <SevereRow
+              key={id}
+              id={id}
+              checked={answers[id]?.value === "yes"}
+              onToggle={() => toggleSevere(id)}
+            />
+          ))}
         </div>
-        <p className="mt-2.5 text-[11px] leading-relaxed text-muted-foreground">
-          {severeCount > 0
-            ? `${severeCount} ${t("checklist.severeTitle").toLowerCase()}`
-            : t("checklist.severeNoneHint")}
-        </p>
       </div>
 
-      {!allRequired && (
-        <p className="mt-6 rounded-xl bg-muted px-4 py-3 text-center text-sm text-muted-foreground">
-          {t("checklist.remaining").replace(
-            "{n}",
-            `${PRIMARY_ITEMS.length - requiredAnswered} ${
-              PRIMARY_ITEMS.length - requiredAnswered === 1
-                ? t("checklist.remainingOne")
-                : t("checklist.remainingMany")
-            }`,
-          )}
-        </p>
-      )}
+      {/* Consolidated, MANDATORY photo section */}
+      <h2 className="mt-6 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+        {t("checklist.photosTitle")}
+      </h2>
+      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+        {t("checklist.photosIntro")}
+      </p>
+
+      <FacadePhoto
+        photo={facadePhoto}
+        onSet={setFacadePhoto}
+        onClear={() => setFacadePhoto(null)}
+      />
+
+      <DamageGallery photos={damagePhotos} onChange={setDamagePhotos} />
+
+      {/* Optional comments */}
+      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <label
+          htmlFor="comments"
+          className="block text-sm font-semibold"
+        >
+          {t("checklist.commentsTitle")}
+        </label>
+        <textarea
+          id="comments"
+          value={comments}
+          onChange={(e) => setComments(e.target.value.slice(0, 1000))}
+          rows={3}
+          placeholder={t("checklist.commentsPlaceholder")}
+          className="mt-2 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+        />
+      </div>
 
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
-        nextDisabled={!allRequired}
+        nextDisabled={!canContinue}
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
@@ -331,44 +288,22 @@ function ChecklistStep() {
   );
 }
 
-function ChecklistCard({
+/* ------------------------------------------------------------------ */
+/* Primary structural question — yes/no/unsure with collapsible example */
+/* ------------------------------------------------------------------ */
+function QuestionCard({
   index,
   id,
   value,
-  photos,
   onAnswer,
-  onAddPhoto,
-  onRemovePhoto,
 }: {
   index: number;
   id: ChecklistItemId;
   value: AnswerValue | null;
-  photos: string[];
   onAnswer: (v: AnswerValue) => void;
-  onAddPhoto: (p: string) => void;
-  onRemovePhoto: (i: number) => void;
 }) {
   const { t } = useLang();
-  const cameraRef = useRef<HTMLInputElement>(null);
-  const galleryRef = useRef<HTMLInputElement>(null);
-  const [processing, setProcessing] = useState(false);
   const [showExample, setShowExample] = useState(false);
-  const canAddMore = photos.length < MAX_PHOTOS_PER_ITEM;
-
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setProcessing(true);
-    try {
-      const dataUrl = await compressImageToDataUrl(file);
-      onAddPhoto(dataUrl);
-    } catch {
-      toast.error(t("analyze.genericError"));
-    } finally {
-      setProcessing(false);
-    }
-  }
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -398,53 +333,9 @@ function ChecklistCard({
               )}
             />
           </button>
-          {showExample && (
-            <div className="mt-2 space-y-2.5 rounded-xl bg-muted/50 p-2.5 text-xs leading-relaxed">
-              <figure className="overflow-hidden rounded-lg border border-border bg-background">
-                <img
-                  src={CHECKLIST_ILLUSTRATIONS[id]}
-                  alt={t("checklist.exampleAlt")}
-                  loading="lazy"
-                  width={1024}
-                  height={512}
-                  className="h-auto w-full"
-                />
-                <figcaption className="flex items-center justify-between border-t border-border px-3 py-1.5 text-[11px] font-semibold">
-                  <span className="text-destructive">❌ {t("checklist.illoDamage")}</span>
-                  <span className="text-emerald-600">✅ {t("checklist.illoOk")}</span>
-                </figcaption>
-              </figure>
-              <p className="flex gap-1.5">
-                <span aria-hidden>❌</span>
-                <span>
-                  <span className="font-semibold">{t("checklist.exampleYes")}:</span>{" "}
-                  {t(`item.${id}.example.yes`)}
-                </span>
-              </p>
-              <p className="flex gap-1.5">
-                <span aria-hidden>✅</span>
-                <span>
-                  <span className="font-semibold">{t("checklist.exampleNo")}:</span>{" "}
-                  {t(`item.${id}.example.no`)}
-                </span>
-              </p>
-              {CHECKLIST_GLOSSARY[id] && (
-                <div className="border-t border-border pt-2">
-                  <p className="text-[11px] text-muted-foreground">
-                    {t("checklist.glossaryHint")}
-                  </p>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {CHECKLIST_GLOSSARY[id]!.map((term) => (
-                      <GlossaryTerm key={term} term={term} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {showExample && <ExampleBlock id={id} />}
         </div>
       </div>
-
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {ANSWER_OPTIONS.map((opt) => {
@@ -467,124 +358,398 @@ function ChecklistCard({
           );
         })}
       </div>
+    </div>
+  );
+}
 
-      {value === "yes" && photos.length === 0 && (
-        <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-300/60 bg-amber-50 p-2.5 text-xs leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-          <Camera className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-          <span>{t("checklist.photoPromptYes")}</span>
+/* ------------------------------------------------------------------ */
+/* "Otras señales" checkbox row with collapsible example               */
+/* ------------------------------------------------------------------ */
+function SevereRow({
+  id,
+  checked,
+  onToggle,
+}: {
+  id: ChecklistItemId;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  const { t } = useLang();
+  const [showExample, setShowExample] = useState(false);
+
+  return (
+    <div
+      className={cn(
+        "rounded-xl border bg-background p-3 transition-colors",
+        checked ? "border-primary bg-primary/5" : "border-border",
+      )}
+    >
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        onClick={onToggle}
+        className="flex w-full items-start gap-3 text-left"
+      >
+        <span
+          className={cn(
+            "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors",
+            checked
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-muted-foreground/40",
+          )}
+        >
+          {checked && <Check className="size-3.5" strokeWidth={3} />}
+        </span>
+        <span className="min-w-0 text-sm font-medium leading-snug">
+          {t(`item.${id}.q`)}
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setShowExample((s) => !s)}
+        aria-expanded={showExample}
+        className="ml-8 mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary"
+      >
+        <HelpCircle className="size-3.5" />
+        {t("checklist.exampleToggle")}
+        <ChevronDown
+          className={cn(
+            "size-3.5 transition-transform",
+            showExample && "rotate-180",
+          )}
+        />
+      </button>
+      {showExample && (
+        <div className="ml-8">
+          <ExampleBlock id={id} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared illustrated example block                                    */
+/* ------------------------------------------------------------------ */
+function ExampleBlock({ id }: { id: ChecklistItemId }) {
+  const { t } = useLang();
+  return (
+    <div className="mt-2 space-y-2.5 rounded-xl bg-muted/50 p-2.5 text-xs leading-relaxed">
+      <figure className="overflow-hidden rounded-lg border border-border bg-background">
+        <img
+          src={CHECKLIST_ILLUSTRATIONS[id]}
+          alt={t("checklist.exampleAlt")}
+          loading="lazy"
+          width={1024}
+          height={512}
+          className="h-auto w-full"
+        />
+        <figcaption className="flex items-center justify-between border-t border-border px-3 py-1.5 text-[11px] font-semibold">
+          <span className="text-destructive">
+            ❌ {t("checklist.illoDamage")}
+          </span>
+          <span className="text-emerald-600">✅ {t("checklist.illoOk")}</span>
+        </figcaption>
+      </figure>
+      <p className="flex gap-1.5">
+        <span aria-hidden>❌</span>
+        <span>
+          <span className="font-semibold">{t("checklist.exampleYes")}:</span>{" "}
+          {t(`item.${id}.example.yes`)}
+        </span>
+      </p>
+      <p className="flex gap-1.5">
+        <span aria-hidden>✅</span>
+        <span>
+          <span className="font-semibold">{t("checklist.exampleNo")}:</span>{" "}
+          {t(`item.${id}.example.no`)}
+        </span>
+      </p>
+      {CHECKLIST_GLOSSARY[id] && (
+        <div className="border-t border-border pt-2">
+          <p className="text-[11px] text-muted-foreground">
+            {t("checklist.glossaryHint")}
+          </p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {CHECKLIST_GLOSSARY[id]!.map((term) => (
+              <GlossaryTerm key={term} term={term} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Required facade photo (single)                                      */
+/* ------------------------------------------------------------------ */
+function FacadePhoto({
+  photo,
+  onSet,
+  onClear,
+}: {
+  photo: string | null;
+  onSet: (p: string) => void;
+  onClear: () => void;
+}) {
+  const { t } = useLang();
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const [processing, setProcessing] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setProcessing(true);
+    try {
+      onSet(await compressImageToDataUrl(file));
+    } catch {
+      toast.error(t("analyze.genericError"));
+    } finally {
+      setProcessing(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="flex items-start gap-2.5">
+        <Building2 className="mt-0.5 size-5 shrink-0 text-primary" />
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-sm font-semibold">
+            {t("checklist.facadeTitle")}
+            <span className="rounded-full bg-risk-red-soft px-2 py-0.5 text-[10px] font-bold uppercase text-risk-red">
+              {t("checklist.required")}
+            </span>
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+            {t("checklist.facadeHelp")}
+          </p>
+        </div>
+      </div>
+
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFile}
+      />
+      <input
+        ref={galleryRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFile}
+      />
+
+      {photo ? (
+        <div className="relative mt-3 overflow-hidden rounded-xl border border-border">
+          <img
+            src={photo}
+            alt={t("checklist.facadeTitle")}
+            className="h-44 w-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={onClear}
+            aria-label={t("checklist.removePhoto")}
+            className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            disabled={processing}
+            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+          >
+            {processing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Camera className="size-4" />
+            )}
+            {t("checklist.takePhoto")}
+          </button>
+          <button
+            type="button"
+            onClick={() => galleryRef.current?.click()}
+            disabled={processing}
+            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+          >
+            {processing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ImagePlus className="size-4" />
+            )}
+            {t("checklist.fromGallery")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Required damage gallery (min MIN_DAMAGE_PHOTOS, max MAX_DAMAGE_PHOTOS)*/
+/* ------------------------------------------------------------------ */
+function DamageGallery({
+  photos,
+  onChange,
+}: {
+  photos: string[];
+  onChange: (next: string[]) => void;
+}) {
+  const { t } = useLang();
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const [processing, setProcessing] = useState(false);
+  const canAddMore = photos.length < MAX_DAMAGE_PHOTOS;
+  const enough = photos.length >= MIN_DAMAGE_PHOTOS;
+
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (!files.length) return;
+    setProcessing(true);
+    try {
+      const room = MAX_DAMAGE_PHOTOS - photos.length;
+      const next = [...photos];
+      for (const file of files.slice(0, room)) {
+        next.push(await compressImageToDataUrl(file));
+      }
+      onChange(next);
+    } catch {
+      toast.error(t("analyze.genericError"));
+    } finally {
+      setProcessing(false);
+    }
+  }
+
+  function removeAt(i: number) {
+    onChange(photos.filter((_, idx) => idx !== i));
+  }
+
+  return (
+    <div className="mt-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="flex items-start gap-2.5">
+        <Images className="mt-0.5 size-5 shrink-0 text-primary" />
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-sm font-semibold">
+            {t("checklist.damageTitle")}
+            <span className="rounded-full bg-risk-red-soft px-2 py-0.5 text-[10px] font-bold uppercase text-risk-red">
+              {t("checklist.required")}
+            </span>
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+            {t("checklist.damageHelp")
+              .replace("{min}", String(MIN_DAMAGE_PHOTOS))
+              .replace("{max}", String(MAX_DAMAGE_PHOTOS))}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-2 flex items-center gap-2">
+        <span
+          className={cn(
+            "text-xs font-semibold",
+            enough ? "text-risk-green" : "text-muted-foreground",
+          )}
+        >
+          {t("checklist.damageCount")
+            .replace("{n}", String(photos.length))
+            .replace("{max}", String(MAX_DAMAGE_PHOTOS))}
+          {enough && " ✓"}
+        </span>
+      </div>
+
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFiles}
+      />
+      <input
+        ref={galleryRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={handleFiles}
+      />
+
+      {photos.length > 0 && (
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {photos.map((src, i) => (
+            <div
+              key={i}
+              className="relative overflow-hidden rounded-xl border border-border"
+            >
+              <img
+                src={src}
+                alt={`${t("checklist.damageTitle")} ${i + 1}`}
+                className="h-24 w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => removeAt(i)}
+                aria-label={t("checklist.removePhoto")}
+                className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Photos */}
-      <div className="mt-3">
-        <input
-          ref={cameraRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={handleFile}
-        />
-        <input
-          ref={galleryRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFile}
-        />
-
-        {photos.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
-            {photos.map((src, i) => (
-              <div
-                key={i}
-                className="relative overflow-hidden rounded-xl border border-border"
-              >
-                <img
-                  src={src}
-                  alt={`${t(`item.${id}.area`)} ${i + 1}`}
-                  className="h-24 w-full object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => onRemovePhoto(i)}
-                  aria-label={t("checklist.removePhoto")}
-                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
-                >
-                  <X className="size-3.5" />
-                </button>
-              </div>
-            ))}
-            {canAddMore && (
-              <div className="grid grid-cols-2 gap-1">
-                <button
-                  type="button"
-                  onClick={() => cameraRef.current?.click()}
-                  disabled={processing}
-                  aria-label={t("checklist.takePhoto")}
-                  className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-                >
-                  {processing ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <Camera className="size-4" />
-                  )}
-                  {t("checklist.takePhoto")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => galleryRef.current?.click()}
-                  disabled={processing}
-                  aria-label={t("checklist.fromGallery")}
-                  className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-                >
-                  {processing ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <ImagePlus className="size-4" />
-                  )}
-                  {t("checklist.fromGallery")}
-                </button>
-              </div>
+      {canAddMore && (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            disabled={processing}
+            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+          >
+            {processing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Camera className="size-4" />
             )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => cameraRef.current?.click()}
-              disabled={processing}
-              className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-            >
-              {processing ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Camera className="size-4" />
-              )}
-              {t("checklist.takePhoto")}
-            </button>
-            <button
-              type="button"
-              onClick={() => galleryRef.current?.click()}
-              disabled={processing}
-              className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-            >
-              {processing ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <ImagePlus className="size-4" />
-              )}
-              {t("checklist.fromGallery")}
-            </button>
-          </div>
-        )}
+            {t("checklist.takePhoto")}
+          </button>
+          <button
+            type="button"
+            onClick={() => galleryRef.current?.click()}
+            disabled={processing}
+            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+          >
+            {processing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ImagePlus className="size-4" />
+            )}
+            {t("checklist.fromGallery")}
+          </button>
+        </div>
+      )}
 
-        {photos.length === 0 && !processing && (
-          <p className="mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground">
-            <ImageOff className="size-3" /> {t("checklist.photoHint")}
-          </p>
-        )}
-      </div>
+      {!enough && (
+        <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+          {t("checklist.missingDamage").replace(
+            "{n}",
+            String(MIN_DAMAGE_PHOTOS),
+          )}
+        </p>
+      )}
     </div>
   );
 }
