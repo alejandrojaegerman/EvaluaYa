@@ -74,6 +74,7 @@ const analyzeSchema = z.object({
       .optional()
       .default("unknown"),
     floors: z.number().int().min(1).max(200),
+    basements: z.number().int().min(0).max(20).optional(),
     age: z.enum(["pre1970", "1970to2000", "post2000"]),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
