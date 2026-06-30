@@ -2674,6 +2674,7 @@ const en: Dict = {
   "panel.reviewDescargo":
     "I declare that my observations are advisory and voluntary, that they do not constitute an official verdict or a habitability certificate, and that the decision on safety rests with a formal inspection by a licensed structural engineer, FUNVISIS or Civil Protection.",
   "panel.reviewSubmit": "Save observations",
+  "panel.reviewSaved": "Observations recorded. Thank you for your support.",
   "panel.reviewedByYou": "Reviewed by you",
   "panel.cancel": "Cancel",
   "panel.noReportToValidate": "This request has no linked assessment.",
