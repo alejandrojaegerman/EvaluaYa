@@ -698,6 +698,60 @@ function PropertyStep() {
               {t("property.phoneHint")}
             </p>
           </div>
+
+          {/* ¿Vives en el edificio? */}
+          <div>
+            <p className="text-sm font-semibold">
+              {t("property.livesInBuilding")}{" "}
+              <span className="font-normal text-destructive">*</span>
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {([true, false] as const).map((v) => {
+                const selected = livesInBuilding === v;
+                return (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    onClick={() => setLivesInBuilding(v)}
+                    className={`h-12 rounded-xl border text-sm font-semibold transition ${
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-input bg-card text-foreground"
+                    }`}
+                  >
+                    {v ? t("common.yes") : t("common.no")}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ¿Eres parte de la junta de condominio? */}
+          <div>
+            <p className="text-sm font-semibold">
+              {t("property.condoBoard")}{" "}
+              <span className="font-normal text-destructive">*</span>
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {([true, false] as const).map((v) => {
+                const selected = condoBoard === v;
+                return (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    onClick={() => setCondoBoard(v)}
+                    className={`h-12 rounded-xl border text-sm font-semibold transition ${
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-input bg-card text-foreground"
+                    }`}
+                  >
+                    {v ? t("common.yes") : t("common.no")}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
 
