@@ -61,9 +61,8 @@ export function EngineerRequestCard({
 }) {
   const { t, lang } = useLang();
   const [progressNote, setProgressNote] = useState("");
-  const [validating, setValidating] = useState(false);
-  const [adjusting, setAdjusting] = useState(false);
-  const [pickedLevel, setPickedLevel] = useState<RiskLevel | null>(null);
+  const [reviewing, setReviewing] = useState(false);
+  const [accepted, setAccepted] = useState(false);
   const [verdictNote, setVerdictNote] = useState("");
 
   const curStage = stageIndex(r.progressStage);

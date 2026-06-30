@@ -438,18 +438,21 @@ const es: Dict = {
   "analyze.genericError":
     "Ocurrió un problema al analizar. Revisa tu conexión e inténtalo de nuevo.",
 
-  "result.title": "Resultado de la evaluación",
-  "result.green.tag": "Riesgo bajo",
-  "result.green.action": "Puedes permanecer",
-  "result.yellow.tag": "Riesgo moderado",
-  "result.yellow.action": "Monitorea y atiende",
-  "result.orange.tag": "Riesgo serio",
-  "result.orange.action": "Necesitas un ingeniero con urgencia",
-  "result.red.tag": "Riesgo alto",
-  "result.red.action": "Evacúa de inmediato",
-  "result.summary": "Resumen",
-  "result.findings": "Hallazgos clave",
-  "result.nextSteps": "Pasos recomendados",
+  "result.title": "Hallazgos visuales de tu revisión",
+  "result.green.tag": "Hallazgos leves",
+  "result.green.action": "Sugerencia: mantén observación ante réplicas",
+  "result.yellow.tag": "Hallazgos moderados",
+  "result.yellow.action": "Sugerencia: solicita una inspección técnica presencial",
+  "result.orange.tag": "Hallazgos serios",
+  "result.orange.action": "Sugerencia: solicita pronto una inspección técnica presencial",
+  "result.red.tag": "Hallazgos severos · alerta",
+  "result.red.action": "Sugerencia: evita ingresar y reporta a cuerpos oficiales",
+  "result.summary": "Lo que reportaste",
+  "result.findings": "Lo que observaste",
+  "result.nextSteps": "Sugerencias (no son órdenes)",
+  "result.findingsDisclaimer":
+    "Esto NO es un dictamen ni una certificación. Son hallazgos visuales preliminares y referenciales basados en lo que reportaste. Solo un ingeniero estructural autorizado o un organismo oficial puede determinar si la edificación es segura o habitable.",
+
   // Same-building context (resident result)
   "building.title": "Otras evaluaciones de este edificio",
   "building.subtitle": "Hay {count} evaluación(es) más de {name}.",
@@ -475,11 +478,11 @@ const es: Dict = {
   "provisional.singleDamage": "Se reportó daño visible en un área estructural.",
   "provisional.unsure": "Hay respuestas marcadas como “No estoy seguro”; conviene una revisión.",
   "provisional.noFindings": "No se reportó daño estructural evidente en la inspección.",
-  "provisional.step.evacuate": "Por precaución, evita usar el inmueble hasta una revisión profesional.",
-  "provisional.step.limit": "Limita el uso de las áreas afectadas hasta una revisión.",
+  "provisional.step.evacuate": "Sugerencia: ante peligro evidente, evita usar el inmueble y solicita una inspección técnica presencial.",
+  "provisional.step.limit": "Sugerencia: limita el uso de las áreas con hallazgos hasta una inspección técnica.",
   "provisional.step.engineer":
-    "Hay daño estructural: limita el uso y busca la revisión de un ingeniero pronto.",
-  "provisional.step.stay": "Puedes permanecer, pero mantente atento a nuevos daños o réplicas.",
+    "Sugerencia: hay hallazgos en elementos estructurales; solicita pronto una inspección técnica presencial.",
+  "provisional.step.stay": "Sugerencia: mantén observación ante nuevos daños o réplicas.",
   "result.photos": "Fotos enviadas",
   "result.seismicContext": "Contexto sísmico",
   "result.mmi": "Intensidad (MMI)",
@@ -495,7 +498,7 @@ const es: Dict = {
   "result.downloadPdf": "Descargar PDF",
   "result.newAssessment": "Nueva evaluación",
   "result.disclaimerShort":
-    "Orientación preliminar. Confirma con un ingeniero estructural o Protección Civil.",
+    "Hallazgos visuales preliminares, no un dictamen. La determinación de seguridad o habitabilidad corresponde a un ingeniero estructural autorizado o a un organismo oficial.",
   "result.notFound": "No se encontró esta evaluación.",
   "result.genericError": "Algo salió mal. Inténtalo de nuevo.",
   "result.goHome": "Ir al inicio",
@@ -597,17 +600,17 @@ const es: Dict = {
   "data.dict.zonas.term": "Zonas",
   "data.dict.zonas.def":
     "Cantidad de municipios o estados distintos con al menos una evaluación.",
-  "data.dict.low.def": "Sin daños visibles. Uso normal.",
-  "data.dict.moderate.def": "Daños menores. Monitorea y atiende pronto.",
+  "data.dict.low.def": "Hallazgos leves: sin daños evidentes en elementos de carga.",
+  "data.dict.moderate.def": "Hallazgos moderados: grietas o desprendimientos menores reportados.",
   "data.dict.serious.def":
-    "Daños moderados a serios. Necesitas un ingeniero con urgencia.",
-  "data.dict.high.def": "Daños graves. No entres; evacúa.",
-  "data.dict.seriousOrHigh.term": "Riesgo serio o alto",
+    "Hallazgos serios: posibles daños en elementos estructurales; conviene inspección técnica pronto.",
+  "data.dict.high.def": "Hallazgos severos: fallas reportadas en columnas, vigas, muros o inclinación.",
+  "data.dict.seriousOrHigh.term": "Hallazgos serios o severos",
   "data.dict.seriousOrHigh.def":
-    "Suma de las evaluaciones en nivel naranja (serio) y rojo (alto): los casos que requieren un ingeniero. No es lo mismo que «Riesgo alto», que cuenta solo el nivel rojo.",
-  "data.dict.verified.term": "Verificado por ingeniero",
+    "Suma de las evaluaciones con hallazgos en nivel naranja (serios) y rojo (severos): los casos que conviene priorizar para inspección técnica. No es lo mismo que «Hallazgos severos», que cuenta solo el nivel rojo.",
+  "data.dict.verified.term": "Revisado por evaluador",
   "data.dict.verified.def":
-    "Evaluaciones confirmadas por un ingeniero voluntario, no solo por el residente.",
+    "Evaluaciones revisadas por un evaluador voluntario de la comunidad, no solo por el residente.",
   "data.dict.more": "Ver metodología completa",
   "mapa.seeFullData": "Ver datos completos",
   "mapa.seeFullDataDesc":
@@ -647,7 +650,7 @@ const es: Dict = {
     "Responde preguntas simples (Sí / No / No estoy seguro) área por área y, si puedes, sube una foto.",
   "help.step3Title": "3. Análisis con IA",
   "help.step3Desc":
-    "Recibes un nivel de riesgo (Verde / Amarillo / Naranja / Rojo) con una explicación clara y pasos a seguir.",
+    "Recibes hallazgos visuales organizados (Leves / Moderados / Serios / Severos) con una explicación clara y sugerencias. No es un dictamen.",
   "help.step4Title": "4. Guarda y comparte",
   "help.step4Desc":
     "Descarga un PDF, compártelo por WhatsApp o guárdalo para consultarlo después.",
@@ -666,10 +669,10 @@ const es: Dict = {
     "Sí. Puedes responder el cuestionario con poca señal; tu avance se guarda en el dispositivo y el análisis se envía cuando recuperes conexión.",
   "help.faq.resultsQ": "¿Qué significan los colores del resultado?",
   "help.faq.resultsA":
-    "Verde: sin señales de riesgo estructural evidente. Amarillo: usa el inmueble con precaución y busca una revisión profesional. Naranja: daño serio; limita el uso y busca una revisión profesional pronto. Rojo: posible peligro grave; evacúa y contacta a las autoridades.",
-  "help.faq.engineerQ": "¿Puedo pedir que un ingeniero revise mi caso?",
+    "Describen hallazgos visuales, no un veredicto de seguridad. Verde: hallazgos leves. Amarillo: hallazgos moderados. Naranja: hallazgos serios. Rojo: hallazgos severos. En todos los casos, la determinación de seguridad o habitabilidad corresponde a un ingeniero estructural autorizado o a un organismo oficial.",
+  "help.faq.engineerQ": "¿Puedo pedir que un evaluador revise mi caso?",
   "help.faq.engineerA":
-    "Sí. Al terminar tu evaluación puedes enviar una solicitud gratuita. Un ingeniero voluntario verificado recibe el aviso y puede contactarte por WhatsApp para confirmar o ajustar el resultado, sin costo.",
+    "Sí. Al terminar tu evaluación puedes enviar una solicitud gratuita. Un evaluador voluntario de la comunidad recibe el aviso y puede contactarte por WhatsApp para orientarte, sin costo. No emite dictámenes periciales.",
   "help.faq.privacyQ": "¿Mis datos son privados?",
   "help.faq.privacyA":
     "Sí. La evaluación es anónima. No pedimos tu nombre ni datos personales para usar la app.",
@@ -768,24 +771,24 @@ const es: Dict = {
     "Reportes anónimos y agregados por zona. Nunca se muestran direcciones ni fotos.",
   "map.totalAssessments": "Evaluaciones",
   "map.areasLabel": "Municipios",
-  "map.high": "Riesgo alto",
-  "map.urgent": "Riesgo serio",
-  "map.moderate": "Riesgo moderado",
-  "map.low": "Riesgo bajo",
-  "map.seriousOrHigh": "Riesgo serio o alto",
-  "map.distribution": "Distribución de riesgo",
+  "map.high": "Hallazgos severos",
+  "map.urgent": "Hallazgos serios",
+  "map.moderate": "Hallazgos moderados",
+  "map.low": "Hallazgos leves",
+  "map.seriousOrHigh": "Hallazgos serios o severos",
+  "map.distribution": "Distribución de hallazgos",
   "map.geoTitle": "Vista geográfica",
-  "map.geoHint": "El tamaño indica cantidad de reportes; el color, el riesgo predominante.",
+  "map.geoHint": "El tamaño indica cantidad de reportes; el color, el nivel de hallazgos predominante.",
   "map.legendSize": "Tamaño = cantidad de reportes",
-  "map.legendRisk": "Color = riesgo predominante",
+  "map.legendRisk": "Color = hallazgos predominantes",
   "map.legendTitle": "¿Qué significa cada color?",
-  "map.legendGreen": "Verde: sin daños visibles. Uso normal.",
-  "map.legendYellow": "Amarillo: daños menores. Monitorea y atiende pronto.",
-  "map.legendOrange": "Naranja: daños moderados a serios. Necesitas un ingeniero con urgencia.",
-  "map.legendRed": "Rojo: daños graves. No entres; evacúa.",
-  "map.legendVerified": "Borde sólido = verificado por un ingeniero",
+  "map.legendGreen": "Verde: hallazgos leves, sin daños evidentes en elementos de carga.",
+  "map.legendYellow": "Amarillo: hallazgos moderados, grietas o desprendimientos menores.",
+  "map.legendOrange": "Naranja: hallazgos serios; conviene inspección técnica pronto.",
+  "map.legendRed": "Rojo: hallazgos severos en columnas, vigas, muros o inclinación.",
+  "map.legendVerified": "Borde sólido = revisado por un evaluador voluntario",
   "map.legendSelf": "Borde punteado = autoevaluación de un residente",
-  "map.verified": "Verificado por ingeniero",
+  "map.verified": "Revisado por evaluador",
   "map.selfReported": "Autoevaluación de residente",
   "map.topAreas": "Zonas con más reportes",
   "map.reports": "reportes",
@@ -876,13 +879,13 @@ const es: Dict = {
   "result.viewMap": "Ver mapa de daños de tu zona",
   "result.shareCard": "Compartir imagen de resultado",
   "result.cardFooter": "Autoevaluación estructural tras el sismo · No sustituye una inspección profesional",
-  "result.proBadge": "Evaluación verificada por ingeniero",
+  "result.proBadge": "Revisado por evaluador voluntario",
   "result.proBadgeDesc":
-    "Este reporte fue realizado por un ingeniero voluntario, no es una autoevaluación.",
+    "Este reporte fue revisado por un evaluador voluntario de la comunidad; no es un dictamen pericial ni una certificación.",
   "result.residentBadge": "Autoevaluación de residente",
   "result.shareOwnerTitle": "¿Es para otra persona?",
   "result.shareOwnerBody":
-    "Comparte este resultado con el dueño o residente para que decida si es seguro entrar.",
+    "Comparte estos hallazgos con el dueño o residente para que busque una inspección técnica.",
 
   "share.title": "Ayuda a difundir EvalúaYa",
   "share.body":
@@ -1016,18 +1019,18 @@ const es: Dict = {
   "nav.volunteersShort": "Voluntarios",
 
   // Result page connect section
-  "connect.title": "Pide ayuda de un ingeniero voluntario",
+  "connect.title": "Pide ayuda de un evaluador voluntario",
   "connect.subtitleRed":
-    "Tu resultado es ROJO. Envía tu caso y un ingeniero voluntario verificado lo revisará y te contactará. Es gratuito y sin compromiso.",
+    "Tus hallazgos son severos. Envía tu caso y un evaluador voluntario de la comunidad lo revisará y te contactará para orientarte. Es gratuito y sin compromiso.",
   "connect.subtitleYellow":
-    "Envía tu caso y un ingeniero voluntario verificado puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
-  "connect.reassure": "Ingenieros voluntarios verificados — sin costo.",
-  "connect.requestTitle": "Solicitar a un ingeniero verificado",
+    "Envía tu caso y un evaluador voluntario de la comunidad puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
+  "connect.reassure": "Evaluadores voluntarios de la comunidad — sin costo.",
+  "connect.requestTitle": "Solicitar a un evaluador voluntario",
   "connect.requestBody":
-    "Deja tu WhatsApp y compartiremos tu reporte con ingenieros voluntarios aprobados. Uno de ellos tomará tu caso y te contactará.",
+    "Deja tu WhatsApp y compartiremos tu reporte con evaluadores voluntarios de la comunidad registrados. Uno de ellos tomará tu caso y te contactará.",
   "connect.requestCta": "Enviar solicitud",
   "connect.requestSending": "Enviando…",
-  "connect.requestDone": "¡Listo! Un ingeniero te contactará pronto.",
+  "connect.requestDone": "¡Listo! Un evaluador te contactará pronto.",
   "connect.requestError": "No se pudo enviar. Intenta de nuevo.",
   "connect.yourWhatsapp": "Tu número de WhatsApp",
   "connect.whatsappPlaceholder": "Ej.: 0414 123 4567",
@@ -1035,9 +1038,9 @@ const es: Dict = {
     "Incluye el código de área. Si estás en Venezuela puedes usar tu número local (ej.: 0414…); le agregamos el código de país (+58) automáticamente.",
   "connect.noteOptional": "Mensaje (puedes editarlo)",
   "connect.notePlaceholder": "Ej.: Hay grietas grandes en la sala.",
-  "connect.notePrefill": "Mi evaluación salió en nivel {risk}. Hallazgos: {findings}.",
+  "connect.notePrefill": "Mi evaluación reportó hallazgos de nivel {risk}. Hallazgos: {findings}.",
   "connect.privacy":
-    "Tu número solo se comparte con ingenieros voluntarios aprobados. No se publica.",
+    "Tu número solo se comparte con evaluadores voluntarios de la comunidad registrados. No se publica.",
   "connect.areEngineer": "¿Eres ingeniero? Súmate como voluntario",
 
 
@@ -1094,21 +1097,21 @@ const es: Dict = {
   "vol.orgSpecialization": "Áreas de especialización / servicios (opcional)",
   "vol.orgRequired": "Indica el nombre de la organización.",
 
-  // Verified engineers showcase
-  "vol.verifiedTitle": "Ingenieros verificados",
-  "vol.verifiedCountOne": "{n} ingeniero u organización verificada",
-  "vol.verifiedCountMany": "{n} ingenieros y organizaciones verificadas",
+  // Volunteer evaluators showcase
+  "vol.verifiedTitle": "Evaluadores voluntarios de la comunidad",
+  "vol.verifiedCountOne": "{n} evaluador u organización registrada",
+  "vol.verifiedCountMany": "{n} evaluadores y organizaciones registradas",
   "vol.verifiedSubtitle":
-    "Profesionales y organizaciones que ya revisamos y se sumaron a la red.",
+    "Profesionales y organizaciones que ya revisamos y se sumaron a la red comunitaria.",
   "vol.verifiedEmptyTitle": "Sé el primero",
   "vol.verifiedEmptyBody":
-    "Aún no hay ingenieros verificados. Súmate hoy y aparece aquí cuando validemos tu solicitud.",
-  "vol.individualLabel": "Ingeniero",
+    "Aún no hay evaluadores registrados. Súmate hoy y aparece aquí cuando validemos tu solicitud.",
+  "vol.individualLabel": "Evaluador",
   "vol.organizationLabel": "Organización",
   "vol.coversStates": "Cubre",
-  "vol.residentNoteTitle": "¿Necesitas un ingeniero?",
+  "vol.residentNoteTitle": "¿Necesitas un evaluador?",
   "vol.residentNoteBody":
-    "Completa tu evaluación y, al final, podrás solicitar una conexión con un ingeniero verificado.",
+    "Completa tu evaluación y, al final, podrás solicitar una conexión con un evaluador voluntario de la comunidad.",
   "vol.residentNoteCta": "Iniciar evaluación",
 
 
@@ -1893,18 +1896,21 @@ const en: Dict = {
   "analyze.genericError":
     "Something went wrong during analysis. Check your connection and try again.",
 
-  "result.title": "Assessment result",
-  "result.green.tag": "Low risk",
-  "result.green.action": "You may stay",
-  "result.yellow.tag": "Moderate risk",
-  "result.yellow.action": "Monitor and address",
-  "result.orange.tag": "Serious risk",
-  "result.orange.action": "You urgently need an engineer",
-  "result.red.tag": "High risk",
-  "result.red.action": "Evacuate immediately",
-  "result.summary": "Summary",
-  "result.findings": "Key findings",
-  "result.nextSteps": "Recommended next steps",
+  "result.title": "Visual findings from your check",
+  "result.green.tag": "Minor findings",
+  "result.green.action": "Suggestion: keep watch for aftershocks",
+  "result.yellow.tag": "Moderate findings",
+  "result.yellow.action": "Suggestion: request an in-person technical inspection",
+  "result.orange.tag": "Serious findings",
+  "result.orange.action": "Suggestion: request an in-person technical inspection soon",
+  "result.red.tag": "Severe findings · alert",
+  "result.red.action": "Suggestion: avoid entering and report to official agencies",
+  "result.summary": "What you reported",
+  "result.findings": "What you observed",
+  "result.nextSteps": "Suggestions (not orders)",
+  "result.findingsDisclaimer":
+    "This is NOT a verdict or certification. These are preliminary, referential visual findings based on what you reported. Only a licensed structural engineer or an official agency can determine whether the building is safe or habitable.",
+
   // Same-building context (resident result)
   "building.title": "Other reports from this building",
   "building.subtitle": "There are {count} more evaluation(s) from {name}.",
@@ -1930,11 +1936,11 @@ const en: Dict = {
   "provisional.singleDamage": "Visible damage was reported in one structural area.",
   "provisional.unsure": "Some answers were marked “Not sure”; a review is advisable.",
   "provisional.noFindings": "No obvious structural damage was reported in the inspection.",
-  "provisional.step.evacuate": "As a precaution, avoid using the building until a professional review.",
-  "provisional.step.limit": "Limit use of the affected areas until a review.",
+  "provisional.step.evacuate": "Suggestion: if there is evident danger, avoid using the building and request an in-person technical inspection.",
+  "provisional.step.limit": "Suggestion: limit use of the areas with findings until a technical inspection.",
   "provisional.step.engineer":
-    "There is structural damage: limit use and seek an engineer's review soon.",
-  "provisional.step.stay": "You may stay, but watch for new damage or aftershocks.",
+    "Suggestion: there are findings in structural elements; request an in-person technical inspection soon.",
+  "provisional.step.stay": "Suggestion: keep watch for new damage or aftershocks.",
   "result.photos": "Submitted photos",
   "result.seismicContext": "Seismic context",
   "result.mmi": "Intensity (MMI)",
@@ -1950,7 +1956,7 @@ const en: Dict = {
   "result.downloadPdf": "Download PDF",
   "result.newAssessment": "New assessment",
   "result.disclaimerShort":
-    "Preliminary guidance. Confirm with a structural engineer or Civil Protection.",
+    "Preliminary visual findings, not a verdict. Determining safety or habitability is up to a licensed structural engineer or an official agency.",
   "result.notFound": "This assessment could not be found.",
   "result.genericError": "Something went wrong. Please try again.",
   "result.goHome": "Go home",
@@ -2052,17 +2058,17 @@ const en: Dict = {
   "data.dict.zonas.term": "Areas",
   "data.dict.zonas.def":
     "Number of distinct municipalities or states with at least one assessment.",
-  "data.dict.low.def": "No visible damage. Normal use.",
-  "data.dict.moderate.def": "Minor damage. Monitor and address soon.",
+  "data.dict.low.def": "Minor findings: no evident damage to load-bearing elements.",
+  "data.dict.moderate.def": "Moderate findings: minor cracks or spalling reported.",
   "data.dict.serious.def":
-    "Moderate-to-serious damage. You urgently need an engineer.",
-  "data.dict.high.def": "Severe damage. Do not enter; evacuate.",
-  "data.dict.seriousOrHigh.term": "Serious or high risk",
+    "Serious findings: possible damage to structural elements; a technical inspection is advisable soon.",
+  "data.dict.high.def": "Severe findings: failures reported in columns, beams, walls or tilting.",
+  "data.dict.seriousOrHigh.term": "Serious or severe findings",
   "data.dict.seriousOrHigh.def":
-    "The sum of assessments at orange (serious) and red (high) level: the cases that need an engineer. It is not the same as “High risk”, which counts only the red level.",
-  "data.dict.verified.term": "Engineer-verified",
+    "The sum of assessments with findings at orange (serious) and red (severe) level: the cases to prioritize for a technical inspection. It is not the same as “Severe findings”, which counts only the red level.",
+  "data.dict.verified.term": "Reviewed by evaluator",
   "data.dict.verified.def":
-    "Assessments confirmed by a volunteer engineer, not just by the resident.",
+    "Assessments reviewed by a community volunteer evaluator, not just by the resident.",
   "data.dict.more": "See full methodology",
   "mapa.seeFullData": "View full data",
   "mapa.seeFullDataDesc":
@@ -2102,7 +2108,7 @@ const en: Dict = {
     "Answer simple Yes / No / Unsure questions area by area and, if you can, add a photo.",
   "help.step3Title": "3. AI analysis",
   "help.step3Desc":
-    "Get a risk level (Green / Yellow / Orange / Red) with a plain-language explanation and next steps.",
+    "Get organized visual findings (Minor / Moderate / Serious / Severe) with a plain-language explanation and suggestions. It is not a verdict.",
   "help.step4Title": "4. Save & share",
   "help.step4Desc":
     "Download a PDF, share it on WhatsApp, or save it to reference later.",
@@ -2121,10 +2127,10 @@ const en: Dict = {
     "Yes. You can fill out the checklist with low signal; your progress is saved on your device and the analysis is sent once you're back online.",
   "help.faq.resultsQ": "What do the result colors mean?",
   "help.faq.resultsA":
-    "Green: no obvious structural risk detected. Yellow: use the building with caution and seek a professional review. Orange: serious damage; limit use and seek a professional review soon. Red: possible serious danger; evacuate and contact the authorities.",
-  "help.faq.engineerQ": "Can I ask an engineer to review my case?",
+    "They describe visual findings, not a safety verdict. Green: minor findings. Yellow: moderate findings. Orange: serious findings. Red: severe findings. In all cases, determining safety or habitability is up to a licensed structural engineer or an official agency.",
+  "help.faq.engineerQ": "Can I ask an evaluator to review my case?",
   "help.faq.engineerA":
-    "Yes. When you finish your assessment you can send a free request. A verified volunteer engineer is notified and may contact you on WhatsApp to confirm or adjust the result, at no cost.",
+    "Yes. When you finish your assessment you can send a free request. A community volunteer evaluator is notified and may contact you on WhatsApp to give guidance, at no cost. They do not issue expert verdicts.",
   "help.faq.privacyQ": "Is my data private?",
   "help.faq.privacyA":
     "Yes. The assessment is anonymous. We don't ask for your name or personal details to use the app.",
@@ -2224,24 +2230,24 @@ const en: Dict = {
     "Anonymous reports aggregated by area. Addresses and photos are never shown.",
   "map.totalAssessments": "Assessments",
   "map.areasLabel": "Municipalities",
-  "map.high": "High risk",
-  "map.urgent": "Serious risk",
-  "map.moderate": "Moderate risk",
-  "map.low": "Low risk",
-  "map.seriousOrHigh": "Serious or high risk",
-  "map.distribution": "Risk distribution",
+  "map.high": "Severe findings",
+  "map.urgent": "Serious findings",
+  "map.moderate": "Moderate findings",
+  "map.low": "Minor findings",
+  "map.seriousOrHigh": "Serious or severe findings",
+  "map.distribution": "Findings distribution",
   "map.geoTitle": "Geographic view",
-  "map.geoHint": "Size shows number of reports; color shows the dominant risk.",
+  "map.geoHint": "Size shows number of reports; color shows the dominant findings level.",
   "map.legendSize": "Size = number of reports",
-  "map.legendRisk": "Color = dominant risk",
+  "map.legendRisk": "Color = dominant findings",
   "map.legendTitle": "What does each color mean?",
-  "map.legendGreen": "Green: no visible damage. Normal use.",
-  "map.legendYellow": "Yellow: minor damage. Monitor and address soon.",
-  "map.legendOrange": "Orange: moderate-to-serious damage. You urgently need an engineer.",
-  "map.legendRed": "Red: severe damage. Do not enter; evacuate.",
-  "map.legendVerified": "Solid ring = verified by an engineer",
+  "map.legendGreen": "Green: minor findings, no evident damage to load-bearing elements.",
+  "map.legendYellow": "Yellow: moderate findings, minor cracks or spalling.",
+  "map.legendOrange": "Orange: serious findings; an in-person technical inspection is advisable soon.",
+  "map.legendRed": "Red: severe findings in columns, beams, walls or tilting.",
+  "map.legendVerified": "Solid ring = reviewed by a volunteer evaluator",
   "map.legendSelf": "Dashed ring = resident self-assessment",
-  "map.verified": "Engineer-verified",
+  "map.verified": "Reviewed by evaluator",
   "map.selfReported": "Resident self-report",
   "map.topAreas": "Areas with most reports",
   "map.reports": "reports",
@@ -2331,13 +2337,13 @@ const en: Dict = {
   "result.viewMap": "View your area's damage map",
   "result.shareCard": "Share result image",
   "result.cardFooter": "Post-earthquake structural self-assessment · Not a substitute for a professional inspection",
-  "result.proBadge": "Engineer-verified evaluation",
+  "result.proBadge": "Reviewed by community volunteer evaluator",
   "result.proBadgeDesc":
-    "This report was completed by a volunteer engineer — it is not a self-assessment.",
+    "This report was reviewed by a community volunteer evaluator; it is not an expert verdict or certification.",
   "result.residentBadge": "Resident self-assessment",
   "result.shareOwnerTitle": "Is this for someone else?",
   "result.shareOwnerBody":
-    "Share this result with the owner or resident so they can decide whether it's safe to enter.",
+    "Share these findings with the owner or resident so they can seek a technical inspection.",
 
   "share.title": "Help spread EvalúaYa",
   "share.body":
@@ -2470,18 +2476,18 @@ const en: Dict = {
   "nav.volunteers": "Volunteer engineers",
   "nav.volunteersShort": "Volunteers",
 
-  "connect.title": "Request a volunteer engineer",
+  "connect.title": "Request a volunteer evaluator",
   "connect.subtitleRed":
-    "Your result is RED. Send your case and a verified volunteer engineer will review it and contact you. Free and no obligation.",
+    "Your findings are severe. Send your case and a community volunteer evaluator will review it and contact you for guidance. Free and no obligation.",
   "connect.subtitleYellow":
-    "Send your case and a verified volunteer engineer can help you interpret these findings. Free and no obligation.",
-  "connect.reassure": "Verified volunteer engineers — no cost.",
-  "connect.requestTitle": "Request a verified engineer",
+    "Send your case and a community volunteer evaluator can help you interpret these findings. Free and no obligation.",
+  "connect.reassure": "Community volunteer evaluators — no cost.",
+  "connect.requestTitle": "Request a volunteer evaluator",
   "connect.requestBody":
-    "Leave your WhatsApp and we'll share your report with approved volunteer engineers. One of them will take your case and reach out.",
+    "Leave your WhatsApp and we'll share your report with registered community volunteer evaluators. One of them will take your case and reach out.",
   "connect.requestCta": "Send request",
   "connect.requestSending": "Sending…",
-  "connect.requestDone": "Done! An engineer will contact you soon.",
+  "connect.requestDone": "Done! An evaluator will contact you soon.",
   "connect.requestError": "Could not send. Please try again.",
   "connect.yourWhatsapp": "Your WhatsApp number",
   "connect.whatsappPlaceholder": "e.g. 0414 123 4567",
@@ -2489,9 +2495,9 @@ const en: Dict = {
     "Include your area code. If you're in Venezuela you can use your local number (e.g. 0414…); we add the country code (+58) automatically.",
   "connect.noteOptional": "Message (you can edit it)",
   "connect.notePlaceholder": "e.g. Large cracks in the living room.",
-  "connect.notePrefill": "My assessment came out as {risk}. Findings: {findings}.",
+  "connect.notePrefill": "My assessment reported {risk}-level findings. Findings: {findings}.",
   "connect.privacy":
-    "Your number is only shared with approved volunteer engineers. It's never published.",
+    "Your number is only shared with registered community volunteer evaluators. It's never published.",
   "connect.areEngineer": "Are you an engineer? Join as a volunteer",
 
   "vol.title": "Volunteer engineers",
@@ -2547,20 +2553,20 @@ const en: Dict = {
   "vol.orgRequired": "Please enter the organization name.",
 
   // Verified engineers showcase
-  "vol.verifiedTitle": "Verified engineers",
-  "vol.verifiedCountOne": "{n} verified engineer or organization",
-  "vol.verifiedCountMany": "{n} verified engineers and organizations",
+  "vol.verifiedTitle": "Community volunteer evaluators",
+  "vol.verifiedCountOne": "{n} registered evaluator or organization",
+  "vol.verifiedCountMany": "{n} registered evaluators and organizations",
   "vol.verifiedSubtitle":
-    "Professionals and organizations we've reviewed who joined the network.",
+    "Professionals and organizations we've reviewed who joined the community network.",
   "vol.verifiedEmptyTitle": "Be the first",
   "vol.verifiedEmptyBody":
-    "No verified engineers yet. Join today and you'll appear here once we validate your request.",
-  "vol.individualLabel": "Engineer",
+    "No registered evaluators yet. Join today and you'll appear here once we validate your request.",
+  "vol.individualLabel": "Evaluator",
   "vol.organizationLabel": "Organization",
   "vol.coversStates": "Covers",
-  "vol.residentNoteTitle": "Need an engineer?",
+  "vol.residentNoteTitle": "Need an evaluator?",
   "vol.residentNoteBody":
-    "Complete your evaluation and, at the end, you can request a connection with a verified engineer.",
+    "Complete your evaluation and, at the end, you can request a connection with a community volunteer evaluator.",
   "vol.residentNoteCta": "Start evaluation",
 
 

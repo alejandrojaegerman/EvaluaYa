@@ -326,6 +326,10 @@ function AnalyzeStep() {
         <p className="mt-2 text-center text-sm text-muted-foreground">
           {t("provisional.subtitle")}
         </p>
+        <p className="mt-4 rounded-xl bg-muted/60 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+          {t("result.findingsDisclaimer")}
+        </p>
+
 
         {result.findings.length > 0 && (
           <section className="mt-6">
