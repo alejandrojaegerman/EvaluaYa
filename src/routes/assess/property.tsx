@@ -135,6 +135,13 @@ function PropertyStep() {
     trackStep("property_started");
   }, []);
 
+  // Blocking gate: show until the user accepts the current legal + consent
+  // versions. Reads existing acceptance so returning users aren't re-prompted.
+  useEffect(() => {
+    setConsent(getLegalConsent());
+    setShowGate(!hasLegalConsent());
+  }, []);
+
   useEffect(() => {
     let active = true;
     loadDraft().then((draft) => {
@@ -146,10 +153,16 @@ function PropertyStep() {
       if (p.buildingName) setBuildingName(p.buildingName);
       if (p.address || p.buildingName) setDetailsOpen(true);
       if (p.state) setState(p.state);
+      if (p.parroquia) setParroquia(p.parroquia);
       // Only restore the municipio when it's a valid option for the saved state.
       if (p.municipality && municipiosFor(p.state).includes(p.municipality)) {
         setMunicipality(p.municipality);
       }
+      if (draft.resident?.name) setResidentName(draft.resident.name);
+      if (draft.resident?.contact) setResidentContact(draft.resident.contact);
+      if (draft.resident?.contactType)
+        setResidentContactType(draft.resident.contactType);
+
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.structuralType) {
         setStructuralType(p.structuralType);
