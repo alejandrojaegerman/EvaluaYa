@@ -2565,16 +2565,16 @@ const en: Dict = {
   "vol.residentNoteCta": "Start evaluation",
 
 
-  "panel.title": "Volunteer engineer panel",
+  "panel.title": "Volunteer evaluator panel",
   "panel.welcome": "Hi",
   "panel.coverage": "Coverage",
-  "panel.proTitle": "Professional evaluation",
+  "panel.proTitle": "Support evaluation",
   "panel.proBody":
-    "Run a certified inspection. You'll answer the same questions and the report will be marked as engineer-verified on the map.",
-  "panel.startPro": "Start professional evaluation",
+    "Support the resident with a follow-up evaluation. You'll answer the same questions and the report will be marked as reviewed by a volunteer evaluator on the map. It is not a verdict or a habitability certificate.",
+  "panel.startPro": "Start support evaluation",
   "panel.invalid": "Invalid or unapproved link",
   "panel.invalidBody":
-    "This link doesn't match an approved volunteer. If you think this is a mistake, contact us.",
+    "This link doesn't match an approved volunteer evaluator. If you think this is a mistake, contact us.",
   "panel.empty": "No open requests in your area right now.",
   "panel.openRequests": "Requests",
   "panel.claim": "I'm available",
