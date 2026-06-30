@@ -146,6 +146,11 @@ function AnalyzeStep() {
           ...(draft.engineerToken
             ? { engineerToken: draft.engineerToken }
             : {}),
+          ...(draft.resident &&
+          (draft.resident.name || draft.resident.contact)
+            ? { resident: draft.resident }
+            : {}),
+          ...(draft.consent ? { consent: draft.consent } : {}),
         },
       });
 
