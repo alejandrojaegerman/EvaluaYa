@@ -936,7 +936,12 @@ function PropertyStep() {
 
           {/* Age */}
           <div>
-            <p className="text-sm font-semibold">{t("property.age")}</p>
+            <p className="text-sm font-semibold">
+              {t("property.age")}{" "}
+              <span className="font-normal text-muted-foreground">
+                {t("common.optional")}
+              </span>
+            </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {t("property.age.help")}
             </p>
