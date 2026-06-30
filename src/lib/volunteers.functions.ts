@@ -47,6 +47,11 @@ export type EngineerRequest = {
   priorRiskLevel: RiskLevel | null;
   verified: boolean;
   engineerVerdict: "agree" | "adjust" | null;
+  /** Signed thumbnail URLs (first few photos) so the engineer can filter
+   * the list without opening each case. Photos are the core triage signal. */
+  thumbnails: string[];
+  /** Total number of photos attached to the linked assessment. */
+  photoCount: number;
 };
 
 
