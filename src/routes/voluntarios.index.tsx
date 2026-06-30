@@ -41,9 +41,9 @@ import {
 
 export const Route = createFileRoute("/voluntarios/")({
   head: () => {
-    const title = "Ingenieros voluntarios | EvalúaYa";
+    const title = "Evaluadores voluntarios de la comunidad | EvalúaYa";
     const description =
-      "Súmate como ingeniero voluntario u organización en Venezuela: cuando una familia lo solicita, la orientas por videollamada y, si hace falta, en persona.";
+      "Súmate como evaluador voluntario de la comunidad u organización en Venezuela: cuando una familia lo solicita, la orientas por videollamada y, si hace falta, en persona.";
     const image = absoluteUrl("/og-voluntarios.jpg");
     return {
       meta: [
