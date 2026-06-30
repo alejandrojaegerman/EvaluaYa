@@ -160,6 +160,8 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   // Inspection answers
   heading(t("pdf.inspection"));
   for (const a of record.answers) {
+    // Photo-carrier ids hold no yes/no answer — they appear in the photos grid.
+    if (a.id === "facade" || a.id === "damage_photos") continue;
     const area = t(`item.${a.id}.area`);
     const ans = t(`checklist.answer.${a.value}`);
     const lines = doc.splitTextToSize(`•  ${area}: ${ans}`, contentW - 6);

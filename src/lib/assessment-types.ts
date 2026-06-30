@@ -27,6 +27,9 @@ export type ChecklistItemId =
   | "columns"
   | "openings"
   | "tilt"
+  // consolidated photo carriers (single photo section at the end)
+  | "facade"
+  | "damage_photos"
   // sub-signals captured by the "señales graves" multi-select
   | "foundation"
   | "liquefaction"
@@ -65,6 +68,9 @@ export const CHECKLIST_ITEMS: ChecklistItemDef[] = [
   { id: "columns", icon: "Columns3", section: "structure" },
   { id: "openings", icon: "DoorOpen", section: "structure" },
   { id: "tilt", icon: "Building2", section: "structure" },
+  // consolidated photo carriers (single photo section)
+  { id: "facade", icon: "Building", section: "structure" },
+  { id: "damage_photos", icon: "Camera", section: "structure" },
   // severe-sign sub-items (recorded via the "señales graves" multi-select)
   { id: "foundation", icon: "Layers", section: "structure" },
   { id: "roof", icon: "Home", section: "structure" },
@@ -155,6 +161,8 @@ export type PropertyInfo = {
   livesInBuilding?: boolean;
   /** whether the person submitting is part of the condo board (junta de condominio) */
   condoBoardMember?: boolean;
+  /** free-text additional comments from the resident (step 2, optional) */
+  comments?: string;
   /** auto-detected ShakeMap MMI value at the building's location */
   seismicIntensity?: number;
   /** Roman-numeral label for the MMI (e.g. "VII") */
@@ -177,6 +185,10 @@ export type PropertyInfo = {
 
 /** Max photos a resident can attach per checklist item. */
 export const MAX_PHOTOS_PER_ITEM = 3;
+
+/** Consolidated damage gallery limits (single photo section, step 2). */
+export const MAX_DAMAGE_PHOTOS = 10;
+export const MIN_DAMAGE_PHOTOS = 5;
 
 export type ChecklistAnswer = {
   id: ChecklistItemId;

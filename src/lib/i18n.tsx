@@ -317,11 +317,35 @@ const es: Dict = {
   "item.tilt.example.no":
     "La edificación sigue recta y a nivel, igual que antes del sismo.",
 
-  // Señales graves (multi-select Q5)
-  "checklist.severeTitle": "Señales graves",
+  // Otras señales a revisar (multi-select, opcional)
+  "checklist.severeTitle": "Otras señales a revisar",
   "checklist.severeSubtitle":
-    "Marca solo lo que viste con este sismo. Cualquiera de estas es una alerta de seguridad.",
+    "Opcional. Si viste alguna de estas con este sismo, márcala. Nos ayuda a entender mejor el caso. Si no viste ninguna, continúa.",
   "checklist.severeNoneHint": "Si no viste ninguna, déjalas sin marcar y continúa.",
+
+  // Sección de fotos (obligatoria) — todo en un solo lugar
+  "checklist.required": "Obligatoria",
+  "checklist.photosTitle": "Fotos (obligatorias)",
+  "checklist.photosIntro":
+    "Las fotos son lo más importante. Sin ellas, un ingeniero no puede ayudarte. Son obligatorias.",
+  "checklist.facadeTitle": "Foto de la fachada",
+  "checklist.facadeHelp":
+    "Toma una foto del edificio completo desde afuera. Permite ver si quedó inclinado sin tener que entrar.",
+  "checklist.damageTitle": "Fotos de los daños",
+  "checklist.damageHelp":
+    "Agrega fotos claras de lo que viste (grietas, columnas, paredes, techos). Mínimo {min}, hasta {max}.",
+  "checklist.damageCount": "{n} de {max} fotos",
+  "checklist.missingFacade": "Falta la foto de la fachada del edificio.",
+  "checklist.missingDamage": "Agrega al menos {n} fotos de los daños para continuar.",
+  "checklist.commentsTitle": "Comentarios adicionales (opcional)",
+  "checklist.commentsPlaceholder":
+    "Escribe aquí cualquier detalle que las fotos no muestren.",
+  // Photo-carrier labels (used by the AI prompt)
+  "item.facade.area": "Fachada",
+  "item.facade.q": "Foto del edificio completo desde afuera.",
+  "item.damage_photos.area": "Fotos de daños",
+  "item.damage_photos.q": "Fotos de los daños observados.",
+
 
 
   "checklist.exampleToggle": "¿Cómo se ve?",
@@ -1831,12 +1855,35 @@ const en: Dict = {
   "item.tilt.example.no":
     "The building is still straight and level, just like before the quake.",
 
-  // Severe signs (multi-select Q5)
-  "checklist.severeTitle": "Serious warning signs",
+  // Other signs to check (multi-select, optional)
+  "checklist.severeTitle": "Other signs to check",
   "checklist.severeSubtitle":
-    "Check only what you saw with this quake. Any of these is a safety alert.",
+    "Optional. If you saw any of these with this quake, check it. It helps us understand the case better. If you saw none, continue.",
   "checklist.severeNoneHint":
     "If you saw none, leave them unchecked and continue.",
+
+  // Photos section (mandatory) — everything in one place
+  "checklist.required": "Required",
+  "checklist.photosTitle": "Photos (required)",
+  "checklist.photosIntro":
+    "Photos are the most important part. Without them, an engineer can't help you. They are required.",
+  "checklist.facadeTitle": "Facade photo",
+  "checklist.facadeHelp":
+    "Take a photo of the whole building from the outside. It lets us see if it's leaning without going inside.",
+  "checklist.damageTitle": "Damage photos",
+  "checklist.damageHelp":
+    "Add clear photos of what you saw (cracks, columns, walls, roofs). At least {min}, up to {max}.",
+  "checklist.damageCount": "{n} of {max} photos",
+  "checklist.missingFacade": "The building facade photo is missing.",
+  "checklist.missingDamage": "Add at least {n} damage photos to continue.",
+  "checklist.commentsTitle": "Additional comments (optional)",
+  "checklist.commentsPlaceholder":
+    "Write here any detail the photos don't show.",
+  // Photo-carrier labels (used by the AI prompt)
+  "item.facade.area": "Facade",
+  "item.facade.q": "Photo of the whole building from outside.",
+  "item.damage_photos.area": "Damage photos",
+  "item.damage_photos.q": "Photos of the observed damage.",
 
 
   "checklist.exampleToggle": "What does it look like?",

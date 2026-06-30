@@ -414,7 +414,9 @@ function ResultPage() {
       {/* Inspection summary */}
       <Section title={t("pdf.inspection")}>
         <ul className="divide-y divide-border">
-          {record.answers.map((a) => (
+          {record.answers
+            .filter((a) => a.id !== "facade" && a.id !== "damage_photos")
+            .map((a) => (
             <li
               key={a.id}
               className="flex items-center justify-between py-2 text-sm"

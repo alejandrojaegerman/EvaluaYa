@@ -36,6 +36,15 @@ const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
 
 const answerSchema = z.object({
   id: z.enum([
+    // 4+1 simplified flow
+    "walls",
+    "columns",
+    "openings",
+    "tilt",
+    // consolidated photo carriers (single photo section)
+    "facade",
+    "damage_photos",
+    // severe-sign + legacy ids
     "foundation",
     "liquefaction",
     "exterior_walls",
@@ -51,10 +60,11 @@ const answerSchema = z.object({
     "stairs",
   ]),
   value: z.enum(["yes", "no", "unsure"]),
-  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 3 photos per item.
+  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 10 photos per item
+  // (the consolidated damage gallery allows up to 10).
   photoDataUrls: z
     .array(z.string().max(3_600_000))
-    .max(3)
+    .max(10)
     .optional()
     .default([]),
 });
@@ -81,6 +91,8 @@ const analyzeSchema = z.object({
       .default("post2000"),
     livesInBuilding: z.boolean().optional(),
     condoBoardMember: z.boolean().optional(),
+    /** free-text additional comments from the resident (step 2, optional) */
+    comments: z.string().max(1000).optional(),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
     pga: z.number().min(0).max(10).optional(),
@@ -91,7 +103,7 @@ const analyzeSchema = z.object({
     spectralDemand: z.number().min(0).max(10).optional(),
     spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
-  answers: z.array(answerSchema).min(1).max(13),
+  answers: z.array(answerSchema).min(1).max(18),
   /** Engineer panel access token — when valid, the report is certified. */
   engineerToken: z.string().uuid().optional(),
   /** Minimal resident contact so a volunteer evaluator can reach them. PII. */
@@ -202,6 +214,9 @@ function buildPrompt(input: AnalyzeInput) {
     "Inspection answers (resident self-report):",
     ...lines,
     "",
+    input.property.comments?.trim()
+      ? `Resident's additional comments: ${input.property.comments.trim()}`
+      : "",
     "Attached images correspond, in order, to the items that have a photo.",
     `Respond in ${langName}.`,
   ]

@@ -105,6 +105,9 @@ function AnalyzeStep() {
             structuralType: draft.property.structuralType ?? "unknown",
             floors: draft.property.floors ?? 1,
             age: draft.property.age,
+            ...(draft.property.comments?.trim()
+              ? { comments: draft.property.comments.trim() }
+              : {}),
             ...(typeof draft.property.seismicIntensity === "number"
               ? {
                   seismicIntensity: draft.property.seismicIntensity,
