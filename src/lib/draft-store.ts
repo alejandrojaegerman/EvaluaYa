@@ -7,6 +7,8 @@ const DRAFT_KEY = "evaluaya.draft.v1";
 
 export type DraftStatus = "in_progress" | "ready_to_send";
 
+export type ResidentContactType = "whatsapp" | "phone" | "email";
+
 export type AssessmentDraft = {
   language: Lang;
   property: Partial<PropertyInfo>;
@@ -14,8 +16,21 @@ export type AssessmentDraft = {
   status?: DraftStatus;
   /** Engineer panel access token — set when an engineer runs a certified eval. */
   engineerToken?: string;
+  /** Minimal resident contact so a volunteer evaluator can reach them. PII. */
+  resident?: {
+    name?: string;
+    contact?: string;
+    contactType?: ResidentContactType;
+  };
+  /** Accepted legal notice + data-consent versions (blocking gate, Doc #1). */
+  consent?: {
+    legalVersion: string;
+    consentVersion: string;
+    at: string;
+  };
   updatedAt: number;
 };
+
 
 /** A draft that has all answers filled and is just waiting to be submitted. */
 export function isReadyToSend(draft: AssessmentDraft | null): boolean {

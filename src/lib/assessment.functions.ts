@@ -66,6 +66,7 @@ const analyzeSchema = z.object({
     address: z.string().max(300).optional().default(""),
     state: z.string().max(120).optional().default(""),
     municipality: z.string().max(120).optional().default(""),
+    parroquia: z.string().max(120).optional().default(""),
     buildingName: z.string().max(160).optional().default(""),
     buildingType: z.enum(["house", "apartment", "commercial"]),
     structuralType: z
@@ -87,6 +88,22 @@ const analyzeSchema = z.object({
   answers: z.array(answerSchema).min(1).max(13),
   /** Engineer panel access token — when valid, the report is certified. */
   engineerToken: z.string().uuid().optional(),
+  /** Minimal resident contact so a volunteer evaluator can reach them. PII. */
+  resident: z
+    .object({
+      name: z.string().max(160).optional().default(""),
+      contact: z.string().max(200).optional().default(""),
+      contactType: z.enum(["whatsapp", "phone", "email"]).optional(),
+    })
+    .optional(),
+  /** Accepted legal notice + data-consent versions (blocking gate, Doc #1). */
+  consent: z
+    .object({
+      legalVersion: z.string().max(40),
+      consentVersion: z.string().max(40),
+      at: z.string().max(40).optional(),
+    })
+    .optional(),
 });
 
 type AnalyzeInput = z.infer<typeof analyzeSchema>;
@@ -433,6 +450,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       }
     }
 
+    const nowIso = new Date().toISOString();
     const { error: insertError } = await supabaseAdmin.from("assessments").insert({
       public_id: publicId,
       device_id: data.deviceId?.trim() || null,
@@ -440,6 +458,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       property: data.property,
       state: data.property.state?.trim() || null,
       municipality: canonicalMunicipality(data.property.state, data.property.municipality),
+      parroquia: data.property.parroquia?.trim() || null,
       building_name: building?.name ?? null,
       building_key: building?.key ?? null,
       building_inferred: buildingInferred,
@@ -450,6 +469,15 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       photo_counts: photoCounts,
       ai_result: aiResult,
       risk_level: finalRisk,
+      // Minimal resident contact (PII) — only owner/service-role can read it.
+      resident_name: data.resident?.name?.trim() || null,
+      resident_contact: data.resident?.contact?.trim() || null,
+      resident_contact_type: data.resident?.contactType ?? null,
+      // Versioned legal acceptance + data consent (blocking gate, Doc #1).
+      legal_ack_at: data.consent ? data.consent.at || nowIso : null,
+      legal_version: data.consent?.legalVersion ?? null,
+      consent_at: data.consent ? data.consent.at || nowIso : null,
+      consent_version: data.consent?.consentVersion ?? null,
       status: "analyzed",
     });
 

@@ -99,6 +99,7 @@ function AnalyzeStep() {
             address: draft.property.address ?? "",
             state: draft.property.state ?? "",
             municipality: draft.property.municipality ?? "",
+            parroquia: draft.property.parroquia ?? "",
             buildingName: draft.property.buildingName ?? "",
             buildingType: draft.property.buildingType,
             structuralType: draft.property.structuralType ?? "unknown",
@@ -145,6 +146,11 @@ function AnalyzeStep() {
           ...(draft.engineerToken
             ? { engineerToken: draft.engineerToken }
             : {}),
+          ...(draft.resident &&
+          (draft.resident.name || draft.resident.contact)
+            ? { resident: draft.resident }
+            : {}),
+          ...(draft.consent ? { consent: draft.consent } : {}),
         },
       });
 

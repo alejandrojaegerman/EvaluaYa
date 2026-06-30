@@ -1,62 +1,92 @@
-# Aviso legal y responsabilidad — EvalúaYa
+## Objetivo
 
-Goal: bulletproof the app legally by adding a complete legal/liability section and surfacing short, non-intrusive versions of it where users actually make decisions — without adding friction that causes drop-off.
+Reestructurar EvalúaYa para blindarla legalmente combinando las recomendaciones del **ingeniero (Manuel)** y del **abogado**, sin convertirla en una herramienta que emita dictámenes ni órdenes. Donde los dos asesores coinciden, ejecutamos; donde difieren (semáforo, registro), aplicamos las decisiones ya tomadas.
 
-## What exists today
-
-- No dedicated legal/terms route. The footer "Legal" column only has **Privacidad** + **Contacto**.
-- Scattered disclaimers already exist: `disclaimer.body` (home), `result.disclaimerShort` (saved report + PDF), `help.faq.officialQ/A`, `methodology.limitsTitle` ("Límites y responsabilidad compartida"), `privacy.disclaimer`.
-- Nothing currently states that volunteer engineers are **verified volunteers, unpaid, and that EvalúaYa is not responsible for their recommendations.**
-
-## 1. New `/legal` page (`src/routes/legal.tsx`)
-
-A bilingual "Aviso legal y responsabilidad" route (ES primary / EN secondary), styled like `privacidad.tsx` / `metodologia.tsx` (AppShell, sectioned cards, lucide icons, JSON-LD, canonical + OG meta). Sections:
-
-1. **No reemplaza una visita oficial** — this tool and any volunteer contact do **not** replace inspection by a licensed/colegiado structural engineer, FUNVISIS, or Protección Civil.
-2. **Visita técnica preliminar** — any volunteer assessment is a *preliminary, informational orientation*, not a structural certification or official report.
-3. **Ingenieros voluntarios** — engineers/organizations are **verified volunteers** who participate freely; EvalúaYa **does not pay them** and they act in a personal/voluntary capacity.
-4. **Limitación de responsabilidad** — EvalúaYa and its volunteers are **not liable** for recommendations given, decisions taken, or damages; the final decision and responsibility rest with the property owner/occupant and the official authorities.
-5. **Emergencias** — imminent danger → evacuate and call emergency services.
-6. **Contacto** — `contacto@evaluaya.app` + link to Privacidad.
-
-## 2. Footer
-
-Add **Aviso legal** (`/legal`) link to the footer "Legal" column (`src/components/Footer.tsx`), next to Privacidad and Contacto.
-
-## 3. Brief disclaimers at decision points
-
-- **Result screen** (`src/routes/assess/analyze.tsx` provisional card + `src/routes/a/$publicId.tsx` saved report): show `result.disclaimerShort` with a short "Leer aviso legal" link to `/legal`. (`/a/$publicId` already shows the short line — add the legal link.)
-- **Volunteers page** (`src/routes/voluntarios.index.tsx`): add a concise note that engineers are verified, unpaid volunteers and that contact is a preliminary orientation, with a link to `/legal`.
-- **Engineer connection point** (`src/components/ConnectEngineers.tsx`): brief inline note before/at the point a resident connects with a volunteer — "preliminary technical visit, not an official inspection; volunteers are unpaid and not liable" + link to `/legal`.
-- **PDF export** (`src/lib/pdf.ts`): append the volunteer/liability line under the existing `result.disclaimerShort` footer so the printed summary an engineer or authority sees carries the disclaimer.
-
-## 4. One-time acknowledgement
-
-A lightweight, low-friction acknowledgement shown **once** (persisted in `localStorage`, following the existing device-id/draft-store pattern):
-
-- Trigger point: at the **start of an assessment** (`assess/property`) OR at the **engineer connection point** — shown as a small inline checkbox/confirm ("Entiendo que esto es una orientación preliminar y no reemplaza una inspección oficial"), with the link to `/legal`.
-- Once acknowledged, it does not reappear (no repeated interruptions → avoids drop-off).
-- Recommendation: place the acknowledgement at the engineer connection step (highest legal exposure) and keep the assessment-start version purely passive. Final placement can be tuned during build.
-
-## 5. i18n
-
-Add new keys under both `es` and `en` blocks in `src/lib/i18n.tsx`:
-- `legal.*` (title, subtitle, updated, intro, the 6 section titles/bodies, contact).
-- `legal.short` (one-line volunteer/liability summary reused in result, volunteers, connect, PDF).
-- `legal.ack` (acknowledgement label) + `nav.legal` / `footer.legal` link label ("Aviso legal" / "Legal notice").
-
-## 6. SEO
-
-Add `/legal` to `src/routes/sitemap[.]xml.ts` with appropriate priority.
+> **Regla transversal innegociable:** la app procesa **hallazgos visuales preliminares y referenciales**. No certifica habitabilidad, no emite dictamen, no ordena evacuar/permanecer, no se vincula a ningún organismo oficial.
 
 ---
 
-### Technical notes
+## Tarea 1 — Vocabulario prohibido + reencuadre del semáforo (🔴 Crítica)
 
-- New route follows TanStack file-based routing: `src/routes/legal.tsx` → `createFileRoute("/legal")`, with `head()` for meta/canonical/JSON-LD (Article or WebPage schema), mirroring `privacidad.tsx`.
-- All copy lives in `src/lib/i18n.tsx` (ES + EN) and is read via `t()` — no hardcoded strings in components.
-- Acknowledgement state stored client-side only (`localStorage`), no schema/backend changes.
-- Pure frontend/presentation + content. No database, RLS, or server-function changes.
-- Files touched: `src/routes/legal.tsx` (new), `src/components/Footer.tsx`, `src/routes/assess/analyze.tsx`, `src/routes/a/$publicId.tsx`, `src/routes/voluntarios.index.tsx`, `src/components/ConnectEngineers.tsx`, `src/lib/pdf.ts`, `src/lib/i18n.tsx`, `src/routes/sitemap[.]xml.ts`.
+Reencuadrar el resultado del residente como **"Hallazgos visuales"** (no veredicto), con sugerencias (nunca órdenes), sujeto a aprobación final de Manuel y el abogado antes de lanzar.
 
-> Note: this is app-owner legal copy, not legal advice or independent certification. The wording is drafted to be informative and protective, but you should have it reviewed by a Venezuelan attorney before relying on it.
+- **Veto de terminología** en toda la UI, PDF y datos: eliminar "habitable/inhabitable", "seguro/inseguro", "bien/mal", "puedes permanecer", "evacúa de inmediato", "no la consideres segura", "uso seguro". Barrer `src/lib/i18n.tsx` (ES+EN) incluyendo `result.*.action`, `provisional.step.*`, `rule.*.step`, `map.legend*`, `data.dict.*`.
+- **Escala reetiquetada** (basada en hallazgos, no en seguridad):
+  - 🟢 **Hallazgos leves** — sin daños evidentes en elementos de carga. Sugerencia: mantener observación ante réplicas y tambien hacer sugerencia de llamar a un ingeniero de funvisis o proteccion civil o los voluntarios de la aplicación. 
+  - 🟡 **Hallazgos moderados** — grietas/desprendimientos menores. Sugerencia: solicitar inspección técnica presencial.
+  - 🔴 **Hallazgos severos / alerta** — fallas en columnas/vigas/muros, inclinación, colapso parcial. **Sugerencia (nunca orden):** no ingresar y reportar a cuerpos oficiales y que se coloque la solicitud a los ingenieros d ela aplicación. 
+- La IA/lógica determinística sigue **interna** para ordenar y clasificar; lo que se muestra se describe como "lo que observaste/reportaste".
+- Quitar del residente: bloque de recomendaciones IA accionables tipo orden y contexto sísmico USGS como justificación de veredicto (queda interno).
+- Ok una cosa que se debe de hacer es siempre la ssolciitudes que se hagan sin importar el semaforo, el ingeniero igualmente siempre tiene que verificar la solicitud de revisión. 
+
+## Tarea 2 — Aviso legal bloqueante + consentimiento de datos (🔴 Crítica / 🟠 Alta)
+
+- **Pop-up bloqueante** de visualización obligatoria que impide usar el flujo de evaluación hasta marcar aceptación. Reemplaza el `legal-ack` opcional actual; se persiste con versión y fecha.
+- **Cláusulas** (reescribir `src/routes/legal.tsx` + claves `legal.*`):
+  - **No oficialidad:** iniciativa privada, independiente y comunitaria; sin vínculo con FUNVISIS, Protección Civil, Bomberos ni organismos del Estado.
+  - **Inexistencia de dictamen:** solo hallazgos visuales referenciales; no certifica habitabilidad ni autoriza ingreso.
+  - **Fuerza mayor / réplicas:** exclusión por daños de réplicas, factores ambientales o eventos posteriores; uso bajo riesgo del usuario.
+- **Consentimiento de datos:** checkbox obligatorio (separado del legal) aceptando el tratamiento de datos solo para gestión de reportes; enlace a privacidad. Guardar y hacer migración en la abse de datos para que cualquier usuario o cualquier reporte que se genere salga que se hizo el check de este consentimiento. 
+
+## Tarea 3 — Datos de contacto del residente (🟠 Alta)
+
+Decisión: del residente solo necesitamos **poder contactarlo** (no cédula obligatoria).
+
+- Captura mínima obligatoria antes de enviar: **nombre + un medio de contacto** (teléfono/WhatsApp o email). Ubicación ya existente (Estado/Municipio + dirección/edificio opcional); añadir **Parroquia** opcional.
+- Validación con Zod (cliente + servidor), límites de longitud, sin loguear datos sensibles.
+- Persistir `consent_at`, `consent_version`, `legal_ack_at` y el contacto del residente en `assessments`.
+
+## Tarea 4 — Régimen y nomenclatura de evaluadores (🔴 Crítica)
+
+- Prohibir "ingeniero certificado/verificado/aprobado" en superficies públicas. Usar **"Evaluador Voluntario de la Comunidad"** / **"Colaborador Técnico"**. Reservar "ingeniero verificado (CIV)" solo para cuando exista verificación real de carnet (fuera de alcance ahora).
+- Barrer `connect.*`, `result.proBadge`, `index.tsx`, `voluntarios.index.tsx`, `datos.tsx`, `mapa.tsx`, `VerifiedEngineers`.
+- **Descargo del voluntario por envío:** antes de enviar cada formulario, el evaluador suscribe que el reporte es transcripción de observaciones visuales puntuales, sin dictamen pericial ni responsabilidad civil. Persistir aceptación.
+- Datos completos del ingeniero (cédula/CIV/foto) se mantienen **internos** para validación nuestra, no como sello público.
+
+## Tarea 5 — Panel del ingeniero sin recomendaciones IA (🔴 Crítica)
+
+- En `EngineerRequestCard`: quitar `RiskBadge`, "la IA dijo" y el flujo aceptar/ajustar veredicto. El ingeniero ve **ubicación, fotos y contacto**; el nivel queda solo para ordenar la cola. Aca es importante, el UI se va a cambiar y el triage inicial se tiene que quedar pero el ingeniero civil no necesita eso, solo deben ayudarle a priorizar. 
+- Mantener USGS del reporte que ve el ingeniero, para verificar como podemos usar esa información, no se elimina luego se reestructura el UI. 
+
+## Tarea 6 — Módulo SOS + directorio de emergencia (🟠 Alta)
+
+- **Banner/botón rojo SOS informativo** sobre peligros evidentes (inclinación, colapso parcial, desprendimientos, crujidos) exhortando al desalojo inmediato.
+- **Directorio de emergencia** con marcado directo (911, Bomberos de Caracas, Protección Civil), dejando claro que la app **no gestiona, enruta ni se responsabiliza** por esas comunicaciones.
+- **Verificar la veracidad de los números con fuentes oficiales antes de publicarlos** (paso bloqueante).
+
+## Tarea 7 — Glosario visual de educación estructural (🟡 Media)
+
+- Infografía interactiva que distinga **estructural** (columnas, vigas, muros de carga) de **no estructural** (tabiquería, drywall, frisos), reusando lo ya creado en la guía de grietas.
+- Patrones de grietas: asentamiento menor vs fallas graves (diagonales 45°, "X" en concreto armado).
+- **Notas al pie con fuentes** (FUNVISIS, Protección Civil u homólogos), reiterando carácter ilustrativo.
+- Investigar y conseguir estas imagenes por favor. 
+
+## Tarea 8 — Datos públicos, PDF y documentación interna
+
+- **Datos públicos agregados:** mantener agregados **anónimos** por zona, reetiquetados como "hallazgos visuales" (mapa, `/datos`, `/zona`, API), sin veredictos por residente.
+- **PDF → "ficha del caso" neutra:** datos del inmueble, fotos, ubicación, contacto y nuevo aviso legal; sin veredictos ni recomendaciones IA.
+- **WhatsApp/compartir:** reescribir mensajes para que no incluyan nivel de riesgo como orden ni instrucción de evacuar/permanecer.
+- **Docs internas:** actualizar `README.md` y `AGENTS.md` con el posicionamiento legal (no dictamen, no certificación, no órdenes, nomenclatura de evaluadores) y guardar memoria de constraint.
+
+---
+
+## Detalles técnicos
+
+- **Migración** en `assessments`: `resident_name`, `resident_contact`, `resident_contact_type`, `parroquia` (opcional), `consent_at`, `consent_version`, `legal_ack_at`. Incluir GRANTs y revisar RLS (contacto del residente es PII: no exponerlo en lecturas públicas/anon ni en agregados).
+- **Descargo del voluntario:** persistir aceptación por envío en `help_requests` (o tabla de auditoría) con versión y timestamp.
+- Reescritura de copy concentrada en `src/lib/i18n.tsx` (ES primario, EN espejo). Componentes afectados: `RiskBadge`/`RiskGauge`, `a/$publicId.tsx`, `assess/analyze.tsx`, `assess/checklist.tsx`, `assess/property.tsx`, `EngineerRequestCard.tsx`, `ConnectEngineers.tsx`, `voluntarios.index.tsx`, `datos.tsx`, `mapa.tsx`, `pdf.ts`, `share-card.ts`, `volunteer-links.ts`, `legal.tsx`, `legal-ack.ts`.
+- Validación de inputs con Zod en cliente y servidor; encodeURIComponent en enlaces WhatsApp/email; sin logging de datos personales.
+
+## Orden sugerido
+
+1. Tareas 1–2 y 4–5 (eliminar veredictos/órdenes y lenguaje "verificado") → 2) Tarea 3 + migración + consentimiento → 3) Tarea 6 (verificar números antes de publicar) → 4) Tareas 7–8 → 5) Documentación/memoria.
+
+## Fuera de alcance (planes posteriores)
+
+Verificación programática con el CIV, simplificación del formulario, panel tipo Tinder, video de 15s.
+
+## Requiere visto bueno antes de lanzar
+
+- Texto final del aviso legal y del consentimiento (abogado).
+- Etiquetas y umbrales del semáforo de "hallazgos visuales" (Manuel + abogado).
+- Veracidad de los números de emergencia (fuente oficial).
