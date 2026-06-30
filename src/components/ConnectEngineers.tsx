@@ -5,11 +5,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
+import { hasLegalAck, setLegalAck } from "@/lib/legal-ack";
 import { cn } from "@/lib/utils";
 import { submitHelpRequest } from "@/lib/volunteers.functions";
 
