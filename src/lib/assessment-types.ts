@@ -68,6 +68,9 @@ export const CHECKLIST_ITEMS: ChecklistItemDef[] = [
   { id: "columns", icon: "Columns3", section: "structure" },
   { id: "openings", icon: "DoorOpen", section: "structure" },
   { id: "tilt", icon: "Building2", section: "structure" },
+  // consolidated photo carriers (single photo section)
+  { id: "facade", icon: "Building", section: "structure" },
+  { id: "damage_photos", icon: "Camera", section: "structure" },
   // severe-sign sub-items (recorded via the "señales graves" multi-select)
   { id: "foundation", icon: "Layers", section: "structure" },
   { id: "roof", icon: "Home", section: "structure" },
