@@ -1651,6 +1651,7 @@ const en: Dict = {
   "property.miss.residentName": "your name",
   "property.miss.residentContact": "your phone",
   "property.miss.address": "the address / neighborhood",
+  "property.miss.parroquia": "the parish",
   "property.miss.buildingName": "the building name",
 
 
