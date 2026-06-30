@@ -1901,7 +1901,8 @@ const en: Dict = {
 
   // Property helper text (accessibility)
   "property.buildingType.help": "What kind of place are you assessing?",
-  "property.floors.help": "Count how many floors the whole building has.",
+  "property.floors.help": "Count the floors above ground level.",
+  "property.basements.help": "Levels below ground (parking, storage). Leave 0 if none.",
   "property.age.help": "If you don't know the exact year, pick the closest one.",
   "property.age.pre1970.desc":
     "Older construction, before modern seismic codes.",
