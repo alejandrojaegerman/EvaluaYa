@@ -194,6 +194,51 @@ export const MAX_PHOTOS_PER_ITEM = 3;
 export const MAX_DAMAGE_PHOTOS = 10;
 export const MIN_DAMAGE_PHOTOS = 5;
 
+/** Facade can carry up to 5 photos (different angles of the whole building). */
+export const MAX_FACADE_PHOTOS = 5;
+
+/**
+ * Damage-photo classification. Lets the resident tag each photo so the
+ * engineer knows what they're looking at. Maps to existing item area labels
+ * for captions; "other" is the friction-free default.
+ */
+export type DamageCategory =
+  | "walls"
+  | "columns_beams"
+  | "doors_windows"
+  | "roof"
+  | "stairs"
+  | "foundation"
+  | "plumbing"
+  | "other";
+
+export const DAMAGE_CATEGORIES: DamageCategory[] = [
+  "walls",
+  "columns_beams",
+  "doors_windows",
+  "roof",
+  "stairs",
+  "foundation",
+  "plumbing",
+  "other",
+];
+
+export const DEFAULT_DAMAGE_CATEGORY: DamageCategory = "other";
+
+/**
+ * Resolve a stored per-photo label (a damage category id) to an i18n key, so
+ * captions render in the viewer's language. Returns null for unknown / empty
+ * labels (callers should fall back to the item area label).
+ */
+export function damageCategoryKey(
+  label: string | null | undefined,
+): string | null {
+  if (!label) return null;
+  return (DAMAGE_CATEGORIES as string[]).includes(label)
+    ? `checklist.cat.${label}`
+    : null;
+}
+
 export type ChecklistAnswer = {
   id: ChecklistItemId;
   value: AnswerValue;
@@ -201,6 +246,12 @@ export type ChecklistAnswer = {
   photoPaths?: string[] | null;
   /** legacy single-photo field (older records) — read-only compat */
   photoPath?: string | null;
+  /**
+   * Per-photo human labels (category captions), aligned by index to
+   * photoPaths. Additive — absent on legacy records. Surfaced to the engineer
+   * as the photo caption.
+   */
+  photoLabels?: (string | null)[] | null;
 };
 
 /** Answer enriched with the in-browser photo data urls (draft only) */
@@ -231,6 +282,8 @@ export type AssessmentRecord = {
   createdAt: string;
   /** signed urls per item id; may contain multiple photos per item */
   photoUrls: Record<string, string[]>;
+  /** per-photo captions per item id, aligned by index to photoUrls */
+  photoCaptions?: Record<string, (string | null)[]>;
   /**
    * Anonymized "same building" context — null when no building name was
    * detected. Counts only; never addresses, photos or report ids.

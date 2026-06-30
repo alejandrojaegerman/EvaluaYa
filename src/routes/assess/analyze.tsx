@@ -145,6 +145,9 @@ function AnalyzeStep() {
                 : a.photoDataUrl
                   ? [a.photoDataUrl]
                   : [],
+            ...(a.photoLabels && a.photoLabels.length
+              ? { photoLabels: a.photoLabels }
+              : {}),
           })),
           ...(draft.engineerToken
             ? { engineerToken: draft.engineerToken }

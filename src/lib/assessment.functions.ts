@@ -67,6 +67,13 @@ const answerSchema = z.object({
     .max(10)
     .optional()
     .default([]),
+  // Per-photo classification labels (damage category ids), aligned by index
+  // with photoDataUrls. Lets the engineer see what each photo depicts.
+  photoLabels: z
+    .array(z.string().max(40).nullable())
+    .max(10)
+    .optional()
+    .default([]),
 });
 
 const analyzeSchema = z.object({
@@ -319,7 +326,11 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
 
     for (const answer of data.answers) {
       const photos = (answer.photoDataUrls ?? []).filter(Boolean);
+      const labels = answer.photoLabels ?? [];
       const photoPaths: string[] = [];
+      // Captions kept index-aligned with photoPaths (a photo may be skipped
+      // by the budget, so we can't reuse the original index).
+      const photoLabels: (string | null)[] = [];
 
       for (let i = 0; i < photos.length; i++) {
         const dataUrl = photos[i];
@@ -340,11 +351,17 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
           });
         if (!uploadError) {
           photoPaths.push(path);
+          photoLabels.push(labels[i] ?? null);
           if (isKey) imageDataUrls.push(dataUrl);
         }
       }
 
-      storedAnswers.push({ id: answer.id, value: answer.value, photoPaths });
+      storedAnswers.push({
+        id: answer.id,
+        value: answer.value,
+        photoPaths,
+        ...(photoLabels.some(Boolean) ? { photoLabels } : {}),
+      });
     }
 
     // Denormalized photo counters kept in sync on write so analytics stay
@@ -570,6 +587,7 @@ export const getAssessment = createServerFn({ method: "GET" })
 
     const answers = (row.answers as AssessmentRecord["answers"]) ?? [];
     const photoUrls: Record<string, string[]> = {};
+    const photoCaptions: Record<string, (string | null)[]> = {};
 
     for (const answer of answers) {
       // Support both the new multi-photo shape and legacy single photoPath.
@@ -578,14 +596,22 @@ export const getAssessment = createServerFn({ method: "GET" })
         ...(answer.photoPath ? [answer.photoPath] : []),
       ].filter(Boolean) as string[];
       if (paths.length === 0) continue;
+      const labels = answer.photoLabels ?? [];
       const urls: string[] = [];
-      for (const path of paths) {
+      const caps: (string | null)[] = [];
+      for (let i = 0; i < paths.length; i++) {
         const { data: signed } = await supabaseAdmin.storage
           .from(BUCKET)
-          .createSignedUrl(path, SIGNED_URL_TTL);
-        if (signed?.signedUrl) urls.push(signed.signedUrl);
+          .createSignedUrl(paths[i], SIGNED_URL_TTL);
+        if (signed?.signedUrl) {
+          urls.push(signed.signedUrl);
+          caps.push(labels[i] ?? null);
+        }
       }
-      if (urls.length > 0) photoUrls[answer.id] = urls;
+      if (urls.length > 0) {
+        photoUrls[answer.id] = urls;
+        if (caps.some(Boolean)) photoCaptions[answer.id] = caps;
+      }
     }
 
 
@@ -636,6 +662,7 @@ export const getAssessment = createServerFn({ method: "GET" })
         (row.report_type as "resident" | "professional" | null) ?? "resident",
       createdAt: row.created_at,
       photoUrls,
+      photoCaptions,
       building,
     };
   });

@@ -30,6 +30,7 @@ import { SameBuildingCard } from "@/components/SameBuildingCard";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
 import type { AssessmentRecord } from "@/lib/assessment-types";
+import { damageCategoryKey } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { downloadAssessmentPdf } from "@/lib/pdf";
 import { RISK_THEME } from "@/lib/risk";
@@ -113,11 +114,15 @@ function ResultPage() {
   const photoItems = record.answers
     .filter((a) => record.photoUrls[a.id]?.length)
     .flatMap((a) =>
-      record.photoUrls[a.id].map((url) => ({
-        id: a.id,
-        url,
-        caption: t(`item.${a.id}.area`),
-      })),
+      record.photoUrls[a.id].map((url, i) => {
+        const label = record.photoCaptions?.[a.id]?.[i];
+        const key = damageCategoryKey(label);
+        return {
+          id: a.id,
+          url,
+          caption: key ? t(key) : (label ?? t(`item.${a.id}.area`)),
+        };
+      }),
     );
 
   // Funnel: resident reached the final result — the completed conversion.

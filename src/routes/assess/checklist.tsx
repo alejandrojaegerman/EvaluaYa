@@ -9,11 +9,14 @@ import {
   Check,
   Building2,
   Images,
+  Maximize2,
+  Lightbulb,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { PhotoLightbox, type LightboxPhoto } from "@/components/PhotoLightbox";
 import { StepHeader, StepFooter } from "./property";
 import {
   CHECKLIST_ITEMS,
@@ -21,12 +24,20 @@ import {
   SEVERE_SIGN_IDS,
   MAX_DAMAGE_PHOTOS,
   MIN_DAMAGE_PHOTOS,
+  MAX_FACADE_PHOTOS,
+  DAMAGE_CATEGORIES,
+  DEFAULT_DAMAGE_CATEGORY,
   type AnswerValue,
   type ChecklistItemId,
+  type DamageCategory,
   type DraftAnswer,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft, type AssessmentDraft } from "@/lib/draft-store";
-import { compressImageToDataUrl } from "@/lib/image-utils";
+import {
+  compressImageToDataUrl,
+  isImageFile,
+  verifyImageLoads,
+} from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
 import { trackStep } from "@/lib/track";
@@ -52,6 +63,9 @@ export const Route = createFileRoute("/assess/checklist")({
 type AnswerEntry = { value: AnswerValue };
 type AnswerMap = Record<string, AnswerEntry>;
 
+/** A single damage photo plus the resident's classification of it. */
+type DamagePhoto = { url: string; category: DamageCategory };
+
 const ANSWER_OPTIONS: { value: AnswerValue; active: string }[] = [
   { value: "yes", active: "border-risk-red bg-risk-red-soft text-risk-red" },
   {
@@ -70,16 +84,52 @@ function normalizePhotos(a: DraftAnswer): string[] {
   return [];
 }
 
+function normalizeCategory(label: unknown): DamageCategory {
+  return (DAMAGE_CATEGORIES as string[]).includes(label as string)
+    ? (label as DamageCategory)
+    : DEFAULT_DAMAGE_CATEGORY;
+}
+
+/**
+ * Validate + compress a picked file into a data URL. Returns null (and shows a
+ * toast) when the file is not an image or doesn't decode into a visible image.
+ */
+async function intakeImage(
+  file: File,
+  t: (k: string) => string,
+): Promise<string | null> {
+  if (!isImageFile(file)) {
+    toast.error(t("checklist.invalidFile"));
+    return null;
+  }
+  let dataUrl: string;
+  try {
+    dataUrl = await compressImageToDataUrl(file);
+  } catch {
+    toast.error(t("checklist.unreadableImage"));
+    return null;
+  }
+  if (!(await verifyImageLoads(dataUrl))) {
+    toast.error(t("checklist.unreadableImage"));
+    return null;
+  }
+  return dataUrl;
+}
+
 function ChecklistStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
 
   const [draft, setDraft] = useState<AssessmentDraft | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
-  const [facadePhoto, setFacadePhoto] = useState<string | null>(null);
-  const [damagePhotos, setDamagePhotos] = useState<string[]>([]);
+  const [facadePhotos, setFacadePhotos] = useState<string[]>([]);
+  const [damagePhotos, setDamagePhotos] = useState<DamagePhoto[]>([]);
   const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState<{
+    photos: LightboxPhoto[];
+    index: number;
+  } | null>(null);
 
   useEffect(() => {
     trackStep("checklist_started");
@@ -94,12 +144,15 @@ function ChecklistStep() {
       const initial: AnswerMap = {};
       for (const a of d.answers) {
         if (a.id === FACADE_ID) {
-          const photos = normalizePhotos(a);
-          if (photos[0]) setFacadePhoto(photos[0]);
+          setFacadePhotos(normalizePhotos(a));
           continue;
         }
         if (a.id === DAMAGE_ID) {
-          setDamagePhotos(normalizePhotos(a));
+          const urls = normalizePhotos(a);
+          const labels = a.photoLabels ?? [];
+          setDamagePhotos(
+            urls.map((url, i) => ({ url, category: normalizeCategory(labels[i]) })),
+          );
           continue;
         }
         initial[a.id] = { value: a.value };
@@ -133,9 +186,29 @@ function ChecklistStep() {
     (id) => answers[id]?.value,
   ).length;
   const allRequired = requiredAnswered === PRIMARY_ITEMS.length;
-  const hasFacade = !!facadePhoto;
+  const hasFacade = facadePhotos.length >= 1;
   const enoughDamage = damagePhotos.length >= MIN_DAMAGE_PHOTOS;
   const canContinue = allRequired && hasFacade && enoughDamage;
+
+  function openFacadeLightbox(index: number) {
+    setLightbox({
+      photos: facadePhotos.map((url) => ({
+        url,
+        caption: t("checklist.facadeTitle"),
+      })),
+      index,
+    });
+  }
+
+  function openDamageLightbox(index: number) {
+    setLightbox({
+      photos: damagePhotos.map((p) => ({
+        url: p.url,
+        caption: t(`checklist.cat.${p.category}`),
+      })),
+      index,
+    });
+  }
 
   async function persist(ready: boolean) {
     if (!draft) return;
@@ -146,18 +219,19 @@ function ChecklistStep() {
       value: answers[i.id].value,
       photoDataUrls: [],
     }));
-    if (facadePhoto) {
+    if (facadePhotos.length) {
       draftAnswers.push({
         id: FACADE_ID,
         value: "yes",
-        photoDataUrls: [facadePhoto],
+        photoDataUrls: facadePhotos,
       });
     }
     if (damagePhotos.length) {
       draftAnswers.push({
         id: DAMAGE_ID,
         value: "yes",
-        photoDataUrls: damagePhotos,
+        photoDataUrls: damagePhotos.map((p) => p.url),
+        photoLabels: damagePhotos.map((p) => p.category),
       });
     }
     await saveDraft({
@@ -251,27 +325,30 @@ function ChecklistStep() {
         {t("checklist.photosIntro")}
       </p>
 
-      <FacadePhoto
-        photo={facadePhoto}
-        onSet={setFacadePhoto}
-        onClear={() => setFacadePhoto(null)}
+      <UsefulPhotosTip />
+
+      <FacadeGallery
+        photos={facadePhotos}
+        onChange={setFacadePhotos}
+        onView={openFacadeLightbox}
       />
 
-      <DamageGallery photos={damagePhotos} onChange={setDamagePhotos} />
+      <DamageGallery
+        photos={damagePhotos}
+        onChange={setDamagePhotos}
+        onView={openDamageLightbox}
+      />
 
       {/* Optional comments */}
       <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <label
-          htmlFor="comments"
-          className="block text-sm font-semibold"
-        >
+        <label htmlFor="comments" className="block text-sm font-semibold">
           {t("checklist.commentsTitle")}
         </label>
         <textarea
           id="comments"
           value={comments}
           onChange={(e) => setComments(e.target.value.slice(0, 1000))}
-          rows={3}
+          rows={4}
           placeholder={t("checklist.commentsPlaceholder")}
           className="mt-2 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
         />
@@ -284,6 +361,17 @@ function ChecklistStep() {
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
+
+      {lightbox && (
+        <PhotoLightbox
+          photos={lightbox.photos}
+          index={lightbox.index}
+          onIndexChange={(i) =>
+            setLightbox((lb) => (lb ? { ...lb, index: i } : lb))
+          }
+          onClose={() => setLightbox(null)}
+        />
+      )}
     </AppShell>
   );
 }
@@ -483,34 +571,82 @@ function ExampleBlock({ id }: { id: ChecklistItemId }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Required facade photo (single)                                      */
+/* Collapsible "which photos help the engineer" tip                    */
 /* ------------------------------------------------------------------ */
-function FacadePhoto({
-  photo,
-  onSet,
-  onClear,
+function UsefulPhotosTip() {
+  const { t } = useLang();
+  const [open, setOpen] = useState(false);
+  const tips = ["1", "2", "3", "4", "5"];
+
+  return (
+    <div className="mt-3 rounded-2xl border border-primary/20 bg-primary/5 p-3">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 text-left text-sm font-semibold text-primary"
+      >
+        <Lightbulb className="size-4 shrink-0" />
+        <span className="flex-1">{t("checklist.usefulToggle")}</span>
+        <ChevronDown
+          className={cn("size-4 transition-transform", open && "rotate-180")}
+        />
+      </button>
+      {open && (
+        <div className="mt-2.5 space-y-2 text-xs leading-relaxed text-foreground/90">
+          <p className="text-muted-foreground">{t("checklist.usefulIntro")}</p>
+          <ul className="space-y-1.5">
+            {tips.map((n) => (
+              <li key={n} className="flex gap-2">
+                <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                <span>{t(`checklist.useful.${n}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Required facade gallery (min 1, max MAX_FACADE_PHOTOS)               */
+/* ------------------------------------------------------------------ */
+function FacadeGallery({
+  photos,
+  onChange,
+  onView,
 }: {
-  photo: string | null;
-  onSet: (p: string) => void;
-  onClear: () => void;
+  photos: string[];
+  onChange: (next: string[]) => void;
+  onView: (index: number) => void;
 }) {
   const { t } = useLang();
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
+  const canAddMore = photos.length < MAX_FACADE_PHOTOS;
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
     e.target.value = "";
-    if (!file) return;
+    if (!files.length) return;
     setProcessing(true);
     try {
-      onSet(await compressImageToDataUrl(file));
-    } catch {
-      toast.error(t("analyze.genericError"));
+      const room = MAX_FACADE_PHOTOS - photos.length;
+      const next = [...photos];
+      for (const file of files.slice(0, room)) {
+        const url = await intakeImage(file, t);
+        if (url) next.push(url);
+      }
+      onChange(next);
     } finally {
       setProcessing(false);
     }
+  }
+
+  function removeAt(i: number) {
+    onChange(photos.filter((_, idx) => idx !== i));
   }
 
   return (
@@ -530,67 +666,58 @@ function FacadePhoto({
         </div>
       </div>
 
+      <div className="mt-2">
+        <span
+          className={cn(
+            "text-xs font-semibold",
+            photos.length >= 1 ? "text-risk-green" : "text-muted-foreground",
+          )}
+        >
+          {t("checklist.facadeCount")
+            .replace("{n}", String(photos.length))
+            .replace("{max}", String(MAX_FACADE_PHOTOS))}
+          {photos.length >= 1 && " ✓"}
+        </span>
+      </div>
+
       <input
         ref={cameraRef}
         type="file"
         accept="image/*"
         capture="environment"
         className="hidden"
-        onChange={handleFile}
+        onChange={handleFiles}
       />
       <input
         ref={galleryRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
-        onChange={handleFile}
+        onChange={handleFiles}
       />
 
-      {photo ? (
-        <div className="relative mt-3 overflow-hidden rounded-xl border border-border">
-          <img
-            src={photo}
-            alt={t("checklist.facadeTitle")}
-            className="h-44 w-full object-cover"
-          />
-          <button
-            type="button"
-            onClick={onClear}
-            aria-label={t("checklist.removePhoto")}
-            className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
-          >
-            <X className="size-4" />
-          </button>
+      {photos.length > 0 && (
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {photos.map((src, i) => (
+            <PhotoThumb
+              key={i}
+              src={src}
+              index={i}
+              label={t("checklist.facadeTitle")}
+              onView={() => onView(i)}
+              onRemove={() => removeAt(i)}
+            />
+          ))}
         </div>
-      ) : (
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => cameraRef.current?.click()}
-            disabled={processing}
-            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-          >
-            {processing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Camera className="size-4" />
-            )}
-            {t("checklist.takePhoto")}
-          </button>
-          <button
-            type="button"
-            onClick={() => galleryRef.current?.click()}
-            disabled={processing}
-            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-          >
-            {processing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <ImagePlus className="size-4" />
-            )}
-            {t("checklist.fromGallery")}
-          </button>
-        </div>
+      )}
+
+      {canAddMore && (
+        <PhotoButtons
+          processing={processing}
+          onCamera={() => cameraRef.current?.click()}
+          onGallery={() => galleryRef.current?.click()}
+        />
       )}
     </div>
   );
@@ -602,9 +729,11 @@ function FacadePhoto({
 function DamageGallery({
   photos,
   onChange,
+  onView,
 }: {
-  photos: string[];
-  onChange: (next: string[]) => void;
+  photos: DamagePhoto[];
+  onChange: (next: DamagePhoto[]) => void;
+  onView: (index: number) => void;
 }) {
   const { t } = useLang();
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -622,11 +751,10 @@ function DamageGallery({
       const room = MAX_DAMAGE_PHOTOS - photos.length;
       const next = [...photos];
       for (const file of files.slice(0, room)) {
-        next.push(await compressImageToDataUrl(file));
+        const url = await intakeImage(file, t);
+        if (url) next.push({ url, category: DEFAULT_DAMAGE_CATEGORY });
       }
       onChange(next);
-    } catch {
-      toast.error(t("analyze.genericError"));
     } finally {
       setProcessing(false);
     }
@@ -634,6 +762,10 @@ function DamageGallery({
 
   function removeAt(i: number) {
     onChange(photos.filter((_, idx) => idx !== i));
+  }
+
+  function setCategory(i: number, category: DamageCategory) {
+    onChange(photos.map((p, idx) => (idx === i ? { ...p, category } : p)));
   }
 
   return (
@@ -687,59 +819,45 @@ function DamageGallery({
       />
 
       {photos.length > 0 && (
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {photos.map((src, i) => (
-            <div
-              key={i}
-              className="relative overflow-hidden rounded-xl border border-border"
-            >
-              <img
-                src={src}
-                alt={`${t("checklist.damageTitle")} ${i + 1}`}
-                className="h-24 w-full object-cover"
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {photos.map((p, i) => (
+            <div key={i} className="space-y-1.5">
+              <PhotoThumb
+                src={p.url}
+                index={i}
+                label={`${t("checklist.damageTitle")} ${i + 1}`}
+                onView={() => onView(i)}
+                onRemove={() => removeAt(i)}
               />
-              <button
-                type="button"
-                onClick={() => removeAt(i)}
-                aria-label={t("checklist.removePhoto")}
-                className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
+              <label className="sr-only" htmlFor={`cat-${i}`}>
+                {t("checklist.photoCategoryLabel")}
+              </label>
+              <select
+                id={`cat-${i}`}
+                value={p.category}
+                onChange={(e) =>
+                  setCategory(i, e.target.value as DamageCategory)
+                }
+                aria-label={t("checklist.photoCategoryLabel")}
+                className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs font-medium outline-none focus:border-primary"
               >
-                <X className="size-3.5" />
-              </button>
+                {DAMAGE_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {t(`checklist.cat.${cat}`)}
+                  </option>
+                ))}
+              </select>
             </div>
           ))}
         </div>
       )}
 
       {canAddMore && (
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => cameraRef.current?.click()}
-            disabled={processing}
-            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-          >
-            {processing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Camera className="size-4" />
-            )}
-            {t("checklist.takePhoto")}
-          </button>
-          <button
-            type="button"
-            onClick={() => galleryRef.current?.click()}
-            disabled={processing}
-            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
-          >
-            {processing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <ImagePlus className="size-4" />
-            )}
-            {t("checklist.fromGallery")}
-          </button>
-        </div>
+        <PhotoButtons
+          processing={processing}
+          onCamera={() => cameraRef.current?.click()}
+          onGallery={() => galleryRef.current?.click()}
+        />
       )}
 
       {!enough && (
@@ -750,6 +868,110 @@ function DamageGallery({
           )}
         </p>
       )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared photo thumbnail (tap to view full, separate remove button)   */
+/* ------------------------------------------------------------------ */
+function PhotoThumb({
+  src,
+  index,
+  label,
+  onView,
+  onRemove,
+}: {
+  src: string;
+  index: number;
+  label: string;
+  onView: () => void;
+  onRemove: () => void;
+}) {
+  const { t } = useLang();
+  const [broken, setBroken] = useState(false);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-border">
+      {broken ? (
+        <div className="flex h-24 w-full flex-col items-center justify-center gap-1 bg-muted px-2 text-center">
+          <X className="size-4 text-destructive" />
+          <span className="text-[10px] font-medium text-muted-foreground">
+            {t("checklist.unreadableImage")}
+          </span>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={onView}
+          aria-label={t("checklist.viewPhoto")}
+          className="group block w-full"
+        >
+          <img
+            src={src}
+            alt={label}
+            onError={() => setBroken(true)}
+            className="h-24 w-full object-cover transition-transform group-hover:scale-105"
+          />
+          <span className="absolute bottom-1 left-1 flex items-center gap-0.5 rounded-md bg-background/85 px-1.5 py-0.5 text-[10px] font-semibold text-foreground shadow-sm backdrop-blur">
+            <Maximize2 className="size-3" />
+            {index + 1}
+          </span>
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={t("checklist.removePhoto")}
+        className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-lg bg-background/90 shadow-sm backdrop-blur"
+      >
+        <X className="size-3.5" />
+      </button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared "take photo / from gallery" button pair                      */
+/* ------------------------------------------------------------------ */
+function PhotoButtons({
+  processing,
+  onCamera,
+  onGallery,
+}: {
+  processing: boolean;
+  onCamera: () => void;
+  onGallery: () => void;
+}) {
+  const { t } = useLang();
+  return (
+    <div className="mt-3 grid grid-cols-2 gap-2">
+      <button
+        type="button"
+        onClick={onCamera}
+        disabled={processing}
+        className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+      >
+        {processing ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Camera className="size-4" />
+        )}
+        {t("checklist.takePhoto")}
+      </button>
+      <button
+        type="button"
+        onClick={onGallery}
+        disabled={processing}
+        className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+      >
+        {processing ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <ImagePlus className="size-4" />
+        )}
+        {t("checklist.fromGallery")}
+      </button>
     </div>
   );
 }
