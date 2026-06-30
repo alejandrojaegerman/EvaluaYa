@@ -186,7 +186,6 @@ function PropertyStep() {
       const p = draft.property;
       if (p.address) setAddress(p.address);
       if (p.buildingName) setBuildingName(p.buildingName);
-      if (p.address || p.buildingName) setDetailsOpen(true);
       if (p.state) setState(p.state);
       if (p.parroquia) setParroquia(p.parroquia);
       // Only restore the municipio when it's a valid option for the saved state.
