@@ -365,50 +365,50 @@ const es: Dict = {
   "rule.urm.finding":
     "Edificación de mampostería sin refuerzo: muy vulnerable tras un sismo fuerte.",
   "rule.urm.step":
-    "No la consideres segura para entrar. Espera la evaluación de un ingeniero o Protección Civil.",
+    "Sugerencia: por precaución, evita permanecer dentro hasta que un ingeniero colegiado o Protección Civil evalúen la edificación.",
   "rule.liquefaction.finding":
     "Señales de licuefacción del suelo: el terreno perdió capacidad de soporte.",
   "rule.liquefaction.step":
-    "No entres. La estructura puede asentarse o inclinarse. Evacúa y reporta a las autoridades.",
+    "Sugerencia: la estructura podría asentarse o inclinarse; considera salir y reportar a las autoridades para que la revisen.",
   "rule.pounding.finding":
     "Golpeteo con un edificio vecino: posible daño estructural severo.",
-  "rule.pounding.step": "No entres y evacúa la zona de contacto entre edificios.",
+  "rule.pounding.step": "Sugerencia: por precaución, evita la zona de contacto entre los edificios.",
   "rule.plumbing.finding":
     "Daño severo de plomería o posible fuga de gas: riesgo inmediato.",
   "rule.plumbing.step":
-    "Cierra la llave principal de gas y agua, no enciendas luces ni llamas, y evacúa.",
+    "Sugerencia: si sospechas una fuga, cierra la llave principal de gas y agua, evita encender luces o llamas y considera salir.",
   "rule.intensity.finding":
     "Sacudida sísmica moderada (intensidad VI o aceleración ≥0.25g) en esta ubicación.",
   "rule.intensity.step":
-    "Aumenta la precaución: revisa con más cuidado y prioriza una evaluación profesional.",
+    "Sugerencia: aumenta la precaución, revisa con más cuidado y prioriza una evaluación profesional.",
   "rule.intensity_severe.finding":
     "Sacudida sísmica muy fuerte (intensidad VIII+ o aceleración ≥0.50g) en esta ubicación.",
   "rule.intensity_severe.step":
-    "Esta zona recibió una de las sacudidas más fuertes del sismo. Trata cualquier daño con máxima cautela.",
+    "Sugerencia: esta zona recibió una de las sacudidas más fuertes del sismo; trata cualquier daño con máxima cautela.",
   "rule.spectral.finding":
     "La demanda sísmica para edificaciones de esta altura fue alta (aceleración espectral ≥0.40g).",
   "rule.spectral.step":
-    "Edificios de esta altura sintieron la sacudida con especial fuerza. Prioriza una revisión profesional.",
+    "Sugerencia: edificios de esta altura sintieron la sacudida con especial fuerza; prioriza una revisión profesional.",
   "rule.softsoil.finding":
     "Suelo blando: amplifica la sacudida y aumenta el riesgo de licuefacción.",
   "rule.softsoil.step":
-    "Vigila asentamientos o inclinaciones del terreno y de la edificación.",
+    "Sugerencia: vigila asentamientos o inclinaciones del terreno y de la edificación.",
   "rule.softsoil_severe.finding":
     "Suelo muy blando: fuerte amplificación de la sacudida y alto riesgo de licuefacción.",
   "rule.softsoil_severe.step":
-    "Observa con cuidado el terreno y los cimientos; prioriza una evaluación profesional.",
+    "Sugerencia: observa con cuidado el terreno y los cimientos y prioriza una evaluación profesional.",
   "rule.combo_shaking.finding":
     "Sacudida muy fuerte combinada con daño estructural reportado: riesgo crítico para la vida.",
   "rule.combo_shaking.step":
-    "No la consideres segura. Evacúa y espera la confirmación de un ingeniero o Protección Civil.",
+    "Sugerencia: por precaución, evita permanecer dentro hasta que un ingeniero colegiado o Protección Civil lo confirmen.",
   "rule.floors.finding":
     "Edificación de más de 7 pisos: requiere precaución adicional.",
   "rule.floors.step":
-    "Limita el uso hasta que un ingeniero confirme la seguridad de los pisos superiores.",
+    "Sugerencia: limita el uso hasta que un ingeniero confirme la seguridad de los pisos superiores.",
   "rule.structure.finding":
     "El sistema estructural de esta edificación requiere precaución adicional.",
   "rule.structure.step":
-    "Limita el uso y prioriza una evaluación profesional.",
+    "Sugerencia: limita el uso y prioriza una evaluación profesional.",
 
   "soil.rock": "Suelo firme / roca",
   "soil.stiff": "Suelo rígido",
