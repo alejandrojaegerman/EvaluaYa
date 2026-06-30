@@ -73,6 +73,37 @@ const es: Dict = {
   "disclaimer.body":
     "Esta herramienta ofrece una orientación preliminar y no sustituye la inspección de un ingeniero estructural autorizado ni de Protección Civil. Ante peligro inminente, evacúa y llama a emergencias.",
 
+  // ----- Legal / responsabilidad (ES) -----
+  "nav.legal": "Aviso legal",
+  "legal.title": "Aviso legal y responsabilidad",
+  "legal.subtitle": "Cómo usar EvalúaYa y los límites de responsabilidad.",
+  "legal.updated": "Última actualización: junio de 2026",
+  "legal.intro":
+    "EvalúaYa es una iniciativa comunitaria sin fines de lucro. Antes de usar la herramienta o de conectarte con un ingeniero voluntario, lee cómo funciona y cuáles son sus límites.",
+  "legal.s1.title": "No reemplaza una visita oficial",
+  "legal.s1.body":
+    "Ni esta herramienta ni el contacto con un ingeniero voluntario reemplazan la inspección formal de un ingeniero estructural colegiado, de FUNVISIS o de Protección Civil. El resultado es solo informativo y no constituye un certificado de habitabilidad ni un dictamen oficial.",
+  "legal.s2.title": "Es una orientación técnica preliminar",
+  "legal.s2.body":
+    "Cualquier evaluación —automática o realizada por un ingeniero voluntario— es una orientación preliminar basada en lo que se reporta y observa a simple vista. No analiza elementos ocultos, fundaciones enterradas ni el interior de los muros, y no sustituye un estudio estructural detallado.",
+  "legal.s3.title": "Ingenieros voluntarios",
+  "legal.s3.body":
+    "Los ingenieros y organizaciones que participan lo hacen de forma voluntaria y gratuita. EvalúaYa no les paga ni mantiene una relación laboral o comercial con ellos; actúan a título personal. Verificamos sus credenciales con la información que nos suministran, pero no garantizamos sus servicios ni el resultado de sus recomendaciones.",
+  "legal.s4.title": "Limitación de responsabilidad",
+  "legal.s4.body":
+    "EvalúaYa, sus colaboradores y los ingenieros voluntarios no se hacen responsables por las recomendaciones dadas, las decisiones tomadas a partir de ellas, ni por daños o perjuicios derivados del uso de la aplicación. La decisión final y la responsabilidad sobre el inmueble corresponden a su propietario u ocupante y a las autoridades competentes.",
+  "legal.s5.title": "Emergencias",
+  "legal.s5.body":
+    "Ante peligro inminente, no esperes una evaluación: evacúa de inmediato y llama a Protección Civil o a los servicios de emergencia.",
+  "legal.contact.title": "Contacto",
+  "legal.contact.body":
+    "¿Dudas sobre este aviso? Escríbenos a contacto@evaluaya.app. Consulta también nuestra Política de privacidad.",
+  "legal.short":
+    "Orientación preliminar de voluntarios; no reemplaza una inspección oficial. Los ingenieros son voluntarios no remunerados y EvalúaYa no se responsabiliza por sus recomendaciones.",
+  "legal.readMore": "Leer el aviso legal completo",
+  "legal.ack":
+    "Entiendo que esto es una orientación preliminar de voluntarios no remunerados y que no reemplaza una inspección oficial.",
+
   "property.title": "Datos de la propiedad",
   "property.subtitle": "Esta información ayuda a interpretar los hallazgos.",
   "property.address": "Dirección / sector",
