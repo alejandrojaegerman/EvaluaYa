@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 
 import type { AssessmentRecord } from "./assessment-types";
+import { damageCategoryKey } from "./assessment-types";
 import { translate, type Lang } from "./i18n";
 import { formatDateTime } from "./datetime";
 import { RISK_HEX } from "./risk";
