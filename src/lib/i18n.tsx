@@ -610,6 +610,7 @@ const es: Dict = {
   "data.filters": "Filtros",
   "picker.mostAffected": "Zonas más afectadas",
   "picker.allAreas": "Todas las zonas",
+  "picker.granCaracas": "Gran Caracas",
   "data.filterState": "Estado",
   "data.filterMunicipality": "Municipio",
   "data.filterAll": "Todos",
