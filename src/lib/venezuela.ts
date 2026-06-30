@@ -692,6 +692,42 @@ export function municipiosFor(state: string | null | undefined): string[] {
 }
 
 /**
+ * Miranda municipios that make up the Caracas metropolitan area ("Gran
+ * Caracas") alongside Libertador (Distrito Capital). People who live here
+ * usually think of themselves as living in "Caracas", so we surface these
+ * under Distrito Capital in the picker — but they are persisted as Miranda
+ * (see normalizeCaracasLocation) so the map, drill-down and centroids stay
+ * correct.
+ */
+export const GRAN_CARACAS_MUNICIPIOS = [
+  "Chacao",
+  "Baruta",
+  "Sucre",
+  "El Hatillo",
+] as const;
+
+/**
+ * Returns the canonical state for a picked location. If the resident chose a
+ * Gran Caracas municipio under "Distrito Capital", the real state is Miranda.
+ * Everything else passes through unchanged.
+ */
+export function normalizeCaracasLocation(
+  state: string | null | undefined,
+  municipality: string | null | undefined,
+): string {
+  const s = (state ?? "").trim();
+  const m = (municipality ?? "").trim();
+  if (
+    s === "Distrito Capital" &&
+    (GRAN_CARACAS_MUNICIPIOS as readonly string[]).includes(m)
+  ) {
+    return "Miranda";
+  }
+  return s;
+}
+
+
+/**
  * URL-safe slug for a municipio name (accent-stripped, lowercase, hyphenated).
  * Shares the exact slugify rules used for estados so links stay consistent.
  * e.g. "Simón Bolívar" -> "simon-bolivar", "El Hatillo" -> "el-hatillo".
