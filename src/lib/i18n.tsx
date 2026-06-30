@@ -1116,16 +1116,16 @@ const es: Dict = {
 
 
   // Engineer panel
-  "panel.title": "Panel de ingeniero voluntario",
+  "panel.title": "Panel del evaluador voluntario",
   "panel.welcome": "Hola",
   "panel.coverage": "Cobertura",
-  "panel.proTitle": "Evaluación profesional",
+  "panel.proTitle": "Evaluación de apoyo",
   "panel.proBody":
-    "Realiza una inspección certificada. Responderás las mismas preguntas y el reporte quedará marcado como verificado por ingeniero en el mapa.",
-  "panel.startPro": "Iniciar evaluación profesional",
+    "Acompaña al residente con una evaluación de apoyo. Responderás las mismas preguntas y el reporte quedará marcado como revisado por un evaluador voluntario en el mapa. No es un dictamen ni un certificado de habitabilidad.",
+  "panel.startPro": "Iniciar evaluación de apoyo",
   "panel.invalid": "Enlace no válido o no aprobado",
   "panel.invalidBody":
-    "Este enlace no corresponde a un voluntario aprobado. Si crees que es un error, contáctanos.",
+    "Este enlace no corresponde a un evaluador voluntario aprobado. Si crees que es un error, contáctanos.",
   "panel.empty": "No hay solicitudes abiertas en tu zona por ahora.",
   "panel.openRequests": "Solicitudes",
   "panel.claim": "Estoy disponible",
