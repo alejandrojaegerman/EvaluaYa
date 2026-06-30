@@ -340,6 +340,12 @@ const es: Dict = {
   "checklist.commentsTitle": "Comentarios adicionales (opcional)",
   "checklist.commentsPlaceholder":
     "Escribe aquí cualquier detalle que las fotos no muestren.",
+  // Photo-carrier labels (used by the AI prompt)
+  "item.facade.area": "Fachada",
+  "item.facade.q": "Foto del edificio completo desde afuera.",
+  "item.damage_photos.area": "Fotos de daños",
+  "item.damage_photos.q": "Fotos de los daños observados.",
+
 
 
   "checklist.exampleToggle": "¿Cómo se ve?",
