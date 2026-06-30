@@ -23,7 +23,7 @@ import type {
   BuildingType,
   StructuralType,
 } from "@/lib/assessment-types";
-import { loadDraft, saveDraft, type ResidentContactType } from "@/lib/draft-store";
+import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { LegalConsentGate } from "@/components/LegalConsentGate";
 import {
   getLegalConsent,
@@ -93,6 +93,41 @@ const STRUCTURAL_TYPES: StructuralType[] = [
 // Sentinel select value for the "I'm not sure" municipio option.
 const UNSURE_MUNICIPIO = "__unsure__";
 
+// Common dial codes for residents in Venezuela and the diaspora.
+// Order: Venezuela first, then the most common destination countries.
+const COUNTRY_CODES: { code: string; label: string }[] = [
+  { code: "+58", label: "🇻🇪 Venezuela (+58)" },
+  { code: "+57", label: "🇨🇴 Colombia (+57)" },
+  { code: "+1", label: "🇺🇸 EE.UU. / Canadá (+1)" },
+  { code: "+34", label: "🇪🇸 España (+34)" },
+  { code: "+56", label: "🇨🇱 Chile (+56)" },
+  { code: "+51", label: "🇵🇪 Perú (+51)" },
+  { code: "+54", label: "🇦🇷 Argentina (+54)" },
+  { code: "+593", label: "🇪🇨 Ecuador (+593)" },
+  { code: "+52", label: "🇲🇽 México (+52)" },
+  { code: "+55", label: "🇧🇷 Brasil (+55)" },
+  { code: "+507", label: "🇵🇦 Panamá (+507)" },
+  { code: "+1809", label: "🇩🇴 Rep. Dominicana (+1809)" },
+  { code: "+39", label: "🇮🇹 Italia (+39)" },
+  { code: "+351", label: "🇵🇹 Portugal (+351)" },
+];
+const DEFAULT_DIAL_CODE = "+58";
+
+// Split a stored contact ("+58 414...") into dial code + local number.
+function splitContact(stored: string): { dial: string; number: string } {
+  const trimmed = stored.trim();
+  // Longest-prefix match so "+1809" wins over "+1".
+  const match = [...COUNTRY_CODES]
+    .sort((a, b) => b.code.length - a.code.length)
+    .find((c) => trimmed.startsWith(c.code));
+  if (match) {
+    return { dial: match.code, number: trimmed.slice(match.code.length).trim() };
+  }
+  return { dial: DEFAULT_DIAL_CODE, number: trimmed };
+}
+
+
+
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
@@ -105,10 +140,10 @@ function PropertyStep() {
   const [municipality, setMunicipality] = useState("");
   const [parroquia, setParroquia] = useState("");
   // Minimal resident contact (Doc #1) — so a volunteer evaluator can reach them.
+  // Contact is WhatsApp-only now: a country dial code + local phone number.
   const [residentName, setResidentName] = useState("");
   const [residentContact, setResidentContact] = useState("");
-  const [residentContactType, setResidentContactType] =
-    useState<ResidentContactType>("whatsapp");
+  const [dialCode, setDialCode] = useState(DEFAULT_DIAL_CODE);
   // Blocking legal + data-consent gate (Doc #1). Shown until accepted.
   const [showGate, setShowGate] = useState(false);
   const [consent, setConsent] = useState<LegalConsent | null>(null);
@@ -159,9 +194,11 @@ function PropertyStep() {
         setMunicipality(p.municipality);
       }
       if (draft.resident?.name) setResidentName(draft.resident.name);
-      if (draft.resident?.contact) setResidentContact(draft.resident.contact);
-      if (draft.resident?.contactType)
-        setResidentContactType(draft.resident.contactType);
+      if (draft.resident?.contact) {
+        const { dial, number } = splitContact(draft.resident.contact);
+        setDialCode(dial);
+        setResidentContact(number);
+      }
 
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.structuralType) {
@@ -262,11 +299,19 @@ function PropertyStep() {
   // Required: either a real municipio is selected, or the resident chose "not sure".
   const municipalitySatisfied = municipality.trim() !== "" || municipalityUnsure;
 
+  // Building name is required for multi-unit buildings (apartment/commercial);
+  // a standalone house often has no tower name.
+  const buildingNameRequired =
+    buildingType === "apartment" || buildingType === "commercial";
+
   const missing: string[] = [];
   if (state.trim() === "") missing.push(t("property.miss.state"));
   if (state.trim() !== "" && !municipalitySatisfied)
     missing.push(t("property.miss.municipality"));
+  if (address.trim() === "") missing.push(t("property.miss.address"));
   if (buildingType === null) missing.push(t("property.miss.type"));
+  if (buildingNameRequired && buildingName.trim() === "")
+    missing.push(t("property.miss.buildingName"));
   if (age === null) missing.push(t("property.miss.age"));
   if (residentName.trim() === "") missing.push(t("property.miss.residentName"));
   if (residentContact.trim() === "")
@@ -277,6 +322,8 @@ function PropertyStep() {
     floors >= 1 &&
     state.trim() !== "" &&
     municipalitySatisfied &&
+    address.trim() !== "" &&
+    (!buildingNameRequired || buildingName.trim() !== "") &&
     residentName.trim() !== "" &&
     residentContact.trim() !== "";
 
@@ -323,8 +370,8 @@ function PropertyStep() {
       ...(engParam ? { engineerToken: engParam } : {}),
       resident: {
         name: residentName.trim(),
-        contact: residentContact.trim(),
-        contactType: residentContactType,
+        contact: `${dialCode} ${residentContact.trim()}`.trim(),
+        contactType: "whatsapp",
       },
       ...(consent ? { consent } : {}),
       updatedAt: Date.now(),
@@ -343,22 +390,17 @@ function PropertyStep() {
           }}
         />
       )}
-      <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
+      <StepHeader step={1} title={t("property.title")} />
 
-
-      <p className="mt-3 text-sm text-muted-foreground">{t("property.effortHint")}</p>
-
-      {engParam ? (
+      {engParam && (
         <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
           <p className="font-medium text-primary">{t("panel.proTitle")}</p>
         </div>
-      ) : (
-        <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card p-3 text-sm">
-          <Users className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-          <p className="text-muted-foreground">{t("property.behalfHint")}</p>
-        </div>
       )}
+
+
+
 
 
 
@@ -632,55 +674,40 @@ function PropertyStep() {
           </div>
 
           <div>
-            <Label className="text-sm font-semibold">
-              {t("property.contactType")}{" "}
+            <Label htmlFor="residentContact" className="text-sm font-semibold">
+              {t("property.phone")}{" "}
               <span className="font-normal text-destructive">*</span>
             </Label>
-            <div className="mt-2 grid grid-cols-3 gap-2">
-              {(["whatsapp", "phone", "email"] as ResidentContactType[]).map(
-                (type) => {
-                  const selected = residentContactType === type;
-                  return (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setResidentContactType(type)}
-                      aria-pressed={selected}
-                      className={cn(
-                        "rounded-xl border-2 py-2.5 text-sm font-semibold transition-colors",
-                        selected
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-card text-foreground hover:border-primary/30",
-                      )}
-                    >
-                      {t(
-                        type === "whatsapp"
-                          ? "property.contactWhatsapp"
-                          : type === "phone"
-                            ? "property.contactPhone"
-                            : "property.contactEmail",
-                      )}
-                    </button>
-                  );
-                },
-              )}
+            <div className="mt-2 flex gap-2">
+              <select
+                aria-label={t("property.countryCode")}
+                value={dialCode}
+                onChange={(e) => setDialCode(e.target.value)}
+                className="h-12 w-32 shrink-0 rounded-xl border border-input bg-card px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {COUNTRY_CODES.map((c) => (
+                  <option key={c.label} value={c.code}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+              <Input
+                id="residentContact"
+                value={residentContact}
+                onChange={(e) => setResidentContact(e.target.value)}
+                placeholder={t("property.residentContactPhonePlaceholder")}
+                className="h-12 flex-1 rounded-xl bg-card"
+                maxLength={40}
+                inputMode="tel"
+                autoComplete="tel"
+              />
             </div>
-            <Input
-              id="residentContact"
-              value={residentContact}
-              onChange={(e) => setResidentContact(e.target.value)}
-              placeholder={t(
-                residentContactType === "email"
-                  ? "property.residentContactEmailPlaceholder"
-                  : "property.residentContactPhonePlaceholder",
-              )}
-              className="mt-2 h-12 rounded-xl bg-card"
-              maxLength={200}
-              inputMode={residentContactType === "email" ? "email" : "tel"}
-              autoComplete={residentContactType === "email" ? "email" : "tel"}
-            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {t("property.phoneHint")}
+            </p>
           </div>
         </section>
+
 
         {/* ── Building ──────────────────────────────────────── */}
 
