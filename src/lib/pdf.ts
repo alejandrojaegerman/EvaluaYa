@@ -38,7 +38,7 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   doc.line(margin, y, pageW - margin, y);
   addSpace(26);
 
-  // Risk banner
+  // Findings banner (visual findings, not a verdict)
   const [r, g, b] = RISK_HEX[record.riskLevel];
   doc.setFillColor(r, g, b);
   doc.roundedRect(margin, y - 6, contentW, 46, 8, 8, "F");
@@ -47,9 +47,22 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   doc.setFontSize(16);
   doc.text(t(`result.${record.riskLevel}.tag`), margin + 16, y + 14);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.text(t(`result.${record.riskLevel}.action`), margin + 16, y + 31);
+  doc.setFontSize(10);
+  doc.text(t("pdf.findingsBannerNote"), margin + 16, y + 31, {
+    maxWidth: contentW - 32,
+  });
   addSpace(64);
+
+  // Findings disclaimer
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(9);
+  doc.setTextColor(110, 118, 126);
+  {
+    const dLines = doc.splitTextToSize(t("result.findingsDisclaimer"), contentW);
+    doc.text(dLines, margin, y);
+    addSpace(dLines.length * 12 + 8);
+  }
+  doc.setFont("helvetica", "normal");
 
   doc.setTextColor(40, 48, 56);
 
