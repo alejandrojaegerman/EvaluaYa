@@ -579,9 +579,7 @@ function PropertyStep() {
             <div>
               <Label htmlFor="parroquia" className="text-sm font-semibold">
                 {t("property.parroquia")}{" "}
-                <span className="font-normal text-muted-foreground">
-                  ({t("common.optional")})
-                </span>
+                <span className="font-normal text-destructive">*</span>
               </Label>
               <Input
                 id="parroquia"
