@@ -23,7 +23,7 @@ import type {
   ProgressStage,
 } from "@/lib/volunteers.functions";
 
-const LEVELS: RiskLevel[] = ["green", "yellow", "orange", "red"];
+
 
 const STAGES: { key: ProgressStage; labelKey: string }[] = [
   { key: "claimed", labelKey: "panel.stage.claimed" },
