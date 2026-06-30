@@ -225,6 +225,20 @@ export const DAMAGE_CATEGORIES: DamageCategory[] = [
 
 export const DEFAULT_DAMAGE_CATEGORY: DamageCategory = "other";
 
+/**
+ * Resolve a stored per-photo label (a damage category id) to an i18n key, so
+ * captions render in the viewer's language. Returns null for unknown / empty
+ * labels (callers should fall back to the item area label).
+ */
+export function damageCategoryKey(
+  label: string | null | undefined,
+): string | null {
+  if (!label) return null;
+  return (DAMAGE_CATEGORIES as string[]).includes(label)
+    ? `checklist.cat.${label}`
+    : null;
+}
+
 export type ChecklistAnswer = {
   id: ChecklistItemId;
   value: AnswerValue;
