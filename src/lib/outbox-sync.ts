@@ -38,6 +38,7 @@ function buildPayload(item: OutboxItem) {
         ? { condoBoardMember: p.condoBoardMember }
         : {}),
       age: p.age ?? "post2000",
+      ...(p.comments?.trim() ? { comments: p.comments.trim() } : {}),
       ...(typeof p.seismicIntensity === "number"
         ? {
             seismicIntensity: p.seismicIntensity,
