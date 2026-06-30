@@ -327,19 +327,48 @@ const es: Dict = {
   "checklist.required": "Obligatoria",
   "checklist.photosTitle": "Fotos (obligatorias)",
   "checklist.photosIntro":
-    "Las fotos son lo más importante. Sin ellas, un ingeniero no puede ayudarte. Son obligatorias.",
-  "checklist.facadeTitle": "Foto de la fachada",
+    "Las fotos son lo más importante: son los ojos del ingeniero. Sin ellas no puede ayudarte. Toma fotos nítidas, con buena luz y bien enfocadas.",
+  "checklist.facadeTitle": "Fotos de la fachada",
   "checklist.facadeHelp":
-    "Toma una foto del edificio completo desde afuera. Permite ver si quedó inclinado sin tener que entrar.",
+    "Agrega de 1 a 5 fotos del edificio completo desde afuera. Si no entra en una sola toma, hazlo desde varios ángulos. Ayuda a ver si quedó inclinado sin tener que entrar.",
+  "checklist.facadeCount": "{n} de {max} fotos",
   "checklist.damageTitle": "Fotos de los daños",
   "checklist.damageHelp":
-    "Agrega fotos claras de lo que viste (grietas, columnas, paredes, techos). Mínimo {min}, hasta {max}.",
+    "Agrega fotos claras de lo que viste. Para cada daño, una toma de lejos (el elemento completo) y una de cerca. Mínimo {min}, hasta {max}.",
   "checklist.damageCount": "{n} de {max} fotos",
-  "checklist.missingFacade": "Falta la foto de la fachada del edificio.",
+  "checklist.missingFacade": "Falta al menos una foto de la fachada del edificio.",
   "checklist.missingDamage": "Agrega al menos {n} fotos de los daños para continuar.",
+  // Clasificación de cada foto de daño (dropdown)
+  "checklist.photoCategoryLabel": "¿Qué muestra esta foto?",
+  "checklist.cat.walls": "Paredes",
+  "checklist.cat.columns_beams": "Columnas y vigas",
+  "checklist.cat.doors_windows": "Puertas y ventanas",
+  "checklist.cat.roof": "Techo",
+  "checklist.cat.stairs": "Escaleras",
+  "checklist.cat.foundation": "Cimientos",
+  "checklist.cat.plumbing": "Plomería / gas",
+  "checklist.cat.other": "Otro / general",
+  // Guía "qué fotos le sirven al ingeniero"
+  "checklist.usefulToggle": "¿Qué fotos le sirven al ingeniero?",
+  "checklist.usefulIntro": "Tómalas pensando en lo que el ingeniero necesita ver:",
+  "checklist.useful.1":
+    "Grietas: ponlas a foco, con algo de referencia de tamaño al lado (una mano, una moneda, una regla) para ver el ancho.",
+  "checklist.useful.2":
+    "Columnas y vigas: muestra el concreto desprendido y el acero (cabilla) a la vista, de lejos y de cerca.",
+  "checklist.useful.3":
+    "Uniones y esquinas: donde se juntan paredes, columnas y techos suele verse el daño real.",
+  "checklist.useful.4":
+    "Cada daño desde 2 ángulos: una toma general para ubicarlo y una cercana del detalle.",
+  "checklist.useful.5":
+    "Buena luz y sin movimiento: si sale borrosa o muy oscura, repítela.",
+  // Lightbox / ver foto completa
+  "checklist.viewPhoto": "Ver foto completa",
+  // Validación de imagen
+  "checklist.invalidFile": "Solo se permiten imágenes (JPG, PNG).",
+  "checklist.unreadableImage": "No pudimos leer esa imagen. Intenta con otra.",
   "checklist.commentsTitle": "Comentarios adicionales (opcional)",
   "checklist.commentsPlaceholder":
-    "Escribe aquí cualquier detalle que las fotos no muestren.",
+    "Ej.: ¿Cuándo aparecieron las grietas? ¿Crecieron tras una réplica? ¿En qué piso vives? ¿La estructura es de concreto o de bloque? ¿Hay daños en áreas comunes (escaleras, estacionamiento)? ¿Sentiste que la edificación se movió raro?",
   // Photo-carrier labels (used by the AI prompt)
   "item.facade.area": "Fachada",
   "item.facade.q": "Foto del edificio completo desde afuera.",
