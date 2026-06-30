@@ -91,6 +91,8 @@ const analyzeSchema = z.object({
       .default("post2000"),
     livesInBuilding: z.boolean().optional(),
     condoBoardMember: z.boolean().optional(),
+    /** free-text additional comments from the resident (step 2, optional) */
+    comments: z.string().max(1000).optional(),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
     pga: z.number().min(0).max(10).optional(),
@@ -101,7 +103,7 @@ const analyzeSchema = z.object({
     spectralDemand: z.number().min(0).max(10).optional(),
     spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
-  answers: z.array(answerSchema).min(1).max(13),
+  answers: z.array(answerSchema).min(1).max(18),
   /** Engineer panel access token — when valid, the report is certified. */
   engineerToken: z.string().uuid().optional(),
   /** Minimal resident contact so a volunteer evaluator can reach them. PII. */
