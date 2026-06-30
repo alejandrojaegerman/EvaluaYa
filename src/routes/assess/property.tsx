@@ -334,7 +334,9 @@ function PropertyStep() {
     parroquia.trim() !== "" &&
     (!buildingNameRequired || buildingName.trim() !== "") &&
     residentName.trim() !== "" &&
-    residentContact.trim() !== "";
+    residentContact.trim() !== "" &&
+    livesInBuilding !== null &&
+    condoBoard !== null;
 
 
   async function handleContinue() {
