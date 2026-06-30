@@ -43,11 +43,13 @@ import {
 import { cn } from "@/lib/utils";
 import {
   ESTADO_NAMES,
+  GRAN_CARACAS_MUNICIPIOS,
   getEstado,
   getEstadoBySlug,
   municipiosFor,
   nearestEstado,
   nearestMunicipio,
+  normalizeCaracasLocation,
 } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
@@ -347,7 +349,7 @@ function PropertyStep() {
       property: {
         address: address.trim(),
         buildingName: buildingName.trim(),
-        state: state.trim(),
+        state: normalizeCaracasLocation(state, municipality),
         municipality: municipality.trim(),
         parroquia: parroquia.trim(),
         buildingType,
@@ -515,6 +517,15 @@ function PropertyStep() {
                       {name}
                     </option>
                   ))
+                )}
+                {state.trim() === "Distrito Capital" && (
+                  <optgroup label={t("picker.granCaracas")}>
+                    {GRAN_CARACAS_MUNICIPIOS.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </optgroup>
                 )}
                 {state.trim() !== "" && (
                   <option value={UNSURE_MUNICIPIO}>

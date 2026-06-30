@@ -1,38 +1,27 @@
-## Ajustes finales — Paso 1 de 2 (datos de la propiedad)
+# Agrupar "Gran Caracas" bajo Distrito Capital
 
-Con base en tus respuestas y la reunión con Manuel, estos son los cambios que faltan. El **sistema estructural se queda como está** (opcional, colapsado) y el **orden del paso 1 no se toca** (el comentario de "contacto primero" se refiere a lo que el ingeniero debe ver en su vista, no al formulario del residente — eso lo abordamos cuando trabajemos la vista del ingeniero).
+## Contexto verificado
+- Oficialmente, **Distrito Capital tiene un solo municipio: Libertador**. Por eso el dropdown solo muestra "Libertador".
+- Los municipios que la gente asocia con Caracas — **Chacao, Baruta, Sucre (Petare) y El Hatillo** — pertenecen legalmente al estado **Miranda** y ya existen ahí en los datos (`MUNICIPIOS_BY_STATE.Miranda`).
+- Solución acordada: mostrarlos como grupo **"Gran Caracas"** cuando el usuario elige Distrito Capital, pero **guardarlos internamente como Miranda** para no romper el mapa, el drill-down `/zona/$estado/$municipio` ni los centroides (`resolveMunicipio`).
 
-### 1. Código de país: mostrar también el indicativo
-Hoy el selector solo muestra la bandera. Pasará a mostrar **bandera + indicativo** (ej. `🇻🇪 +58`, `🇨🇴 +57`) para que se vea claro qué código se está usando. Venezuela queda primero y por defecto en `+58`.
+## Cambios
 
-### 2. Edad de la edificación → opcional
-Manuel pidió que la antigüedad no sea obligatoria. El campo se queda visible pero:
-- Se marca como **"(opcional)"**.
-- Deja de bloquear el botón Continuar (se puede avanzar sin elegir edad).
+### 1. `src/lib/venezuela.ts`
+- Exportar una constante `GRAN_CARACAS_MUNICIPIOS = ["Chacao", "Baruta", "Sucre", "El Hatillo"]` (municipios de Miranda que conforman el área metropolitana junto a Libertador).
+- Agregar un helper `normalizeCaracasLocation(state, municipality)` que devuelva el estado efectivo: si `state === "Distrito Capital"` y el municipio está en `GRAN_CARACAS_MUNICIPIOS`, devuelve `"Miranda"`; de lo contrario devuelve el estado tal cual. Esto centraliza la corrección de datos.
 
-### 3. Datos del solicitante: dos preguntas nuevas (Sí/No)
-En la sección de contacto se agregan dos preguntas rápidas de un toque:
-- **¿Vives en el edificio?** (Sí / No)
-- **¿Eres parte de la junta de condominio?** (Sí / No)
+### 2. `src/routes/assess/property.tsx` (solo UI + guardado)
+- En el `<select>` de Municipio, cuando `state === "Distrito Capital"`, renderizar un `<optgroup label={t("picker.granCaracas")}>` con los 4 municipios de `GRAN_CARACAS_MUNICIPIOS`, ubicado después de "Libertador" y antes de "No estoy seguro". (Libertador sigue saliendo como la opción principal de Distrito Capital.)
+- En `handleContinue`, antes de `saveDraft`, calcular el estado efectivo con `normalizeCaracasLocation(state, municipality)` y guardar ese valor en `property.state`. Así, si eligen "Chacao" bajo Distrito Capital, se persiste `state: "Miranda"`, `municipality: "Chacao"` y todo el resto del sistema (mapa, drill-down, sitemap) funciona correctamente.
+- La validación actual (`municipalitySatisfied` = municipio no vacío) ya acepta estas opciones, no requiere cambios.
 
-Ambas se guardan con la evaluación para que el evaluador entienda el acceso y la autoridad del contacto. Serán obligatorias (un solo toque cada una).
+### 3. `src/lib/i18n.tsx`
+- Agregar la clave `picker.granCaracas`:
+  - ES: `"Gran Caracas"`
+  - EN: `"Greater Caracas"`
 
-### 4. Verificación final antes de pasar al Paso 2
-Reviso en pantalla que el Paso 1 quede así:
-- Ubicación: estado, municipio, dirección (obligatoria), nombre del edificio (obligatorio en apto/comercial), parroquia (obligatoria).
-- Contacto: nombre, teléfono con `🇻🇪 +58`, ¿vive en el edificio?, ¿junta de condominio?
-- Edificación: tipo, sistema estructural (opcional colapsado), pisos sobre nivel de tierra, sótanos, edad (opcional).
-- Que no quede ningún texto engañoso tipo "gratis / dos minutos / sin registro" ni "(opcional)" donde el campo es obligatorio.
-
----
-
-### Detalles técnicos
-- **`src/routes/assess/property.tsx`**
-  - Selector de país: `option` mostrará `{c.flag} {c.code}`; ensanchar el `select` (de `w-20` a ~`w-28`) y alinear a la izquierda para que entre el indicativo.
-  - Edad: quitar `age !== null` de `valid` y la entrada de `age` en `missing`; agregar etiqueta "(opcional)" en el encabezado de la sección.
-  - Nuevos estados `livesInBuilding` y `condoBoard` (Sí/No), con UI de botones pareados en la sección de contacto; incluidos en validación (obligatorios) y persistidos en `saveDraft`/`loadDraft`.
-- **`src/lib/assessment-types.ts`**: agregar `livesInBuilding?: boolean` y `condoBoardMember?: boolean` (y `age` opcional) en la interfaz `Property`.
-- **`src/lib/outbox-sync.ts`**: incluir ambos campos en el payload cuando estén definidos.
-- **`src/lib/assessment.functions.ts`**: agregar los dos booleanos opcionales al esquema Zod del `property`.
-- **`src/lib/i18n.tsx`**: nuevas llaves ES/EN (`property.livesInBuilding`, `property.condoBoard`, sus opciones Sí/No, `property.miss.*` correspondientes, y "(opcional)" para edad).
-- Verificación con captura (Playwright) del Paso 1 renderizado.
+## Notas técnicas
+- No se toca la lógica del algoritmo ni los datos oficiales de `MUNICIPIOS_BY_STATE`; solo se agrega una vista de conveniencia en el dropdown y una normalización en el momento de guardar.
+- Si el usuario regresa al paso 1 tras guardar, verá el estado como "Miranda" con su municipio seleccionado (comportamiento correcto y consistente con los datos almacenados).
+- `resolveMunicipio` ya mapea correctamente "Sucre" en Miranda a Petare, así que el centroide del mapa queda bien.
