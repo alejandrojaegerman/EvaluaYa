@@ -194,6 +194,37 @@ export const MAX_PHOTOS_PER_ITEM = 3;
 export const MAX_DAMAGE_PHOTOS = 10;
 export const MIN_DAMAGE_PHOTOS = 5;
 
+/** Facade can carry up to 5 photos (different angles of the whole building). */
+export const MAX_FACADE_PHOTOS = 5;
+
+/**
+ * Damage-photo classification. Lets the resident tag each photo so the
+ * engineer knows what they're looking at. Maps to existing item area labels
+ * for captions; "other" is the friction-free default.
+ */
+export type DamageCategory =
+  | "walls"
+  | "columns_beams"
+  | "doors_windows"
+  | "roof"
+  | "stairs"
+  | "foundation"
+  | "plumbing"
+  | "other";
+
+export const DAMAGE_CATEGORIES: DamageCategory[] = [
+  "walls",
+  "columns_beams",
+  "doors_windows",
+  "roof",
+  "stairs",
+  "foundation",
+  "plumbing",
+  "other",
+];
+
+export const DEFAULT_DAMAGE_CATEGORY: DamageCategory = "other";
+
 export type ChecklistAnswer = {
   id: ChecklistItemId;
   value: AnswerValue;
@@ -201,6 +232,12 @@ export type ChecklistAnswer = {
   photoPaths?: string[] | null;
   /** legacy single-photo field (older records) — read-only compat */
   photoPath?: string | null;
+  /**
+   * Per-photo human labels (category captions), aligned by index to
+   * photoPaths. Additive — absent on legacy records. Surfaced to the engineer
+   * as the photo caption.
+   */
+  photoLabels?: (string | null)[] | null;
 };
 
 /** Answer enriched with the in-browser photo data urls (draft only) */
