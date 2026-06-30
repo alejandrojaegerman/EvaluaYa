@@ -450,6 +450,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       }
     }
 
+    const nowIso = new Date().toISOString();
     const { error: insertError } = await supabaseAdmin.from("assessments").insert({
       public_id: publicId,
       device_id: data.deviceId?.trim() || null,
@@ -457,6 +458,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       property: data.property,
       state: data.property.state?.trim() || null,
       municipality: canonicalMunicipality(data.property.state, data.property.municipality),
+      parroquia: data.property.parroquia?.trim() || null,
       building_name: building?.name ?? null,
       building_key: building?.key ?? null,
       building_inferred: buildingInferred,
@@ -467,6 +469,15 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
       photo_counts: photoCounts,
       ai_result: aiResult,
       risk_level: finalRisk,
+      // Minimal resident contact (PII) — only owner/service-role can read it.
+      resident_name: data.resident?.name?.trim() || null,
+      resident_contact: data.resident?.contact?.trim() || null,
+      resident_contact_type: data.resident?.contactType ?? null,
+      // Versioned legal acceptance + data consent (blocking gate, Doc #1).
+      legal_ack_at: data.consent ? data.consent.at || nowIso : null,
+      legal_version: data.consent?.legalVersion ?? null,
+      consent_at: data.consent ? data.consent.at || nowIso : null,
+      consent_version: data.consent?.consentVersion ?? null,
       status: "analyzed",
     });
 
