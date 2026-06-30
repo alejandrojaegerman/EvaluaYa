@@ -393,7 +393,8 @@ const es: Dict = {
 
   // Property helper text (accessibility)
   "property.buildingType.help": "¿Qué tipo de lugar estás evaluando?",
-  "property.floors.help": "Cuenta cuántos pisos tiene la edificación completa.",
+  "property.floors.help": "Cuenta los pisos por encima del nivel del suelo.",
+  "property.basements.help": "Niveles por debajo del nivel del suelo (estacionamientos, depósitos). Si no tiene, deja 0.",
   "property.age.help": "Si no sabes el año exacto, elige lo más cercano.",
   "property.age.pre1970.desc":
     "Construcción antigua, anterior a las normas sísmicas modernas.",
