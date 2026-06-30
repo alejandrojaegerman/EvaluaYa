@@ -222,7 +222,11 @@ function ResultPage() {
             {record.aiResult.summary}
           </p>
         )}
+        <p className="mt-4 rounded-xl bg-background/60 px-3 py-2.5 text-left text-xs leading-relaxed text-muted-foreground">
+          {t("result.findingsDisclaimer")}
+        </p>
       </section>
+
 
       {record.priorRiskLevel && record.priorRiskLevel !== record.riskLevel && (
         <p className="mt-3 rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">

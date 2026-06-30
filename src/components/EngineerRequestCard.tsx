@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { RiskLevel } from "@/lib/assessment-types";
 import { formatDateTime } from "@/lib/datetime";
 import { useLang } from "@/lib/i18n";
-import { RISK_THEME } from "@/lib/risk";
+
 import { absoluteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import type {
@@ -23,7 +23,7 @@ import type {
   ProgressStage,
 } from "@/lib/volunteers.functions";
 
-const LEVELS: RiskLevel[] = ["green", "yellow", "orange", "red"];
+
 
 const STAGES: { key: ProgressStage; labelKey: string }[] = [
   { key: "claimed", labelKey: "panel.stage.claimed" },
@@ -61,9 +61,8 @@ export function EngineerRequestCard({
 }) {
   const { t, lang } = useLang();
   const [progressNote, setProgressNote] = useState("");
-  const [validating, setValidating] = useState(false);
-  const [adjusting, setAdjusting] = useState(false);
-  const [pickedLevel, setPickedLevel] = useState<RiskLevel | null>(null);
+  const [reviewing, setReviewing] = useState(false);
+  const [accepted, setAccepted] = useState(false);
   const [verdictNote, setVerdictNote] = useState("");
 
   const curStage = stageIndex(r.progressStage);
@@ -207,136 +206,78 @@ export function EngineerRequestCard({
         </div>
       )}
 
-      {/* Validate the AI evaluation */}
+      {/* Record professional observations (no AI verdict shown) */}
       {r.claimedByMe && r.assessmentPublicId && (
         <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-3">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-primary">
             <ClipboardCheck className="size-4" aria-hidden />
-            {t("panel.validateTitle")}
+            {t("panel.reviewTitle")}
           </p>
 
           {r.verified ? (
             <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-risk-green">
               <ShieldCheck className="size-4" aria-hidden />
-              {t("panel.verifiedByYou")} —{" "}
-              {r.engineerVerdict === "adjust"
-                ? t("panel.verifiedAdjust")
-                : t("panel.verifiedAgree")}
+              {t("panel.reviewedByYou")}
             </p>
-          ) : !validating ? (
+          ) : !reviewing ? (
             <>
               <p className="mt-1 text-xs text-muted-foreground">
-                {t("panel.validateBody")}
+                {t("panel.reviewBody")}
               </p>
               <Button
                 size="sm"
                 variant="outline"
                 className="mt-2"
-                onClick={() => setValidating(true)}
+                onClick={() => setReviewing(true)}
               >
-                {t("panel.validateTitle")}
+                {t("panel.reviewCta")}
               </Button>
             </>
           ) : (
             <div className="mt-2 space-y-2">
-              {r.aiRiskLevel && (
-                <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                  {t("panel.aiSaid")}:{" "}
-                  <RiskBadge level={r.aiRiskLevel} size="sm" />
-                </p>
-              )}
-
-              {!adjusting ? (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    disabled={acting}
-                    onClick={() =>
-                      onVerdict(r.id, "agree", undefined, verdictNote.trim())
-                    }
-                  >
-                    <CheckCircle2 className="size-4" />
-                    {t("panel.agree")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setAdjusting(true)}
-                  >
-                    {t("panel.adjust")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setValidating(false)}
-                  >
-                    {t("panel.cancel")}
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium">{t("panel.pickLevel")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {LEVELS.map((lvl) => (
-                      <button
-                        key={lvl}
-                        type="button"
-                        onClick={() => setPickedLevel(lvl)}
-                        className={cn(
-                          "rounded-full px-3 py-1 text-xs font-semibold transition",
-                          RISK_THEME[lvl].badge,
-                          pickedLevel === lvl
-                            ? "ring-2 ring-offset-1 ring-primary"
-                            : "opacity-70 hover:opacity-100",
-                        )}
-                      >
-                        {t(RISK_THEME[lvl].tagKey)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <Textarea
                 value={verdictNote}
                 onChange={(e) => setVerdictNote(e.target.value)}
-                placeholder={t("panel.verdictNotePlaceholder")}
-                rows={2}
+                placeholder={t("panel.reviewNotePlaceholder")}
+                rows={3}
                 className="text-sm"
               />
-
-              {adjusting && (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    disabled={acting || !pickedLevel}
-                    onClick={() =>
-                      onVerdict(
-                        r.id,
-                        "adjust",
-                        pickedLevel ?? undefined,
-                        verdictNote.trim(),
-                      )
-                    }
-                  >
-                    {t("panel.submitVerdict")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setAdjusting(false);
-                      setPickedLevel(null);
-                    }}
-                  >
-                    {t("panel.cancel")}
-                  </Button>
-                </div>
-              )}
+              <label className="flex items-start gap-2 rounded-lg bg-background/70 p-2 text-[11px] leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={accepted}
+                  onChange={(e) => setAccepted(e.target.checked)}
+                  className="mt-0.5 size-3.5 shrink-0"
+                />
+                <span>{t("panel.reviewDescargo")}</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  disabled={acting || !accepted}
+                  onClick={() =>
+                    onVerdict(r.id, "agree", undefined, verdictNote.trim())
+                  }
+                >
+                  <CheckCircle2 className="size-4" />
+                  {t("panel.reviewSubmit")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setReviewing(false);
+                    setAccepted(false);
+                  }}
+                >
+                  {t("panel.cancel")}
+                </Button>
+              </div>
             </div>
           )}
         </div>
       )}
+
 
       {/* Primary actions */}
       <div className="mt-3 grid gap-2">
