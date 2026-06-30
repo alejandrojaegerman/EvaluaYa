@@ -63,6 +63,7 @@ async function buildSitemap(): Promise<string> {
     },
     { loc: absoluteUrl("/feedback"), changefreq: "monthly", priority: "0.5" },
     { loc: absoluteUrl("/privacidad"), changefreq: "yearly", priority: "0.3" },
+    { loc: absoluteUrl("/legal"), changefreq: "yearly", priority: "0.3" },
     // Regional landing pages — one per estado.
     ...ESTADOS.map((e) => ({
       loc: absoluteUrl(`/zona/${estadoSlug(e.name)}`),
