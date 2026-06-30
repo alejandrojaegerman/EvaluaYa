@@ -67,6 +67,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
         },
       });
       if (res.ok) {
+        setLegalAck();
         setSent(true);
         toast.success(t("connect.requestDone"));
       } else {
