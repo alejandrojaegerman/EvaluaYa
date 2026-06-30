@@ -240,6 +240,7 @@ const es: Dict = {
   "factors.rule.pounding": "Golpeteo entre edificios",
   "factors.rule.plumbing": "Fuga de gas / plomería",
   "factors.rule.severe_shaking": "Sacudida muy fuerte",
+  "factors.rule.tilt": "Inclinación / desplome",
   "dash.recentReports": "Reportes recientes",
   "dash.issuesWord": "problemas",
 
