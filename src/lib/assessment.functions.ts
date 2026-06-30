@@ -67,6 +67,13 @@ const answerSchema = z.object({
     .max(10)
     .optional()
     .default([]),
+  // Per-photo classification labels (damage category ids), aligned by index
+  // with photoDataUrls. Lets the engineer see what each photo depicts.
+  photoLabels: z
+    .array(z.string().max(40).nullable())
+    .max(10)
+    .optional()
+    .default([]),
 });
 
 const analyzeSchema = z.object({
