@@ -2590,7 +2590,7 @@ const en: Dict = {
   "panel.noLocation": "Location not specified",
   "panel.refresh": "Refresh",
   "panel.waResident":
-    "Hi, I'm a volunteer engineer from EvalúaYa. I saw your request for guidance after your assessment. How can I help?",
+    "Hi, I'm a community volunteer evaluator from EvalúaYa. I saw your request for guidance after your assessment. How can I help?",
 
   "admin.title": "Volunteer administration",
   "admin.secret": "Admin key",
