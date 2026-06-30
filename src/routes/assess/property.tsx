@@ -320,13 +320,13 @@ function PropertyStep() {
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (buildingNameRequired && buildingName.trim() === "")
     missing.push(t("property.miss.buildingName"));
-  if (age === null) missing.push(t("property.miss.age"));
   if (residentName.trim() === "") missing.push(t("property.miss.residentName"));
   if (residentContact.trim() === "")
     missing.push(t("property.miss.residentContact"));
+  if (livesInBuilding === null) missing.push(t("property.miss.livesInBuilding"));
+  if (condoBoard === null) missing.push(t("property.miss.condoBoard"));
   const valid =
     buildingType !== null &&
-    age !== null &&
     floors >= 1 &&
     state.trim() !== "" &&
     municipalitySatisfied &&
