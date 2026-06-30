@@ -100,6 +100,11 @@ export const PRIMARY_QUESTION_IDS: ChecklistItemId[] = [
  * Sub-signals captured by the "señales graves" multi-select. Each maps to a
  * civil-engineer-validated deterministic rule. Stored as individual answers so
  * historical records and the data-room analytics keep working unchanged.
+ *
+ * NOTE: "foundation" intentionally NOT listed here — its signals (cracks +
+ * sinking) are already covered by P1 walls and P4 tilt, so asking it again was
+ * redundant. The id stays in the type + STRUCTURAL_DAMAGE_IDS so legacy records
+ * keep displaying and scoring exactly as before.
  */
 export const SEVERE_SIGN_IDS: ChecklistItemId[] = [
   "liquefaction",
@@ -107,7 +112,6 @@ export const SEVERE_SIGN_IDS: ChecklistItemId[] = [
   "plumbing",
   "roof",
   "stairs",
-  "foundation",
 ];
 
 /** Direct life-safety RED trigger (new in the 4+1 flow). */

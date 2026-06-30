@@ -1,48 +1,44 @@
-# Paso 2 del formulario: "Daños y fotos" (rediseño)
+# Limpieza de preguntas + imagen de Plomería
 
-Alinea el paso 2 con lo acordado con Manuel y tus comentarios: simplificar, quitar lo técnico, y poner **todas las fotos en un solo lugar con fachada obligatoria**.
+Objetivo: reducir preguntas repetidas sin tocar el algoritmo, y arreglar la ilustración de Plomería/gas. Después analizamos el documento oficial venezolano para sumar más imágenes.
 
-## Qué quitamos (lo que ves hoy y no sirve)
+## 1. Quitar la pregunta de "Cimientos"
 
-1. **Banner "Reporta solo daños NUEVOS"** → se elimina por completo. La gente reporta los daños que ve, punto.
-2. **Bloque "Señales graves"** (licuefacción, golpeteo, plomería, etc.) → se mantiene. Son términos técnicos que el residente no entiende. Entonces hay que reescirbirlas para que se entienda y se utilicen imagenes, se retira el borde rojo para que no de mucha alarma pero que es importante para el algoritmo, esta parte tambien es importante y suma al algoritmo. Se mantiene opcional
-3. **Barra de progreso "0 / 4 esenciales"** → se elimina ese stepper interno.
-4. **Texto "Las fotos son opcionales..."** y el hint "puedes usar fotos que ya tengas / una foto mejora el análisis" → se elimina. Las fotos pasan a ser **obligatorias**. 
-5. **Uploader de foto dentro de cada pregunta** → se quita. Ya no se sube foto pregunta por pregunta.
+La pregunta de cimientos ya está cubierta por **P1 Paredes** (grietas) y **P4 Inclinación/desplome** (hundimientos). Se deja de mostrar.
 
-## Qué queda / se reordena
+- En `src/lib/assessment-types.ts`: sacar `"foundation"` de `SEVERE_SIGN_IDS`. Queda: licuefacción, golpeteo, plomería, techo, escaleras.
+- **No se toca** `STRUCTURAL_DAMAGE_IDS` (mantiene `foundation` para que reportes viejos sigan puntuando igual).
+- El algoritmo (`safety-rules.ts` / `provisional.ts`) queda **idéntico**: cimientos solo sumaba dentro de daños estructurales, y eso ya lo aportan Paredes + Inclinación.
 
-**A. Preguntas de daño (sí / no / no sé)** — arriba, simples, sin fotos:
+## 2. Afinar el texto de "Licuefacción"
 
-- Paredes — *(se mantiene, lo aprobaste)*
-- Columnas y vigas / estructura — *(se mantiene, lo aprobaste)*
-- Puertas, ventanas y vías de escape
-- ¿El edificio se ve inclinado o desplomado? *(disparador clave de seguridad)*
+Hoy su texto también menciona "estructuras hundidas o inclinadas", que pisa la P4. Se recorta para que hable solo de la señal única (agua/arena del suelo).
 
-Cada una conserva su "¿Cómo se ve?" con ejemplo/ilustración (eso ayuda y no estorba).
+- En `src/lib/i18n.tsx` (ES y EN): ajustar `item.liquefaction.q` para enfocarlo en agua/arena brotando del suelo, charcos nuevos y grietas en el terreno; quitar la parte de estructuras hundidas/inclinadas (eso ya es P4).
+- `item.liquefaction.example.yes/no` se mantienen (ya hablan de agua/arena/terreno).
 
-**B. Sección única de Fotos (lo más importante)** — un solo lugar al final:
+## 3. Regenerar la ilustración de Plomería/gas
 
-- **Foto de la fachada — OBLIGATORIA.** Slot propio y destacado, con texto corto explicando por qué ("permite ver si el edificio está inclinado sin entrar"). Sin foto de fachada no se puede continuar.
-- **Fotos de los daños — OBLIGATORIAS.** Un solo campo donde la persona agrega todas las fotos posibles (cámara o galería), hasta **10 en total**. Se exige al menos 5.
-- Miniaturas con botón de eliminar, como ahora.
+La actual (tubo caricaturesco) no comunica bien. Se reemplaza con una escena más representativa, en el **mismo estilo de dos paneles** que el resto.
 
-**C. Comentarios adicionales (opcional)** — campo de texto corto al final, para que la persona aclare algo que la foto no muestra.
+- Panel ❌ (daño): tubería con filtración + mancha de agua en la pared/techo, y una señal de olor a gas (ondas).
+- Panel ✅ (sano): tubería seca, pared limpia.
+- Estilo idéntico a las demás: fondo crema, trazo de línea verde/teal, círculo rojo ❌ arriba-izquierda, círculo verde ✅ arriba-derecha, divisor punteado vertical, 1024×512.
+- Se sobrescribe `src/assets/checklist/plumbing.jpg` (mismo nombre/import, sin cambios en código). `checklist-illustrations.ts` no cambia.
 
-## Reglas para continuar (botón "Analizar / Enviar")
+## 4. Verificación
 
-Se habilita solo cuando: las 4 preguntas están respondidas **+** hay foto de fachada **+** hay al menos 1 foto de daño. Si falta algo, se indica qué falta.
+- Confirmar que el checklist muestra 4 preguntas principales + 5 "otras señales" (sin Cimientos).
+- Confirmar que el algoritmo de riesgo da los mismos resultados en los casos de prueba existentes (`tests/unit/safety-rules.test.ts`).
+- Revisar la nueva imagen en el toggle "¿Cómo se ve?".
+
+## Siguiente paso (después de aprobar)
+
+Una vez hechos estos cambios con lo que ya tenemos, trabajamos el documento oficial venezolano que compartirás para evaluar qué imágenes adicionales incorporar (techo y escaleras quedaron señaladas como mejorables, pero las dejamos para esa fase con tus referencias).
 
 ---
 
-## Detalle técnico
-
-- `**src/lib/assessment-types.ts**`: agregar dos ids reservados `facade` y `damage_photos` a `ChecklistItemId` y a `CHECKLIST_ITEMS` (solo para transportar las fotos consolidadas como respuestas). No entran en `PRIMARY_QUESTION_IDS` ni en `STRUCTURAL_DAMAGE_IDS`, así el algoritmo determinista no cambia. Subir el tope de fotos consolidadas a 10.
-- `**src/routes/assess/checklist.tsx**`: reescribir el cuerpo del paso — quitar banner de daños nuevos, bloque de señales graves, barra de progreso y los uploaders por pregunta; dejar las 4 preguntas sin foto; agregar la sección única de Fotos (fachada obligatoria + galería hasta 10) y el campo de comentarios. Persistir `facade` y `damage_photos` como respuestas con `photoDataUrls`, y los comentarios en el draft.
-- `**src/lib/assessment.functions.ts**`: subir el `max` de `answers` (de 13) para acomodar los nuevos ids; guardar el comentario en el registro. Las fotos siguen subiéndose a storage por el mismo flujo (iteración sobre `answers`), así que el panel del ingeniero ya las verá como miniaturas.
-- `**src/lib/outbox-sync.ts` / `src/lib/draft-store.ts**`: incluir comentarios en el payload offline (las fotos ya viajan en `answers`).
-- `**src/lib/i18n.tsx**`: nuevos textos ES/EN (fachada, "fotos obligatorias", galería, comentarios, validaciones) y retirar los textos de "opcional/daños nuevos/esenciales" del paso 2. Etiquetas `item.facade.*` e `item.damage_photos.*` para que el panel del ingeniero las muestre.
-
-## Fuera de alcance (de la reunión, para otro turno)
-
-Rediseño del panel del ingeniero (miniaturas expandibles, ubicación Google Maps, estados tipo "por revisar / en hold / descartado"), quitar veredicto automático y contexto sísmico de la vista del ingeniero, y verificación CIV en el onboarding. Lo abordamos después de cerrar el paso 2.
+### Detalles técnicos
+- `SEVERE_SIGN_IDS` se usa directamente como `SEVERE_ITEMS` para renderizar el multi-select en `checklist.tsx`; quitar el id basta para ocultar la fila.
+- `foundation` permanece en el type `ChecklistItemId` y en `CHECKLIST_ILLUSTRATIONS` (back-compat de registros antiguos).
+- La imagen se genera con la herramienta de imágenes a `src/assets/checklist/plumbing.jpg`; al ser import estático de Vite, no requiere cambios de código.
