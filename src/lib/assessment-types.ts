@@ -184,6 +184,10 @@ export type PropertyInfo = {
 /** Max photos a resident can attach per checklist item. */
 export const MAX_PHOTOS_PER_ITEM = 3;
 
+/** Consolidated damage gallery limits (single photo section, step 2). */
+export const MAX_DAMAGE_PHOTOS = 10;
+export const MIN_DAMAGE_PHOTOS = 5;
+
 export type ChecklistAnswer = {
   id: ChecklistItemId;
   value: AnswerValue;
