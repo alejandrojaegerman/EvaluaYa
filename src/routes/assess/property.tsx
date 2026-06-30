@@ -310,6 +310,7 @@ function PropertyStep() {
   if (state.trim() !== "" && !municipalitySatisfied)
     missing.push(t("property.miss.municipality"));
   if (address.trim() === "") missing.push(t("property.miss.address"));
+  if (parroquia.trim() === "") missing.push(t("property.miss.parroquia"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (buildingNameRequired && buildingName.trim() === "")
     missing.push(t("property.miss.buildingName"));
@@ -324,6 +325,7 @@ function PropertyStep() {
     state.trim() !== "" &&
     municipalitySatisfied &&
     address.trim() !== "" &&
+    parroquia.trim() !== "" &&
     (!buildingNameRequired || buildingName.trim() !== "") &&
     residentName.trim() !== "" &&
     residentContact.trim() !== "";
