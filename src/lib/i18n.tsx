@@ -140,6 +140,7 @@ const es: Dict = {
   "property.miss.residentName": "tu nombre",
   "property.miss.residentContact": "tu teléfono",
   "property.miss.address": "la dirección / sector",
+  "property.miss.parroquia": "la parroquia",
   "property.miss.buildingName": "el nombre del edificio",
 
 
