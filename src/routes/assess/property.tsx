@@ -354,7 +354,9 @@ function PropertyStep() {
         structuralType,
         floors,
         basements,
-        age,
+        ...(age ? { age } : {}),
+        ...(livesInBuilding !== null ? { livesInBuilding } : {}),
+        ...(condoBoard !== null ? { condoBoardMember: condoBoard } : {}),
         ...(intensity
           ? (() => {
               const demand = spectralDemand(intensity, floors);
