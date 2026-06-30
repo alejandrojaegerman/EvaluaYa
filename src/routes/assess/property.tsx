@@ -97,6 +97,15 @@ function PropertyStep() {
   const [buildingName, setBuildingName] = useState("");
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
+  const [parroquia, setParroquia] = useState("");
+  // Minimal resident contact (Doc #1) — so a volunteer evaluator can reach them.
+  const [residentName, setResidentName] = useState("");
+  const [residentContact, setResidentContact] = useState("");
+  const [residentContactType, setResidentContactType] =
+    useState<ResidentContactType>("whatsapp");
+  // Blocking legal + data-consent gate (Doc #1). Shown until accepted.
+  const [showGate, setShowGate] = useState(false);
+  const [consent, setConsent] = useState<LegalConsent | null>(null);
   // Resident explicitly chose "I'm not sure" — satisfies the required field
   // while keeping the stored municipality empty (rolls up to state level).
   const [municipalityUnsure, setMunicipalityUnsure] = useState(false);
