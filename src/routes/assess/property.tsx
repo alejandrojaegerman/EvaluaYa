@@ -23,7 +23,13 @@ import type {
   BuildingType,
   StructuralType,
 } from "@/lib/assessment-types";
-import { loadDraft, saveDraft } from "@/lib/draft-store";
+import { loadDraft, saveDraft, type ResidentContactType } from "@/lib/draft-store";
+import { LegalConsentGate } from "@/components/LegalConsentGate";
+import {
+  getLegalConsent,
+  hasLegalConsent,
+  type LegalConsent,
+} from "@/lib/legal-ack";
 import { splitFeatured } from "@/lib/impact";
 import { trackStep } from "@/lib/track";
 import { useLang } from "@/lib/i18n";
