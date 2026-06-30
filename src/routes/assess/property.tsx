@@ -540,6 +540,23 @@ function PropertyStep() {
                 </p>
               </div>
 
+              <div>
+                <Label htmlFor="parroquia" className="text-sm font-semibold">
+                  {t("property.parroquia")}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                </Label>
+                <Input
+                  id="parroquia"
+                  value={parroquia}
+                  onChange={(e) => setParroquia(e.target.value)}
+                  placeholder={t("property.parroquiaPlaceholder")}
+                  className="mt-2 h-12 rounded-xl bg-background"
+                  maxLength={120}
+                />
+              </div>
+
               <button
                 type="button"
                 onClick={() => setDetailsOpen(false)}
