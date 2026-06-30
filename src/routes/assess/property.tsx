@@ -532,82 +532,66 @@ function PropertyStep() {
             {t("property.locationHint")}
           </p>
 
-          {/* Optional free-text detail (address + building name) — collapsed by
-              default so the required path stays short on mobile. */}
-          {!detailsOpen ? (
-            <button
-              type="button"
-              onClick={() => setDetailsOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-card py-3 text-sm font-semibold text-primary transition-colors hover:border-primary/40"
-            >
-              <Plus className="size-4" />
-              {t("property.optionalDetails")}
-            </button>
-          ) : (
-            <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
-              <div>
-                <Label htmlFor="address" className="text-sm font-semibold">
-                  {t("property.address")}{" "}
-                  <span className="font-normal text-muted-foreground">
-                    ({t("common.optional")})
-                  </span>
-                </Label>
-                <Input
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder={t("property.addressPlaceholder")}
-                  className="mt-2 h-12 rounded-xl bg-background"
-                  autoComplete="street-address"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="buildingName" className="text-sm font-semibold">
-                  {t("property.buildingName")}{" "}
-                  <span className="font-normal text-muted-foreground">
-                    ({t("common.optional")})
-                  </span>
-                </Label>
-                <Input
-                  id="buildingName"
-                  value={buildingName}
-                  onChange={(e) => setBuildingName(e.target.value)}
-                  placeholder={t("property.buildingNamePlaceholder")}
-                  className="mt-2 h-12 rounded-xl bg-background"
-                  maxLength={160}
-                />
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  {t("property.buildingNameHint")}
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="parroquia" className="text-sm font-semibold">
-                  {t("property.parroquia")}{" "}
-                  <span className="font-normal text-muted-foreground">
-                    ({t("common.optional")})
-                  </span>
-                </Label>
-                <Input
-                  id="parroquia"
-                  value={parroquia}
-                  onChange={(e) => setParroquia(e.target.value)}
-                  placeholder={t("property.parroquiaPlaceholder")}
-                  className="mt-2 h-12 rounded-xl bg-background"
-                  maxLength={120}
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setDetailsOpen(false)}
-                className="text-xs font-semibold text-muted-foreground hover:text-foreground"
-              >
-                {t("property.optionalDetailsHide")}
-              </button>
+          {/* Address + building detail — required so an evaluator can locate
+              the property and group reports per building. */}
+          <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
+            <div>
+              <Label htmlFor="address" className="text-sm font-semibold">
+                {t("property.address")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Input
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={t("property.addressPlaceholder")}
+                className="mt-2 h-12 rounded-xl bg-background"
+                autoComplete="street-address"
+              />
             </div>
-          )}
+
+            <div>
+              <Label htmlFor="buildingName" className="text-sm font-semibold">
+                {t("property.buildingName")}{" "}
+                {buildingNameRequired ? (
+                  <span className="font-normal text-destructive">*</span>
+                ) : (
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="buildingName"
+                value={buildingName}
+                onChange={(e) => setBuildingName(e.target.value)}
+                placeholder={t("property.buildingNamePlaceholder")}
+                className="mt-2 h-12 rounded-xl bg-background"
+                maxLength={160}
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                {t("property.buildingNameHint")}
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="parroquia" className="text-sm font-semibold">
+                {t("property.parroquia")}{" "}
+                <span className="font-normal text-muted-foreground">
+                  ({t("common.optional")})
+                </span>
+              </Label>
+              <Input
+                id="parroquia"
+                value={parroquia}
+                onChange={(e) => setParroquia(e.target.value)}
+                placeholder={t("property.parroquiaPlaceholder")}
+                className="mt-2 h-12 rounded-xl bg-background"
+                maxLength={120}
+              />
+            </div>
+          </div>
+
 
           {/* ShakeMap intensity (auto-detected) */}
           {intensity && (
