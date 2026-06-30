@@ -206,6 +206,7 @@ function PropertyStep() {
         if (p.structuralType !== "unknown") setStructOpen(true);
       }
       if (p.floors) setFloors(p.floors);
+      if (typeof p.basements === "number") setBasements(p.basements);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
         const sa: SeismicReading["sa"] = {};
