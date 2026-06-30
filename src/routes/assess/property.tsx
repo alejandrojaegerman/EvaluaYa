@@ -154,7 +154,7 @@ function PropertyStep() {
   const [structuralType, setStructuralType] =
     useState<StructuralType>("unknown");
   const [structOpen, setStructOpen] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  
   const [floors, setFloors] = useState(1);
   const [age, setAge] = useState<BuildingAge | null>(null);
   const [geoStatus, setGeoStatus] = useState<
