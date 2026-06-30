@@ -1214,21 +1214,16 @@ const es: Dict = {
   "panel.lastUpdate": "Última actualización",
   "panel.currentStage": "Etapa actual",
 
-  // Panel — validate the AI evaluation
-  "panel.validateTitle": "Validar la evaluación de la app",
-  "panel.validateBody":
-    "Compara el resultado de la IA con tu criterio profesional. Tu verdicto marca el reporte como verificado en todas las superficies.",
-  "panel.aiSaid": "La IA indicó",
-  "panel.agree": "Estoy de acuerdo",
-  "panel.adjust": "Ajustar nivel",
-  "panel.pickLevel": "Tu nivel profesional",
-  "panel.verdictNote": "Notas profesionales (opcional)",
-  "panel.verdictNotePlaceholder": "Ej.: Grietas no estructurales; uso seguro con reparaciones menores.",
-  "panel.submitVerdict": "Guardar verdicto",
-  "panel.verdictSaved": "Verdicto guardado. Reporte verificado.",
-  "panel.verifiedByYou": "Verificado por ti",
-  "panel.verifiedAgree": "Confirmaste el nivel de la IA",
-  "panel.verifiedAdjust": "Ajustaste el nivel",
+  // Panel — record professional observations
+  "panel.reviewTitle": "Registrar tus observaciones",
+  "panel.reviewBody":
+    "Deja tus observaciones profesionales tras orientar al residente. Esto marca el reporte como revisado por un evaluador voluntario; no es un dictamen ni un certificado de habitabilidad.",
+  "panel.reviewCta": "Registrar observaciones",
+  "panel.reviewNotePlaceholder": "Ej.: Orienté al residente; recomendé inspección formal de un ingeniero colegiado.",
+  "panel.reviewDescargo":
+    "Declaro que mis observaciones son orientativas y voluntarias, que no constituyen un dictamen oficial ni un certificado de habitabilidad, y que la decisión sobre la seguridad corresponde a una inspección formal de un ingeniero estructural colegiado, FUNVISIS o Protección Civil.",
+  "panel.reviewSubmit": "Guardar observaciones",
+  "panel.reviewedByYou": "Revisado por ti",
   "panel.cancel": "Cancelar",
   "panel.noReportToValidate": "Esta solicitud no tiene una evaluación vinculada.",
 
