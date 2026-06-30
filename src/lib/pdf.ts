@@ -219,14 +219,15 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   }
 
   // Footer
-  const footerY = doc.internal.pageSize.getHeight() - 36;
+  const footerY = doc.internal.pageSize.getHeight() - 52;
   doc.setDrawColor(220, 224, 228);
   doc.line(margin, footerY - 14, pageW - margin, footerY - 14);
   doc.setFontSize(9);
   doc.setTextColor(120, 128, 136);
   const date = formatDateTime(record.createdAt, lang);
   doc.text(`${t("result.assessedOn")} ${date}`, margin, footerY);
-  doc.text(t("result.disclaimerShort"), margin, footerY + 12, {
+  doc.setFontSize(8);
+  doc.text(`${t("result.disclaimerShort")} ${t("legal.short")}`, margin, footerY + 11, {
     maxWidth: contentW,
   });
 
