@@ -518,6 +518,15 @@ function PropertyStep() {
                     </option>
                   ))
                 )}
+                {state.trim() === "Distrito Capital" && (
+                  <optgroup label={t("picker.granCaracas")}>
+                    {GRAN_CARACAS_MUNICIPIOS.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
                 {state.trim() !== "" && (
                   <option value={UNSURE_MUNICIPIO}>
                     {t("property.municipalityUnsure")}
