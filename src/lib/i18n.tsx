@@ -140,6 +140,7 @@ const es: Dict = {
   "property.miss.residentName": "tu nombre",
   "property.miss.residentContact": "tu teléfono",
   "property.miss.address": "la dirección / sector",
+  "property.miss.parroquia": "la parroquia",
   "property.miss.buildingName": "el nombre del edificio",
 
 
@@ -182,7 +183,8 @@ const es: Dict = {
     "Paredes de bloque/ladrillo con refuerzo de acero, pocos pisos.",
   "property.struct.unknown": "No estoy seguro",
   "property.struct.unknown.desc": "No sé de qué está hecha la estructura.",
-  "property.floors": "Número de pisos",
+  "property.floors": "Número de pisos (sobre el nivel del suelo)",
+  "property.basements": "Número de sótanos",
   "property.floorsHigh": "Más de 7 pisos: se recomienda precaución adicional.",
   "property.intensityDetected": "Intensidad sísmica estimada en esta ubicación",
   "property.intensityHigh": "Intensidad alta (VII+): precaución adicional.",
@@ -391,7 +393,8 @@ const es: Dict = {
 
   // Property helper text (accessibility)
   "property.buildingType.help": "¿Qué tipo de lugar estás evaluando?",
-  "property.floors.help": "Cuenta cuántos pisos tiene la edificación completa.",
+  "property.floors.help": "Cuenta los pisos por encima del nivel del suelo.",
+  "property.basements.help": "Niveles por debajo del nivel del suelo (estacionamientos, depósitos). Si no tiene, deja 0.",
   "property.age.help": "Si no sabes el año exacto, elige lo más cercano.",
   "property.age.pre1970.desc":
     "Construcción antigua, anterior a las normas sísmicas modernas.",
@@ -1648,6 +1651,7 @@ const en: Dict = {
   "property.miss.residentName": "your name",
   "property.miss.residentContact": "your phone",
   "property.miss.address": "the address / neighborhood",
+  "property.miss.parroquia": "the parish",
   "property.miss.buildingName": "the building name",
 
 
@@ -1689,7 +1693,8 @@ const en: Dict = {
     "Block/brick walls with steel reinforcement, few floors.",
   "property.struct.unknown": "Not sure",
   "property.struct.unknown.desc": "I don't know what the structure is made of.",
-  "property.floors": "Number of floors",
+  "property.floors": "Number of floors (above ground)",
+  "property.basements": "Number of basements",
   "property.floorsHigh": "Over 7 floors: extra caution is recommended.",
   "property.intensityDetected": "Estimated shaking intensity at this location",
   "property.intensityHigh": "High intensity (VII+): extra caution.",
@@ -1896,7 +1901,8 @@ const en: Dict = {
 
   // Property helper text (accessibility)
   "property.buildingType.help": "What kind of place are you assessing?",
-  "property.floors.help": "Count how many floors the whole building has.",
+  "property.floors.help": "Count the floors above ground level.",
+  "property.basements.help": "Levels below ground (parking, storage). Leave 0 if none.",
   "property.age.help": "If you don't know the exact year, pick the closest one.",
   "property.age.pre1970.desc":
     "Older construction, before modern seismic codes.",

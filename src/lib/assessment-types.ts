@@ -147,6 +147,8 @@ export type PropertyInfo = {
   /** structural lateral system (drives deterministic safety rules) */
   structuralType?: StructuralType;
   floors: number;
+  /** number of basement / below-grade levels (sótanos) */
+  basements?: number;
   age: BuildingAge;
   /** auto-detected ShakeMap MMI value at the building's location */
   seismicIntensity?: number;

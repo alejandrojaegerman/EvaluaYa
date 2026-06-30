@@ -95,21 +95,21 @@ const UNSURE_MUNICIPIO = "__unsure__";
 
 // Common dial codes for residents in Venezuela and the diaspora.
 // Order: Venezuela first, then the most common destination countries.
-const COUNTRY_CODES: { code: string; label: string }[] = [
-  { code: "+58", label: "🇻🇪 Venezuela (+58)" },
-  { code: "+57", label: "🇨🇴 Colombia (+57)" },
-  { code: "+1", label: "🇺🇸 EE.UU. / Canadá (+1)" },
-  { code: "+34", label: "🇪🇸 España (+34)" },
-  { code: "+56", label: "🇨🇱 Chile (+56)" },
-  { code: "+51", label: "🇵🇪 Perú (+51)" },
-  { code: "+54", label: "🇦🇷 Argentina (+54)" },
-  { code: "+593", label: "🇪🇨 Ecuador (+593)" },
-  { code: "+52", label: "🇲🇽 México (+52)" },
-  { code: "+55", label: "🇧🇷 Brasil (+55)" },
-  { code: "+507", label: "🇵🇦 Panamá (+507)" },
-  { code: "+1809", label: "🇩🇴 Rep. Dominicana (+1809)" },
-  { code: "+39", label: "🇮🇹 Italia (+39)" },
-  { code: "+351", label: "🇵🇹 Portugal (+351)" },
+const COUNTRY_CODES: { code: string; flag: string; name: string }[] = [
+  { code: "+58", flag: "🇻🇪", name: "Venezuela" },
+  { code: "+57", flag: "🇨🇴", name: "Colombia" },
+  { code: "+1", flag: "🇺🇸", name: "EE.UU. / Canadá" },
+  { code: "+34", flag: "🇪🇸", name: "España" },
+  { code: "+56", flag: "🇨🇱", name: "Chile" },
+  { code: "+51", flag: "🇵🇪", name: "Perú" },
+  { code: "+54", flag: "🇦🇷", name: "Argentina" },
+  { code: "+593", flag: "🇪🇨", name: "Ecuador" },
+  { code: "+52", flag: "🇲🇽", name: "México" },
+  { code: "+55", flag: "🇧🇷", name: "Brasil" },
+  { code: "+507", flag: "🇵🇦", name: "Panamá" },
+  { code: "+1809", flag: "🇩🇴", name: "Rep. Dominicana" },
+  { code: "+39", flag: "🇮🇹", name: "Italia" },
+  { code: "+351", flag: "🇵🇹", name: "Portugal" },
 ];
 const DEFAULT_DIAL_CODE = "+58";
 
@@ -156,6 +156,7 @@ function PropertyStep() {
   const [structOpen, setStructOpen] = useState(false);
   
   const [floors, setFloors] = useState(1);
+  const [basements, setBasements] = useState(0);
   const [age, setAge] = useState<BuildingAge | null>(null);
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
@@ -205,6 +206,7 @@ function PropertyStep() {
         if (p.structuralType !== "unknown") setStructOpen(true);
       }
       if (p.floors) setFloors(p.floors);
+      if (typeof p.basements === "number") setBasements(p.basements);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
         const sa: SeismicReading["sa"] = {};
@@ -308,6 +310,7 @@ function PropertyStep() {
   if (state.trim() !== "" && !municipalitySatisfied)
     missing.push(t("property.miss.municipality"));
   if (address.trim() === "") missing.push(t("property.miss.address"));
+  if (parroquia.trim() === "") missing.push(t("property.miss.parroquia"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (buildingNameRequired && buildingName.trim() === "")
     missing.push(t("property.miss.buildingName"));
@@ -322,6 +325,7 @@ function PropertyStep() {
     state.trim() !== "" &&
     municipalitySatisfied &&
     address.trim() !== "" &&
+    parroquia.trim() !== "" &&
     (!buildingNameRequired || buildingName.trim() !== "") &&
     residentName.trim() !== "" &&
     residentContact.trim() !== "";
@@ -341,6 +345,7 @@ function PropertyStep() {
         buildingType,
         structuralType,
         floors,
+        basements,
         age,
         ...(intensity
           ? (() => {
@@ -552,12 +557,8 @@ function PropertyStep() {
             <div>
               <Label htmlFor="buildingName" className="text-sm font-semibold">
                 {t("property.buildingName")}{" "}
-                {buildingNameRequired ? (
+                {buildingNameRequired && (
                   <span className="font-normal text-destructive">*</span>
-                ) : (
-                  <span className="font-normal text-muted-foreground">
-                    ({t("common.optional")})
-                  </span>
                 )}
               </Label>
               <Input
@@ -576,9 +577,7 @@ function PropertyStep() {
             <div>
               <Label htmlFor="parroquia" className="text-sm font-semibold">
                 {t("property.parroquia")}{" "}
-                <span className="font-normal text-muted-foreground">
-                  ({t("common.optional")})
-                </span>
+                <span className="font-normal text-destructive">*</span>
               </Label>
               <Input
                 id="parroquia"
@@ -666,11 +665,11 @@ function PropertyStep() {
                 aria-label={t("property.countryCode")}
                 value={dialCode}
                 onChange={(e) => setDialCode(e.target.value)}
-                className="h-12 w-32 shrink-0 rounded-xl border border-input bg-card px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-12 w-20 shrink-0 rounded-xl border border-input bg-card px-2 text-center text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {COUNTRY_CODES.map((c) => (
-                  <option key={c.label} value={c.code}>
-                    {c.label}
+                  <option key={c.code} value={c.code} title={`${c.name} (${c.code})`}>
+                    {c.flag}
                   </option>
                 ))}
               </select>
@@ -838,6 +837,38 @@ function PropertyStep() {
               </p>
             )}
           </div>
+
+          {/* Basements (sótanos) */}
+          <div>
+            <p className="text-sm font-semibold">{t("property.basements")}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("property.basements.help")}
+            </p>
+            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-2">
+              <button
+                type="button"
+                onClick={() => setBasements((b) => Math.max(0, b - 1))}
+                disabled={basements <= 0}
+                aria-label="-"
+                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70 disabled:opacity-40"
+              >
+                <Minus className="size-5" />
+              </button>
+              <span className="flex-1 text-center font-display text-2xl font-bold tabular-nums">
+                {basements}
+              </span>
+              <button
+                type="button"
+                onClick={() => setBasements((b) => Math.min(20, b + 1))}
+                aria-label="+"
+                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70"
+              >
+                <Plus className="size-5" />
+              </button>
+            </div>
+          </div>
+
+
 
           {/* Age */}
           <div>
