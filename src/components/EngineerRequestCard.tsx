@@ -65,6 +65,7 @@ export function EngineerRequestCard({
   const [reviewing, setReviewing] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [verdictNote, setVerdictNote] = useState("");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const curStage = stageIndex(r.progressStage);
 
