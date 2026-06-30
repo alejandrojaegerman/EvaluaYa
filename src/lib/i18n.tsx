@@ -38,7 +38,7 @@ const es: Dict = {
   "home.behalfTitle": "¿No puedes entrar al edificio?",
   "home.behalfBody":
     "No tienes que estar dentro. Un familiar o vecino puede hacer la inspección por ti y compartirte el resultado para decidir si es seguro entrar.",
-  "home.how2Title": "Inspección guiada",
+  "home.how2Title": "Observa y reporta",
   "home.how2Desc": "Responde el cuestionario y sube una foto de cada área.",
   "home.how3Title": "Análisis con IA",
   "home.how3Desc": "Recibe un nivel de riesgo y pasos recomendados.",
@@ -199,8 +199,8 @@ const es: Dict = {
   "property.age.1970to2000": "1970 – 2000",
   "property.age.post2000": "Después de 2000",
 
-  "checklist.title": "Inspección guiada",
-  "checklist.subtitle": "Revisa cada área con cuidado.",
+  "checklist.title": "Observa y reporta",
+  "checklist.subtitle": "Revisa cada señal con cuidado.",
   "checklist.answer.yes": "Sí",
   "checklist.answer.no": "No",
   "checklist.answer.unsure": "No sé",
@@ -213,7 +213,7 @@ const es: Dict = {
   "checklist.morePhotos": "Otra foto",
   "checklist.answerAll": "Responde las preguntas esenciales para continuar.",
   "checklist.analyze": "Analizar daños",
-  "checklist.sectionStructure": "Revisión estructural",
+  "checklist.sectionStructure": "Qué revisar en la estructura",
   "checklist.sectionUtilities": "Servicios e interiores",
   "checklist.optionalTag": "opcional",
   "checklist.optionalNote":
@@ -728,7 +728,7 @@ const es: Dict = {
   "help.step1Title": "1. Datos de la propiedad",
   "help.step1Desc":
     "Indica la dirección, el tipo de edificación, los pisos y la antigüedad.",
-  "help.step2Title": "2. Inspección guiada",
+  "help.step2Title": "2. Observa y reporta",
   "help.step2Desc":
     "Responde preguntas simples (Sí / No / No estoy seguro) área por área y, si puedes, sube una foto.",
   "help.step3Title": "3. Análisis con IA",
@@ -1580,7 +1580,7 @@ const en: Dict = {
   "home.behalfTitle": "Can't safely enter the building?",
   "home.behalfBody":
     "You don't have to be inside. A relative or neighbor can run the inspection for you and share the result so you can decide whether it's safe to enter.",
-  "home.how2Title": "Guided inspection",
+  "home.how2Title": "Observe and report",
   "home.how2Desc": "Answer the questionnaire and add a photo for each area.",
   "home.how3Title": "AI analysis",
   "home.how3Desc": "Get a risk level and recommended next steps.",
@@ -1740,8 +1740,8 @@ const en: Dict = {
   "property.age.1970to2000": "1970 – 2000",
   "property.age.post2000": "After 2000",
 
-  "checklist.title": "Guided inspection",
-  "checklist.subtitle": "Inspect each area carefully.",
+  "checklist.title": "Observe and report",
+  "checklist.subtitle": "Review each sign carefully.",
   "checklist.answer.yes": "Yes",
   "checklist.answer.no": "No",
   "checklist.answer.unsure": "Unsure",
@@ -1754,7 +1754,7 @@ const en: Dict = {
   "checklist.morePhotos": "Another photo",
   "checklist.answerAll": "Answer the essential questions to continue.",
   "checklist.analyze": "Analyze damage",
-  "checklist.sectionStructure": "Structural checks",
+  "checklist.sectionStructure": "What to look at in the structure",
   "checklist.sectionUtilities": "Utilities & interior",
   "checklist.optionalTag": "optional",
   "checklist.optionalNote":
@@ -2263,7 +2263,7 @@ const en: Dict = {
   "help.step1Title": "1. Property info",
   "help.step1Desc":
     "Enter the address, building type, number of floors, and approximate age.",
-  "help.step2Title": "2. Guided inspection",
+  "help.step2Title": "2. Observe and report",
   "help.step2Desc":
     "Answer simple Yes / No / Unsure questions area by area and, if you can, add a photo.",
   "help.step3Title": "3. AI analysis",
