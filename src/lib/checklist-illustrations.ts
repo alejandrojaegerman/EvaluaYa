@@ -20,6 +20,11 @@ import fixtures from "@/assets/checklist/fixtures.jpg";
  * residents who may not know the technical terms.
  */
 export const CHECKLIST_ILLUSTRATIONS: Record<ChecklistItemId, string> = {
+  // 4+1 flow reuses the closest legacy illustration
+  walls: interior_walls,
+  columns: columns_beams,
+  openings: doors_windows,
+  tilt: foundation,
   foundation,
   liquefaction,
   exterior_walls,

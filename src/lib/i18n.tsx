@@ -278,6 +278,43 @@ const es: Dict = {
   "item.stairs.area": "Escaleras",
   "item.stairs.q": "¿Hay escaleras agrietadas o separadas de los muros?",
 
+  // --- 4+1 simplified flow (preguntas principales) ---
+  "item.walls.area": "Paredes",
+  "item.walls.q":
+    "¿Aparecieron grietas nuevas en las paredes (en diagonal, en X, o más anchas que una moneda de canto)?",
+  "item.walls.example.yes":
+    "Grietas nuevas en diagonal o en forma de X, o tan anchas que cabe una moneda de canto o un lápiz.",
+  "item.walls.example.no":
+    "Solo líneas finas como un cabello, o ninguna grieta nueva.",
+  "item.columns.area": "Columnas y vigas",
+  "item.columns.q":
+    "¿Hay columnas o vigas con concreto desprendido (descascarado), acero (cabilla) a la vista, o grietas marcadas?",
+  "item.columns.example.yes":
+    "El concreto de una columna o viga se descascaró y se ve la cabilla, o tiene grietas fuertes.",
+  "item.columns.example.no":
+    "Columnas y vigas lisas, sin concreto caído ni acero a la vista.",
+  "item.openings.area": "Puertas y ventanas",
+  "item.openings.q":
+    "¿Hay puertas o ventanas que ya no abren o cierran porque el marco se deformó?",
+  "item.openings.example.yes":
+    "Una puerta o ventana que antes abría ahora se traba o no cierra porque el marco quedó torcido.",
+  "item.openings.example.no":
+    "Puertas y ventanas abren y cierran como siempre.",
+  "item.tilt.area": "Inclinación / desplome",
+  "item.tilt.q":
+    "¿El edificio o algún piso se ve inclinado, desplomado o hundido respecto a antes?",
+  "item.tilt.example.yes":
+    "La edificación se ve recostada o inclinada, un piso quedó chueco, o una parte se hundió.",
+  "item.tilt.example.no":
+    "La edificación sigue recta y a nivel, igual que antes del sismo.",
+
+  // Señales graves (multi-select Q5)
+  "checklist.severeTitle": "Señales graves",
+  "checklist.severeSubtitle":
+    "Marca solo lo que viste con este sismo. Cualquiera de estas es una alerta de seguridad.",
+  "checklist.severeNoneHint": "Si no viste ninguna, déjalas sin marcar y continúa.",
+
+
   "checklist.exampleToggle": "¿Cómo se ve?",
   "checklist.exampleYes": "Sí (señal de daño)",
   "checklist.exampleNo": "No (se ve bien)",
@@ -366,6 +403,10 @@ const es: Dict = {
     "Edificación de mampostería sin refuerzo: muy vulnerable tras un sismo fuerte.",
   "rule.urm.step":
     "Sugerencia: por precaución, evita permanecer dentro hasta que un ingeniero colegiado o Protección Civil evalúen la edificación.",
+  "rule.tilt.finding":
+    "La edificación se ve inclinada, desplomada o hundida: posible riesgo de colapso.",
+  "rule.tilt.step":
+    "Sugerencia: no permanezcas dentro; sal y reporta a Protección Civil o a un ingeniero colegiado de inmediato.",
   "rule.liquefaction.finding":
     "Señales de licuefacción del suelo: el terreno perdió capacidad de soporte.",
   "rule.liquefaction.step":
@@ -1741,6 +1782,42 @@ const en: Dict = {
   "item.roof.q": "Is there visible deformation or roof collapse?",
   "item.stairs.area": "Stairs",
   "item.stairs.q": "Are the stairs cracked or separated from the walls?",
+
+  // --- 4+1 simplified flow (primary questions) ---
+  "item.walls.area": "Walls",
+  "item.walls.q":
+    "Did new cracks appear in the walls (diagonal, X-shaped, or wider than a coin on edge)?",
+  "item.walls.example.yes":
+    "New diagonal or X-shaped cracks, or wide enough to fit a coin on edge or a pencil.",
+  "item.walls.example.no": "Only hairline lines, or no new cracks at all.",
+  "item.columns.area": "Columns and beams",
+  "item.columns.q":
+    "Are there columns or beams with spalled (chipped) concrete, exposed rebar, or marked cracks?",
+  "item.columns.example.yes":
+    "Concrete on a column or beam chipped off and you can see the rebar, or it has strong cracks.",
+  "item.columns.example.no":
+    "Columns and beams are smooth, with no fallen concrete or visible steel.",
+  "item.openings.area": "Doors and windows",
+  "item.openings.q":
+    "Are there doors or windows that no longer open or close because the frame warped?",
+  "item.openings.example.yes":
+    "A door or window that used to open now jams or won't close because the frame is distorted.",
+  "item.openings.example.no": "Doors and windows open and close like always.",
+  "item.tilt.area": "Lean / tilt",
+  "item.tilt.q":
+    "Does the building or any floor look leaning, tilted, or sunken compared to before?",
+  "item.tilt.example.yes":
+    "The building looks leaning or tilted, a floor is now crooked, or part of it sank.",
+  "item.tilt.example.no":
+    "The building is still straight and level, just like before the quake.",
+
+  // Severe signs (multi-select Q5)
+  "checklist.severeTitle": "Serious warning signs",
+  "checklist.severeSubtitle":
+    "Check only what you saw with this quake. Any of these is a safety alert.",
+  "checklist.severeNoneHint":
+    "If you saw none, leave them unchecked and continue.",
+
 
   "checklist.exampleToggle": "What does it look like?",
   "checklist.exampleYes": "Yes (sign of damage)",

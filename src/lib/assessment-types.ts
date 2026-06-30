@@ -22,19 +22,26 @@ export type StructuralType =
   | "unknown";
 
 export type ChecklistItemId =
+  // 4+1 simplified flow (current)
+  | "walls"
+  | "columns"
+  | "openings"
+  | "tilt"
+  // sub-signals captured by the "señales graves" multi-select
   | "foundation"
   | "liquefaction"
-  | "exterior_walls"
   | "pounding"
+  | "plumbing"
+  | "roof"
+  | "stairs"
+  // legacy-only ids (older records) — kept for back-compat display + scoring
+  | "exterior_walls"
   | "interior_walls"
   | "flooring"
-  | "plumbing"
   | "electrical"
   | "fixtures"
   | "columns_beams"
-  | "doors_windows"
-  | "roof"
-  | "stairs";
+  | "doors_windows";
 
 /** Inspection groups: core structural checks vs. optional utility checks. */
 export type ChecklistSection = "structure" | "utilities";
@@ -53,25 +60,76 @@ export type ChecklistItemDef = {
 };
 
 export const CHECKLIST_ITEMS: ChecklistItemDef[] = [
+  // 4+1 simplified flow — display/order for current records
+  { id: "walls", icon: "Square", section: "structure" },
+  { id: "columns", icon: "Columns3", section: "structure" },
+  { id: "openings", icon: "DoorOpen", section: "structure" },
+  { id: "tilt", icon: "Building2", section: "structure" },
+  // severe-sign sub-items (recorded via the "señales graves" multi-select)
   { id: "foundation", icon: "Layers", section: "structure" },
+  { id: "roof", icon: "Home", section: "structure" },
+  { id: "stairs", icon: "Footprints", section: "structure" },
   { id: "liquefaction", icon: "Droplets", section: "structure" },
-  { id: "exterior_walls", icon: "Building2", section: "structure" },
   { id: "pounding", icon: "Building", section: "structure" },
+  { id: "plumbing", icon: "Wrench", section: "structure" },
+  // legacy-only items (older records) — kept for back-compat ordering/display
+  { id: "exterior_walls", icon: "Building2", section: "structure" },
   { id: "interior_walls", icon: "Square", section: "structure" },
   { id: "columns_beams", icon: "Columns3", section: "structure" },
   { id: "doors_windows", icon: "DoorOpen", section: "structure" },
-  { id: "roof", icon: "Home", section: "structure" },
-  { id: "stairs", icon: "Footprints", section: "structure" },
   { id: "flooring", icon: "Grid3x3", section: "utilities", optional: true },
-  { id: "plumbing", icon: "Wrench", section: "utilities", optional: true },
   { id: "electrical", icon: "Zap", section: "utilities", optional: true },
   { id: "fixtures", icon: "Lightbulb", section: "utilities", optional: true },
 ];
 
+/** The four direct yes/no/unsure questions (each with photo upload). */
+export const PRIMARY_QUESTION_IDS: ChecklistItemId[] = [
+  "walls",
+  "columns",
+  "openings",
+  "tilt",
+];
+
+/**
+ * Sub-signals captured by the "señales graves" multi-select. Each maps to a
+ * civil-engineer-validated deterministic rule. Stored as individual answers so
+ * historical records and the data-room analytics keep working unchanged.
+ */
+export const SEVERE_SIGN_IDS: ChecklistItemId[] = [
+  "liquefaction",
+  "pounding",
+  "plumbing",
+  "roof",
+  "stairs",
+  "foundation",
+];
+
+/** Direct life-safety RED trigger (new in the 4+1 flow). */
+export const TILT_ID: ChecklistItemId = "tilt";
+
+/**
+ * Checklist ids whose "yes" indicates observed STRUCTURAL damage (each counts
+ * toward the ≥2-systems = red heuristic). Includes both the new 4+1 ids and the
+ * legacy ids so old and new records both score correctly — no single record
+ * ever contains both generations, so there is no double counting.
+ * Note: liquefaction / pounding / plumbing are NOT here; they are their own
+ * forced-red triggers.
+ */
+export const STRUCTURAL_DAMAGE_IDS: ChecklistItemId[] = [
+  "walls",
+  "columns",
+  "openings",
+  "foundation",
+  "roof",
+  "stairs",
+  "exterior_walls",
+  "interior_walls",
+  "columns_beams",
+  "doors_windows",
+];
+
 /** Core items that must be answered before analysis can run. */
-export const REQUIRED_ITEM_IDS: ChecklistItemId[] = CHECKLIST_ITEMS.filter(
-  (i) => !i.optional,
-).map((i) => i.id);
+export const REQUIRED_ITEM_IDS: ChecklistItemId[] = PRIMARY_QUESTION_IDS;
 
 export type PropertyInfo = {
   address: string;
