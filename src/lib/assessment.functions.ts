@@ -88,6 +88,22 @@ const analyzeSchema = z.object({
   answers: z.array(answerSchema).min(1).max(13),
   /** Engineer panel access token — when valid, the report is certified. */
   engineerToken: z.string().uuid().optional(),
+  /** Minimal resident contact so a volunteer evaluator can reach them. PII. */
+  resident: z
+    .object({
+      name: z.string().max(160).optional().default(""),
+      contact: z.string().max(200).optional().default(""),
+      contactType: z.enum(["whatsapp", "phone", "email"]).optional(),
+    })
+    .optional(),
+  /** Accepted legal notice + data-consent versions (blocking gate, Doc #1). */
+  consent: z
+    .object({
+      legalVersion: z.string().max(40),
+      consentVersion: z.string().max(40),
+      at: z.string().max(40).optional(),
+    })
+    .optional(),
 });
 
 type AnalyzeInput = z.infer<typeof analyzeSchema>;
