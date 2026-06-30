@@ -1493,6 +1493,37 @@ const en: Dict = {
   "disclaimer.body":
     "This tool gives preliminary guidance and is not a substitute for inspection by a licensed structural engineer or Civil Protection. If there is imminent danger, evacuate and call emergency services.",
 
+  // ----- Legal / liability (EN) -----
+  "nav.legal": "Legal notice",
+  "legal.title": "Legal notice & liability",
+  "legal.subtitle": "How to use EvalúaYa and the limits of responsibility.",
+  "legal.updated": "Last updated: June 2026",
+  "legal.intro":
+    "EvalúaYa is a non-profit, community-built initiative. Before using the tool or connecting with a volunteer engineer, please read how it works and what its limits are.",
+  "legal.s1.title": "It does not replace an official inspection",
+  "legal.s1.body":
+    "Neither this tool nor contact with a volunteer engineer replaces a formal inspection by a licensed structural engineer, FUNVISIS or Civil Protection. The result is informational only and is not a certificate of habitability or an official ruling.",
+  "legal.s2.title": "It is preliminary technical guidance",
+  "legal.s2.body":
+    "Any assessment — automated or carried out by a volunteer engineer — is preliminary guidance based on what is reported and visible to the naked eye. It does not analyze hidden elements, buried foundations or the inside of walls, and does not replace a detailed structural study.",
+  "legal.s3.title": "Volunteer engineers",
+  "legal.s3.body":
+    "The engineers and organizations that take part do so voluntarily and free of charge. EvalúaYa does not pay them and has no employment or commercial relationship with them; they act in a personal capacity. We verify their credentials with the information they provide, but we do not guarantee their services or the outcome of their recommendations.",
+  "legal.s4.title": "Limitation of liability",
+  "legal.s4.body":
+    "EvalúaYa, its collaborators and the volunteer engineers are not liable for the recommendations given, the decisions made based on them, or any damages arising from use of the application. The final decision and the responsibility over the building rest with its owner or occupant and the competent authorities.",
+  "legal.s5.title": "Emergencies",
+  "legal.s5.body":
+    "If there is imminent danger, do not wait for an assessment: evacuate immediately and call Civil Protection or emergency services.",
+  "legal.contact.title": "Contact",
+  "legal.contact.body":
+    "Questions about this notice? Write to us at contacto@evaluaya.app. See also our Privacy Policy.",
+  "legal.short":
+    "Preliminary volunteer guidance; it does not replace an official inspection. Engineers are unpaid volunteers and EvalúaYa is not liable for their recommendations.",
+  "legal.readMore": "Read the full legal notice",
+  "legal.ack":
+    "I understand this is preliminary guidance from unpaid volunteers and does not replace an official inspection.",
+
   "property.title": "Property details",
   "property.subtitle": "This information helps interpret the findings.",
   "property.address": "Address / neighborhood",
