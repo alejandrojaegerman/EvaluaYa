@@ -106,6 +106,19 @@ function ResultPage() {
 
   const theme = RISK_THEME[record.riskLevel];
   const [cardBusy, setCardBusy] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Flatten all photos into a single ordered list for the gallery + lightbox,
+  // so the engineer can open any photo and swipe through the whole case.
+  const photoItems = record.answers
+    .filter((a) => record.photoUrls[a.id]?.length)
+    .flatMap((a) =>
+      record.photoUrls[a.id].map((url) => ({
+        id: a.id,
+        url,
+        caption: t(`item.${a.id}.area`),
+      })),
+    );
 
   // Funnel: resident reached the final result — the completed conversion.
   useEffect(() => {
