@@ -113,11 +113,15 @@ function ResultPage() {
   const photoItems = record.answers
     .filter((a) => record.photoUrls[a.id]?.length)
     .flatMap((a) =>
-      record.photoUrls[a.id].map((url) => ({
-        id: a.id,
-        url,
-        caption: t(`item.${a.id}.area`),
-      })),
+      record.photoUrls[a.id].map((url, i) => {
+        const label = record.photoCaptions?.[a.id]?.[i];
+        const key = damageCategoryKey(label);
+        return {
+          id: a.id,
+          url,
+          caption: key ? t(key) : (label ?? t(`item.${a.id}.area`)),
+        };
+      }),
     );
 
   // Funnel: resident reached the final result — the completed conversion.
