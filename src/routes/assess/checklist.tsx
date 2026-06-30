@@ -6,9 +6,10 @@ import {
   ImageOff,
   ImagePlus,
   ChevronDown,
-  Plus,
   Info,
   HelpCircle,
+  AlertTriangle,
+  Check,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +18,8 @@ import { AppShell } from "@/components/AppShell";
 import { StepHeader, StepFooter } from "./property";
 import {
   CHECKLIST_ITEMS,
+  PRIMARY_QUESTION_IDS,
+  SEVERE_SIGN_IDS,
   MAX_PHOTOS_PER_ITEM,
   type AnswerValue,
   type ChecklistItemId,
@@ -31,8 +34,12 @@ import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { cn } from "@/lib/utils";
 
-const STRUCTURE_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "structure");
-const UTILITY_ITEMS = CHECKLIST_ITEMS.filter((i) => i.section === "utilities");
+// The 4 direct yes/no/unsure photo questions, plus the "señales graves"
+// multi-select. Both persist as individual checklist answers so the
+// engineer-validated deterministic rules + AI prompt + analytics keep working
+// unchanged for new AND historical records.
+const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
+const SEVERE_ITEMS = SEVERE_SIGN_IDS;
 
 export const Route = createFileRoute("/assess/checklist")({
   component: ChecklistStep,
@@ -72,7 +79,7 @@ function ChecklistStep() {
   const [draft, setDraft] = useState<AssessmentDraft | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [loading, setLoading] = useState(true);
-  const [showOptional, setShowOptional] = useState(false);
+  
 
   useEffect(() => {
     trackStep("checklist_started");
@@ -123,12 +130,25 @@ function ChecklistStep() {
     });
   }
 
-  const requiredAnswered = STRUCTURE_ITEMS.filter(
-    (i) => answers[i.id]?.value,
+  // A severe sign is "on" when stored as a "yes" answer; toggling off removes it.
+  function toggleSevere(id: ChecklistItemId) {
+    setAnswers((prev) => {
+      if (prev[id]?.value === "yes") {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      }
+      return { ...prev, [id]: { value: "yes", photoDataUrls: [] } };
+    });
+  }
+
+  const requiredAnswered = PRIMARY_ITEMS.filter(
+    (id) => answers[id]?.value,
   ).length;
-  const allRequired = requiredAnswered === STRUCTURE_ITEMS.length;
-  const hasUtilityAnswers = UTILITY_ITEMS.some((i) => answers[i.id]?.value);
-  const optionalVisible = showOptional || hasUtilityAnswers;
+  const allRequired = requiredAnswered === PRIMARY_ITEMS.length;
+  const severeCount = SEVERE_ITEMS.filter(
+    (id) => answers[id]?.value === "yes",
+  ).length;
 
   async function persist(map: AnswerMap, ready: boolean) {
     if (!draft) return;
@@ -184,33 +204,26 @@ function ChecklistStep() {
     <AppShell hideBottomNav hideFooter>
       <StepHeader step={2} title={t("checklist.title")} subtitle={t("checklist.subtitle")} />
 
-      {/* Required-progress bar (only the essential structural checks gate
-          submission; utility checks are optional). */}
+      {/* Required-progress bar — the 4 main questions gate submission. */}
       <div className="mt-4">
         <div className="flex items-center justify-between text-xs font-semibold">
           <span className="text-muted-foreground">
-            {requiredAnswered} / {STRUCTURE_ITEMS.length}{" "}
+            {requiredAnswered} / {PRIMARY_ITEMS.length}{" "}
             {t("checklist.coreProgress")}
           </span>
-          {allRequired && (
-            <span className="text-risk-green">✓</span>
-          )}
+          {allRequired && <span className="text-risk-green">✓</span>}
         </div>
         <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-border">
           <div
             className="h-full rounded-full bg-primary transition-all"
             style={{
-              width: `${(requiredAnswered / STRUCTURE_ITEMS.length) * 100}%`,
+              width: `${(requiredAnswered / PRIMARY_ITEMS.length) * 100}%`,
             }}
           />
         </div>
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          {t("checklist.optionalNote")}
-        </p>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
           {t("checklist.photosOptional")}
         </p>
-
       </div>
 
       {/* Report NEW damage only (feedback #7) */}
@@ -226,59 +239,80 @@ function ChecklistStep() {
         </div>
       </div>
 
-
-      {/* Structural checks (required) */}
+      {/* The four main structural questions (each with photo upload) */}
       <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
         {t("checklist.sectionStructure")}
       </h2>
       <div className="mt-3 space-y-4">
-        {STRUCTURE_ITEMS.map((item, idx) => renderCard(item.id, idx + 1))}
+        {PRIMARY_ITEMS.map((id, idx) => renderCard(id, idx + 1))}
       </div>
 
-      {/* Utility checks (optional, collapsed by default) */}
-      {!optionalVisible ? (
-        <button
-          type="button"
-          onClick={() => setShowOptional(true)}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-card py-3.5 text-sm font-semibold text-primary transition-colors hover:border-primary/40"
-        >
-          <Plus className="size-4" />
-          {t("checklist.showOptional")}
-        </button>
-      ) : (
-        <>
-          <div className="mt-5 flex items-center justify-between">
-            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
-              {t("checklist.sectionUtilities")}{" "}
-              <span className="ml-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-secondary-foreground">
-                {t("checklist.optionalTag")}
-              </span>
+      {/* Q5 — "Señales graves" multi-select. Each selection maps to an
+          engineer-validated deterministic rule behind the scenes. */}
+      <div className="mt-6 rounded-2xl border-2 border-risk-red/30 bg-risk-red-soft/40 p-4">
+        <div className="flex items-start gap-2.5">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-risk-red" />
+          <div className="min-w-0">
+            <h2 className="font-display text-base font-bold text-risk-red">
+              {t("checklist.severeTitle")}
             </h2>
-            {!hasUtilityAnswers && (
+            <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
+              {t("checklist.severeSubtitle")}
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 space-y-2">
+          {SEVERE_ITEMS.map((id) => {
+            const checked = answers[id]?.value === "yes";
+            return (
               <button
+                key={id}
                 type="button"
-                onClick={() => setShowOptional(false)}
-                aria-label={t("checklist.hideOptional")}
-                className="text-muted-foreground transition-transform hover:text-foreground"
+                role="checkbox"
+                aria-checked={checked}
+                onClick={() => toggleSevere(id)}
+                className={cn(
+                  "flex w-full items-start gap-3 rounded-xl border-2 bg-card p-3 text-left transition-colors",
+                  checked
+                    ? "border-risk-red bg-risk-red-soft"
+                    : "border-border hover:border-risk-red/40",
+                )}
               >
-                <ChevronDown className="size-4 rotate-180" />
+                <span
+                  className={cn(
+                    "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors",
+                    checked
+                      ? "border-risk-red bg-risk-red text-white"
+                      : "border-muted-foreground/40",
+                  )}
+                >
+                  {checked && <Check className="size-3.5" strokeWidth={3} />}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">
+                    {t(`item.${id}.area`)}
+                  </span>
+                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                    {t(`item.${id}.q`)}
+                  </span>
+                </span>
               </button>
-            )}
-          </div>
-          <div className="mt-3 space-y-4">
-            {UTILITY_ITEMS.map((item, idx) =>
-              renderCard(item.id, STRUCTURE_ITEMS.length + idx + 1),
-            )}
-          </div>
-        </>
-      )}
+            );
+          })}
+        </div>
+        <p className="mt-2.5 text-[11px] leading-relaxed text-muted-foreground">
+          {severeCount > 0
+            ? `${severeCount} ${t("checklist.severeTitle").toLowerCase()}`
+            : t("checklist.severeNoneHint")}
+        </p>
+      </div>
 
       {!allRequired && (
         <p className="mt-6 rounded-xl bg-muted px-4 py-3 text-center text-sm text-muted-foreground">
           {t("checklist.remaining").replace(
             "{n}",
-            `${STRUCTURE_ITEMS.length - requiredAnswered} ${
-              STRUCTURE_ITEMS.length - requiredAnswered === 1
+            `${PRIMARY_ITEMS.length - requiredAnswered} ${
+              PRIMARY_ITEMS.length - requiredAnswered === 1
                 ? t("checklist.remainingOne")
                 : t("checklist.remainingMany")
             }`,

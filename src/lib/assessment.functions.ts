@@ -217,7 +217,8 @@ Assess the OVERALL risk and choose exactly one level:
 
 Decision guidance:
 - Reserve "yellow" for genuinely minor/cosmetic issues — do NOT use it as a catch-all. If real structural elements (foundation, columns/beams, load-bearing walls, stairs, roof) are affected but collapse is not imminent, choose "orange" so the resident knows to get an engineer urgently.
-- "yes" to foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation, or stairs separating from walls suggests orange or red.
+- "yes" to wide/diagonal/X-shaped cracks in load-bearing walls, spalling concrete with exposed rebar on columns/beams, doors/windows jammed by frame distortion, foundation shifts, roof deformation, or stairs separating from walls suggests orange or red.
+- "yes" to a visible LEAN / tilt / sinking of the building or a floor is a sign of potential collapse — treat as red.
 - "yes" to ground liquefaction signs, building-to-building pounding, severe plumbing/gas damage, or roof collapse are critical life-safety hazards (treat as red).
 - Damaged flooring, electrical panels/wiring, or hanging fixtures alone suggest yellow.
 - Ground-motion context (from USGS ShakeMap): higher MMI / PGA means this location was shaken harder, so weigh reported damage more heavily. The spectral acceleration at the building's own period is the demand a building of THAT height actually felt — high values there (≥0.4g) make even partial damage reports more concerning. Soft/very-soft soil sites amplify shaking and are more prone to liquefaction and settlement. Treat strong shaking together with any reported structural damage as a serious (red) combination. Ground motion alone, with no observed damage, should not by itself force red or orange.

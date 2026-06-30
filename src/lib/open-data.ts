@@ -111,6 +111,7 @@ const RISK_MEANING: Record<RiskLevel, { es: string; en: string }> = {
 type RuleFloor = "red" | "orange" | "yellow" | "red_or_orange";
 
 const SAFETY_RULE_KEYS: Array<{ key: string; floor: RuleFloor }> = [
+  { key: "tilt", floor: "red" },
   { key: "liquefaction", floor: "red" },
   { key: "pounding", floor: "red" },
   { key: "plumbing", floor: "red" },

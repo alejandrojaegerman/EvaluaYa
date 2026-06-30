@@ -7,6 +7,7 @@
 
 import type { AssessmentDraft } from "./draft-store";
 import type { RiskLevel } from "./assessment-types";
+import { STRUCTURAL_DAMAGE_IDS } from "./assessment-types";
 import { translate } from "./i18n";
 import { evaluateSafetyRules, maxRisk } from "./safety-rules";
 
@@ -16,16 +17,6 @@ export type ProvisionalResult = {
   nextSteps: string[];
 };
 
-// Structural items whose "yes" answer means observed damage.
-const STRUCTURAL_DAMAGE_IDS = [
-  "foundation",
-  "exterior_walls",
-  "interior_walls",
-  "columns_beams",
-  "doors_windows",
-  "roof",
-  "stairs",
-] as const;
 
 export function computeProvisional(draft: AssessmentDraft): ProvisionalResult {
   const lang = draft.language;
