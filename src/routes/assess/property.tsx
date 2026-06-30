@@ -291,6 +291,7 @@ function PropertyStep() {
         buildingName: buildingName.trim(),
         state: state.trim(),
         municipality: municipality.trim(),
+        parroquia: parroquia.trim(),
         buildingType,
         structuralType,
         floors,
