@@ -719,7 +719,7 @@ function PropertyStep() {
                         : "border-input bg-card text-foreground"
                     }`}
                   >
-                    {v ? t("common.yes") : t("common.no")}
+                    {v ? t("checklist.answer.yes") : t("checklist.answer.no")}
                   </button>
                 );
               })}
@@ -746,7 +746,7 @@ function PropertyStep() {
                         : "border-input bg-card text-foreground"
                     }`}
                   >
-                    {v ? t("common.yes") : t("common.no")}
+                    {v ? t("checklist.answer.yes") : t("checklist.answer.no")}
                   </button>
                 );
               })}
