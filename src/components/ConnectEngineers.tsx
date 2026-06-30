@@ -156,7 +156,31 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               />
             </div>
 
-            <Button type="submit" disabled={busy} className="mt-3 w-full">
+            {!alreadyAcked && (
+              <label className="mt-3 flex items-start gap-2.5 rounded-xl border border-border bg-muted/40 p-3">
+                <Checkbox
+                  checked={acked}
+                  onCheckedChange={(v) => setAcked(v === true)}
+                  className="mt-0.5"
+                  aria-label={t("legal.ack")}
+                />
+                <span className="text-[11px] leading-relaxed text-muted-foreground">
+                  {t("legal.ack")}{" "}
+                  <Link
+                    to="/legal"
+                    className="font-semibold text-primary underline-offset-2 hover:underline"
+                  >
+                    {t("legal.readMore")}
+                  </Link>
+                </span>
+              </label>
+            )}
+
+            <Button
+              type="submit"
+              disabled={busy || (!alreadyAcked && !acked)}
+              className="mt-3 w-full"
+            >
               {busy ? t("connect.requestSending") : t("connect.requestCta")}
             </Button>
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
