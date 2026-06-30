@@ -30,6 +30,7 @@ function buildPayload(item: OutboxItem) {
       buildingType: p.buildingType ?? "house",
       structuralType: p.structuralType ?? "unknown",
       floors: p.floors ?? 1,
+      ...(typeof p.basements === "number" ? { basements: p.basements } : {}),
       age: p.age ?? "post2000",
       ...(typeof p.seismicIntensity === "number"
         ? {
