@@ -110,7 +110,7 @@ function PanelPage() {
         data: { token, requestId: id, verdict: v, level, notes },
       });
       if (res.ok) {
-        toast.success(t("panel.verdictSaved"));
+        toast.success(t("panel.reviewSaved"));
         await load();
       } else toast.error(t("result.genericError"));
     } finally {
