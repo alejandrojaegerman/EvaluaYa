@@ -1907,6 +1907,10 @@ const en: Dict = {
     "Unreinforced masonry building: highly vulnerable after strong shaking.",
   "rule.urm.step":
     "Suggestion: as a precaution, avoid staying inside until a licensed engineer or Civil Protection assess the building.",
+  "rule.tilt.finding":
+    "The building looks leaning, tilted, or sunken: possible collapse risk.",
+  "rule.tilt.step":
+    "Suggestion: do not stay inside; step out and report it to Civil Protection or a licensed engineer immediately.",
   "rule.liquefaction.finding":
     "Soil liquefaction signs: the ground lost its bearing capacity.",
   "rule.liquefaction.step":
