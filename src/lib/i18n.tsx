@@ -142,6 +142,12 @@ const es: Dict = {
   "property.miss.address": "la dirección / sector",
   "property.miss.parroquia": "la parroquia",
   "property.miss.buildingName": "el nombre del edificio",
+  "property.miss.livesInBuilding": "si vives en el edificio",
+  "property.miss.condoBoard": "si eres parte de la junta de condominio",
+  "property.livesInBuilding": "¿Vives en el edificio?",
+  "property.condoBoard": "¿Eres parte de la junta de condominio?",
+
+
 
 
 
@@ -1653,6 +1659,12 @@ const en: Dict = {
   "property.miss.address": "the address / neighborhood",
   "property.miss.parroquia": "the parish",
   "property.miss.buildingName": "the building name",
+  "property.miss.livesInBuilding": "whether you live in the building",
+  "property.miss.condoBoard": "whether you're on the condo board",
+  "property.livesInBuilding": "Do you live in the building?",
+  "property.condoBoard": "Are you part of the condo board?",
+
+
 
 
 

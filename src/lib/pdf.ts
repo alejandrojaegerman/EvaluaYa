@@ -102,8 +102,10 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   const propLine = [
     t(`property.type.${record.property.buildingType}`),
     `${record.property.floors} ${lang === "es" ? "piso(s)" : "floor(s)"}`,
-    ageMap[record.property.age],
-  ].join(" · ");
+    record.property.age ? ageMap[record.property.age] : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   paragraph(record.property.address ? `${record.property.address}\n${propLine}` : propLine);
 
   // Seismic context (USGS ShakeMap) — only when location data is present

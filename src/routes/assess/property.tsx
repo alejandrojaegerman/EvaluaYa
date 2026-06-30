@@ -158,6 +158,8 @@ function PropertyStep() {
   const [floors, setFloors] = useState(1);
   const [basements, setBasements] = useState(0);
   const [age, setAge] = useState<BuildingAge | null>(null);
+  const [livesInBuilding, setLivesInBuilding] = useState<boolean | null>(null);
+  const [condoBoard, setCondoBoard] = useState<boolean | null>(null);
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
@@ -207,6 +209,10 @@ function PropertyStep() {
       }
       if (p.floors) setFloors(p.floors);
       if (typeof p.basements === "number") setBasements(p.basements);
+      if (typeof p.livesInBuilding === "boolean")
+        setLivesInBuilding(p.livesInBuilding);
+      if (typeof p.condoBoardMember === "boolean")
+        setCondoBoard(p.condoBoardMember);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
         const sa: SeismicReading["sa"] = {};
@@ -314,13 +320,13 @@ function PropertyStep() {
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (buildingNameRequired && buildingName.trim() === "")
     missing.push(t("property.miss.buildingName"));
-  if (age === null) missing.push(t("property.miss.age"));
   if (residentName.trim() === "") missing.push(t("property.miss.residentName"));
   if (residentContact.trim() === "")
     missing.push(t("property.miss.residentContact"));
+  if (livesInBuilding === null) missing.push(t("property.miss.livesInBuilding"));
+  if (condoBoard === null) missing.push(t("property.miss.condoBoard"));
   const valid =
     buildingType !== null &&
-    age !== null &&
     floors >= 1 &&
     state.trim() !== "" &&
     municipalitySatisfied &&
@@ -328,7 +334,9 @@ function PropertyStep() {
     parroquia.trim() !== "" &&
     (!buildingNameRequired || buildingName.trim() !== "") &&
     residentName.trim() !== "" &&
-    residentContact.trim() !== "";
+    residentContact.trim() !== "" &&
+    livesInBuilding !== null &&
+    condoBoard !== null;
 
 
   async function handleContinue() {
@@ -346,7 +354,9 @@ function PropertyStep() {
         structuralType,
         floors,
         basements,
-        age,
+        ...(age ? { age } : {}),
+        ...(livesInBuilding !== null ? { livesInBuilding } : {}),
+        ...(condoBoard !== null ? { condoBoardMember: condoBoard } : {}),
         ...(intensity
           ? (() => {
               const demand = spectralDemand(intensity, floors);
@@ -665,11 +675,11 @@ function PropertyStep() {
                 aria-label={t("property.countryCode")}
                 value={dialCode}
                 onChange={(e) => setDialCode(e.target.value)}
-                className="h-12 w-20 shrink-0 rounded-xl border border-input bg-card px-2 text-center text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-12 w-28 shrink-0 rounded-xl border border-input bg-card px-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {COUNTRY_CODES.map((c) => (
                   <option key={c.code} value={c.code} title={`${c.name} (${c.code})`}>
-                    {c.flag}
+                    {c.flag} {c.code}
                   </option>
                 ))}
               </select>
@@ -687,6 +697,60 @@ function PropertyStep() {
             <p className="mt-1.5 text-xs text-muted-foreground">
               {t("property.phoneHint")}
             </p>
+          </div>
+
+          {/* ¿Vives en el edificio? */}
+          <div>
+            <p className="text-sm font-semibold">
+              {t("property.livesInBuilding")}{" "}
+              <span className="font-normal text-destructive">*</span>
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {([true, false] as const).map((v) => {
+                const selected = livesInBuilding === v;
+                return (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    onClick={() => setLivesInBuilding(v)}
+                    className={`h-12 rounded-xl border text-sm font-semibold transition ${
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-input bg-card text-foreground"
+                    }`}
+                  >
+                    {v ? t("checklist.answer.yes") : t("checklist.answer.no")}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ¿Eres parte de la junta de condominio? */}
+          <div>
+            <p className="text-sm font-semibold">
+              {t("property.condoBoard")}{" "}
+              <span className="font-normal text-destructive">*</span>
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {([true, false] as const).map((v) => {
+                const selected = condoBoard === v;
+                return (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    onClick={() => setCondoBoard(v)}
+                    className={`h-12 rounded-xl border text-sm font-semibold transition ${
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-input bg-card text-foreground"
+                    }`}
+                  >
+                    {v ? t("checklist.answer.yes") : t("checklist.answer.no")}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -872,7 +936,12 @@ function PropertyStep() {
 
           {/* Age */}
           <div>
-            <p className="text-sm font-semibold">{t("property.age")}</p>
+            <p className="text-sm font-semibold">
+              {t("property.age")}{" "}
+              <span className="font-normal text-muted-foreground">
+                {t("common.optional")}
+              </span>
+            </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {t("property.age.help")}
             </p>
