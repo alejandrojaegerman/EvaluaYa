@@ -1659,6 +1659,12 @@ const en: Dict = {
   "property.miss.address": "the address / neighborhood",
   "property.miss.parroquia": "the parish",
   "property.miss.buildingName": "the building name",
+  "property.miss.livesInBuilding": "whether you live in the building",
+  "property.miss.condoBoard": "whether you're on the condo board",
+  "property.livesInBuilding": "Do you live in the building?",
+  "property.condoBoard": "Are you part of the condo board?",
+
+
 
 
 
