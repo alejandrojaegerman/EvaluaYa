@@ -175,8 +175,11 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   for (const a of record.answers) {
     const urls = record.photoUrls[a.id];
     if (urls && urls.length) {
-      for (const url of urls) {
-        photoItems.push({ area: t(`item.${a.id}.area`), url });
+      for (let i = 0; i < urls.length; i++) {
+        const label = record.photoCaptions?.[a.id]?.[i];
+        const key = damageCategoryKey(label);
+        const area = key ? t(key) : (label ?? t(`item.${a.id}.area`));
+        photoItems.push({ area, url: urls[i] });
       }
     }
   }
