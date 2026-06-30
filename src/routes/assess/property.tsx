@@ -95,21 +95,21 @@ const UNSURE_MUNICIPIO = "__unsure__";
 
 // Common dial codes for residents in Venezuela and the diaspora.
 // Order: Venezuela first, then the most common destination countries.
-const COUNTRY_CODES: { code: string; label: string }[] = [
-  { code: "+58", label: "🇻🇪 Venezuela (+58)" },
-  { code: "+57", label: "🇨🇴 Colombia (+57)" },
-  { code: "+1", label: "🇺🇸 EE.UU. / Canadá (+1)" },
-  { code: "+34", label: "🇪🇸 España (+34)" },
-  { code: "+56", label: "🇨🇱 Chile (+56)" },
-  { code: "+51", label: "🇵🇪 Perú (+51)" },
-  { code: "+54", label: "🇦🇷 Argentina (+54)" },
-  { code: "+593", label: "🇪🇨 Ecuador (+593)" },
-  { code: "+52", label: "🇲🇽 México (+52)" },
-  { code: "+55", label: "🇧🇷 Brasil (+55)" },
-  { code: "+507", label: "🇵🇦 Panamá (+507)" },
-  { code: "+1809", label: "🇩🇴 Rep. Dominicana (+1809)" },
-  { code: "+39", label: "🇮🇹 Italia (+39)" },
-  { code: "+351", label: "🇵🇹 Portugal (+351)" },
+const COUNTRY_CODES: { code: string; flag: string; name: string }[] = [
+  { code: "+58", flag: "🇻🇪", name: "Venezuela" },
+  { code: "+57", flag: "🇨🇴", name: "Colombia" },
+  { code: "+1", flag: "🇺🇸", name: "EE.UU. / Canadá" },
+  { code: "+34", flag: "🇪🇸", name: "España" },
+  { code: "+56", flag: "🇨🇱", name: "Chile" },
+  { code: "+51", flag: "🇵🇪", name: "Perú" },
+  { code: "+54", flag: "🇦🇷", name: "Argentina" },
+  { code: "+593", flag: "🇪🇨", name: "Ecuador" },
+  { code: "+52", flag: "🇲🇽", name: "México" },
+  { code: "+55", flag: "🇧🇷", name: "Brasil" },
+  { code: "+507", flag: "🇵🇦", name: "Panamá" },
+  { code: "+1809", flag: "🇩🇴", name: "Rep. Dominicana" },
+  { code: "+39", flag: "🇮🇹", name: "Italia" },
+  { code: "+351", flag: "🇵🇹", name: "Portugal" },
 ];
 const DEFAULT_DIAL_CODE = "+58";
 
