@@ -921,7 +921,7 @@ export function StepHeader({
   return (
     <div>
       <div className="flex items-center gap-1.5">
-        {[1, 2, 3].map((n) => (
+        {[1, 2].map((n) => (
           <span
             key={n}
             className={cn(
