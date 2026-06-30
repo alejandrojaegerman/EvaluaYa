@@ -932,7 +932,7 @@ export function StepHeader({
         ))}
       </div>
       <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t("common.step")} {step} {t("common.of")} 3
+        {t("common.step")} {step} {t("common.of")} 2
       </p>
       <h1 className="mt-1 font-display text-2xl font-extrabold tracking-tight">
         {title}
