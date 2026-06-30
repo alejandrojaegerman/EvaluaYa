@@ -2662,21 +2662,16 @@ const en: Dict = {
   "panel.lastUpdate": "Last update",
   "panel.currentStage": "Current stage",
 
-  // Panel — validate the AI evaluation
-  "panel.validateTitle": "Validate the app's assessment",
-  "panel.validateBody":
-    "Compare the AI result with your professional judgment. Your verdict marks the report as verified across all surfaces.",
-  "panel.aiSaid": "The AI rated this",
-  "panel.agree": "I agree",
-  "panel.adjust": "Adjust level",
-  "panel.pickLevel": "Your professional level",
-  "panel.verdictNote": "Professional notes (optional)",
-  "panel.verdictNotePlaceholder": "E.g.: Non-structural cracks; safe to use with minor repairs.",
-  "panel.submitVerdict": "Save verdict",
-  "panel.verdictSaved": "Verdict saved. Report verified.",
-  "panel.verifiedByYou": "Verified by you",
-  "panel.verifiedAgree": "You confirmed the AI level",
-  "panel.verifiedAdjust": "You adjusted the level",
+  // Panel — record professional observations
+  "panel.reviewTitle": "Record your observations",
+  "panel.reviewBody":
+    "Leave your professional observations after guiding the resident. This marks the report as reviewed by a volunteer evaluator; it is not a verdict or a habitability certificate.",
+  "panel.reviewCta": "Record observations",
+  "panel.reviewNotePlaceholder": "E.g.: Guided the resident; recommended a formal inspection by a licensed engineer.",
+  "panel.reviewDescargo":
+    "I declare that my observations are advisory and voluntary, that they do not constitute an official verdict or a habitability certificate, and that the decision on safety rests with a formal inspection by a licensed structural engineer, FUNVISIS or Civil Protection.",
+  "panel.reviewSubmit": "Save observations",
+  "panel.reviewedByYou": "Reviewed by you",
   "panel.cancel": "Cancel",
   "panel.noReportToValidate": "This request has no linked assessment.",
 
