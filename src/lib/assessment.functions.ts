@@ -214,6 +214,9 @@ function buildPrompt(input: AnalyzeInput) {
     "Inspection answers (resident self-report):",
     ...lines,
     "",
+    input.property.comments?.trim()
+      ? `Resident's additional comments: ${input.property.comments.trim()}`
+      : "",
     "Attached images correspond, in order, to the items that have a photo.",
     `Respond in ${langName}.`,
   ]
