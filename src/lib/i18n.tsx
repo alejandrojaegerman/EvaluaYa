@@ -1747,6 +1747,7 @@ const en: Dict = {
   "factors.rule.pounding": "Building pounding",
   "factors.rule.plumbing": "Gas / plumbing risk",
   "factors.rule.severe_shaking": "Very strong shaking",
+  "factors.rule.tilt": "Lean / tilt",
   "dash.recentReports": "Recent reports",
   "dash.issuesWord": "issues",
 
