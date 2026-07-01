@@ -1659,6 +1659,8 @@ const es: Dict = {
     "Incluso la inspección oficial no garantiza la seguridad ante eventos futuros: pueden existir situaciones fuera de su alcance y las condiciones de estabilidad pueden cambiar.",
   "transparency.cta": "Ver contactos oficiales",
   "transparency.processCta": "Conoce el proceso oficial",
+  "transparency.remit":
+    "Puedes mostrar este reporte (y su PDF) a las autoridades al solicitar la evaluación oficial. Si un ingeniero voluntario lo revisa, también puedes compartir sus observaciones: ayudan pero no reemplazan la inspección oficial.",
 
   "pdf.officialTitle": "Contactos oficiales",
   "pdf.officialIntro":
