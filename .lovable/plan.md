@@ -1,37 +1,68 @@
-# Home refinements + consistent "most-affected first" pickers
+# EvalúaYa — Consentimiento tardío + PII solo si piden ingeniero + guía de fotos
 
-## 1. Reframe the engineer connection (not a promise)
-Remove the "y conéctate con un ingeniero civil voluntario" clause from the hero subtitle so it reads as a self-assessment tool, not a guaranteed service. The volunteer-engineer path stays available as a secondary option (the existing "Ingenieros voluntarios" home section and the post-report `ConnectEngineers` card).
+Optimizar el flujo para conversión. Los datos lo confirman: `/assess/property` 213 vistas → `/assess/checklist` 45 → `/assess/analyze` 26. El gate bloqueante al inicio del Paso 1 corta el embudo antes de que la persona empiece.
 
-- `src/lib/i18n.tsx`
-  - ES `home.heroSubtitle` → "Revisa los daños de tu casa en minutos con una guía paso a paso." (drop the "y conéctate…" clause)
-  - EN `home.heroSubtitle` → "Review your home's damage in minutes with a step-by-step guide." (drop the "and connect…" clause)
+**Guardrail:** nada de esto toca el algoritmo de puntuación (Proceso 1) ni la página de Metodología. Solo confianza, orden y usabilidad alrededor del flujo existente.
 
-## 2. Stats block first, above Contactos oficiales (mobile)
-Reorder the home layout so the live stats counters render right under the hero CTA, with the Contactos oficiales card staying where it currently is (below the stats). Contactos oficiales is not moved down further — the stats simply come first.
+---
 
-- `src/routes/index.tsx`: move the `hasTotals` stats `<section>` to render immediately after the hero CTA and before the Contactos oficiales link card. New above-the-fold order: Hero → Stats → Contactos oficiales → Quick actions.
+## 1. Mover el consentimiento al final (lo más tarde posible)
 
-## 3. Drop "alerta" from the severe-findings label
-- `src/lib/i18n.tsx`
-  - ES `result.red.tag`: "Hallazgos severos · alerta" → "Hallazgos severos"
-  - EN `result.red.tag`: "Severe findings · alert" → "Severe findings"
+Hoy `LegalConsentGate` es un overlay bloqueante en el Paso 1 (property). Se elimina de ahí y se convierte en **checkboxes en línea al final del Paso 2 (checklist), justo encima del botón "Analizar"** — el último campo antes de recibir el análisis.
 
-This label is shared by the result card and the home stats counter, so both update together.
+### Cambios
+- **`src/routes/assess/property.tsx`**: quitar el overlay `LegalConsentGate` y su estado (`showGate`, `getLegalConsent`/`hasLegalConsent`). El Paso 1 queda sin fricción (solo ubicación + tipo de edificio, todo anónimo). Se mantiene guardar el borrador igual; el `consent` ya no se captura aquí.
+- **`src/routes/assess/checklist.tsx`**: agregar antes de `StepFooter` un bloque compacto de consentimiento:
+  - Un resumen breve y claro de qué **es** EvalúaYa (iniciativa comunitaria independiente, no oficial), qué **no es** (no es FUNVISIS, Protección Civil, servicio del gobierno, ni certificación técnica) y qué pasa con la información — reusando el texto existente de `gate.c1/c2/c3`, presentado liviano.
+  - Dos checkboxes: (1) aceptar aviso legal/descargo, (2) consentir el tratamiento de datos — reusando `gate.accept`, `gate.consent`, con enlace "Leer aviso completo" a `/legal` (`gate.readFull`).
+  - El botón "Analizar" queda deshabilitado hasta que estén respondidas las preguntas estructurales **y** marcados ambos checkboxes. Si falta, mensaje inline (`gate.mustAccept`).
+  - En `handleContinue`: llamar `setLegalConsent()` y guardar el registro en `draft.consent` antes de navegar a `/assess/analyze`.
+- **`src/routes/assess/analyze.tsx`**: ya lee `draft.consent` y lo envía. Añadir una guarda: si por acceso directo a la URL el borrador no tiene `consent`, redirigir de vuelta a `/assess/checklist` (evita enviar sin consentimiento).
+- **`src/components/LegalConsentGate.tsx`**: deja de usarse como overlay. Se extrae su contenido a un componente en línea (o se reemplaza por el bloque inline en checklist). Se conservan todas las claves i18n `gate.*`.
 
-## 4. Most-affected areas first, everywhere a state/zone is picked
-The assessment form, volunteer signup, and data room already surface most-affected areas first via impact ranking. Extend the same treatment to the two remaining state selectors that still list states plainly:
+### Efectos
+- **Per-evaluación** de forma natural: el consentimiento se captura fresco al final de cada evaluación, no una vez por dispositivo.
+- **Prueba por reporte**: cada `assessment` ya guarda `legal_version` y `consent_version` (versión exacta aceptada) vía `draft.consent`; `assessments.created_at` sirve como marca temporal de la aceptación. No hace falta cambio de esquema.
+- **Menos fricción arriba** = menos abandono entre property y checklist.
 
-- `src/routes/index.tsx` — "Explora tu estado" Select: load impact ranking (via existing `getImpactRanking` server fn in a route loader) and render a "Zonas más afectadas" group first, then "Todas las zonas" alphabetically, using shadcn `SelectGroup`/`SelectLabel` + `splitFeatured`.
-- `src/routes/mapa.tsx` — state list/select (line ~600): order featured states first using the same ranking, keeping the full inclusive list below.
+---
 
-Reuse existing helpers (`splitFeatured`, `getImpactRanking`, `picker.mostAffected` / `picker.allAreas` i18n keys) so behavior matches the assessment picker exactly.
+## 2. PII solo si la persona pide conectar con un ingeniero
 
-## Technical notes
-- `getImpactRanking` is an existing `createServerFn` (`src/lib/stats.functions.ts`) returning `{ featuredStates, featuredMunicipios }`; it's already used by `assess/property.tsx` and `voluntarios.index.tsx`.
-- For `index.tsx`, add a route `loader` returning the ranking (public, anonymized) and read it with `Route.useLoaderData()`, mirroring `assess/property.tsx`. This keeps SSR-safe (no protected middleware).
-- No database or business-logic changes; all edits are copy, layout, and picker ordering. Risk-level computation is untouched.
+Ya es así: el flujo principal es anónimo (property solo pide Estado/Municipio) y los datos personales (nombre, WhatsApp, dirección) solo se piden en el componente de solicitar ingeniero, **después** de ver el resultado. Acciones:
+- Confirmar que ningún campo de PII es obligatorio en property/checklist (verificación, sin cambios esperados).
+- Dejar un comentario `// TODO(legal)` donde los datos saldrían hacia un ingeniero nombrado, para el consentimiento aparte que se consultará con el asesor legal (decisión previa: se trabaja después).
 
-## Verification
-- Typecheck + unit tests (`tests/unit/impact.test.ts` already covers ranking).
-- Visual check on 390px mobile: hero subtitle shortened, stats above Contactos oficiales, severe tag reads "Hallazgos severos", and both index + mapa state pickers show the most-affected group first.
+---
+
+## 3. Corregir el lenguaje de "ingenieros verificados"
+
+Los ingenieros son **voluntarios registrados**, no verificados/certificados/avalados. Correcciones de copy público en `src/lib/i18n.tsx` (ES y EN) y `src/routes/index.tsx`:
+- `engineers.connectDesc`, `engineers.mapNote`, `engineers.methodologyBody`, `privacy.use.b4`, y meta description en `index.tsx`: "ingeniero voluntario **verificado**" → "**registrado**".
+- `engineers.validateDesc`: "marcarlos como **verificados**" → "sumarlos como **voluntarios registrados**".
+- `legal.s3.body`: "**Verificamos** sus credenciales…" → "**Registramos** la información que nos suministran; no verificamos ni garantizamos sus credenciales ni sus recomendaciones."
+- `vol.verifyTitle`/`vol.verifyHint`/`vol.verifiedSubtitle`: reformular hacia registro/aprobación, sin afirmar verificación completada (quitar "que ya revisamos").
+
+**No se cambian** (son sobre reportes revisados, no sobre ingenieros, y son ciertos): `map.verified`, `data.dict.verified` ("revisado por evaluador") y métricas internas del admin.
+
+---
+
+## 4. Restaurar el acordeón de guía de fotos (borrado por el rollback)
+
+Recuperar del commit `b7714a4`:
+- `src/lib/photo-guide-examples.ts` y los assets `src/assets/photo-guide/{scale,rebar,joint,wide-close}.jpg`.
+- El acordeón `UsefulPhotosTip` ("¿Qué fotos le sirven al ingeniero?"), colocado en el checklist actual cerca del área de captura.
+- Claves i18n `checklist.usefulToggle`, `checklist.usefulIntro`, `checklist.usefulEx.*` (ES y EN).
+- Reforzar que la **fachada** debe mostrar el **edificio completo desde lejos** (la foto más útil para el triaje).
+- Se mantiene el marco "orientación preliminar": es guía ilustrativa, no diagnóstica.
+
+Convive con el toggle "¿Cómo se ve?" (❌ daño / ✅ sano por item): ese explica *qué buscar*; el acordeón explica *cómo tomar* la foto.
+
+---
+
+## Detalles técnicos y verificación
+- Sin cambios de base de datos (las columnas `legal_version`/`consent_version` ya existen).
+- `tsgo` typecheck + build.
+- Prueba manual: property sin gate → checklist con checkboxes al final → "Analizar" bloqueado hasta marcar ambos → resultado. Acceso directo a `/assess/analyze` sin consentimiento redirige a checklist.
+- Confirmar que no queda copy público que diga "ingeniero verificado".
+- Abrir el acordeón de fotos y verificar las 4 imágenes + tip de fachada.

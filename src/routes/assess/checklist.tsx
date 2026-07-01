@@ -9,11 +9,13 @@ import {
   Plus,
   Info,
   HelpCircle,
+  Lightbulb,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { LegalConsentInline } from "@/components/LegalConsentInline";
 import { StepHeader, StepFooter } from "./property";
 import {
   CHECKLIST_ITEMS,
@@ -23,9 +25,11 @@ import {
   type DraftAnswer,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft, type AssessmentDraft } from "@/lib/draft-store";
+import { setLegalConsent } from "@/lib/legal-ack";
 import { compressImageToDataUrl } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
+import { PHOTO_GUIDE_EXAMPLES } from "@/lib/photo-guide-examples";
 import { trackStep } from "@/lib/track";
 import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
@@ -73,6 +77,12 @@ function ChecklistStep() {
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [loading, setLoading] = useState(true);
   const [showOptional, setShowOptional] = useState(false);
+  // Legal + data consent, captured here (as late as possible) right before the
+  // analysis. Both required. Pre-checked if the current draft already consented.
+  const [acceptLegal, setAcceptLegal] = useState(false);
+  const [acceptData, setAcceptData] = useState(false);
+  const [consentError, setConsentError] = useState(false);
+  const consentGiven = acceptLegal && acceptData;
 
   useEffect(() => {
     trackStep("checklist_started");
@@ -84,6 +94,10 @@ function ChecklistStep() {
         return;
       }
       setDraft(d);
+      if (d.consent) {
+        setAcceptLegal(true);
+        setAcceptData(true);
+      }
       const initial: AnswerMap = {};
       for (const a of d.answers) {
         initial[a.id] = {
@@ -130,7 +144,7 @@ function ChecklistStep() {
   const hasUtilityAnswers = UTILITY_ITEMS.some((i) => answers[i.id]?.value);
   const optionalVisible = showOptional || hasUtilityAnswers;
 
-  async function persist(map: AnswerMap, ready: boolean) {
+  async function persist(map: AnswerMap, ready: boolean, consentGranted: boolean) {
     if (!draft) return;
     const draftAnswers: DraftAnswer[] = CHECKLIST_ITEMS.filter(
       (i) => map[i.id]?.value,
@@ -139,11 +153,15 @@ function ChecklistStep() {
       value: map[i.id].value,
       photoDataUrls: map[i.id].photoDataUrls,
     }));
+    // Stamp a fresh, versioned consent record onto this evaluation when granted
+    // (proof is persisted per assessment via assessment.functions).
+    const consent = consentGranted ? (draft.consent ?? setLegalConsent()) : draft.consent;
     await saveDraft({
       ...draft,
       answers: draftAnswers,
       language: lang,
       status: ready ? "ready_to_send" : "in_progress",
+      ...(consent ? { consent } : {}),
     });
   }
 
@@ -152,7 +170,12 @@ function ChecklistStep() {
       toast.warning(t("checklist.answerAll"));
       return;
     }
-    await persist(answers, true);
+    if (!consentGiven) {
+      setConsentError(true);
+      toast.warning(t("gate.mustAccept"));
+      return;
+    }
+    await persist(answers, true, true);
     navigate({ to: "/assess/analyze" });
   }
 
@@ -198,6 +221,8 @@ function ChecklistStep() {
         </div>
       </div>
 
+      {/* How to take a useful photo (illustrative guidance) */}
+      <UsefulPhotosTip />
 
       {/* Structural checks (required) */}
       <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
@@ -258,16 +283,90 @@ function ChecklistStep() {
         </p>
       )}
 
+      {/* Legal + data consent — captured as late as possible, right before analysis */}
+      <LegalConsentInline
+        acceptLegal={acceptLegal}
+        acceptData={acceptData}
+        onChangeLegal={(v) => {
+          setAcceptLegal(v);
+          setConsentError(false);
+        }}
+        onChangeData={(v) => {
+          setAcceptData(v);
+          setConsentError(false);
+        }}
+        showError={consentError}
+      />
+
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
-        nextDisabled={!allRequired}
+        nextDisabled={!allRequired || !consentGiven}
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
     </AppShell>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Collapsible "which photos help the engineer" guidance               */
+/* ------------------------------------------------------------------ */
+function UsefulPhotosTip() {
+  const { t } = useLang();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-3">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 text-left text-sm font-semibold text-primary"
+      >
+        <Lightbulb className="size-4 shrink-0" />
+        <span className="flex-1">{t("checklist.usefulToggle")}</span>
+        <ChevronDown
+          className={cn("size-4 transition-transform", open && "rotate-180")}
+        />
+      </button>
+      {open && (
+        <div className="mt-2.5 space-y-3">
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {t("checklist.usefulIntro")}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {PHOTO_GUIDE_EXAMPLES.map((ex) => (
+              <figure
+                key={ex.titleKey}
+                className="overflow-hidden rounded-xl border border-border bg-card"
+              >
+                <img
+                  src={ex.img}
+                  alt={t(ex.titleKey)}
+                  loading="lazy"
+                  width={816}
+                  height={816}
+                  className="aspect-square w-full object-cover"
+                />
+                <figcaption className="p-2">
+                  <p className="text-xs font-semibold leading-tight">
+                    {t(ex.titleKey)}
+                  </p>
+                  <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                    {t(ex.descKey)}
+                  </p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 
 function ChecklistCard({
   index,

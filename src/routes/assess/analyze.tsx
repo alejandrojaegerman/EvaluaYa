@@ -76,6 +76,12 @@ function AnalyzeStep() {
       navigate({ to: "/assess/property" });
       return;
     }
+    // Consent is captured at the end of the checklist. If it's missing (e.g. the
+    // user reached this route directly), send them back to grant it.
+    if (!draft.consent) {
+      navigate({ to: "/assess/checklist" });
+      return;
+    }
     if (!navigator.onLine) {
       void goProvisional();
       return;
