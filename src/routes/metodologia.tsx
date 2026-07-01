@@ -380,6 +380,26 @@ function MethodologyPage() {
           {t("methodology.disclaimer")}
         </p>
       </section>
+
+      {/* Encyclopedia — reachable only from here now that methodology is
+          promoted to a top-level nav/footer page. */}
+      <Link
+        to="/guia"
+        className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+          <BookOpen className="size-5" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold leading-tight">
+            {t("methodology.encyclopediaTitle")}
+          </span>
+          <span className="mt-0.5 block text-sm text-muted-foreground">
+            {t("methodology.encyclopediaBody")}
+          </span>
+        </span>
+        <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
     </AppShell>
   );
 }
