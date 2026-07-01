@@ -147,10 +147,21 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       {/* Request a verified engineer */}
       <div className="mt-5">
         {sent ? (
-          <p className="flex items-center gap-2 rounded-xl border border-risk-green/30 bg-risk-green-soft/50 p-3 text-sm font-medium text-risk-green">
-            <CheckCircle2 className="size-5 shrink-0" aria-hidden />
-            {t("connect.requestDone")}
-          </p>
+          <div className="rounded-xl border border-risk-green/30 bg-risk-green-soft/50 p-3">
+            <p className="flex items-center gap-2 text-sm font-medium text-risk-green">
+              <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+              {t("connect.requestDone")}
+            </p>
+            {trackingToken && (
+              <Link
+                to="/seguimiento/$token"
+                params={{ token: trackingToken }}
+                className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-risk-green/40 bg-card px-3 py-2 text-sm font-semibold text-risk-green underline-offset-2 hover:underline"
+              >
+                {t("connect.trackCta")}
+              </Link>
+            )}
+          </div>
         ) : (
           <form
             onSubmit={onSubmit}
