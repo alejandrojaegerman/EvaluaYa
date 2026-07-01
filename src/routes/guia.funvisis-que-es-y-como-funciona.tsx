@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
+import {
+  EncyclopediaBreadcrumb,
+  breadcrumbJsonLd,
+  encyclopediaCrumbs,
+} from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -155,6 +160,7 @@ const COPY = {
     ctaButton: "Iniciar autoevaluación",
     tremorLink: "Qué hacer después de un temblor",
     boconoLink: "Falla de Boconó: la principal falla activa",
+    processLink: "Proceso oficial de FUNVISIS (próximamente)",
     liveLink: "¿Tembló en Venezuela hoy? Sismos recientes",
     faqTitle: "Preguntas frecuentes",
     sourceNote:
@@ -172,6 +178,7 @@ const COPY = {
     ctaButton: "Start self-assessment",
     tremorLink: "What to do after a tremor",
     boconoLink: "Boconó Fault: the main active fault",
+    processLink: "FUNVISIS official process (coming soon)",
     liveLink: "Earthquake in Venezuela today? Recent quakes",
     faqTitle: "Frequently asked questions",
     sourceNote:
@@ -216,6 +223,16 @@ export const Route = createFileRoute("/guia/funvisis-que-es-y-como-funciona")({
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(article) },
         { type: "application/ld+json", children: JSON.stringify(faqSchema) },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "FUNVISIS: qué es y cómo funciona",
+              }),
+            ),
+          ),
+        },
       ],
     };
   },
@@ -230,6 +247,7 @@ function FunvisisPage() {
 
   return (
     <AppShell>
+      <EncyclopediaBreadcrumb items={encyclopediaCrumbs(lang, { label: c.h1 })} />
       <header>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
           <Radar className="size-3.5" aria-hidden />
@@ -283,6 +301,9 @@ function FunvisisPage() {
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
           <Link to="/guia/que-hacer-despues-de-un-temblor">{c.tremorLink}</Link>
+        </Button>
+        <Button asChild variant="link" className="mt-1 w-full">
+          <Link to="/guia/proceso-oficial-funvisis">{c.processLink}</Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
           <Link to="/guia/falla-de-bocono">{c.boconoLink}</Link>

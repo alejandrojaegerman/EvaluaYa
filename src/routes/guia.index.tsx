@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChevronRight,
   ClipboardCheck,
+  Clock,
   HelpCircle,
   Landmark,
   Mountain,
@@ -14,6 +15,10 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
+import {
+  EncyclopediaBreadcrumb,
+  encyclopediaCrumbs,
+} from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
@@ -166,6 +171,20 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
   ],
 };
 
+const FEATURED = {
+  to: "/guia/proceso-oficial-funvisis",
+  es: {
+    badge: "Próximamente",
+    title: "Proceso oficial de FUNVISIS",
+    desc: "El procedimiento oficial paso a paso tras un sismo. La pieza central de la Enciclopedia.",
+  },
+  en: {
+    badge: "Coming soon",
+    title: "FUNVISIS official process",
+    desc: "The official step-by-step procedure after an earthquake. The core of the Encyclopedia.",
+  },
+};
+
 const COPY = {
   es: {
     kicker: "Enciclopedia",
@@ -196,20 +215,22 @@ const COPY = {
 export const Route = createFileRoute("/guia/")({
   head: () => {
     const { title, description } = META.es;
+    const links = [
+      { title: FEATURED.es.title, to: FEATURED.to },
+      ...GROUPS.es.flatMap((g) => g.items),
+    ];
     const itemList = {
       "@context": "https://schema.org",
       "@type": "ItemList",
       name: "Aprende sobre sismos en Venezuela",
       description,
       url: absoluteUrl(PATH),
-      itemListElement: GROUPS.es
-        .flatMap((g) => g.items)
-        .map((item, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          name: item.title,
-          url: absoluteUrl(item.to),
-        })),
+      itemListElement: links.map((item, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: item.title,
+        url: absoluteUrl(item.to),
+      })),
     };
     return {
       meta: [
@@ -236,9 +257,12 @@ function GuideHub() {
   const { lang } = useLang();
   const c = COPY[lang];
   const groups = GROUPS[lang];
+  const featured = FEATURED[lang];
 
   return (
     <AppShell>
+      <EncyclopediaBreadcrumb items={encyclopediaCrumbs(lang)} />
+
       <header>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
           <BookOpen className="size-3.5" aria-hidden />
@@ -251,6 +275,30 @@ function GuideHub() {
           {c.intro}
         </p>
       </header>
+
+      {/* Featured: official FUNVISIS process */}
+      <Link
+        to={FEATURED.to}
+        className="mt-6 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 shadow-sm transition-colors hover:bg-primary/10"
+      >
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <Landmark className="size-5" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+            <Clock className="size-3" aria-hidden />
+            {featured.badge}
+          </span>
+          <span className="mt-1 block font-display font-bold leading-tight">
+            {featured.title}
+          </span>
+          <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">
+            {featured.desc}
+          </span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-primary" aria-hidden />
+      </Link>
+
 
       {/* Compact CTA */}
       <section className="mt-6 rounded-2xl border border-primary/20 bg-secondary/40 p-4">

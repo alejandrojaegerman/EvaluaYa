@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
+import {
+  EncyclopediaBreadcrumb,
+  breadcrumbJsonLd,
+  encyclopediaCrumbs,
+} from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -209,6 +214,16 @@ export const Route = createFileRoute("/guia/falla-de-bocono")({
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(article) },
         { type: "application/ld+json", children: JSON.stringify(faqSchema) },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "Falla de Boconó: la principal falla activa de Venezuela",
+              }),
+            ),
+          ),
+        },
       ],
     };
   },
@@ -223,6 +238,7 @@ function BoconoPage() {
 
   return (
     <AppShell>
+      <EncyclopediaBreadcrumb items={encyclopediaCrumbs(lang, { label: c.h1 })} />
       <header>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
           <Waves className="size-3.5" aria-hidden />

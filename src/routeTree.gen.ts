@@ -27,6 +27,7 @@ import { Route as GuiaIndexRouteImport } from './routes/guia.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
 import { Route as GuiaQueHacerDespuesDeUnTemblorRouteImport } from './routes/guia.que-hacer-despues-de-un-temblor'
+import { Route as GuiaProcesoOficialFunvisisRouteImport } from './routes/guia.proceso-oficial-funvisis'
 import { Route as GuiaGrietasPeligrosasDespuesDeUnSismoRouteImport } from './routes/guia.grietas-peligrosas-despues-de-un-sismo'
 import { Route as GuiaFunvisisQueEsYComoFuncionaRouteImport } from './routes/guia.funvisis-que-es-y-como-funciona'
 import { Route as GuiaFallaDeBoconoRouteImport } from './routes/guia.falla-de-bocono'
@@ -145,6 +146,12 @@ const GuiaQueHacerDespuesDeUnTemblorRoute =
   GuiaQueHacerDespuesDeUnTemblorRouteImport.update({
     id: '/guia/que-hacer-despues-de-un-temblor',
     path: '/guia/que-hacer-despues-de-un-temblor',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuiaProcesoOficialFunvisisRoute =
+  GuiaProcesoOficialFunvisisRouteImport.update({
+    id: '/guia/proceso-oficial-funvisis',
+    path: '/guia/proceso-oficial-funvisis',
     getParentRoute: () => rootRouteImport,
   } as any)
 const GuiaGrietasPeligrosasDespuesDeUnSismoRoute =
@@ -319,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/funvisis-que-es-y-como-funciona': typeof GuiaFunvisisQueEsYComoFuncionaRoute
   '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
+  '/guia/proceso-oficial-funvisis': typeof GuiaProcesoOficialFunvisisRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -366,6 +374,7 @@ export interface FileRoutesByTo {
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/funvisis-que-es-y-como-funciona': typeof GuiaFunvisisQueEsYComoFuncionaRoute
   '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
+  '/guia/proceso-oficial-funvisis': typeof GuiaProcesoOficialFunvisisRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin': typeof AdminIndexRoute
@@ -414,6 +423,7 @@ export interface FileRoutesById {
   '/guia/falla-de-bocono': typeof GuiaFallaDeBoconoRoute
   '/guia/funvisis-que-es-y-como-funciona': typeof GuiaFunvisisQueEsYComoFuncionaRoute
   '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
+  '/guia/proceso-oficial-funvisis': typeof GuiaProcesoOficialFunvisisRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/guia/falla-de-bocono'
     | '/guia/funvisis-que-es-y-como-funciona'
     | '/guia/grietas-peligrosas-despues-de-un-sismo'
+    | '/guia/proceso-oficial-funvisis'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
@@ -510,6 +521,7 @@ export interface FileRouteTypes {
     | '/guia/falla-de-bocono'
     | '/guia/funvisis-que-es-y-como-funciona'
     | '/guia/grietas-peligrosas-despues-de-un-sismo'
+    | '/guia/proceso-oficial-funvisis'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin'
@@ -557,6 +569,7 @@ export interface FileRouteTypes {
     | '/guia/falla-de-bocono'
     | '/guia/funvisis-que-es-y-como-funciona'
     | '/guia/grietas-peligrosas-despues-de-un-sismo'
+    | '/guia/proceso-oficial-funvisis'
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
@@ -605,6 +618,7 @@ export interface RootRouteChildren {
   GuiaFallaDeBoconoRoute: typeof GuiaFallaDeBoconoRoute
   GuiaFunvisisQueEsYComoFuncionaRoute: typeof GuiaFunvisisQueEsYComoFuncionaRoute
   GuiaGrietasPeligrosasDespuesDeUnSismoRoute: typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
+  GuiaProcesoOficialFunvisisRoute: typeof GuiaProcesoOficialFunvisisRoute
   GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
   ZonaEstadoRoute: typeof ZonaEstadoRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -755,6 +769,13 @@ declare module '@tanstack/react-router' {
       path: '/guia/que-hacer-despues-de-un-temblor'
       fullPath: '/guia/que-hacer-despues-de-un-temblor'
       preLoaderRoute: typeof GuiaQueHacerDespuesDeUnTemblorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/proceso-oficial-funvisis': {
+      id: '/guia/proceso-oficial-funvisis'
+      path: '/guia/proceso-oficial-funvisis'
+      fullPath: '/guia/proceso-oficial-funvisis'
+      preLoaderRoute: typeof GuiaProcesoOficialFunvisisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guia/grietas-peligrosas-despues-de-un-sismo': {
@@ -985,6 +1006,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuiaFunvisisQueEsYComoFuncionaRoute: GuiaFunvisisQueEsYComoFuncionaRoute,
   GuiaGrietasPeligrosasDespuesDeUnSismoRoute:
     GuiaGrietasPeligrosasDespuesDeUnSismoRoute,
+  GuiaProcesoOficialFunvisisRoute: GuiaProcesoOficialFunvisisRoute,
   GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
   ZonaEstadoRoute: ZonaEstadoRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,

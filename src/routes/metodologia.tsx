@@ -16,6 +16,11 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
+import {
+  EncyclopediaBreadcrumb,
+  breadcrumbJsonLd,
+  encyclopediaCrumbs,
+} from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
@@ -53,6 +58,16 @@ export const Route = createFileRoute("/metodologia")({
         {
           type: "application/ld+json",
           children: JSON.stringify(articleSchema),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "Cómo funciona la metodología",
+              }),
+            ),
+          ),
         },
       ],
     };
@@ -97,6 +112,9 @@ function MethodologyPage() {
 
   return (
     <AppShell>
+      <EncyclopediaBreadcrumb
+        items={encyclopediaCrumbs(lang, { label: t("methodology.title") })}
+      />
       {/* Header */}
       <header>
         <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground">
