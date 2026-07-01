@@ -9,6 +9,7 @@ import {
   HandHeart,
   LifeBuoy,
   Map,
+  Phone,
   MessageSquareHeart,
   Scale,
   ShieldCheck,
