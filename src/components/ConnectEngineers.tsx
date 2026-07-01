@@ -146,7 +146,26 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
             </p>
 
             <div className="mt-3">
-              <Label htmlFor="hr-wa">{t("connect.yourWhatsapp")}</Label>
+              <Label htmlFor="hr-name">
+                {t("connect.yourName")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Input
+                id="hr-name"
+                value={residentName}
+                onChange={(e) => setResidentName(e.target.value)}
+                placeholder={t("connect.namePlaceholder")}
+                required
+                maxLength={160}
+                autoComplete="name"
+                className="mt-1.5"
+              />
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="hr-wa">
+                {t("connect.yourWhatsapp")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
               <Input
                 id="hr-wa"
                 type="tel"
@@ -160,6 +179,26 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               />
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("connect.whatsappHint")}
+              </p>
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="hr-address">
+                {t("connect.yourAddress")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="hr-address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={t("connect.addressPlaceholder")}
+                required
+                maxLength={400}
+                rows={2}
+                autoComplete="street-address"
+                className="mt-1.5"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("connect.addressHint")}
               </p>
             </div>
             <div className="mt-3">
