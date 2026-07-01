@@ -264,6 +264,7 @@ function GuidePage() {
 
   return (
     <AppShell>
+      <EncyclopediaBreadcrumb items={encyclopediaCrumbs(lang, { label: c.h1 })} />
       <header>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
           <ShieldCheck className="size-3.5" aria-hidden />
