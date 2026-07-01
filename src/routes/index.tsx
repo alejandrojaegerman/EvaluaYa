@@ -361,23 +361,16 @@ function Index() {
         </section>
       )}
 
-      {/* Disclaimer */}
-      <section className="mt-8 flex items-start gap-3 rounded-2xl border border-amber-300/50 bg-risk-yellow-soft/60 p-4">
-        <Info className="mt-0.5 size-5 shrink-0 text-risk-yellow" aria-hidden />
-        <div>
-          <p className="text-sm font-semibold">{t("disclaimer.title")}</p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {t("disclaimer.body")}
-          </p>
-          <Link
-            to="/metodologia"
-            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-          >
-            {t("home.methodologyLink")}
-            <ChevronRight className="size-3.5" aria-hidden />
-          </Link>
-        </div>
-      </section>
+      {/* Legal notice — compact info icon + link */}
+      <Link
+        to="/legal"
+        className="mt-8 flex items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-accent/40"
+      >
+        <Info className="size-4 shrink-0 text-risk-yellow" aria-hidden />
+        <span className="flex-1 leading-relaxed">{t("home.legalNotice")}</span>
+        <ChevronRight className="size-4 shrink-0" aria-hidden />
+      </Link>
+
     </AppShell>
   );
 }
