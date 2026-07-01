@@ -154,8 +154,9 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
       ],
     },
     {
-      heading: "How EvalúaYa works",
+      heading: "More resources",
       items: [
+
         {
           to: "/contactos-oficiales",
           icon: Phone,
