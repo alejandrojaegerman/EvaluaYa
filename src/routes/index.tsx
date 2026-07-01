@@ -132,52 +132,34 @@ function Index() {
           {t("home.startCta")}
           <ArrowRight className="size-5" />
         </Button>
-        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/90">
-          {t("home.timePromise")}
-        </p>
       </section>
 
-      {/* Trust strip — addresses the top hesitations (cost, sign-up,
-          connectivity, privacy) that drive the Home → Property drop-off. */}
-      <section className="mt-4 flex flex-wrap gap-2">
-        {[
-          { icon: BadgeCheck, label: t("home.trustFree") },
-          { icon: UserX, label: t("home.trustNoSignup") },
-          { icon: WifiOff, label: t("home.trustOffline") },
-          { icon: EyeOff, label: t("home.trustAnon") },
-        ].map(({ icon: PillIcon, label }) => (
-          <span
-            key={label}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm"
-          >
-            <PillIcon className="size-3.5 text-primary" aria-hidden />
-            {label}
-          </span>
-        ))}
-      </section>
-
-      {/* "Did it just shake?" — captures real-time quake intent and routes it
-          into an assessment. Links to the language-matched live page. */}
-      <section className="mt-4">
+      {/* Quick actions — quake + community map, side by side */}
+      <section className="mt-4 grid grid-cols-2 gap-3">
         <Link
           to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
-          className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 shadow-sm transition-colors hover:bg-secondary/60"
+          className="flex flex-col items-start gap-2 rounded-2xl border border-primary/20 bg-secondary/40 p-4 shadow-sm transition-colors hover:bg-secondary/60"
         >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Waves className="size-5" aria-hidden />
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-tight">{t("home.todayTitle")}</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {t("home.todayDesc")}
-            </p>
-          </div>
-          <ChevronRight
-            className="size-4 shrink-0 text-muted-foreground"
-            aria-hidden
-          />
+          <span className="text-sm font-semibold leading-tight">
+            {t("home.quakeBtn")}
+          </span>
+        </Link>
+        <Link
+          to="/mapa"
+          className="flex flex-col items-start gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+        >
+          <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+            <MapIcon className="size-5" aria-hidden />
+          </span>
+          <span className="text-sm font-semibold leading-tight">
+            {t("home.mapBtn")}
+          </span>
         </Link>
       </section>
+
 
       {/* Pending submission — offline-first resume card */}
       {pending && (
