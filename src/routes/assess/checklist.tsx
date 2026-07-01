@@ -54,17 +54,8 @@ import { cn } from "@/lib/utils";
 const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
 const SEVERE_ITEMS = SEVERE_SIGN_IDS;
 
-// Self-explanatory context signals shown as a small checklist ("Marca lo que
-// aplique"). Each is a clear, full sentence the resident checks off when true;
-// selections are stored (by key) separately from the free-text comment and sent
-// to the engineer / AI as extra context.
-const CONTEXT_SIGNALS = [
-  "aftershock",
-  "noises",
-  "common",
-  "people",
-  "evacuated",
-] as const;
+
+
 
 // Reserved photo-carrier ids for the consolidated photo section.
 const FACADE_ID: ChecklistItemId = "facade";
