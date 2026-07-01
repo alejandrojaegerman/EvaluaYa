@@ -98,25 +98,18 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
     <section
       className={cn(
         "mt-6 rounded-2xl border p-5 shadow-sm",
-        urgent
-          ? "border-risk-red/30 bg-risk-red-soft/50"
-          : "border-risk-yellow/40 bg-risk-yellow-soft/40",
+        theme.soft,
+        `border-${level === "yellow" ? "risk-yellow/40" : `risk-${level}/30`}`,
       )}
     >
       <div className="flex items-center gap-2">
-        <HardHat
-          className={cn(
-            "size-5",
-            urgent ? "text-risk-red" : "text-risk-yellow",
-          )}
-          aria-hidden
-        />
+        <HardHat className={cn("size-5", theme.text)} aria-hidden />
         <h2 className="font-display text-base font-bold">
           {t("connect.title")}
         </h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-        {urgent ? t("connect.subtitleRed") : t("connect.subtitleYellow")}
+        {t(subtitleKey)}
       </p>
       <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card/80 px-2.5 py-1 text-xs font-semibold text-foreground/70">
         <BadgeCheck className="size-3.5 text-primary" aria-hidden />
