@@ -223,6 +223,11 @@ function buildPrompt(input: AnalyzeInput) {
     "Inspection answers (resident self-report):",
     ...lines,
     "",
+    input.property.contextTags?.length
+      ? `Additional signals reported by the resident:\n${input.property.contextTags
+          .map((s) => `- ${s}`)
+          .join("\n")}`
+      : "",
     input.property.comments?.trim()
       ? `Resident's additional comments: ${input.property.comments.trim()}`
       : "",
