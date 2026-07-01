@@ -1069,7 +1069,7 @@ const es: Dict = {
   "methodology.maintainedBy":
     "Esta página la mantiene el equipo de EvalúaYa para explicar cómo funciona la herramienta. Puede actualizarse a medida que mejoramos el método.",
   "methodology.intro":
-    "EvalúaYa combina reglas de seguridad comprobadas con un análisis de inteligencia artificial sobre tus respuestas y fotos para dar una orientación rápida: verde, amarillo o rojo. Aquí explicamos cada paso para que puedas validarlo antes de usarlo o compartirlo.",
+    "EvalúaYa combina reglas de seguridad comprobadas con una capa de apoyo de inteligencia artificial que resume tus respuestas y fotos para darte una orientación rápida en cuatro niveles: 🟢 verde, 🟡 amarillo, 🟠 naranja o 🔴 rojo. Son hallazgos visuales preliminares para ayudarte a decidir el siguiente paso; no son un dictamen ni reemplazan a un ingeniero. Aquí explicamos cada paso para que puedas validarlo antes de usarlo o compartirlo.",
 
   "methodology.layersTitle": "Dos capas de análisis",
   "methodology.layersIntro":
@@ -1110,13 +1110,13 @@ const es: Dict = {
   "reclassify.updated":
     "Resultado actualizado de «{from}» a «{to}» con la nueva escala de 4 niveles (🟢🟡🟠🔴), que distingue mejor el daño moderado del serio.",
 
-  "methodology.layerB.title": "Capa 2 · Análisis con IA",
+  "methodology.layerB.title": "Capa 2 · Apoyo con IA",
   "methodology.layerB.body":
-    "Tus respuestas del cuestionario y una foto clave por área se envían a un modelo de visión por IA, que actúa como un triaje rápido tipo ATC-20 y devuelve un nivel de riesgo con hallazgos y pasos en lenguaje sencillo. La IA es conservadora: ante la duda sobre la seguridad, no elige verde.",
+    "Tus respuestas y las fotos que subes (fachada y daños) se envían a un modelo de visión por IA que actúa como un apoyo de triaje rápido tipo ATC-20: resume los hallazgos visuales y sugiere próximos pasos en lenguaje sencillo. Es una capa de apoyo, no un veredicto: la IA es conservadora y, ante la duda sobre la seguridad, no elige verde. No reemplaza la inspección de un ingeniero.",
 
-  "methodology.checklistTitle": "Qué inspeccionas",
+  "methodology.checklistTitle": "Qué observas y reportas",
   "methodology.checklistBody":
-    "El cuestionario cubre 9 puntos estructurales obligatorios (fundaciones, paredes, columnas y vigas, techo, escaleras, licuación, golpeteo) y 4 puntos opcionales de servicios (pisos, plomería, electricidad, lámparas y objetos colgantes).",
+    "El proceso son 2 pasos. En «Observa y reporta» respondes 4 preguntas principales (paredes, columnas y vigas, puertas y ventanas, inclinación del edificio) y marcas señales graves si las hubo (licuación del suelo, golpeteo entre edificios, daño en tuberías o gas, techo y escaleras). Las fotos son obligatorias: la fachada (hasta 5) y los daños (entre 5 y 10). También puedes agregar notas y datos opcionales de servicios (pisos, plomería, electricidad, objetos colgantes) que ayudan al ingeniero.",
 
   "methodology.seismicTitle": "Contexto sísmico",
   "methodology.seismicBody":
