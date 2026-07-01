@@ -822,18 +822,13 @@ function DataRoomPage() {
             </div>
 
             {/* Headline counters */}
-            <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="mt-5 grid grid-cols-3 gap-3">
               <Stat value={totals!.total} label={t("map.totalAssessments")} />
               <Stat value={totals!.areas} label={t("map.areasLabel")} />
               <Stat
                 value={totals!.red + totals!.orange}
                 label={t("map.seriousOrHigh")}
                 color={rgb("red")}
-              />
-              <Stat
-                value={totals!.verified}
-                label={t("map.verified")}
-                color={rgb("green")}
               />
             </div>
           </section>
@@ -877,12 +872,12 @@ function DataRoomPage() {
           </div>
 
           {/* Resumen */}
-          <TabsContent value="summary" className="mt-4 space-y-4">
-            <div className="grid gap-4 lg:grid-cols-2">
+          <TabsContent value="summary" className="mt-4 flex flex-col gap-4">
+            <div className="order-2 grid gap-4 md:order-none lg:grid-cols-2">
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                 <SectionEyebrow
                   eyebrow={t("dataroom.eyebrow.severity")}
-                  title={t("map.seriousOrHigh")}
+                  title={t("dataroom.severityTitle")}
                 />
                 <SeveritySpotlight
                   total={totals!.total}
@@ -908,7 +903,7 @@ function DataRoomPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="order-1 rounded-2xl border border-border bg-card p-4 shadow-sm md:order-none">
               <SectionEyebrow
                 eyebrow={t("dataroom.eyebrow.trend")}
                 title={t("map.trendTitle")}

@@ -1,21 +1,22 @@
 ## Goal
-Bring the Ingenieros voluntarios page in line with the realistic, best-effort expectations used elsewhere in the app (matching the "no podemos garantizar respuesta ni tiempo" framing on the resident/help-request side).
+Tidy the Sala de datos (`/datos`) page: drop the "Revisado por evaluador" KPI, reduce how often the word "hallazgos" appears, and — on mobile only — lead with the Tendencia (trend) chart.
 
-## The problem
-`src/lib/i18n.tsx` contains a hard guarantee in `vol.subtitle`:
+## 1. Remove the "Revisado por evaluador" KPI
+In `src/routes/datos.tsx` (headline counters, ~lines 825–838), delete the fourth `<Stat>` that renders `totals.verified` / `t("map.verified")`. Change the grid from `grid-cols-2 md:grid-cols-4` to `grid-cols-3` so the three remaining counters (Evaluaciones, Municipios, Hallazgos serios o severos) stay balanced.
 
-- ES (line 924): "…Cada familia que pide ayuda tras su autoevaluación **siempre recibe la evaluación de un ingeniero voluntario**…"
-- EN (line 2216): "…Every family that asks for help after their self-assessment **always gets** a volunteer engineer's assessment…"
+The `map.verified` i18n key and the `verified` field stay in place — they're still used by the map bubbles and the glossary/dictionary — only the headline KPI tile is removed.
 
-This promises a guaranteed engineer evaluation for every request, which the volunteer network cannot ensure.
+## 2. Reduce repetition of "hallazgos"
+Currently the Resumen tab shows "hallazgos" three times above the fold: the KPI "Hallazgos serios o severos", the Severidad card titled again "Hallazgos serios o severos", and the Distribución card "Distribución de hallazgos".
 
-## Changes (copy only, no logic)
+- Reword the Distribución card title key `map.distribution`: "Distribución de hallazgos" → "Distribución por nivel" (ES) / "Distribution by level" (EN). This reads clean and also improves the shared usage on the map/zona pages.
+- On `/datos`, give the Severidad card a distinct title so it no longer echoes the KPI verbatim: keep the "Severidad" eyebrow and set the card title to "Casos que priorizar" (ES) / "Priority cases" (EN) via a small datos-scoped key. The KPI keeps the exact metric name "Hallazgos serios o severos".
 
-1. **`vol.subtitle` (ES, line 924)** — rewrite to community best-effort language, e.g.:
-   "Iniciativa comunitaria. Cuando una familia pide ayuda tras su autoevaluación, compartimos su caso con la red de evaluadores voluntarios. Si hay un voluntario disponible en su zona, la orienta por videollamada y, si hace falta, con una visita presencial. Es un servicio gratuito y depende de la disponibilidad de la comunidad."
+Net effect on the Resumen tab: "hallazgos" drops from 3 mentions to 1 (the KPI metric name). No changes to result-page, methodology, or legal copy.
 
-2. **`vol.subtitle` (EN, line 2216)** — matching translation with the same best-effort framing (no "always/guaranteed").
+## 3. Mobile: lead with the Tendencia chart
+In the Resumen `TabsContent` (~lines 880–919), the order is currently: severity+distribution grid, then the trend chart. Convert that container to `flex flex-col gap-4` and apply order utilities so on mobile the trend block is `order-1` and the severity/distribution grid is `order-2`, while at `md:` and up both reset to `md:order-none` (natural document order — grid first, then trend). Desktop layout is unchanged.
 
-3. **Quick sweep of remaining `vol.*` keys** (`vol.how3`, `vol.residentNoteBody`) to confirm they stay descriptive/best-effort — no additional guarantee wording expected, adjust only if a hidden guarantee surfaces.
-
-No changes to components, server functions, or methodology logic — this is a bilingual copy edit in `src/lib/i18n.tsx`.
+## Files
+- `src/routes/datos.tsx` — remove KPI + adjust grid; reorder Resumen tab for mobile; point the Severidad card title at the new key.
+- `src/lib/i18n.tsx` — reword `map.distribution` (ES + EN); add the new Severidad card title key (ES + EN).
