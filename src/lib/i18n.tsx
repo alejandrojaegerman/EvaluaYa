@@ -2661,7 +2661,7 @@ const en: Dict = {
   "methodology.maintainedBy":
     "This page is maintained by the EvalúaYa team to explain how the tool works. It may be updated as we improve the method.",
   "methodology.intro":
-    "EvalúaYa combines proven safety rules with an AI analysis of your answers and photos to give quick guidance: green, yellow or red. Here we explain each step so you can validate it before using or sharing it.",
+    "EvalúaYa combines proven safety rules with an AI support layer that summarizes your answers and photos to give quick guidance across four levels: 🟢 green, 🟡 yellow, 🟠 orange or 🔴 red. These are preliminary visual findings to help you decide your next step; they are not a verdict and do not replace an engineer. Here we explain each step so you can validate it before using or sharing it.",
 
   "methodology.layersTitle": "Two layers of analysis",
   "methodology.layersIntro":
@@ -2702,13 +2702,13 @@ const en: Dict = {
   "reclassify.updated":
     "Result updated from \u201C{from}\u201D to \u201C{to}\u201D under the new 4-level scale (🟢🟡🟠🔴), which better separates moderate from serious damage.",
 
-  "methodology.layerB.title": "Layer 2 · AI analysis",
+  "methodology.layerB.title": "Layer 2 · AI support",
   "methodology.layerB.body":
-    "Your checklist answers and one key photo per area are sent to an AI vision model that acts as an ATC-20-style rapid triage and returns a risk level with findings and steps in plain language. The AI is conservative: when safety is uncertain, it does not choose green.",
+    "Your answers and the photos you upload (facade and damage) are sent to an AI vision model that acts as an ATC-20-style rapid triage aid: it summarizes the visual findings and suggests next steps in plain language. It is a support layer, not a verdict: the AI is conservative and, when safety is uncertain, it does not choose green. It does not replace an engineer's inspection.",
 
-  "methodology.checklistTitle": "What you inspect",
+  "methodology.checklistTitle": "What you observe and report",
   "methodology.checklistBody":
-    "The checklist covers 9 required structural points (foundations, walls, columns and beams, roof, stairs, liquefaction, pounding) and 4 optional utility points (floors, plumbing, electrical, hanging fixtures and objects).",
+    "The process has 2 steps. In \u201CObserve and report\u201D you answer 4 main questions (walls, columns and beams, doors and windows, building tilt) and flag serious signs if present (soil liquefaction, pounding between buildings, plumbing or gas damage, roof and stairs). Photos are required: the facade (up to 5) and the damage (between 5 and 10). You can also add notes and optional utility details (floors, plumbing, electrical, hanging objects) that help the engineer.",
 
   "methodology.seismicTitle": "Seismic context",
   "methodology.seismicBody":
