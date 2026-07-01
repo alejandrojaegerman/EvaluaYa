@@ -10,10 +10,6 @@ import {
   Map as MapIcon,
   CloudUpload,
   WifiOff,
-  BadgeCheck,
-  UserX,
-  EyeOff,
-  
   HardHat,
   Waves,
 } from "lucide-react";
@@ -23,6 +19,13 @@ import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { formatDate } from "@/lib/datetime";
