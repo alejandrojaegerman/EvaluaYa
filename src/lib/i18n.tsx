@@ -854,6 +854,8 @@ const es: Dict = {
   "home.quakeBtn": "Historial de sismos",
   "home.mapBtn": "Mapa comunitario de daños",
   "home.legalNotice": "Orientación preliminar. No reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil. Lee el aviso legal.",
+  "home.officialContactsTitle": "Contactos oficiales de las autoridades",
+  "home.officialContactsBody": "Protección Civil, VEN 9-1-1, FUNVISIS y más. Toca para llamar.",
   "zona.breadcrumbHome": "Inicio",
   "zona.eyebrow": "Reporte regional",
   "zona.h1Prefix": "Daños estructurales en",
@@ -1166,6 +1168,9 @@ const es: Dict = {
   "connect.subtitleYellow":
     "Envía tu caso y un evaluador voluntario de la comunidad puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
   "connect.reassure": "Evaluadores voluntarios de la comunidad — sin costo.",
+  "connect.officialNotice":
+    "La revisión de un voluntario es una orientación visual preliminar, no la evaluación oficial. La etiqueta oficial solo la coloca personal certificado por la autoridad.",
+  "connect.officialNoticeLink": "Ver contactos oficiales",
   "connect.requestTitle": "Solicitar a un evaluador voluntario",
   "connect.requestBody":
     "Deja tu WhatsApp y compartiremos tu reporte con evaluadores voluntarios de la comunidad registrados. Uno de ellos tomará tu caso y te contactará.",
@@ -1366,6 +1371,9 @@ const es: Dict = {
   "panel.reviewSubmit": "Guardar observaciones",
   "panel.reviewSaved": "Observaciones registradas. Gracias por tu apoyo.",
   "panel.reviewedByYou": "Revisado por ti",
+  "panel.remitBody":
+    "Recuérdale al residente que puede mostrar este reporte y tus observaciones a las autoridades para solicitar la evaluación oficial.",
+  "panel.remitLink": "Contactos oficiales",
   "panel.cancel": "Cancelar",
   "panel.noReportToValidate": "Esta solicitud no tiene una evaluación vinculada.",
 
@@ -1659,6 +1667,8 @@ const es: Dict = {
     "Incluso la inspección oficial no garantiza la seguridad ante eventos futuros: pueden existir situaciones fuera de su alcance y las condiciones de estabilidad pueden cambiar.",
   "transparency.cta": "Ver contactos oficiales",
   "transparency.processCta": "Conoce el proceso oficial",
+  "transparency.remit":
+    "Puedes mostrar este reporte (y su PDF) a las autoridades al solicitar la evaluación oficial. Si un ingeniero voluntario lo revisa, también puedes compartir sus observaciones: ayudan pero no reemplazan la inspección oficial.",
 
   "pdf.officialTitle": "Contactos oficiales",
   "pdf.officialIntro":
@@ -2502,6 +2512,8 @@ const en: Dict = {
   "home.quakeBtn": "Earthquake history",
   "home.mapBtn": "Community damage map",
   "home.legalNotice": "Preliminary guidance. It does not replace a licensed civil engineer or an official assessment by FUNVISIS or Civil Protection. Read the legal notice.",
+  "home.officialContactsTitle": "Official authority contacts",
+  "home.officialContactsBody": "Civil Protection, VEN 9-1-1, FUNVISIS and more. Tap to call.",
   "zona.breadcrumbHome": "Home",
   "zona.eyebrow": "Regional report",
   "zona.h1Prefix": "Structural damage in",
@@ -2813,6 +2825,9 @@ const en: Dict = {
   "connect.subtitleYellow":
     "Send your case and a community volunteer evaluator can help you interpret these findings. Free and no obligation.",
   "connect.reassure": "Community volunteer evaluators — no cost.",
+  "connect.officialNotice":
+    "A volunteer's review is a preliminary visual orientation, not the official assessment. The official label is placed only by authority-certified personnel.",
+  "connect.officialNoticeLink": "See official contacts",
   "connect.requestTitle": "Request a volunteer evaluator",
   "connect.requestBody":
     "Leave your WhatsApp and we'll share your report with registered community volunteer evaluators. One of them will take your case and reach out.",
@@ -3009,6 +3024,9 @@ const en: Dict = {
   "panel.reviewSubmit": "Save observations",
   "panel.reviewSaved": "Observations recorded. Thank you for your support.",
   "panel.reviewedByYou": "Reviewed by you",
+  "panel.remitBody":
+    "Remind the resident they can show this report and your observations to the authorities to request the official assessment.",
+  "panel.remitLink": "Official contacts",
   "panel.cancel": "Cancel",
   "panel.noReportToValidate": "This request has no linked assessment.",
 
@@ -3299,6 +3317,8 @@ const en: Dict = {
     "Even the official inspection does not guarantee safety against future events: situations beyond its scope may exist and stability conditions can change.",
   "transparency.cta": "See official contacts",
   "transparency.processCta": "Learn the official process",
+  "transparency.remit":
+    "You can show this report (and its PDF) to the authorities when requesting the official assessment. If a volunteer engineer reviews it, you can share their observations too — they help but do not replace the official inspection.",
 
   "pdf.officialTitle": "Official contacts",
   "pdf.officialIntro":
