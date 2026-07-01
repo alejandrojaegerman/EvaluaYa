@@ -184,34 +184,6 @@ function ChecklistStep() {
     <AppShell hideBottomNav hideFooter>
       <StepHeader step={2} title={t("checklist.title")} subtitle={t("checklist.subtitle")} />
 
-      {/* Required-progress bar (only the essential structural checks gate
-          submission; utility checks are optional). */}
-      <div className="mt-4">
-        <div className="flex items-center justify-between text-xs font-semibold">
-          <span className="text-muted-foreground">
-            {requiredAnswered} / {STRUCTURE_ITEMS.length}{" "}
-            {t("checklist.coreProgress")}
-          </span>
-          {allRequired && (
-            <span className="text-risk-green">✓</span>
-          )}
-        </div>
-        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-border">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{
-              width: `${(requiredAnswered / STRUCTURE_ITEMS.length) * 100}%`,
-            }}
-          />
-        </div>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          {t("checklist.optionalNote")}
-        </p>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          {t("checklist.photosOptional")}
-        </p>
-
-      </div>
 
       {/* Report NEW damage only (feedback #7) */}
       <div className="mt-4 flex gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 p-3.5 dark:border-amber-500/30 dark:bg-amber-500/10">
