@@ -139,6 +139,7 @@ function ChecklistStep() {
   const [facadePhotos, setFacadePhotos] = useState<string[]>([]);
   const [damagePhotos, setDamagePhotos] = useState<DamagePhoto[]>([]);
   const [comments, setComments] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<{
     photos: LightboxPhoto[];
