@@ -14,8 +14,18 @@ test("resident completes a full assessment and reaches a result", async ({
   // ── Step 1: Property info ────────────────────────────────────────────
   await page.goto("/assess/property");
 
+  // Dismiss the blocking legal + data-consent gate (both checkboxes required).
+  const gate = page.getByRole("dialog");
+  await expect(gate).toBeVisible({ timeout: 15_000 });
+  const consents = gate.getByRole("checkbox");
+  await consents.nth(0).check();
+  await consents.nth(1).check();
+  await gate.getByRole("button", { name: "Aceptar y continuar" }).click();
+  await expect(gate).toBeHidden({ timeout: 10_000 });
+
   // Select estado. Retry until it "sticks" — the controlled <select> only keeps
   // the value once React has hydrated, which can lag the initial SSR paint.
+
   await expect(async () => {
     await page.locator("#estado").selectOption("Miranda");
     await expect(page.locator("#municipio")).toBeEnabled({ timeout: 1000 });
