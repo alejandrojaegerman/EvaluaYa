@@ -309,11 +309,6 @@ function PropertyStep() {
       },
       answers: existing?.answers ?? [],
       ...(engParam ? { engineerToken: engParam } : {}),
-      resident: {
-        name: residentName.trim(),
-        contact: residentContact.trim(),
-        contactType: residentContactType,
-      },
       ...(consent ? { consent } : {}),
       updatedAt: Date.now(),
     });
