@@ -553,9 +553,6 @@ function PropertyStep() {
             </p>
           )}
 
-          <p className="text-xs text-muted-foreground">
-            {t("property.locationHint")}
-          </p>
 
           {/* Address + building detail — required so an evaluator can locate
               the property and group reports per building. */}
@@ -590,9 +587,7 @@ function PropertyStep() {
                 className="mt-2 h-12 rounded-xl bg-background"
                 maxLength={160}
               />
-              <p className="mt-1.5 text-xs text-muted-foreground">
-                {t("property.buildingNameHint")}
-              </p>
+
             </div>
 
             <div>
