@@ -39,6 +39,7 @@ export function Footer() {
       heading: t("footer.resources"),
       links: [
         { to: "/guia", label: t("nav.learn") },
+        { to: "/contactos-oficiales", label: t("nav.officialContacts") },
         { to: "/ayuda", label: t("nav.help") },
         { to: "/feedback", label: t("nav.feedback") },
       ],
