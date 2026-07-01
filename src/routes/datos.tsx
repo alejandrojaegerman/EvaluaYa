@@ -872,12 +872,12 @@ function DataRoomPage() {
           </div>
 
           {/* Resumen */}
-          <TabsContent value="summary" className="mt-4 space-y-4">
-            <div className="grid gap-4 lg:grid-cols-2">
+          <TabsContent value="summary" className="mt-4 flex flex-col gap-4">
+            <div className="order-2 grid gap-4 md:order-none lg:grid-cols-2">
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                 <SectionEyebrow
                   eyebrow={t("dataroom.eyebrow.severity")}
-                  title={t("map.seriousOrHigh")}
+                  title={t("dataroom.severityTitle")}
                 />
                 <SeveritySpotlight
                   total={totals!.total}
@@ -903,7 +903,7 @@ function DataRoomPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="order-1 rounded-2xl border border-border bg-card p-4 shadow-sm md:order-none">
               <SectionEyebrow
                 eyebrow={t("dataroom.eyebrow.trend")}
                 title={t("map.trendTitle")}
