@@ -1457,7 +1457,7 @@ const en: Dict = {
   "checklist.fromGallery": "From gallery",
   "checklist.changePhoto": "Change photo",
   "checklist.removePhoto": "Remove photo",
-  "checklist.photoHint": "A clear photo improves the analysis. You can use photos you already have.",
+  "checklist.photoHint": "A photo isn't required, but it greatly improves the analysis. You can use photos you already have.",
   "checklist.morePhotos": "Another photo",
   "checklist.answerAll": "Answer the essential questions to continue.",
   "checklist.analyze": "Analyze damage",
