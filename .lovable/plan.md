@@ -1,22 +1,31 @@
 ## Objetivo
 
-Hacer el aviso corto de la home (`home.legalNotice`) más explícito y consistente con el copy legal que ya existe (`legal.s1.body`), dejando claro que la herramienta **no reemplaza** ni la ayuda de un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil.
+Mejorar el subtítulo del hero de la home, quitando "Sin registro. Funciona con poca señal." por copy que comunique mejor el valor.
 
 ## Cambio (solo copy)
 
-En `src/lib/i18n.tsx`, actualizar dos claves:
+En `src/lib/i18n.tsx`, actualizar `home.heroSubtitle` en ES (línea 33) y EN (línea 1631). El título (`home.heroTitle`) se mantiene igual.
 
-- **ES** (`home.legalNotice`, ~línea 855): de
-  > "Esto no reemplaza la evaluación de un ingeniero. Lee el aviso legal."  
-  > a algo como:  
-  > "Orientación preliminar. No reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil. Lee el aviso legal." Prefiero yo rodrigo estte
-- **EN** (`home.legalNotice`, ~línea 2446): de
-  > "This does not replace an engineer's assessment. Read the legal notice."
-  > a:
-  > "Preliminary guidance. It does not replace a licensed civil engineer or an official assessment by FUNVISIS or Civil Protection. Read the legal notice."
+### Opción recomendada (A) — enfoque en rapidez + ingeniero
+
+- **ES:** "Revisa los daños de tu casa en minutos con una guía paso a paso y conéctate con un ingeniero civil voluntario."
+- **EN:** "Review your home's damage in minutes with a step-by-step guide and connect with a volunteer civil engineer."
+
+### Opción B — enfoque en tranquilidad/seguridad
+
+- **ES:** "En pocos minutos, revisa los daños de tu vivienda paso a paso y sabe qué hacer después del sismo."
+- **EN:** "In a few minutes, review your home's damage step by step and know what to do after the quake."
+
+### Opción C — más directo/urgente
+
+- **ES:** "Guía paso a paso para revisar daños estructurales y recibir orientación después de un temblor."
+- **EN:** "Step-by-step guide to review structural damage and get guidance after a tremor."
+
+Recomiendo la **Opción A** porque resalta lo rápido y el respaldo del ingeniero voluntario (diferenciador clave). Dime cuál prefieres o ajusto el texto. 
+
+Vamos con opción A por favor
 
 ## Notas
 
-- No cambia estructura ni la ruta del enlace (sigue a `/legal`).
-- El texto queda alineado con `legal.s1.body`, que ya menciona ingeniero colegiado, FUNVISIS y Protección Civil.
-- Verificaré que el bloque en la home se siga viendo bien con el texto un poco más largo (icono + texto + chevron).
+- No cambia estructura, botón ni la ilustración.
+- Verificaré que el texto quepa bien en el hero móvil.
