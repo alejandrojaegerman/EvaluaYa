@@ -8,7 +8,7 @@ import {
   Landmark,
   Mountain,
   Phone,
-  Radar,
+  
   Ruler,
   ShieldCheck,
   Waves,
