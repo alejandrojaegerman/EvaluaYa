@@ -234,6 +234,16 @@ export const Route = createFileRoute("/guia/que-hacer-despues-de-un-temblor")({
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(howTo) },
         { type: "application/ld+json", children: JSON.stringify(faqSchema) },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "Qué hacer después de un temblor",
+              }),
+            ),
+          ),
+        },
       ],
     };
   },
