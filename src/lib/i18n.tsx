@@ -1974,7 +1974,7 @@ const en: Dict = {
   "property.detected": "Location detected. You can change it if it's not correct.",
   "property.detectFailed": "We couldn't detect your location. Please select your state.",
   "property.stateRequired": "Select your state to continue.",
-  "property.effortHint": "It only takes a few minutes. Photos are optional.",
+  "property.effortHint": "It only takes a few minutes. Photos aren't required, but they help the analysis a lot.",
   "property.missingPrefix": "To continue, you still need:",
   "property.miss.state": "state",
   "property.miss.municipality": "municipality",
