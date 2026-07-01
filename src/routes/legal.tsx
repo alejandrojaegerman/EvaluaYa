@@ -76,9 +76,6 @@ function LegalPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           {t("legal.subtitle")}
         </p>
-        <p className="mt-2 text-xs text-muted-foreground">
-          {t("legal.updated")}
-        </p>
         <p className="mt-4 text-sm leading-relaxed">{t("legal.intro")}</p>
       </header>
 
