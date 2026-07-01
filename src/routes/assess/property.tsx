@@ -23,7 +23,7 @@ import type {
   BuildingType,
   StructuralType,
 } from "@/lib/assessment-types";
-import { loadDraft, saveDraft, type ResidentContactType } from "@/lib/draft-store";
+import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { LegalConsentGate } from "@/components/LegalConsentGate";
 import {
   getLegalConsent,
@@ -104,11 +104,6 @@ function PropertyStep() {
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [parroquia, setParroquia] = useState("");
-  // Minimal resident contact (Doc #1) — so a volunteer evaluator can reach them.
-  const [residentName, setResidentName] = useState("");
-  const [residentContact, setResidentContact] = useState("");
-  const [residentContactType, setResidentContactType] =
-    useState<ResidentContactType>("whatsapp");
   // Blocking legal + data-consent gate (Doc #1). Shown until accepted.
   const [showGate, setShowGate] = useState(false);
   const [consent, setConsent] = useState<LegalConsent | null>(null);
