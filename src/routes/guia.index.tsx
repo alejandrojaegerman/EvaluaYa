@@ -171,6 +171,20 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
   ],
 };
 
+const FEATURED = {
+  to: "/guia/proceso-oficial-funvisis",
+  es: {
+    badge: "Próximamente",
+    title: "Proceso oficial de FUNVISIS",
+    desc: "El procedimiento oficial paso a paso tras un sismo. La pieza central de la Enciclopedia.",
+  },
+  en: {
+    badge: "Coming soon",
+    title: "FUNVISIS official process",
+    desc: "The official step-by-step procedure after an earthquake. The core of the Encyclopedia.",
+  },
+};
+
 const COPY = {
   es: {
     kicker: "Enciclopedia",
