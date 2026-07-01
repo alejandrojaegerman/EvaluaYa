@@ -9,7 +9,6 @@ import {
   Plus,
   Info,
   HelpCircle,
-  Lightbulb,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
