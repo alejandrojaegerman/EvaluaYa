@@ -659,6 +659,7 @@ const es: Dict = {
   "nav.feedback": "Enviar comentarios",
   "nav.data": "Datos",
   "nav.dataDesc": "Mapa y datos abiertos para autoridades y medios",
+  "nav.officialContacts": "Contactos oficiales",
   "nav.today": "¿Tembló hoy?",
   "nav.todayDesc": "Sismos recientes cerca de Venezuela",
   "home.todayTitle": "¿Acaba de temblar?",
