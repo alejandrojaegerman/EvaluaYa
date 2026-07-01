@@ -4,6 +4,7 @@ import {
   BookOpen,
   ClipboardCheck,
   FolderOpen,
+  GraduationCap,
   HandHeart,
   Home,
   Languages,
