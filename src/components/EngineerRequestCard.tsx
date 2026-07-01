@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
   MessageCircle,
   CheckCircle2,
@@ -6,6 +7,7 @@ import {
   ShieldCheck,
   ClipboardCheck,
   Circle,
+  Landmark,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -258,10 +260,26 @@ export function EngineerRequestCard({
           </p>
 
           {r.verified ? (
-            <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-risk-green">
-              <ShieldCheck className="size-4" aria-hidden />
-              {t("panel.reviewedByYou")}
-            </p>
+            <>
+              <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-risk-green">
+                <ShieldCheck className="size-4" aria-hidden />
+                {t("panel.reviewedByYou")}
+              </p>
+              {/* Remit to authorities: after the volunteer review, remind that
+                  the resident can show the report to the official organism. */}
+              <div className="mt-2 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-2.5">
+                <Landmark className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  {t("panel.remitBody")}{" "}
+                  <Link
+                    to="/contactos-oficiales"
+                    className="font-semibold text-primary underline-offset-2 hover:underline"
+                  >
+                    {t("panel.remitLink")}
+                  </Link>
+                </p>
+              </div>
+            </>
           ) : !reviewing ? (
             <>
               <p className="mt-1 text-xs text-muted-foreground">

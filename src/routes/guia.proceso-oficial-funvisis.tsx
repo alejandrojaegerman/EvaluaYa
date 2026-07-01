@@ -5,6 +5,7 @@ import {
   ClipboardList,
   Download,
   FileText,
+  HelpCircle,
   Info,
   Landmark,
   Phone,
@@ -113,19 +114,22 @@ const LABELS: Record<"es" | "en", Label[]> = {
     {
       key: "green",
       label: "Permitido (Verde)",
-      meaning: "Uso permitido. Se relaciona con el 🟢 de EvalúaYa.",
+      meaning:
+        "Uso permitido. El inmueble puede seguir ocupándose con normalidad.",
       dot: "bg-risk-green",
     },
     {
       key: "yellow",
       label: "Restringido (Amarillo)",
-      meaning: "Uso restringido / limitado. Se relaciona con 🟡 y 🟠.",
+      meaning:
+        "Uso restringido o limitado. Puede requerir precauciones o una inspección adicional antes de volver al uso pleno.",
       dot: "bg-risk-yellow",
     },
     {
       key: "red",
       label: "No Permitido (Rojo)",
-      meaning: "No se permite el uso. Se relaciona con el 🔴 de EvalúaYa.",
+      meaning:
+        "No se permite el uso. El inmueble debe desalojarse hasta una evaluación más detallada.",
       dot: "bg-risk-red",
     },
   ],
@@ -133,19 +137,21 @@ const LABELS: Record<"es" | "en", Label[]> = {
     {
       key: "green",
       label: "Allowed (Green)",
-      meaning: "Use allowed. Maps to EvalúaYa's 🟢.",
+      meaning: "Use allowed. The building may continue to be occupied normally.",
       dot: "bg-risk-green",
     },
     {
       key: "yellow",
       label: "Restricted (Yellow)",
-      meaning: "Restricted / limited use. Maps to 🟡 and 🟠.",
+      meaning:
+        "Restricted or limited use. It may require precautions or a further inspection before returning to full use.",
       dot: "bg-risk-yellow",
     },
     {
       key: "red",
       label: "Not allowed (Red)",
-      meaning: "Use not permitted. Maps to EvalúaYa's 🔴.",
+      meaning:
+        "Use not permitted. The building must be evacuated until a more detailed evaluation.",
       dot: "bg-risk-red",
     },
   ],
@@ -160,7 +166,10 @@ const COPY = {
     phasesTitle: "Las fases oficiales",
     labelsTitle: "Qué significan las etiquetas oficiales",
     labelsNote:
-      "El naranja (🟠) es un matiz propio de EvalúaYa entre amarillo y rojo; no es una etiqueta oficial.",
+      "Estas etiquetas oficiales solo las coloca el inspector certificado por la autoridad tras la evaluación oficial.",
+    whereTitle: "¿Dónde entra EvalúaYa en este proceso?",
+    whereBody:
+      "EvalúaYa es el Paso 0: una verificación visual rápida y comunitaria que te ayuda a organizar fotos e información y a saber a quién acudir. No es la evaluación oficial ni coloca ninguna etiqueta; eso lo hace personal certificado por la autoridad en las fases 1 a 3.",
     legalTitle: "Por qué EvalúaYa siempre te remite al organismo oficial",
     legalBody:
       "La planilla de evaluación oficial debe ser llenada por personas con el Certificado de Inspector de Evaluación de Daños que otorga la autoridad competente. Solo FUNVISIS y Protección Civil pueden emitir la etiqueta oficial. Por eso EvalúaYa documenta el proceso, pero nunca lo reemplaza.",
@@ -186,6 +195,33 @@ const COPY = {
       "EvalúaYa no agenda ni realiza la inspección. El residente o el ingeniero voluntario contacta a Protección Civil para coordinarla.",
     ctaTitle: "¿Aún no evalúas tu vivienda?",
     ctaButton: "Iniciar autoevaluación",
+    faqTitle: "Preguntas frecuentes",
+    faq: [
+      {
+        q: "¿EvalúaYa reemplaza la evaluación oficial?",
+        a: "No. EvalúaYa es una orientación rápida y no oficial (Paso 0). La evaluación oficial y la etiqueta siempre las realiza personal certificado por la autoridad.",
+      },
+      {
+        q: "¿Quién coloca la etiqueta oficial?",
+        a: "Solo un inspector certificado por la autoridad competente (FUNVISIS / Protección Civil) puede colocar la etiqueta oficial Verde, Amarilla o Roja tras una evaluación presencial.",
+      },
+      {
+        q: "¿Cómo solicito la evaluación oficial y a quién llamo?",
+        a: "Contacta a Protección Civil de tu municipio o llama al VEN 9-1-1. En la página de Contactos oficiales encuentras números verificados.",
+      },
+      {
+        q: "¿Qué debo tener listo para agilizarla?",
+        a: "Fotos claras de los daños, la ubicación exacta y el nombre del edificio, el número de pisos y sótanos, y tu reporte de EvalúaYa (PDF) para dar contexto al inspector.",
+      },
+      {
+        q: "¿Qué pasa si el resultado sale Rojo o Amarillo?",
+        a: "Prioriza tu seguridad y solicita la evaluación oficial lo antes posible. Un resultado Rojo suele implicar desalojar hasta que un inspector revise el edificio; Amarillo implica limitar el uso con precaución.",
+      },
+      {
+        q: "¿El reporte de EvalúaYa tiene validez oficial?",
+        a: "No. Es una referencia de apoyo que puedes mostrar al inspector y a las autoridades para agilizar el proceso, pero no reemplaza la evaluación oficial.",
+      },
+    ],
     note: "Referencia educativa. La evaluación y la etiqueta oficial las realiza personal certificado por la autoridad.",
   },
   en: {
@@ -196,7 +232,10 @@ const COPY = {
     phasesTitle: "The official phases",
     labelsTitle: "What the official labels mean",
     labelsNote:
-      "Orange (🟠) is an EvalúaYa nuance between yellow and red; it is not an official label.",
+      "These official labels are placed only by the authority-certified inspector after the official evaluation.",
+    whereTitle: "Where does EvalúaYa fit in this process?",
+    whereBody:
+      "EvalúaYa is Step 0: a quick, community visual check that helps you organize photos and information and know who to reach. It is not the official assessment and it does not place any label — that is done by authority-certified personnel in phases 1 to 3.",
     legalTitle: "Why EvalúaYa always refers you to the official body",
     legalBody:
       "The official evaluation form must be filled out by people holding the Damage Evaluation Inspector Certificate issued by the competent authority. Only FUNVISIS and Civil Protection can issue the official label. That's why EvalúaYa documents the process but never replaces it.",
@@ -222,6 +261,33 @@ const COPY = {
       "EvalúaYa does not schedule or perform the inspection. The resident or volunteer engineer contacts Civil Protection to coordinate it.",
     ctaTitle: "Haven't assessed your home yet?",
     ctaButton: "Start self-assessment",
+    faqTitle: "Frequently asked questions",
+    faq: [
+      {
+        q: "Does EvalúaYa replace the official assessment?",
+        a: "No. EvalúaYa is a quick, unofficial guide (Step 0). The official assessment and the label are always done by authority-certified personnel.",
+      },
+      {
+        q: "Who places the official label?",
+        a: "Only an inspector certified by the competent authority (FUNVISIS / Civil Protection) can place the official Green, Yellow or Red label after an in-person evaluation.",
+      },
+      {
+        q: "How do I request the official assessment and who do I call?",
+        a: "Contact Civil Protection in your municipality or call VEN 9-1-1. You'll find verified numbers on the Official contacts page.",
+      },
+      {
+        q: "What should I have ready to speed it up?",
+        a: "Clear photos of the damage, the exact location and building name, the number of floors and basements, and your EvalúaYa report (PDF) to give the inspector context.",
+      },
+      {
+        q: "What happens if the result is Red or Yellow?",
+        a: "Prioritize your safety and request the official assessment as soon as possible. A Red result usually means evacuating until an inspector reviews the building; Yellow means limiting use with caution.",
+      },
+      {
+        q: "Does the EvalúaYa report have official validity?",
+        a: "No. It is a support reference you can show the inspector and the authorities to speed up the process, but it does not replace the official evaluation.",
+      },
+    ],
     note: "Educational reference. The official assessment and label are performed by personnel certified by the authority.",
   },
 };
@@ -249,6 +315,18 @@ export const Route = createFileRoute("/guia/proceso-oficial-funvisis")({
         {
           type: "application/ld+json",
           children: JSON.stringify(breadcrumbJsonLd(crumbs)),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: COPY.es.faq.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          }),
         },
       ],
     };
@@ -367,6 +445,18 @@ function FunvisisProcessPage() {
         </p>
       </section>
 
+      {/* Where EvalúaYa fits */}
+      <section className="mt-8 rounded-2xl border border-primary/30 bg-primary/5 p-5">
+        <div className="flex items-center gap-2">
+          <Info className="size-5 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold">{c.whereTitle}</h2>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {c.whereBody}
+        </p>
+      </section>
+
+
       {/* Legal base */}
       <section className="mt-8 rounded-2xl border border-border bg-muted/40 p-5">
         <div className="flex items-center gap-2">
@@ -451,6 +541,28 @@ function FunvisisProcessPage() {
         </p>
         <OfficialDirectory showHeader={false} />
       </section>
+
+      {/* FAQ */}
+      <section className="mt-8">
+        <div className="flex items-center gap-2">
+          <HelpCircle className="size-4 text-muted-foreground" aria-hidden />
+          <h2 className="font-display text-lg font-bold">{c.faqTitle}</h2>
+        </div>
+        <ul className="mt-3 space-y-2">
+          {c.faq.map((f) => (
+            <li
+              key={f.q}
+              className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+            >
+              <h3 className="font-semibold leading-tight">{f.q}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                {f.a}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
 
       {/* CTA */}
       <section className="mt-8 rounded-2xl border border-primary/20 bg-secondary/40 p-5">

@@ -32,6 +32,9 @@ export function TransparencyBanner({ riskLevel }: { riskLevel: RiskLevel }) {
           <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           {t("transparency.limits")}
         </p>
+        <p className="mt-2 rounded-xl border border-primary/20 bg-card/70 p-3 text-xs leading-relaxed text-foreground/80">
+          {t("transparency.remit")}
+        </p>
         <Link
           to="/guia/proceso-oficial-funvisis"
           className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"

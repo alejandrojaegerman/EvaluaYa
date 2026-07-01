@@ -187,12 +187,12 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
 const FEATURED = {
   to: "/guia/proceso-oficial-funvisis",
   es: {
-    badge: "La pieza central",
+    badge: "Empieza aquí",
     title: "Proceso oficial de FUNVISIS",
     desc: "Las fases oficiales tras un sismo, dónde entra EvalúaYa y los documentos oficiales descargables.",
   },
   en: {
-    badge: "The core piece",
+    badge: "Start here",
     title: "FUNVISIS official process",
     desc: "The official phases after an earthquake, where EvalúaYa fits and downloadable official documents.",
   },

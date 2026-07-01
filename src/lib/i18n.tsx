@@ -3299,6 +3299,8 @@ const en: Dict = {
     "Even the official inspection does not guarantee safety against future events: situations beyond its scope may exist and stability conditions can change.",
   "transparency.cta": "See official contacts",
   "transparency.processCta": "Learn the official process",
+  "transparency.remit":
+    "You can show this report (and its PDF) to the authorities when requesting the official assessment. If a volunteer engineer reviews it, you can share their observations too — they help but do not replace the official inspection.",
 
   "pdf.officialTitle": "Official contacts",
   "pdf.officialIntro":

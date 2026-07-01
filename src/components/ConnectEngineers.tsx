@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { HardHat, CheckCircle2, BadgeCheck } from "lucide-react";
+import { HardHat, CheckCircle2, BadgeCheck, Info } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -108,6 +108,21 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
         <BadgeCheck className="size-3.5 text-primary" aria-hidden />
         {t("connect.reassure")}
       </p>
+
+      {/* Official-process advisory: the volunteer review is a preliminary visual
+          orientation, never the official assessment or label. */}
+      <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card/70 p-3">
+        <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          {t("connect.officialNotice")}{" "}
+          <Link
+            to="/contactos-oficiales"
+            className="font-semibold text-primary underline-offset-2 hover:underline"
+          >
+            {t("connect.officialNoticeLink")}
+          </Link>
+        </p>
+      </div>
 
       {/* Request a verified engineer */}
       <div className="mt-5">

@@ -12,6 +12,8 @@ import {
   WifiOff,
   HardHat,
   Waves,
+  Phone,
+
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -136,6 +138,28 @@ function Index() {
           <ArrowRight className="size-5" />
         </Button>
       </section>
+
+      {/* Official authority contacts — right under the primary CTA so residents
+          always have the official channels one tap away. */}
+      <Link
+        to="/contactos-oficiales"
+        className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+          <Phone className="size-5" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold leading-tight">
+            {t("home.officialContactsTitle")}
+          </span>
+          <span className="mt-0.5 block text-sm text-muted-foreground">
+            {t("home.officialContactsBody")}
+          </span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
+
+
 
       {/* Quick actions — quake + community map, side by side */}
       <section className="mt-4 grid grid-cols-2 gap-3">
