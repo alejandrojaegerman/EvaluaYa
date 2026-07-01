@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { hasLegalAck, setLegalAck } from "@/lib/legal-ack";
+import { RISK_THEME } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 import { submitHelpRequest } from "@/lib/volunteers.functions";
 
