@@ -178,6 +178,31 @@ export function BottomNav() {
                   {t("nav.feedback")}
                 </Link>
               </SheetClose>
+
+              <SheetClose asChild>
+                <Link
+                  to="/legal"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <Scale className="size-4.5" aria-hidden />
+                  </span>
+                  {t("nav.legal")}
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <Link
+                  to="/privacidad"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <ShieldQuestion className="size-4.5" aria-hidden />
+                  </span>
+                  {t("nav.privacy")}
+                </Link>
+              </SheetClose>
+
             </div>
 
             <div className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card p-3">
