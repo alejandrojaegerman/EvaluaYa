@@ -214,6 +214,27 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               </p>
             </div>
             <div className="mt-3">
+              <Label htmlFor="hr-email">
+                {t("connect.yourEmail")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Input
+                id="hr-email"
+                type="email"
+                inputMode="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t("connect.emailPlaceholder")}
+                required
+                maxLength={255}
+                autoComplete="email"
+                className="mt-1.5"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("connect.emailHint")}
+              </p>
+            </div>
+            <div className="mt-3">
               <Label htmlFor="hr-address">
                 {t("connect.yourAddress")}{" "}
                 <span className="font-normal text-destructive">*</span>
