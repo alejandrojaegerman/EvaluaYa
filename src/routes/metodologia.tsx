@@ -116,7 +116,7 @@ function MethodologyPage() {
   return (
     <AppShell>
       <EncyclopediaBreadcrumb
-        items={encyclopediaCrumbs(lang, { label: t("methodology.title") })}
+        items={methodologyCrumbs(lang, t("methodology.title"))}
       />
       {/* Header */}
       <header>
