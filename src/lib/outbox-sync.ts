@@ -40,6 +40,13 @@ function buildPayload(item: OutboxItem) {
         : {}),
       age: p.age ?? "post2000",
       ...(p.comments?.trim() ? { comments: p.comments.trim() } : {}),
+      ...(p.contextTags?.length
+        ? {
+            contextTags: p.contextTags.map((k) =>
+              translate(draft.language, `checklist.suggest.${k}`),
+            ),
+          }
+        : {}),
       ...(typeof p.seismicIntensity === "number"
         ? {
             seismicIntensity: p.seismicIntensity,
