@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { UsefulPhotosTip } from "@/components/UsefulPhotosTip";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { hasLegalAck, setLegalAck } from "@/lib/legal-ack";
