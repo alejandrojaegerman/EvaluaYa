@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -179,7 +180,16 @@ export function LiveQuakesPage({ feed }: { feed: QuakeFeed }) {
   const c = COPY[lang];
   const faqs = LIVE_FAQS[lang];
 
-  const now = Date.now();
+  // Baseline "now" is derived from the serialized feed timestamp so SSR and the
+  // first client render produce identical HTML (no hydration mismatch). After
+  // mount we switch to the real clock and it stays fresh.
+  const [now, setNow] = useState(() => Date.parse(feed.updatedAt));
+  useEffect(() => {
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(id);
+  }, []);
+
   const recent = feed.quakes
     .filter((q) => now - Date.parse(q.time) <= 7 * 24 * 60 * 60 * 1000)
     .slice(0, 12);

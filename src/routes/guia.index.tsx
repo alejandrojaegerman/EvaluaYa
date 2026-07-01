@@ -168,25 +168,25 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
 
 const COPY = {
   es: {
-    kicker: "Centro de información",
-    h1: "Aprende sobre sismos",
+    kicker: "Enciclopedia",
+    h1: "Enciclopedia",
     intro:
-      "Todo lo que necesitas saber para actuar con seguridad después de un temblor en Venezuela: qué hacer, cómo revisar tu vivienda y cómo funciona todo. Guías claras y gratuitas, en un solo lugar.",
+      "Todo en un solo lugar: qué hacer después de un temblor, cómo revisar tu vivienda, entender los sismos en Venezuela y cómo funciona EvalúaYa. Guías claras y gratuitas.",
     ctaTitle: "¿Sentiste un temblor?",
     ctaBody:
-      "Haz una autoevaluación guiada y gratuita en pocos minutos. Recibe un nivel de riesgo y pasos a seguir.",
+      "Haz una autoevaluación guiada y gratuita en pocos minutos. Recibe una orientación y pasos a seguir.",
     ctaButton: "Iniciar autoevaluación",
     disclaimer:
       "EvalúaYa es una herramienta comunitaria gratuita. Orienta pero no reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil.",
   },
   en: {
-    kicker: "Information hub",
-    h1: "Learn about earthquakes",
+    kicker: "Encyclopedia",
+    h1: "Encyclopedia",
     intro:
-      "Everything you need to act safely after a tremor in Venezuela: what to do, how to check your home, and how it all works. Clear, free guides in one place.",
+      "Everything in one place: what to do after a tremor, how to check your home, understanding earthquakes in Venezuela, and how EvalúaYa works. Clear, free guides.",
     ctaTitle: "Felt a tremor?",
     ctaBody:
-      "Run a free, guided self-assessment in a few minutes. Get a risk level and clear next steps.",
+      "Run a free, guided self-assessment in a few minutes. Get guidance and clear next steps.",
     ctaButton: "Start self-assessment",
     disclaimer:
       "EvalúaYa is a free community tool. It offers guidance but does not replace a licensed civil engineer or an official assessment by FUNVISIS or Civil Protection.",

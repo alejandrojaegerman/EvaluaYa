@@ -1057,7 +1057,7 @@ const es: Dict = {
   "inst.invalid": "Revisa la organización y el correo.",
 
   "nav.methodology": "Metodología",
-  "nav.learn": "Aprende sobre sismos",
+  "nav.learn": "Enciclopedia",
   "home.methodologyLink": "Cómo se calcula el resultado",
   "help.tremorGuideLink": "Qué hacer después de un temblor",
   "help.cracksGuideLink": "Grietas peligrosas: cómo identificarlas",
@@ -1069,7 +1069,7 @@ const es: Dict = {
   "methodology.maintainedBy":
     "Esta página la mantiene el equipo de EvalúaYa para explicar cómo funciona la herramienta. Puede actualizarse a medida que mejoramos el método.",
   "methodology.intro":
-    "EvalúaYa combina reglas de seguridad comprobadas con un análisis de inteligencia artificial sobre tus respuestas y fotos para dar una orientación rápida: verde, amarillo o rojo. Aquí explicamos cada paso para que puedas validarlo antes de usarlo o compartirlo.",
+    "EvalúaYa combina reglas de seguridad comprobadas con una capa de apoyo de inteligencia artificial que resume tus respuestas y fotos para darte una orientación rápida en cuatro niveles: 🟢 verde, 🟡 amarillo, 🟠 naranja o 🔴 rojo. Son hallazgos visuales preliminares para ayudarte a decidir el siguiente paso; no son un dictamen ni reemplazan a un ingeniero. Aquí explicamos cada paso para que puedas validarlo antes de usarlo o compartirlo.",
 
   "methodology.layersTitle": "Dos capas de análisis",
   "methodology.layersIntro":
@@ -1110,13 +1110,13 @@ const es: Dict = {
   "reclassify.updated":
     "Resultado actualizado de «{from}» a «{to}» con la nueva escala de 4 niveles (🟢🟡🟠🔴), que distingue mejor el daño moderado del serio.",
 
-  "methodology.layerB.title": "Capa 2 · Análisis con IA",
+  "methodology.layerB.title": "Capa 2 · Apoyo con IA",
   "methodology.layerB.body":
-    "Tus respuestas del cuestionario y una foto clave por área se envían a un modelo de visión por IA, que actúa como un triaje rápido tipo ATC-20 y devuelve un nivel de riesgo con hallazgos y pasos en lenguaje sencillo. La IA es conservadora: ante la duda sobre la seguridad, no elige verde.",
+    "Tus respuestas y las fotos que subes (fachada y daños) se envían a un modelo de visión por IA que actúa como un apoyo de triaje rápido tipo ATC-20: resume los hallazgos visuales y sugiere próximos pasos en lenguaje sencillo. Es una capa de apoyo, no un veredicto: la IA es conservadora y, ante la duda sobre la seguridad, no elige verde. No reemplaza la inspección de un ingeniero.",
 
-  "methodology.checklistTitle": "Qué inspeccionas",
+  "methodology.checklistTitle": "Qué observas y reportas",
   "methodology.checklistBody":
-    "El cuestionario cubre 9 puntos estructurales obligatorios (fundaciones, paredes, columnas y vigas, techo, escaleras, licuación, golpeteo) y 4 puntos opcionales de servicios (pisos, plomería, electricidad, lámparas y objetos colgantes).",
+    "El proceso son 2 pasos. En «Observa y reporta» respondes 4 preguntas principales (paredes, columnas y vigas, puertas y ventanas, inclinación del edificio) y marcas señales graves si las hubo (licuación del suelo, golpeteo entre edificios, daño en tuberías o gas, techo y escaleras). Las fotos son obligatorias: la fachada (hasta 5) y los daños (entre 5 y 10). También puedes agregar notas y datos opcionales de servicios (pisos, plomería, electricidad, objetos colgantes) que ayudan al ingeniero.",
 
   "methodology.seismicTitle": "Contexto sísmico",
   "methodology.seismicBody":
@@ -1132,11 +1132,11 @@ const es: Dict = {
   "methodology.source.urm":
     "Consenso de ingeniería sísmica sobre la vulnerabilidad de la mampostería no reforzada y los pisos blandos.",
   "methodology.source.ai":
-    "Modelo de visión por IA a través de Lovable AI Gateway, usado para el triaje preliminar (no es un certificador).",
+    "Modelo de visión por IA a través de Lovable AI Gateway, usado como apoyo para el triaje preliminar. No es un certificador ni emite un dictamen.",
 
   "methodology.limitsTitle": "Límites y responsabilidad compartida",
   "methodology.limit.notCert":
-    "Esto NO es una certificación ni reemplaza a un ingeniero colegiado o a Protección Civil. Es una orientación preliminar.",
+    "Esto NO es una certificación ni un dictamen, y no reemplaza a un ingeniero colegiado ni a Protección Civil. Son hallazgos visuales preliminares para orientarte.",
   "methodology.limit.surface":
     "Solo evalúa lo visible que reportas. No inspecciona elementos ocultos, fundaciones enterradas ni el interior de los muros.",
   "methodology.limit.depends":
@@ -2649,7 +2649,7 @@ const en: Dict = {
   "inst.invalid": "Check the organization and email.",
 
   "nav.methodology": "Methodology",
-  "nav.learn": "Learn about earthquakes",
+  "nav.learn": "Encyclopedia",
   "home.methodologyLink": "How the result is calculated",
   "help.tremorGuideLink": "What to do after a tremor",
   "help.cracksGuideLink": "Dangerous cracks: how to identify them",
@@ -2661,7 +2661,7 @@ const en: Dict = {
   "methodology.maintainedBy":
     "This page is maintained by the EvalúaYa team to explain how the tool works. It may be updated as we improve the method.",
   "methodology.intro":
-    "EvalúaYa combines proven safety rules with an AI analysis of your answers and photos to give quick guidance: green, yellow or red. Here we explain each step so you can validate it before using or sharing it.",
+    "EvalúaYa combines proven safety rules with an AI support layer that summarizes your answers and photos to give quick guidance across four levels: 🟢 green, 🟡 yellow, 🟠 orange or 🔴 red. These are preliminary visual findings to help you decide your next step; they are not a verdict and do not replace an engineer. Here we explain each step so you can validate it before using or sharing it.",
 
   "methodology.layersTitle": "Two layers of analysis",
   "methodology.layersIntro":
@@ -2702,13 +2702,13 @@ const en: Dict = {
   "reclassify.updated":
     "Result updated from \u201C{from}\u201D to \u201C{to}\u201D under the new 4-level scale (🟢🟡🟠🔴), which better separates moderate from serious damage.",
 
-  "methodology.layerB.title": "Layer 2 · AI analysis",
+  "methodology.layerB.title": "Layer 2 · AI support",
   "methodology.layerB.body":
-    "Your checklist answers and one key photo per area are sent to an AI vision model that acts as an ATC-20-style rapid triage and returns a risk level with findings and steps in plain language. The AI is conservative: when safety is uncertain, it does not choose green.",
+    "Your answers and the photos you upload (facade and damage) are sent to an AI vision model that acts as an ATC-20-style rapid triage aid: it summarizes the visual findings and suggests next steps in plain language. It is a support layer, not a verdict: the AI is conservative and, when safety is uncertain, it does not choose green. It does not replace an engineer's inspection.",
 
-  "methodology.checklistTitle": "What you inspect",
+  "methodology.checklistTitle": "What you observe and report",
   "methodology.checklistBody":
-    "The checklist covers 9 required structural points (foundations, walls, columns and beams, roof, stairs, liquefaction, pounding) and 4 optional utility points (floors, plumbing, electrical, hanging fixtures and objects).",
+    "The process has 2 steps. In \u201CObserve and report\u201D you answer 4 main questions (walls, columns and beams, doors and windows, building tilt) and flag serious signs if present (soil liquefaction, pounding between buildings, plumbing or gas damage, roof and stairs). Photos are required: the facade (up to 5) and the damage (between 5 and 10). You can also add notes and optional utility details (floors, plumbing, electrical, hanging objects) that help the engineer.",
 
   "methodology.seismicTitle": "Seismic context",
   "methodology.seismicBody":
@@ -2724,11 +2724,11 @@ const en: Dict = {
   "methodology.source.urm":
     "Earthquake-engineering consensus on the vulnerability of unreinforced masonry and soft stories.",
   "methodology.source.ai":
-    "AI vision model via the Lovable AI Gateway, used for preliminary triage (not a certifier).",
+    "AI vision model via the Lovable AI Gateway, used as support for preliminary triage. It is not a certifier and does not issue a verdict.",
 
   "methodology.limitsTitle": "Limits & shared responsibility",
   "methodology.limit.notCert":
-    "This is NOT a certification and does not replace a licensed engineer or Civil Protection. It is preliminary guidance.",
+    "This is NOT a certification or a verdict, and does not replace a licensed engineer or Civil Protection. These are preliminary visual findings to guide you.",
   "methodology.limit.surface":
     "It only assesses the visible things you report. It does not inspect hidden elements, buried foundations, or the inside of walls.",
   "methodology.limit.depends":
