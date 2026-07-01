@@ -1353,6 +1353,8 @@ const en: Dict = {
   "gate.consent": "I authorize the processing of my personal data solely to manage reports on this platform.",
   "gate.cta": "Accept and continue",
   "gate.readFull": "Read the full legal notice",
+  "gate.finePrint":
+    "EvalúaYa is an independent, community-built (non-official) initiative that only produces preliminary visual findings, not technical rulings. By tapping Analyze you accept the legal notice and authorize the processing of your data to manage your report.",
   "gate.mustAccept": "You must accept both boxes to continue.",
   "property.sectionContact": "Contact details",
   "property.contactHint": "Only so a volunteer evaluator can reach you about this report. Never published.",
