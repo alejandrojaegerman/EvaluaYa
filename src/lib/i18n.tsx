@@ -2210,6 +2210,7 @@ const en: Dict = {
   "track.confirmedReopened": "We reopened your case and notified volunteers again.",
   "track.confirmError": "Could not update. Please try again.",
   "track.disclaimer": "EvalúaYa is an independent community initiative, not an official authority. We can't guarantee a visit or a response time.",
+  "track.viewReport": "View my report",
   "vol.title": "Volunteer engineers",
   "vol.subtitle": "A community initiative. Every family that asks for help after their self-assessment always gets a volunteer engineer's assessment: you guide them first over a video call, and with an in-person visit if needed.",
   "vol.how1": "Sign up with your WhatsApp and the states you can cover.",
