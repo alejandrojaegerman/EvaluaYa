@@ -54,10 +54,11 @@ import { cn } from "@/lib/utils";
 const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
 const SEVERE_ITEMS = SEVERE_SIGN_IDS;
 
-// Tappable suggestion chips for the "additional comments" field. Each inserts a
-// guiding question the resident may not have thought to mention — extra context
-// the engineer values that isn't captured anywhere else in the flow.
-const COMMENT_SUGGESTIONS = [
+// Self-explanatory context signals shown as a small checklist ("Marca lo que
+// aplique"). Each is a clear, full sentence the resident checks off when true;
+// selections are stored (by key) separately from the free-text comment and sent
+// to the engineer / AI as extra context.
+const CONTEXT_SIGNALS = [
   "aftershock",
   "noises",
   "common",
