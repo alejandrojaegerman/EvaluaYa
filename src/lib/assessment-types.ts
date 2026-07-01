@@ -167,6 +167,12 @@ export type PropertyInfo = {
   condoBoardMember?: boolean;
   /** free-text additional comments from the resident (step 2, optional) */
   comments?: string;
+  /**
+   * Extra context signals the resident checked off in step 2 ("Marca lo que
+   * aplique"). Stored as stable keys (e.g. "aftershock", "noises"); resolved to
+   * localized sentences when sent to the AI and rendered in the PDF.
+   */
+  contextTags?: string[];
   /** auto-detected ShakeMap MMI value at the building's location */
   seismicIntensity?: number;
   /** Roman-numeral label for the MMI (e.g. "VII") */
