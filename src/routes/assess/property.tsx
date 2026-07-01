@@ -261,17 +261,12 @@ function PropertyStep() {
     missing.push(t("property.miss.municipality"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (age === null) missing.push(t("property.miss.age"));
-  if (residentName.trim() === "") missing.push(t("property.miss.residentName"));
-  if (residentContact.trim() === "")
-    missing.push(t("property.miss.residentContact"));
   const valid =
     buildingType !== null &&
     age !== null &&
     floors >= 1 &&
     state.trim() !== "" &&
-    municipalitySatisfied &&
-    residentName.trim() !== "" &&
-    residentContact.trim() !== "";
+    municipalitySatisfied;
 
 
   async function handleContinue() {
