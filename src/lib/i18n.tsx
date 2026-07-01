@@ -1963,25 +1963,23 @@ const en: Dict = {
   "checklist.unreadableImage": "We couldn't read that image. Try another one.",
   "checklist.commentsTitle": "Additional comments (optional)",
   "checklist.commentsHint":
-    "Tell the engineer what the photo can't show. Tap a suggestion to start:",
+    "Tell the engineer what the photos can't show — materials, when the damage appeared, anything unusual.",
   "checklist.commentsPlaceholder":
-    "E.g.: The cracks grew after an aftershock. There are new creaking sounds. The building stairwell is affected. There are elderly people in the apartment.",
-  // Suggestion chips (insert a guiding question into the comment)
-  "checklist.suggest.aftershock": "Aftershocks",
-  "checklist.suggest.aftershock.text":
-    "Did the cracks grow or appear after an aftershock?",
-  "checklist.suggest.noises": "New noises",
-  "checklist.suggest.noises.text":
-    "Do you hear creaking or noises that weren't there before?",
-  "checklist.suggest.common": "Common areas",
-  "checklist.suggest.common.text":
-    "Any damage in common areas (stairs, parking, elevator, water tank)?",
-  "checklist.suggest.people": "Vulnerable people",
-  "checklist.suggest.people.text":
-    "Are there elderly people, children or people with reduced mobility in the building?",
-  "checklist.suggest.evacuated": "Already evacuated",
-  "checklist.suggest.evacuated.text":
-    "Has the building already been evacuated or tagged by the authorities?",
+    "E.g.: The building is concrete block. A crack in the living room appeared right after the quake and keeps growing. Water is leaking from the ceiling.",
+  // Self-explanatory checklist of extra context signals ("Mark what applies")
+  "checklist.signalsTitle": "Mark what applies (optional)",
+  "checklist.signalsHint":
+    "This helps the engineer prioritize your case. Mark only what's true.",
+  "checklist.suggest.aftershock":
+    "There were strong aftershocks after the quake",
+  "checklist.suggest.noises":
+    "I hear new creaking or noises in the structure",
+  "checklist.suggest.common":
+    "There is damage in common areas (stairs, elevator, water tank, parking)",
+  "checklist.suggest.people":
+    "There are elderly people, children or people with reduced mobility in the building",
+  "checklist.suggest.evacuated":
+    "The building has already been evacuated or tagged by the authorities",
   // Photo-carrier labels (used by the AI prompt)
 
   "item.facade.area": "Facade",
