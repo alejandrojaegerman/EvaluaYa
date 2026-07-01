@@ -236,7 +236,13 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
 
             <Button
               type="submit"
-              disabled={busy || (!alreadyAcked && !acked)}
+              disabled={
+                busy ||
+                (!alreadyAcked && !acked) ||
+                residentName.trim().length < 2 ||
+                whatsapp.trim().length < 7 ||
+                address.trim().length < 6
+              }
               className="mt-3 w-full"
             >
               {busy ? t("connect.requestSending") : t("connect.requestCta")}
