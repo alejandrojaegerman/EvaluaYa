@@ -48,7 +48,7 @@ export function TopNav() {
           </span>
         </Link>
 
-        <nav className="ml-2 flex items-center gap-0.5">
+        <nav className="mx-auto flex items-center gap-0.5">
           {/* Primary action #1 — start an assessment */}
           <Link
             to="/assess/property"
