@@ -38,7 +38,7 @@ export function Footer() {
     {
       heading: t("footer.resources"),
       links: [
-        { to: "/metodologia", label: t("nav.methodology") },
+        { to: "/guia", label: t("nav.learn") },
         { to: "/ayuda", label: t("nav.help") },
         { to: "/feedback", label: t("nav.feedback") },
       ],
