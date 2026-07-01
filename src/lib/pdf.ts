@@ -140,6 +140,18 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   }
 
 
+  // Extra context signals the resident checked off (already localized sentences)
+  if (record.property.contextTags?.length) {
+    heading(t("pdf.signals"));
+    bullets(record.property.contextTags);
+  }
+
+  // Free-text resident comments
+  if (record.property.comments?.trim()) {
+    heading(t("pdf.comments"));
+    paragraph(record.property.comments.trim());
+  }
+
   // Summary
   if (record.aiResult.summary) {
     heading(t("pdf.summary"));
