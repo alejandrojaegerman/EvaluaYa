@@ -16,6 +16,11 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
+import {
+  EncyclopediaBreadcrumb,
+  breadcrumbJsonLd,
+  encyclopediaCrumbs,
+} from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
