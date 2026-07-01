@@ -12,7 +12,9 @@ import type { RiskLevel } from "@/lib/assessment-types";
  */
 export function TransparencyBanner({ riskLevel }: { riskLevel: RiskLevel }) {
   const { t } = useLang();
-  const urgent = riskLevel === "red" || riskLevel === "orange";
+  // Emergency SOS (911 / avoid entering) matches the red action only; orange
+  // ("serios") is "get an engineer soon", not evacuate.
+  const urgent = riskLevel === "red";
 
   return (
     <section className="mt-6">
