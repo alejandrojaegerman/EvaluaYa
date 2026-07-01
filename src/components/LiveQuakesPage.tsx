@@ -349,9 +349,9 @@ export function LiveQuakesPage({ feed }: { feed: QuakeFeed }) {
 
       {/* CTA */}
       <section className="mt-8 rounded-2xl border border-primary/20 bg-secondary/40 p-5">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="size-5 text-primary" aria-hidden />
-          <h2 className="font-display text-base font-bold">{c.ctaTitle}</h2>
+        <div className="flex items-start gap-2">
+          <ClipboardCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold leading-snug">{c.ctaTitle}</h2>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {c.ctaBody}
@@ -363,17 +363,13 @@ export function LiveQuakesPage({ feed }: { feed: QuakeFeed }) {
           </Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
-          <Link to="/guia/funvisis-que-es-y-como-funciona">
-            {c.funvisisLink}
+          <Link to="/guia">
+            <BookOpen className="size-4" aria-hidden />
+            {c.learnLink}
           </Link>
         </Button>
-        <Button asChild variant="link" className="mt-1 w-full">
-          <Link to="/guia/que-hacer-despues-de-un-temblor">{c.tremorLink}</Link>
-        </Button>
-        <Button asChild variant="link" className="mt-1 w-full">
-          <Link to="/mapa">{c.mapLink}</Link>
-        </Button>
       </section>
+
 
       {/* FAQ */}
       <section className="mt-8">
