@@ -91,6 +91,8 @@ const es: Dict = {
   "gate.consent": "Autorizo el tratamiento de mis datos personales exclusivamente para la gestión de reportes de esta plataforma.",
   "gate.cta": "Aceptar y continuar",
   "gate.readFull": "Leer el aviso legal completo",
+  "gate.finePrint":
+    "EvalúaYa es una iniciativa independiente y comunitaria (no oficial) que solo genera hallazgos visuales preliminares, no dictámenes técnicos. Al tocar Analizar aceptas el aviso legal y autorizas el tratamiento de tus datos para gestionar tu reporte.",
   "gate.mustAccept": "Debes aceptar ambas casillas para continuar.",
   "property.sectionContact": "Datos de contacto",
   "property.contactHint": "Solo para que un evaluador voluntario pueda comunicarse contigo sobre este reporte. No se publican.",
