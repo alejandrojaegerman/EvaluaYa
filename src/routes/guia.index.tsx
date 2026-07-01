@@ -4,15 +4,16 @@ import {
   BookOpen,
   ChevronRight,
   ClipboardCheck,
-  Clock,
   HelpCircle,
   Landmark,
   Mountain,
+  Phone,
   Radar,
   Ruler,
   ShieldCheck,
   Waves,
 } from "lucide-react";
+
 
 import { AppShell } from "@/components/AppShell";
 import {
