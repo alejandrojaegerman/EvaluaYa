@@ -19,11 +19,16 @@ import { AppShell } from "@/components/AppShell";
 import {
   EncyclopediaBreadcrumb,
   breadcrumbJsonLd,
-  encyclopediaCrumbs,
+  type Crumb,
 } from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
+
+/** Top-level trail for the (now standalone) methodology page. */
+function methodologyCrumbs(lang: "es" | "en", label: string): Crumb[] {
+  return [{ label: lang === "es" ? "Inicio" : "Home", to: "/" }, { label }];
+}
 
 export const Route = createFileRoute("/metodologia")({
   head: () => {
