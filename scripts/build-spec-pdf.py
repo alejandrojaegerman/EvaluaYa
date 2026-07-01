@@ -253,25 +253,29 @@ def content_es(s):
         "elige exactamente un nivel:", s["body"]))
     f.append(two_col_table(s, ["Nivel", "Significado"], [
         (G, "Sin daño estructural significativo; parece seguro ocupar."),
-        (Y, "Daño posible o moderado; uso restringido, solo tareas esenciales breves."),
+        (Y, "Daño leve o cosmético; habitable, mantener observación y atender lo señalado."),
+        (O, "Daño moderado a serio; necesita a un ingeniero pronto, limitar el uso a entradas breves."),
         (R, "Daño grave o señales de colapso; inseguro, evacuar de inmediato."),
     ], c0=40 * mm))
     f.append(Paragraph(
         "El contexto de ground-motion (MMI, PGA, PGV, demanda espectral según altura y "
         "clase de suelo) se incluye en el prompt: una sacudida fuerte hace pesar más "
         "cualquier daño reportado, pero la sacudida sola, sin daño observado, no fuerza "
-        "Rojo por sí misma. La IA es conservadora: ante duda de seguridad, no elige Verde.",
+        "Rojo por sí misma. La IA es conservadora: ante duda de seguridad, no elige Verde. "
+        "Reserva Amarillo para lo genuinamente leve; si hay elementos estructurales "
+        "afectados sin colapso inminente, elige Naranja.",
         s["body"]))
     f.append(Paragraph("fuente: assessment.functions.ts — SYSTEM_PROMPT + buildPrompt()", s["src"]))
 
     f.append(Paragraph("Cómo se combina — ejemplos", s["h2"]))
     f.append(three_col_table(s, ["La IA dice", "¿Regla activa?", "Resultado final"], [
-        ("Verde", "URM -> fuerza Rojo", R),
         ("Amarillo", "Licuefacción = SÍ", R),
         ("Verde", "PGA 0.55g + grieta = SÍ", R),
+        ("Verde", "URM + grieta = SÍ", R),
+        ("Verde", "URM sola (sin daño)", O),
+        ("Amarillo", "Demanda espectral 0.45g", O),
         ("Verde", "9 pisos", Y),
         ("Verde", "PGA 0.30g (sin daño)", Y),
-        ("Amarillo", "Ninguna regla", Y),
         ("Verde", "Ninguna regla", G),
     ]))
     f.append(Paragraph("fuente: safety-rules.ts — maxRisk(a, b) devuelve el más severo", s["src"]))
