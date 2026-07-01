@@ -221,6 +221,16 @@ export const Route = createFileRoute("/guia/funvisis-que-es-y-como-funciona")({
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(article) },
         { type: "application/ld+json", children: JSON.stringify(faqSchema) },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "FUNVISIS: qué es y cómo funciona",
+              }),
+            ),
+          ),
+        },
       ],
     };
   },
