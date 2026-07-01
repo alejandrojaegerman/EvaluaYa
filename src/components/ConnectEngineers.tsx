@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { UsefulPhotosTip } from "@/components/UsefulPhotosTip";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { hasLegalAck, setLegalAck } from "@/lib/legal-ack";
@@ -155,6 +156,11 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
               {t("connect.requestBody")}
             </p>
+
+            {/* Guidance on which photos help the engineer — shown here, where
+                the resident is deciding to reach out. */}
+            <UsefulPhotosTip />
+
 
             <div className="mt-3">
               <Label htmlFor="hr-name">
