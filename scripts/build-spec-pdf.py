@@ -400,25 +400,29 @@ def content_en(s):
         "picks exactly one level:", s["body"]))
     f.append(two_col_table(s, ["Level", "Meaning"], [
         (G, "No significant structural damage; appears safe to occupy."),
-        (Y, "Possible/moderate damage; restricted use, short essential tasks only."),
+        (Y, "Light or cosmetic damage; habitable, keep monitoring and address the items noted."),
+        (O, "Moderate-to-serious damage; needs an engineer soon, limit use to short entries."),
         (R, "Serious damage or signs of collapse; unsafe, evacuate immediately."),
     ], c0=40 * mm))
     f.append(Paragraph(
         "The ground-motion context (MMI, PGA, PGV, period-matched spectral demand and "
         "soil class) is included in the prompt: strong shaking makes any reported damage "
         "weigh more, but shaking alone, with no observed damage, does not by itself force "
-        "Red. The AI is conservative: when safety is uncertain, it does not choose green.",
+        "Red. The AI is conservative: when safety is uncertain, it does not choose green. "
+        "It reserves Yellow for genuinely minor issues; if structural elements are "
+        "affected but collapse is not imminent, it chooses Orange.",
         s["body"]))
     f.append(Paragraph("source: assessment.functions.ts — SYSTEM_PROMPT + buildPrompt()", s["src"]))
 
     f.append(Paragraph("How it combines — examples", s["h2"]))
     f.append(three_col_table(s, ["AI says", "Rule fired?", "Final result"], [
-        ("Green", "URM -> forces Red", R),
         ("Yellow", "Liquefaction = YES", R),
         ("Green", "PGA 0.55g + crack = YES", R),
+        ("Green", "URM + crack = YES", R),
+        ("Green", "URM alone (no damage)", O),
+        ("Yellow", "Spectral demand 0.45g", O),
         ("Green", "9 floors", Y),
         ("Green", "PGA 0.30g (no damage)", Y),
-        ("Yellow", "No rule fired", Y),
         ("Green", "No rule fired", G),
     ]))
     f.append(Paragraph("source: safety-rules.ts — maxRisk(a, b) returns the more severe", s["src"]))
