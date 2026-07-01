@@ -4,12 +4,12 @@ import {
   Activity,
   AlertTriangle,
   ArrowRight,
+  BookOpen,
   CheckCircle2,
   ClipboardCheck,
   Clock,
   Info,
   MapPin,
-  
   Waves,
 } from "lucide-react";
 
@@ -81,9 +81,7 @@ const COPY = {
     ctaBody:
       "Haz una autoevaluación guiada y gratuita en pocos minutos. Sin registro y funciona con poca señal. Recibe un nivel de riesgo y pasos a seguir.",
     ctaButton: "Iniciar autoevaluación",
-    funvisisLink: "Cómo leer un reporte de FUNVISIS",
-    tremorLink: "Qué hacer después de un temblor",
-    mapLink: "Ver el mapa de daños reportados",
+    learnLink: "Aprende qué hacer y cómo revisar tu vivienda",
     unavailableTitle: "No pudimos cargar los sismos en este momento",
     unavailableBody:
       "Vuelve a intentar en unos minutos. Para confirmar un sismo, consulta el reporte oficial de FUNVISIS.",
@@ -119,9 +117,7 @@ const COPY = {
     ctaBody:
       "Run a free, guided self-assessment in a few minutes. No sign-up, works on low bandwidth. Get a risk level and clear next steps.",
     ctaButton: "Start self-assessment",
-    funvisisLink: "How to read a FUNVISIS report",
-    tremorLink: "What to do after a tremor",
-    mapLink: "See the reported-damage map",
+    learnLink: "Learn what to do and how to check your home",
     unavailableTitle: "We couldn't load earthquakes right now",
     unavailableBody:
       "Try again in a few minutes. To confirm a quake, check the official FUNVISIS report.",
@@ -353,9 +349,9 @@ export function LiveQuakesPage({ feed }: { feed: QuakeFeed }) {
 
       {/* CTA */}
       <section className="mt-8 rounded-2xl border border-primary/20 bg-secondary/40 p-5">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="size-5 text-primary" aria-hidden />
-          <h2 className="font-display text-base font-bold">{c.ctaTitle}</h2>
+        <div className="flex items-start gap-2">
+          <ClipboardCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold leading-snug">{c.ctaTitle}</h2>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {c.ctaBody}
@@ -367,17 +363,13 @@ export function LiveQuakesPage({ feed }: { feed: QuakeFeed }) {
           </Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
-          <Link to="/guia/funvisis-que-es-y-como-funciona">
-            {c.funvisisLink}
+          <Link to="/guia">
+            <BookOpen className="size-4" aria-hidden />
+            {c.learnLink}
           </Link>
         </Button>
-        <Button asChild variant="link" className="mt-1 w-full">
-          <Link to="/guia/que-hacer-despues-de-un-temblor">{c.tremorLink}</Link>
-        </Button>
-        <Button asChild variant="link" className="mt-1 w-full">
-          <Link to="/mapa">{c.mapLink}</Link>
-        </Button>
       </section>
+
 
       {/* FAQ */}
       <section className="mt-8">

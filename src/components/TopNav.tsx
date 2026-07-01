@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ClipboardCheck,
   FolderOpen,
+  GraduationCap,
   HandHeart,
   LifeBuoy,
   Map,
@@ -94,8 +95,14 @@ export function TopNav() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/metodologia" className="flex items-center gap-2">
+                <Link to="/guia" className="flex items-center gap-2">
                   <BookOpen className="size-4" aria-hidden />
+                  {t("nav.learn")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/metodologia" className="flex items-center gap-2">
+                  <GraduationCap className="size-4" aria-hidden />
                   {t("nav.methodology")}
                 </Link>
               </DropdownMenuItem>

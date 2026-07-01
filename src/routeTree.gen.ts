@@ -23,6 +23,7 @@ import { Route as DatosRouteImport } from './routes/datos'
 import { Route as AyudaRouteImport } from './routes/ayuda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
+import { Route as GuiaIndexRouteImport } from './routes/guia.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
 import { Route as GuiaQueHacerDespuesDeUnTemblorRouteImport } from './routes/guia.que-hacer-despues-de-un-temblor'
@@ -123,6 +124,11 @@ const IndexRoute = IndexRouteImport.update({
 const VoluntariosIndexRoute = VoluntariosIndexRouteImport.update({
   id: '/voluntarios/',
   path: '/voluntarios/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaIndexRoute = GuiaIndexRouteImport.update({
+  id: '/guia/',
+  path: '/guia/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -316,6 +322,7 @@ export interface FileRoutesByFullPath {
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/guia/': typeof GuiaIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
   '/lovable/cron/completion-engine': typeof LovableCronCompletionEngineRoute
@@ -362,6 +369,7 @@ export interface FileRoutesByTo {
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin': typeof AdminIndexRoute
+  '/guia': typeof GuiaIndexRoute
   '/voluntarios': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
   '/lovable/cron/completion-engine': typeof LovableCronCompletionEngineRoute
@@ -409,6 +417,7 @@ export interface FileRoutesById {
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/guia/': typeof GuiaIndexRoute
   '/voluntarios/': typeof VoluntariosIndexRoute
   '/lovable/cron/admin-help-digest': typeof LovableCronAdminHelpDigestRoute
   '/lovable/cron/completion-engine': typeof LovableCronCompletionEngineRoute
@@ -457,6 +466,7 @@ export interface FileRouteTypes {
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
+    | '/guia/'
     | '/voluntarios/'
     | '/lovable/cron/admin-help-digest'
     | '/lovable/cron/completion-engine'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin'
+    | '/guia'
     | '/voluntarios'
     | '/lovable/cron/admin-help-digest'
     | '/lovable/cron/completion-engine'
@@ -549,6 +560,7 @@ export interface FileRouteTypes {
     | '/guia/que-hacer-despues-de-un-temblor'
     | '/zona/$estado'
     | '/admin/'
+    | '/guia/'
     | '/voluntarios/'
     | '/lovable/cron/admin-help-digest'
     | '/lovable/cron/completion-engine'
@@ -596,6 +608,7 @@ export interface RootRouteChildren {
   GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
   ZonaEstadoRoute: typeof ZonaEstadoRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
+  GuiaIndexRoute: typeof GuiaIndexRoute
   VoluntariosIndexRoute: typeof VoluntariosIndexRoute
   LovableCronAdminHelpDigestRoute: typeof LovableCronAdminHelpDigestRoute
   LovableCronCompletionEngineRoute: typeof LovableCronCompletionEngineRoute
@@ -714,6 +727,13 @@ declare module '@tanstack/react-router' {
       path: '/voluntarios'
       fullPath: '/voluntarios/'
       preLoaderRoute: typeof VoluntariosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/': {
+      id: '/guia/'
+      path: '/guia'
+      fullPath: '/guia/'
+      preLoaderRoute: typeof GuiaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -968,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
   ZonaEstadoRoute: ZonaEstadoRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
+  GuiaIndexRoute: GuiaIndexRoute,
   VoluntariosIndexRoute: VoluntariosIndexRoute,
   LovableCronAdminHelpDigestRoute: LovableCronAdminHelpDigestRoute,
   LovableCronCompletionEngineRoute: LovableCronCompletionEngineRoute,

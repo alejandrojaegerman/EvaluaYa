@@ -32,7 +32,9 @@ export function formatDateTime(
     hour: "numeric",
     minute: "2-digit",
   }).format(d);
-  return `${formatted} ET`;
+  // Normalize narrow/no-break spaces: Node (server) and browser ICU builds
+  // emit different space characters here, which breaks SSR hydration.
+  return `${formatted} ET`.replace(/[\u202f\u00a0]/g, " ");
 }
 
 /** Date only of an instant, forced to Eastern. */

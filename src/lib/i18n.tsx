@@ -1057,6 +1057,7 @@ const es: Dict = {
   "inst.invalid": "Revisa la organización y el correo.",
 
   "nav.methodology": "Metodología",
+  "nav.learn": "Aprende sobre sismos",
   "home.methodologyLink": "Cómo se calcula el resultado",
   "help.tremorGuideLink": "Qué hacer después de un temblor",
   "help.cracksGuideLink": "Grietas peligrosas: cómo identificarlas",
@@ -2648,6 +2649,7 @@ const en: Dict = {
   "inst.invalid": "Check the organization and email.",
 
   "nav.methodology": "Methodology",
+  "nav.learn": "Learn about earthquakes",
   "home.methodologyLink": "How the result is calculated",
   "help.tremorGuideLink": "What to do after a tremor",
   "help.cracksGuideLink": "Dangerous cracks: how to identify them",
