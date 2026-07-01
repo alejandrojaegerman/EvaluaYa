@@ -294,6 +294,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                 (!alreadyAcked && !acked) ||
                 residentName.trim().length < 2 ||
                 whatsapp.trim().length < 7 ||
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
                 address.trim().length < 6
               }
               className="mt-3 w-full"
