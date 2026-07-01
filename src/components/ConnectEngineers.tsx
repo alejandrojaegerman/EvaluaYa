@@ -64,10 +64,12 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
 
   const [residentName, setResidentName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [trackingToken, setTrackingToken] = useState<string | null>(null);
   // One-time legal acknowledgement: ask once, then never interrupt again.
   const [alreadyAcked] = useState(hasLegalAck);
   const [acked, setAcked] = useState(false);
@@ -85,12 +87,14 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
           riskLevel: record.riskLevel,
           whatsapp,
           residentName,
+          email,
           address,
           note,
         },
       });
       if (res.ok) {
         setLegalAck();
+        setTrackingToken(res.residentToken ?? null);
         setSent(true);
         toast.success(t("connect.requestDone"));
       } else {

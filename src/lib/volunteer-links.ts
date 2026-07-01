@@ -28,3 +28,19 @@ export function engineerPanelUrl(
   u.searchParams.set("utm_campaign", campaign);
   return u.toString();
 }
+
+/**
+ * Build the resident-facing tracking URL for a help request. The `token` is the
+ * unguessable per-row `resident_token`, so the page needs no login. Tagged with
+ * UTMs so we can attribute traffic that arrives from status-update emails.
+ */
+export function residentTrackingUrl(
+  token: string,
+  root: string = APP_ROOT,
+): string {
+  const u = new URL(`${root}/seguimiento/${token}`);
+  u.searchParams.set("utm_source", "email");
+  u.searchParams.set("utm_medium", "email");
+  u.searchParams.set("utm_campaign", "resident_status");
+  return u.toString();
+}
