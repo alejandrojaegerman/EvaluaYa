@@ -8,6 +8,8 @@ import {
   ClipboardCheck,
   Circle,
   Landmark,
+  User,
+  Home,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -339,6 +341,27 @@ export function EngineerRequestCard({
         </div>
       )}
 
+
+      {/* Resident contact details — revealed only after this engineer claims. */}
+      {r.claimedByMe && (r.residentName || r.residentAddress) && (
+        <div className="mt-3 space-y-2 rounded-xl border border-border bg-muted/40 p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("panel.residentContactTitle")}
+          </p>
+          {r.residentName && (
+            <p className="flex items-start gap-2 text-sm text-foreground">
+              <User className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span>{r.residentName}</span>
+            </p>
+          )}
+          {r.residentAddress && (
+            <p className="flex items-start gap-2 text-sm text-foreground">
+              <Home className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="whitespace-pre-line">{r.residentAddress}</span>
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Primary actions */}
       <div className="mt-3 grid gap-2">

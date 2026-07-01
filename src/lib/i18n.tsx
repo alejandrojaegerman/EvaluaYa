@@ -870,6 +870,13 @@ const es: Dict = {
   "connect.requestSending": "Enviando…",
   "connect.requestDone": "¡Listo! Un evaluador te contactará pronto.",
   "connect.requestError": "No se pudo enviar. Intenta de nuevo.",
+  "connect.yourName": "Tu nombre y apellido",
+  "connect.namePlaceholder": "Ej.: María Rodríguez",
+  "connect.yourAddress": "Dirección exacta para la visita",
+  "connect.addressPlaceholder":
+    "Calle/av., número de casa o edificio, piso y apto., punto de referencia",
+  "connect.addressHint":
+    "El ingeniero necesita estos datos para ubicarte y visitar la vivienda. Solo se muestran al ingeniero que tome tu caso.",
   "connect.yourWhatsapp": "Tu número de WhatsApp",
   "connect.whatsappPlaceholder": "Ej.: 0414 123 4567",
   "connect.whatsappHint": "Incluye el código de área. Si estás en Venezuela puedes usar tu número local (ej.: 0414…); le agregamos el código de país (+58) automáticamente.",
@@ -949,6 +956,7 @@ const es: Dict = {
   "panel.claimed": "La estás atendiendo",
   "panel.close": "Marcar como atendida",
   "panel.contactResident": "Escribir al residente",
+  "panel.residentContactTitle": "Datos del residente para la visita",
   "panel.contactLocked": "Marca \"Estoy disponible\" para ver el contacto del residente.",
   "panel.expired": "Enlace vencido",
   "panel.expiredBody": "Tu enlace de acceso caducó por seguridad. Escríbenos para recibir uno nuevo.",
@@ -2119,6 +2127,13 @@ const en: Dict = {
   "connect.requestSending": "Sending…",
   "connect.requestDone": "Done! An evaluator will contact you soon.",
   "connect.requestError": "Could not send. Please try again.",
+  "connect.yourName": "Your full name",
+  "connect.namePlaceholder": "e.g. María Rodríguez",
+  "connect.yourAddress": "Exact address for the visit",
+  "connect.addressPlaceholder":
+    "Street/ave., house or building number, floor and unit, landmark",
+  "connect.addressHint":
+    "The engineer needs this to find you and visit the home. Only shown to the engineer who takes your case.",
   "connect.yourWhatsapp": "Your WhatsApp number",
   "connect.whatsappPlaceholder": "e.g. 0414 123 4567",
   "connect.whatsappHint": "Include your area code. If you're in Venezuela you can use your local number (e.g. 0414…); we add the country code (+58) automatically.",
@@ -2198,6 +2213,7 @@ const en: Dict = {
   "panel.claimed": "You're handling this",
   "panel.close": "Mark as handled",
   "panel.contactResident": "Message resident",
+  "panel.residentContactTitle": "Resident details for the visit",
   "panel.contactLocked": "Tap \"I'm available\" to see the resident's contact.",
   "panel.expired": "Link expired",
   "panel.expiredBody": "Your access link expired for security. Contact us to get a new one.",

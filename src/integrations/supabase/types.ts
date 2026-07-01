@@ -336,7 +336,9 @@ export type Database = {
           public_id: string
           reclaim_count: number
           reminder_count: number
+          resident_address: string | null
           resident_confirmed_at: string | null
+          resident_name: string | null
           resident_token: string
           resident_whatsapp: string
           risk_level: string | null
@@ -360,7 +362,9 @@ export type Database = {
           public_id?: string
           reclaim_count?: number
           reminder_count?: number
+          resident_address?: string | null
           resident_confirmed_at?: string | null
+          resident_name?: string | null
           resident_token?: string
           resident_whatsapp: string
           risk_level?: string | null
@@ -384,7 +388,9 @@ export type Database = {
           public_id?: string
           reclaim_count?: number
           reminder_count?: number
+          resident_address?: string | null
           resident_confirmed_at?: string | null
+          resident_name?: string | null
           resident_token?: string
           resident_whatsapp?: string
           risk_level?: string | null

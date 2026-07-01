@@ -43,7 +43,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       .slice(0, 600);
   };
 
+  const [residentName, setResidentName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [address, setAddress] = useState("");
   const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
@@ -63,6 +65,8 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
           municipality: record.property.municipality ?? undefined,
           riskLevel: record.riskLevel,
           whatsapp,
+          residentName,
+          address,
           note,
         },
       });
@@ -142,7 +146,26 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
             </p>
 
             <div className="mt-3">
-              <Label htmlFor="hr-wa">{t("connect.yourWhatsapp")}</Label>
+              <Label htmlFor="hr-name">
+                {t("connect.yourName")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Input
+                id="hr-name"
+                value={residentName}
+                onChange={(e) => setResidentName(e.target.value)}
+                placeholder={t("connect.namePlaceholder")}
+                required
+                maxLength={160}
+                autoComplete="name"
+                className="mt-1.5"
+              />
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="hr-wa">
+                {t("connect.yourWhatsapp")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
               <Input
                 id="hr-wa"
                 type="tel"
@@ -156,6 +179,26 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               />
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("connect.whatsappHint")}
+              </p>
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="hr-address">
+                {t("connect.yourAddress")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="hr-address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={t("connect.addressPlaceholder")}
+                required
+                maxLength={400}
+                rows={2}
+                autoComplete="street-address"
+                className="mt-1.5"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("connect.addressHint")}
               </p>
             </div>
             <div className="mt-3">
@@ -193,7 +236,13 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
 
             <Button
               type="submit"
-              disabled={busy || (!alreadyAcked && !acked)}
+              disabled={
+                busy ||
+                (!alreadyAcked && !acked) ||
+                residentName.trim().length < 2 ||
+                whatsapp.trim().length < 7 ||
+                address.trim().length < 6
+              }
               className="mt-3 w-full"
             >
               {busy ? t("connect.requestSending") : t("connect.requestCta")}

@@ -23,7 +23,7 @@ import type {
   BuildingType,
   StructuralType,
 } from "@/lib/assessment-types";
-import { loadDraft, saveDraft, type ResidentContactType } from "@/lib/draft-store";
+import { loadDraft, saveDraft } from "@/lib/draft-store";
 import { LegalConsentGate } from "@/components/LegalConsentGate";
 import {
   getLegalConsent,
@@ -104,11 +104,6 @@ function PropertyStep() {
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [parroquia, setParroquia] = useState("");
-  // Minimal resident contact (Doc #1) — so a volunteer evaluator can reach them.
-  const [residentName, setResidentName] = useState("");
-  const [residentContact, setResidentContact] = useState("");
-  const [residentContactType, setResidentContactType] =
-    useState<ResidentContactType>("whatsapp");
   // Blocking legal + data-consent gate (Doc #1). Shown until accepted.
   const [showGate, setShowGate] = useState(false);
   const [consent, setConsent] = useState<LegalConsent | null>(null);
@@ -158,10 +153,8 @@ function PropertyStep() {
       if (p.municipality && municipiosFor(p.state).includes(p.municipality)) {
         setMunicipality(p.municipality);
       }
-      if (draft.resident?.name) setResidentName(draft.resident.name);
-      if (draft.resident?.contact) setResidentContact(draft.resident.contact);
-      if (draft.resident?.contactType)
-        setResidentContactType(draft.resident.contactType);
+
+
 
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.structuralType) {
@@ -268,17 +261,12 @@ function PropertyStep() {
     missing.push(t("property.miss.municipality"));
   if (buildingType === null) missing.push(t("property.miss.type"));
   if (age === null) missing.push(t("property.miss.age"));
-  if (residentName.trim() === "") missing.push(t("property.miss.residentName"));
-  if (residentContact.trim() === "")
-    missing.push(t("property.miss.residentContact"));
   const valid =
     buildingType !== null &&
     age !== null &&
     floors >= 1 &&
     state.trim() !== "" &&
-    municipalitySatisfied &&
-    residentName.trim() !== "" &&
-    residentContact.trim() !== "";
+    municipalitySatisfied;
 
 
   async function handleContinue() {
@@ -321,11 +309,6 @@ function PropertyStep() {
       },
       answers: existing?.answers ?? [],
       ...(engParam ? { engineerToken: engParam } : {}),
-      resident: {
-        name: residentName.trim(),
-        contact: residentContact.trim(),
-        contactType: residentContactType,
-      },
       ...(consent ? { consent } : {}),
       updatedAt: Date.now(),
     });
@@ -606,81 +589,7 @@ function PropertyStep() {
           )}
         </section>
 
-        {/* ── Contact (minimal, required — so a volunteer can reach them) ── */}
-        <section className="space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            {t("property.sectionContact")}
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            {t("property.contactHint")}
-          </p>
 
-          <div>
-            <Label htmlFor="residentName" className="text-sm font-semibold">
-              {t("property.residentName")}{" "}
-              <span className="font-normal text-destructive">*</span>
-            </Label>
-            <Input
-              id="residentName"
-              value={residentName}
-              onChange={(e) => setResidentName(e.target.value)}
-              placeholder={t("property.residentNamePlaceholder")}
-              className="mt-2 h-12 rounded-xl bg-card"
-              maxLength={160}
-              autoComplete="name"
-            />
-          </div>
-
-          <div>
-            <Label className="text-sm font-semibold">
-              {t("property.contactType")}{" "}
-              <span className="font-normal text-destructive">*</span>
-            </Label>
-            <div className="mt-2 grid grid-cols-3 gap-2">
-              {(["whatsapp", "phone", "email"] as ResidentContactType[]).map(
-                (type) => {
-                  const selected = residentContactType === type;
-                  return (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setResidentContactType(type)}
-                      aria-pressed={selected}
-                      className={cn(
-                        "rounded-xl border-2 py-2.5 text-sm font-semibold transition-colors",
-                        selected
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-card text-foreground hover:border-primary/30",
-                      )}
-                    >
-                      {t(
-                        type === "whatsapp"
-                          ? "property.contactWhatsapp"
-                          : type === "phone"
-                            ? "property.contactPhone"
-                            : "property.contactEmail",
-                      )}
-                    </button>
-                  );
-                },
-              )}
-            </div>
-            <Input
-              id="residentContact"
-              value={residentContact}
-              onChange={(e) => setResidentContact(e.target.value)}
-              placeholder={t(
-                residentContactType === "email"
-                  ? "property.residentContactEmailPlaceholder"
-                  : "property.residentContactPhonePlaceholder",
-              )}
-              className="mt-2 h-12 rounded-xl bg-card"
-              maxLength={200}
-              inputMode={residentContactType === "email" ? "email" : "tel"}
-              autoComplete={residentContactType === "email" ? "email" : "tel"}
-            />
-          </div>
-        </section>
 
         {/* ── Building ──────────────────────────────────────── */}
 
