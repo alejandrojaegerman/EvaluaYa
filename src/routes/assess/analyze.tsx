@@ -105,16 +105,6 @@ function AnalyzeStep() {
             structuralType: draft.property.structuralType ?? "unknown",
             floors: draft.property.floors ?? 1,
             age: draft.property.age,
-            ...(draft.property.comments?.trim()
-              ? { comments: draft.property.comments.trim() }
-              : {}),
-            ...(draft.property.contextTags?.length
-              ? {
-                  contextTags: draft.property.contextTags.map((k) =>
-                    t(`checklist.suggest.${k}`),
-                  ),
-                }
-              : {}),
             ...(typeof draft.property.seismicIntensity === "number"
               ? {
                   seismicIntensity: draft.property.seismicIntensity,
@@ -152,9 +142,6 @@ function AnalyzeStep() {
                 : a.photoDataUrl
                   ? [a.photoDataUrl]
                   : [],
-            ...(a.photoLabels && a.photoLabels.length
-              ? { photoLabels: a.photoLabels }
-              : {}),
           })),
           ...(draft.engineerToken
             ? { engineerToken: draft.engineerToken }

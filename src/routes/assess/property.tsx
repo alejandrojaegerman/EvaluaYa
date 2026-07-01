@@ -10,7 +10,7 @@ import {
   Activity,
   AlertTriangle,
   ShieldCheck,
-
+  Users,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -23,7 +23,7 @@ import type {
   BuildingType,
   StructuralType,
 } from "@/lib/assessment-types";
-import { loadDraft, saveDraft } from "@/lib/draft-store";
+import { loadDraft, saveDraft, type ResidentContactType } from "@/lib/draft-store";
 import { LegalConsentGate } from "@/components/LegalConsentGate";
 import {
   getLegalConsent,
@@ -43,13 +43,11 @@ import {
 import { cn } from "@/lib/utils";
 import {
   ESTADO_NAMES,
-  GRAN_CARACAS_MUNICIPIOS,
   getEstado,
   getEstadoBySlug,
   municipiosFor,
   nearestEstado,
   nearestMunicipio,
-  normalizeCaracasLocation,
 } from "@/lib/venezuela";
 
 export const Route = createFileRoute("/assess/property")({
@@ -95,41 +93,6 @@ const STRUCTURAL_TYPES: StructuralType[] = [
 // Sentinel select value for the "I'm not sure" municipio option.
 const UNSURE_MUNICIPIO = "__unsure__";
 
-// Common dial codes for residents in Venezuela and the diaspora.
-// Order: Venezuela first, then the most common destination countries.
-const COUNTRY_CODES: { code: string; flag: string; name: string }[] = [
-  { code: "+58", flag: "🇻🇪", name: "Venezuela" },
-  { code: "+57", flag: "🇨🇴", name: "Colombia" },
-  { code: "+1", flag: "🇺🇸", name: "EE.UU. / Canadá" },
-  { code: "+34", flag: "🇪🇸", name: "España" },
-  { code: "+56", flag: "🇨🇱", name: "Chile" },
-  { code: "+51", flag: "🇵🇪", name: "Perú" },
-  { code: "+54", flag: "🇦🇷", name: "Argentina" },
-  { code: "+593", flag: "🇪🇨", name: "Ecuador" },
-  { code: "+52", flag: "🇲🇽", name: "México" },
-  { code: "+55", flag: "🇧🇷", name: "Brasil" },
-  { code: "+507", flag: "🇵🇦", name: "Panamá" },
-  { code: "+1809", flag: "🇩🇴", name: "Rep. Dominicana" },
-  { code: "+39", flag: "🇮🇹", name: "Italia" },
-  { code: "+351", flag: "🇵🇹", name: "Portugal" },
-];
-const DEFAULT_DIAL_CODE = "+58";
-
-// Split a stored contact ("+58 414...") into dial code + local number.
-function splitContact(stored: string): { dial: string; number: string } {
-  const trimmed = stored.trim();
-  // Longest-prefix match so "+1809" wins over "+1".
-  const match = [...COUNTRY_CODES]
-    .sort((a, b) => b.code.length - a.code.length)
-    .find((c) => trimmed.startsWith(c.code));
-  if (match) {
-    return { dial: match.code, number: trimmed.slice(match.code.length).trim() };
-  }
-  return { dial: DEFAULT_DIAL_CODE, number: trimmed };
-}
-
-
-
 function PropertyStep() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
@@ -142,10 +105,10 @@ function PropertyStep() {
   const [municipality, setMunicipality] = useState("");
   const [parroquia, setParroquia] = useState("");
   // Minimal resident contact (Doc #1) — so a volunteer evaluator can reach them.
-  // Contact is WhatsApp-only now: a country dial code + local phone number.
   const [residentName, setResidentName] = useState("");
   const [residentContact, setResidentContact] = useState("");
-  const [dialCode, setDialCode] = useState(DEFAULT_DIAL_CODE);
+  const [residentContactType, setResidentContactType] =
+    useState<ResidentContactType>("whatsapp");
   // Blocking legal + data-consent gate (Doc #1). Shown until accepted.
   const [showGate, setShowGate] = useState(false);
   const [consent, setConsent] = useState<LegalConsent | null>(null);
@@ -156,12 +119,9 @@ function PropertyStep() {
   const [structuralType, setStructuralType] =
     useState<StructuralType>("unknown");
   const [structOpen, setStructOpen] = useState(false);
-  
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [floors, setFloors] = useState(1);
-  const [basements, setBasements] = useState(0);
   const [age, setAge] = useState<BuildingAge | null>(null);
-  const [livesInBuilding, setLivesInBuilding] = useState<boolean | null>(null);
-  const [condoBoard, setCondoBoard] = useState<boolean | null>(null);
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "detecting" | "detected" | "failed"
   >("idle");
@@ -191,6 +151,7 @@ function PropertyStep() {
       const p = draft.property;
       if (p.address) setAddress(p.address);
       if (p.buildingName) setBuildingName(p.buildingName);
+      if (p.address || p.buildingName) setDetailsOpen(true);
       if (p.state) setState(p.state);
       if (p.parroquia) setParroquia(p.parroquia);
       // Only restore the municipio when it's a valid option for the saved state.
@@ -198,11 +159,9 @@ function PropertyStep() {
         setMunicipality(p.municipality);
       }
       if (draft.resident?.name) setResidentName(draft.resident.name);
-      if (draft.resident?.contact) {
-        const { dial, number } = splitContact(draft.resident.contact);
-        setDialCode(dial);
-        setResidentContact(number);
-      }
+      if (draft.resident?.contact) setResidentContact(draft.resident.contact);
+      if (draft.resident?.contactType)
+        setResidentContactType(draft.resident.contactType);
 
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.structuralType) {
@@ -210,11 +169,6 @@ function PropertyStep() {
         if (p.structuralType !== "unknown") setStructOpen(true);
       }
       if (p.floors) setFloors(p.floors);
-      if (typeof p.basements === "number") setBasements(p.basements);
-      if (typeof p.livesInBuilding === "boolean")
-        setLivesInBuilding(p.livesInBuilding);
-      if (typeof p.condoBoardMember === "boolean")
-        setCondoBoard(p.condoBoardMember);
       if (p.age) setAge(p.age);
       if (typeof p.seismicIntensity === "number") {
         const sa: SeismicReading["sa"] = {};
@@ -308,37 +262,23 @@ function PropertyStep() {
   // Required: either a real municipio is selected, or the resident chose "not sure".
   const municipalitySatisfied = municipality.trim() !== "" || municipalityUnsure;
 
-  // Building name is required for multi-unit buildings (apartment/commercial);
-  // a standalone house often has no tower name.
-  const buildingNameRequired =
-    buildingType === "apartment" || buildingType === "commercial";
-
   const missing: string[] = [];
   if (state.trim() === "") missing.push(t("property.miss.state"));
   if (state.trim() !== "" && !municipalitySatisfied)
     missing.push(t("property.miss.municipality"));
-  if (address.trim() === "") missing.push(t("property.miss.address"));
-  if (parroquia.trim() === "") missing.push(t("property.miss.parroquia"));
   if (buildingType === null) missing.push(t("property.miss.type"));
-  if (buildingNameRequired && buildingName.trim() === "")
-    missing.push(t("property.miss.buildingName"));
+  if (age === null) missing.push(t("property.miss.age"));
   if (residentName.trim() === "") missing.push(t("property.miss.residentName"));
   if (residentContact.trim() === "")
     missing.push(t("property.miss.residentContact"));
-  if (livesInBuilding === null) missing.push(t("property.miss.livesInBuilding"));
-  if (condoBoard === null) missing.push(t("property.miss.condoBoard"));
   const valid =
     buildingType !== null &&
+    age !== null &&
     floors >= 1 &&
     state.trim() !== "" &&
     municipalitySatisfied &&
-    address.trim() !== "" &&
-    parroquia.trim() !== "" &&
-    (!buildingNameRequired || buildingName.trim() !== "") &&
     residentName.trim() !== "" &&
-    residentContact.trim() !== "" &&
-    livesInBuilding !== null &&
-    condoBoard !== null;
+    residentContact.trim() !== "";
 
 
   async function handleContinue() {
@@ -349,16 +289,13 @@ function PropertyStep() {
       property: {
         address: address.trim(),
         buildingName: buildingName.trim(),
-        state: normalizeCaracasLocation(state, municipality),
+        state: state.trim(),
         municipality: municipality.trim(),
         parroquia: parroquia.trim(),
         buildingType,
         structuralType,
         floors,
-        basements,
-        ...(age ? { age } : {}),
-        ...(livesInBuilding !== null ? { livesInBuilding } : {}),
-        ...(condoBoard !== null ? { condoBoardMember: condoBoard } : {}),
+        age,
         ...(intensity
           ? (() => {
               const demand = spectralDemand(intensity, floors);
@@ -386,8 +323,8 @@ function PropertyStep() {
       ...(engParam ? { engineerToken: engParam } : {}),
       resident: {
         name: residentName.trim(),
-        contact: `${dialCode} ${residentContact.trim()}`.trim(),
-        contactType: "whatsapp",
+        contact: residentContact.trim(),
+        contactType: residentContactType,
       },
       ...(consent ? { consent } : {}),
       updatedAt: Date.now(),
@@ -406,17 +343,22 @@ function PropertyStep() {
           }}
         />
       )}
-      <StepHeader step={1} title={t("property.title")} />
+      <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
 
-      {engParam && (
+
+      <p className="mt-3 text-sm text-muted-foreground">{t("property.effortHint")}</p>
+
+      {engParam ? (
         <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
           <p className="font-medium text-primary">{t("panel.proTitle")}</p>
         </div>
+      ) : (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-card p-3 text-sm">
+          <Users className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          <p className="text-muted-foreground">{t("property.behalfHint")}</p>
+        </div>
       )}
-
-
-
 
 
 
@@ -518,15 +460,6 @@ function PropertyStep() {
                     </option>
                   ))
                 )}
-                {state.trim() === "Distrito Capital" && (
-                  <optgroup label={t("picker.granCaracas")}>
-                    {GRAN_CARACAS_MUNICIPIOS.map((name) => (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
                 {state.trim() !== "" && (
                   <option value={UNSURE_MUNICIPIO}>
                     {t("property.municipalityUnsure")}
@@ -553,59 +486,86 @@ function PropertyStep() {
             </p>
           )}
 
+          <p className="text-xs text-muted-foreground">
+            {t("property.locationHint")}
+          </p>
 
-          {/* Address + building detail — required so an evaluator can locate
-              the property and group reports per building. */}
-          <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
-            <div>
-              <Label htmlFor="address" className="text-sm font-semibold">
-                {t("property.address")}{" "}
-                <span className="font-normal text-destructive">*</span>
-              </Label>
-              <Input
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder={t("property.addressPlaceholder")}
-                className="mt-2 h-12 rounded-xl bg-background"
-                autoComplete="street-address"
-              />
+          {/* Optional free-text detail (address + building name) — collapsed by
+              default so the required path stays short on mobile. */}
+          {!detailsOpen ? (
+            <button
+              type="button"
+              onClick={() => setDetailsOpen(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-card py-3 text-sm font-semibold text-primary transition-colors hover:border-primary/40"
+            >
+              <Plus className="size-4" />
+              {t("property.optionalDetails")}
+            </button>
+          ) : (
+            <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
+              <div>
+                <Label htmlFor="address" className="text-sm font-semibold">
+                  {t("property.address")}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                </Label>
+                <Input
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={t("property.addressPlaceholder")}
+                  className="mt-2 h-12 rounded-xl bg-background"
+                  autoComplete="street-address"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="buildingName" className="text-sm font-semibold">
+                  {t("property.buildingName")}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                </Label>
+                <Input
+                  id="buildingName"
+                  value={buildingName}
+                  onChange={(e) => setBuildingName(e.target.value)}
+                  placeholder={t("property.buildingNamePlaceholder")}
+                  className="mt-2 h-12 rounded-xl bg-background"
+                  maxLength={160}
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t("property.buildingNameHint")}
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="parroquia" className="text-sm font-semibold">
+                  {t("property.parroquia")}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({t("common.optional")})
+                  </span>
+                </Label>
+                <Input
+                  id="parroquia"
+                  value={parroquia}
+                  onChange={(e) => setParroquia(e.target.value)}
+                  placeholder={t("property.parroquiaPlaceholder")}
+                  className="mt-2 h-12 rounded-xl bg-background"
+                  maxLength={120}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDetailsOpen(false)}
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+              >
+                {t("property.optionalDetailsHide")}
+              </button>
             </div>
-
-            <div>
-              <Label htmlFor="buildingName" className="text-sm font-semibold">
-                {t("property.buildingName")}{" "}
-                {buildingNameRequired && (
-                  <span className="font-normal text-destructive">*</span>
-                )}
-              </Label>
-              <Input
-                id="buildingName"
-                value={buildingName}
-                onChange={(e) => setBuildingName(e.target.value)}
-                placeholder={t("property.buildingNamePlaceholder")}
-                className="mt-2 h-12 rounded-xl bg-background"
-                maxLength={160}
-              />
-
-            </div>
-
-            <div>
-              <Label htmlFor="parroquia" className="text-sm font-semibold">
-                {t("property.parroquia")}{" "}
-                <span className="font-normal text-destructive">*</span>
-              </Label>
-              <Input
-                id="parroquia"
-                value={parroquia}
-                onChange={(e) => setParroquia(e.target.value)}
-                placeholder={t("property.parroquiaPlaceholder")}
-                className="mt-2 h-12 rounded-xl bg-background"
-                maxLength={120}
-              />
-            </div>
-          </div>
-
+          )}
 
           {/* ShakeMap intensity (auto-detected) */}
           {intensity && (
@@ -672,94 +632,55 @@ function PropertyStep() {
           </div>
 
           <div>
-            <Label htmlFor="residentContact" className="text-sm font-semibold">
-              {t("property.phone")}{" "}
+            <Label className="text-sm font-semibold">
+              {t("property.contactType")}{" "}
               <span className="font-normal text-destructive">*</span>
             </Label>
-            <div className="mt-2 flex gap-2">
-              <select
-                aria-label={t("property.countryCode")}
-                value={dialCode}
-                onChange={(e) => setDialCode(e.target.value)}
-                className="h-12 w-28 shrink-0 rounded-xl border border-input bg-card px-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {COUNTRY_CODES.map((c) => (
-                  <option key={c.code} value={c.code} title={`${c.name} (${c.code})`}>
-                    {c.flag} {c.code}
-                  </option>
-                ))}
-              </select>
-              <Input
-                id="residentContact"
-                value={residentContact}
-                onChange={(e) => setResidentContact(e.target.value)}
-                placeholder={t("property.residentContactPhonePlaceholder")}
-                className="h-12 flex-1 rounded-xl bg-card"
-                maxLength={40}
-                inputMode="tel"
-                autoComplete="tel"
-              />
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {(["whatsapp", "phone", "email"] as ResidentContactType[]).map(
+                (type) => {
+                  const selected = residentContactType === type;
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setResidentContactType(type)}
+                      aria-pressed={selected}
+                      className={cn(
+                        "rounded-xl border-2 py-2.5 text-sm font-semibold transition-colors",
+                        selected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-card text-foreground hover:border-primary/30",
+                      )}
+                    >
+                      {t(
+                        type === "whatsapp"
+                          ? "property.contactWhatsapp"
+                          : type === "phone"
+                            ? "property.contactPhone"
+                            : "property.contactEmail",
+                      )}
+                    </button>
+                  );
+                },
+              )}
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              {t("property.phoneHint")}
-            </p>
-          </div>
-
-          {/* ¿Vives en el edificio? */}
-          <div>
-            <p className="text-sm font-semibold">
-              {t("property.livesInBuilding")}{" "}
-              <span className="font-normal text-destructive">*</span>
-            </p>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              {([true, false] as const).map((v) => {
-                const selected = livesInBuilding === v;
-                return (
-                  <button
-                    key={String(v)}
-                    type="button"
-                    onClick={() => setLivesInBuilding(v)}
-                    className={`h-12 rounded-xl border text-sm font-semibold transition ${
-                      selected
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-input bg-card text-foreground"
-                    }`}
-                  >
-                    {v ? t("checklist.answer.yes") : t("checklist.answer.no")}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ¿Eres parte de la junta de condominio? */}
-          <div>
-            <p className="text-sm font-semibold">
-              {t("property.condoBoard")}{" "}
-              <span className="font-normal text-destructive">*</span>
-            </p>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              {([true, false] as const).map((v) => {
-                const selected = condoBoard === v;
-                return (
-                  <button
-                    key={String(v)}
-                    type="button"
-                    onClick={() => setCondoBoard(v)}
-                    className={`h-12 rounded-xl border text-sm font-semibold transition ${
-                      selected
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-input bg-card text-foreground"
-                    }`}
-                  >
-                    {v ? t("checklist.answer.yes") : t("checklist.answer.no")}
-                  </button>
-                );
-              })}
-            </div>
+            <Input
+              id="residentContact"
+              value={residentContact}
+              onChange={(e) => setResidentContact(e.target.value)}
+              placeholder={t(
+                residentContactType === "email"
+                  ? "property.residentContactEmailPlaceholder"
+                  : "property.residentContactPhonePlaceholder",
+              )}
+              className="mt-2 h-12 rounded-xl bg-card"
+              maxLength={200}
+              inputMode={residentContactType === "email" ? "email" : "tel"}
+              autoComplete={residentContactType === "email" ? "email" : "tel"}
+            />
           </div>
         </section>
-
 
         {/* ── Building ──────────────────────────────────────── */}
 
@@ -908,46 +829,9 @@ function PropertyStep() {
             )}
           </div>
 
-          {/* Basements (sótanos) */}
-          <div>
-            <p className="text-sm font-semibold">{t("property.basements")}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {t("property.basements.help")}
-            </p>
-            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-2">
-              <button
-                type="button"
-                onClick={() => setBasements((b) => Math.max(0, b - 1))}
-                disabled={basements <= 0}
-                aria-label="-"
-                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70 disabled:opacity-40"
-              >
-                <Minus className="size-5" />
-              </button>
-              <span className="flex-1 text-center font-display text-2xl font-bold tabular-nums">
-                {basements}
-              </span>
-              <button
-                type="button"
-                onClick={() => setBasements((b) => Math.min(20, b + 1))}
-                aria-label="+"
-                className="flex size-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/70"
-              >
-                <Plus className="size-5" />
-              </button>
-            </div>
-          </div>
-
-
-
           {/* Age */}
           <div>
-            <p className="text-sm font-semibold">
-              {t("property.age")}{" "}
-              <span className="font-normal text-muted-foreground">
-                {t("common.optional")}
-              </span>
-            </p>
+            <p className="text-sm font-semibold">{t("property.age")}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {t("property.age.help")}
             </p>
@@ -1027,7 +911,7 @@ export function StepHeader({
   return (
     <div>
       <div className="flex items-center gap-1.5">
-        {[1, 2].map((n) => (
+        {[1, 2, 3].map((n) => (
           <span
             key={n}
             className={cn(
@@ -1038,7 +922,7 @@ export function StepHeader({
         ))}
       </div>
       <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t("common.step")} {step} {t("common.of")} 2
+        {t("common.step")} {step} {t("common.of")} 3
       </p>
       <h1 className="mt-1 font-display text-2xl font-extrabold tracking-tight">
         {title}

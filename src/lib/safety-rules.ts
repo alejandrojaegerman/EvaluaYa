@@ -9,7 +9,6 @@ import type {
   PropertyInfo,
   RiskLevel,
 } from "./assessment-types";
-import { STRUCTURAL_DAMAGE_IDS } from "./assessment-types";
 import { translate, type Lang } from "./i18n";
 
 const ORDER: RiskLevel[] = ["green", "yellow", "orange", "red"];
@@ -29,10 +28,19 @@ export type SafetyRuleResult = {
 
 type AnswerLike = Pick<ChecklistAnswer, "id" | "value">;
 
-// Structural-damage ids live in assessment-types.ts as the single source of
-// truth (shared with the offline provisional heuristic). liquefaction /
-// pounding / plumbing are handled by their own forced-red rules.
-
+/**
+ * Structural-damage checklist items whose "yes" answers indicate observed
+ * damage (liquefaction / pounding are handled by their own forced-red rules).
+ */
+const STRUCTURAL_DAMAGE_IDS = [
+  "foundation",
+  "exterior_walls",
+  "interior_walls",
+  "columns_beams",
+  "doors_windows",
+  "roof",
+  "stairs",
+] as const;
 
 type SeismicProps = Pick<
   PropertyInfo,
@@ -90,8 +98,6 @@ export function evaluateSafetyRules(
   );
 
   // --- Force RED: not safe to enter (clear life-safety hazards) ---
-  // Visible lean / tilt of the building is an imminent-collapse signal.
-  if (answerOf("tilt") === "yes") fireRed("tilt");
   if (answerOf("liquefaction") === "yes") fireRed("liquefaction");
   if (answerOf("pounding") === "yes") fireRed("pounding");
   if (answerOf("plumbing") === "yes") fireRed("plumbing");

@@ -1,30 +1,4 @@
 /**
- * True when the picked file is an actual image type (image/jpeg, image/png,
- * image/webp, …). Rejects PDFs, videos, and anything else the OS file picker
- * might let through.
- */
-export function isImageFile(file: File): boolean {
-  return typeof file.type === "string" && file.type.startsWith("image/");
-}
-
-/**
- * Verify a data URL actually decodes into a visible raster image. Guards
- * against corrupt files, 0-byte captures, or formats the browser can't render.
- */
-export function verifyImageLoads(dataUrl: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (!dataUrl || !dataUrl.startsWith("data:image/")) {
-      resolve(false);
-      return;
-    }
-    const img = new Image();
-    img.onload = () => resolve(img.naturalWidth > 0 && img.naturalHeight > 0);
-    img.onerror = () => resolve(false);
-    img.src = dataUrl;
-  });
-}
-
-/**
  * Compress an image File to a JPEG data URL, resized to fit within maxDim
  * and quality ~0.6, to keep uploads light on low-bandwidth connections.
  */

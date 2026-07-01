@@ -36,15 +36,6 @@ const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
 
 const answerSchema = z.object({
   id: z.enum([
-    // 4+1 simplified flow
-    "walls",
-    "columns",
-    "openings",
-    "tilt",
-    // consolidated photo carriers (single photo section)
-    "facade",
-    "damage_photos",
-    // severe-sign + legacy ids
     "foundation",
     "liquefaction",
     "exterior_walls",
@@ -60,18 +51,10 @@ const answerSchema = z.object({
     "stairs",
   ]),
   value: z.enum(["yes", "no", "unsure"]),
-  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 10 photos per item
-  // (the consolidated damage gallery allows up to 10).
+  // ~2.5MB decoded ≈ 3.4M base64 chars per photo; up to 3 photos per item.
   photoDataUrls: z
     .array(z.string().max(3_600_000))
-    .max(10)
-    .optional()
-    .default([]),
-  // Per-photo classification labels (damage category ids), aligned by index
-  // with photoDataUrls. Lets the engineer see what each photo depicts.
-  photoLabels: z
-    .array(z.string().max(40).nullable())
-    .max(10)
+    .max(3)
     .optional()
     .default([]),
 });
@@ -91,17 +74,7 @@ const analyzeSchema = z.object({
       .optional()
       .default("unknown"),
     floors: z.number().int().min(1).max(200),
-    basements: z.number().int().min(0).max(20).optional(),
-    age: z
-      .enum(["pre1970", "1970to2000", "post2000"])
-      .optional()
-      .default("post2000"),
-    livesInBuilding: z.boolean().optional(),
-    condoBoardMember: z.boolean().optional(),
-    /** free-text additional comments from the resident (step 2, optional) */
-    comments: z.string().max(1000).optional(),
-    /** extra context signals the resident checked off (localized sentences) */
-    contextTags: z.array(z.string().max(200)).max(20).optional(),
+    age: z.enum(["pre1970", "1970to2000", "post2000"]),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
     pga: z.number().min(0).max(10).optional(),
@@ -112,7 +85,7 @@ const analyzeSchema = z.object({
     spectralDemand: z.number().min(0).max(10).optional(),
     spectralBand: z.enum(["0.3", "0.6", "1.0", "3.0"]).optional(),
   }),
-  answers: z.array(answerSchema).min(1).max(18),
+  answers: z.array(answerSchema).min(1).max(13),
   /** Engineer panel access token — when valid, the report is certified. */
   engineerToken: z.string().uuid().optional(),
   /** Minimal resident contact so a volunteer evaluator can reach them. PII. */
@@ -223,14 +196,6 @@ function buildPrompt(input: AnalyzeInput) {
     "Inspection answers (resident self-report):",
     ...lines,
     "",
-    input.property.contextTags?.length
-      ? `Additional signals reported by the resident:\n${input.property.contextTags
-          .map((s) => `- ${s}`)
-          .join("\n")}`
-      : "",
-    input.property.comments?.trim()
-      ? `Resident's additional comments: ${input.property.comments.trim()}`
-      : "",
     "Attached images correspond, in order, to the items that have a photo.",
     `Respond in ${langName}.`,
   ]
@@ -252,8 +217,7 @@ Assess the OVERALL risk and choose exactly one level:
 
 Decision guidance:
 - Reserve "yellow" for genuinely minor/cosmetic issues — do NOT use it as a catch-all. If real structural elements (foundation, columns/beams, load-bearing walls, stairs, roof) are affected but collapse is not imminent, choose "orange" so the resident knows to get an engineer urgently.
-- "yes" to wide/diagonal/X-shaped cracks in load-bearing walls, spalling concrete with exposed rebar on columns/beams, doors/windows jammed by frame distortion, foundation shifts, roof deformation, or stairs separating from walls suggests orange or red.
-- "yes" to a visible LEAN / tilt / sinking of the building or a floor is a sign of potential collapse — treat as red.
+- "yes" to foundation shifts, diagonal exterior cracks/separation, spalling concrete with exposed rebar, roof deformation, or stairs separating from walls suggests orange or red.
 - "yes" to ground liquefaction signs, building-to-building pounding, severe plumbing/gas damage, or roof collapse are critical life-safety hazards (treat as red).
 - Damaged flooring, electrical panels/wiring, or hanging fixtures alone suggest yellow.
 - Ground-motion context (from USGS ShakeMap): higher MMI / PGA means this location was shaken harder, so weigh reported damage more heavily. The spectral acceleration at the building's own period is the demand a building of THAT height actually felt — high values there (≥0.4g) make even partial damage reports more concerning. Soft/very-soft soil sites amplify shaking and are more prone to liquefaction and settlement. Treat strong shaking together with any reported structural damage as a serious (red) combination. Ground motion alone, with no observed damage, should not by itself force red or orange.
@@ -333,11 +297,7 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
 
     for (const answer of data.answers) {
       const photos = (answer.photoDataUrls ?? []).filter(Boolean);
-      const labels = answer.photoLabels ?? [];
       const photoPaths: string[] = [];
-      // Captions kept index-aligned with photoPaths (a photo may be skipped
-      // by the budget, so we can't reuse the original index).
-      const photoLabels: (string | null)[] = [];
 
       for (let i = 0; i < photos.length; i++) {
         const dataUrl = photos[i];
@@ -358,17 +318,11 @@ export const analyzeAssessment = createServerFn({ method: "POST" })
           });
         if (!uploadError) {
           photoPaths.push(path);
-          photoLabels.push(labels[i] ?? null);
           if (isKey) imageDataUrls.push(dataUrl);
         }
       }
 
-      storedAnswers.push({
-        id: answer.id,
-        value: answer.value,
-        photoPaths,
-        ...(photoLabels.some(Boolean) ? { photoLabels } : {}),
-      });
+      storedAnswers.push({ id: answer.id, value: answer.value, photoPaths });
     }
 
     // Denormalized photo counters kept in sync on write so analytics stay
@@ -594,7 +548,6 @@ export const getAssessment = createServerFn({ method: "GET" })
 
     const answers = (row.answers as AssessmentRecord["answers"]) ?? [];
     const photoUrls: Record<string, string[]> = {};
-    const photoCaptions: Record<string, (string | null)[]> = {};
 
     for (const answer of answers) {
       // Support both the new multi-photo shape and legacy single photoPath.
@@ -603,22 +556,14 @@ export const getAssessment = createServerFn({ method: "GET" })
         ...(answer.photoPath ? [answer.photoPath] : []),
       ].filter(Boolean) as string[];
       if (paths.length === 0) continue;
-      const labels = answer.photoLabels ?? [];
       const urls: string[] = [];
-      const caps: (string | null)[] = [];
-      for (let i = 0; i < paths.length; i++) {
+      for (const path of paths) {
         const { data: signed } = await supabaseAdmin.storage
           .from(BUCKET)
-          .createSignedUrl(paths[i], SIGNED_URL_TTL);
-        if (signed?.signedUrl) {
-          urls.push(signed.signedUrl);
-          caps.push(labels[i] ?? null);
-        }
+          .createSignedUrl(path, SIGNED_URL_TTL);
+        if (signed?.signedUrl) urls.push(signed.signedUrl);
       }
-      if (urls.length > 0) {
-        photoUrls[answer.id] = urls;
-        if (caps.some(Boolean)) photoCaptions[answer.id] = caps;
-      }
+      if (urls.length > 0) photoUrls[answer.id] = urls;
     }
 
 
@@ -669,7 +614,6 @@ export const getAssessment = createServerFn({ method: "GET" })
         (row.report_type as "resident" | "professional" | null) ?? "resident",
       createdAt: row.created_at,
       photoUrls,
-      photoCaptions,
       building,
     };
   });
