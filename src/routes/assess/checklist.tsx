@@ -9,11 +9,13 @@ import {
   Plus,
   Info,
   HelpCircle,
+  Lightbulb,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { LegalConsentInline } from "@/components/LegalConsentInline";
 import { StepHeader, StepFooter } from "./property";
 import {
   CHECKLIST_ITEMS,
@@ -23,9 +25,11 @@ import {
   type DraftAnswer,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft, type AssessmentDraft } from "@/lib/draft-store";
+import { setLegalConsent } from "@/lib/legal-ack";
 import { compressImageToDataUrl } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
+import { PHOTO_GUIDE_EXAMPLES } from "@/lib/photo-guide-examples";
 import { trackStep } from "@/lib/track";
 import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
