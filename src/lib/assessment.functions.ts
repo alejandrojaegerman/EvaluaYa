@@ -100,6 +100,8 @@ const analyzeSchema = z.object({
     condoBoardMember: z.boolean().optional(),
     /** free-text additional comments from the resident (step 2, optional) */
     comments: z.string().max(1000).optional(),
+    /** extra context signals the resident checked off (localized sentences) */
+    contextTags: z.array(z.string().max(200)).max(20).optional(),
     seismicIntensity: z.number().min(0).max(12).optional(),
     seismicIntensityRoman: z.string().max(8).optional(),
     pga: z.number().min(0).max(10).optional(),
