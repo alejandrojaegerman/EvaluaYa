@@ -16,6 +16,14 @@ import { RISK_THEME } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 import { submitHelpRequest } from "@/lib/volunteers.functions";
 
+/** Static border classes per level (Tailwind can't extract interpolated names). */
+const BORDER_BY_LEVEL = {
+  green: "border-risk-green/30",
+  yellow: "border-risk-yellow/40",
+  orange: "border-risk-orange/40",
+  red: "border-risk-red/30",
+} as const;
+
 /**
  * Shown on Red/Orange/Yellow results: a single "request a verified engineer"
  * form that records a help request for engineers to claim. Residents never see
