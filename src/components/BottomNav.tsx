@@ -4,7 +4,7 @@ import {
   BookOpen,
   ClipboardCheck,
   FolderOpen,
-  GraduationCap,
+  
   HandHeart,
   Home,
   Languages,
@@ -158,17 +158,6 @@ export function BottomNav() {
                 </Link>
               </SheetClose>
 
-              <SheetClose asChild>
-                <Link
-                  to="/metodologia"
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
-                >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
-                    <GraduationCap className="size-4.5" aria-hidden />
-                  </span>
-                  {t("nav.methodology")}
-                </Link>
-              </SheetClose>
 
               <SheetClose asChild>
                 <Link
