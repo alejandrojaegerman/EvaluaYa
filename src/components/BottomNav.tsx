@@ -87,12 +87,12 @@ export function BottomNav() {
     ...(hasReports
       ? [{ to: "/mis-reportes", label: t("nav.reports"), icon: FolderOpen }]
       : []),
-    { to: "/datos", label: t("nav.data"), icon: BarChart3, desc: t("nav.dataDesc") },
+    { to: "/datos", label: t("nav.data"), icon: BarChart3 },
     { to: "/voluntarios", label: t("nav.volunteers"), icon: HandHeart },
   ];
 
   const resourceLinks: MenuLink[] = [
-    { to: "/guia", label: t("nav.learn"), icon: BookOpen },
+    { to: "/metodologia", label: t("nav.methodology"), icon: BookOpen },
     { to: "/ayuda", label: t("nav.help"), icon: LifeBuoy },
     { to: "/feedback", label: t("nav.feedback"), icon: MessageSquareHeart },
   ];

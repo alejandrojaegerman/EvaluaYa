@@ -19,11 +19,16 @@ import { AppShell } from "@/components/AppShell";
 import {
   EncyclopediaBreadcrumb,
   breadcrumbJsonLd,
-  encyclopediaCrumbs,
+  type Crumb,
 } from "@/components/EncyclopediaBreadcrumb";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
+
+/** Top-level trail for the (now standalone) methodology page. */
+function methodologyCrumbs(lang: "es" | "en", label: string): Crumb[] {
+  return [{ label: lang === "es" ? "Inicio" : "Home", to: "/" }, { label }];
+}
 
 export const Route = createFileRoute("/metodologia")({
   head: () => {
@@ -63,9 +68,7 @@ export const Route = createFileRoute("/metodologia")({
           type: "application/ld+json",
           children: JSON.stringify(
             breadcrumbJsonLd(
-              encyclopediaCrumbs("es", {
-                label: "Cómo funciona la metodología",
-              }),
+              methodologyCrumbs("es", "Cómo funciona la metodología"),
             ),
           ),
         },
@@ -113,7 +116,7 @@ function MethodologyPage() {
   return (
     <AppShell>
       <EncyclopediaBreadcrumb
-        items={encyclopediaCrumbs(lang, { label: t("methodology.title") })}
+        items={methodologyCrumbs(lang, t("methodology.title"))}
       />
       {/* Header */}
       <header>
@@ -377,6 +380,26 @@ function MethodologyPage() {
           {t("methodology.disclaimer")}
         </p>
       </section>
+
+      {/* Encyclopedia — reachable only from here now that methodology is
+          promoted to a top-level nav/footer page. */}
+      <Link
+        to="/guia"
+        className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+          <BookOpen className="size-5" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold leading-tight">
+            {t("methodology.encyclopediaTitle")}
+          </span>
+          <span className="mt-0.5 block text-sm text-muted-foreground">
+            {t("methodology.encyclopediaBody")}
+          </span>
+        </span>
+        <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
     </AppShell>
   );
 }

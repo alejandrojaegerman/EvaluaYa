@@ -1,79 +1,35 @@
+
 ## Goal
+Four focused changes: bring back the bottom-of-home disclaimer on mobile, stop promoting "you can do this even if you're not at your property," make the "Más" menu items uniform (no descriptions), and turn **Metodología** into a top-level nav/footer page with the **Enciclopedia** now hanging off the bottom of it.
 
-On mobile, keep the homepage laser-focused on starting an evaluation. Move "warnings" and "official references" out of the primary mobile flow into the **Más** menu and **footer** (where they already partly live). Then declutter the **Más** menu by grouping less-visited items into collapsible sections.
+## 1. Restore the home page disclaimer (all screens)
+`src/routes/index.tsx` — the legal-notice link at the bottom (uses `home.legalNotice`) is currently `hidden sm:flex` (mobile-hidden from an earlier change). Remove the `hidden sm:flex` so it shows on every viewport again, matching the original "disclaimer near the bottom." No copy change — `home.legalNotice` stays.
 
-Note: this slightly reverses an earlier request to keep "Contactos oficiales" above the fold on mobile. Per this new direction, that card gets tucked away on mobile but stays reachable via Más + footer (and remains on desktop). Flagging in case you want it kept above the fold.
+## 2. Remove "even if you're not at your property" references (without forbidding it)
+Remove the promotional framing that says you don't need to be present, while keeping the neutral capability intact so we don't contradict that it's still possible:
+- `src/routes/assess/property.tsx` — remove the in-flow "behalf" hint card (`property.behalfHint`) shown on Step 1 (the `Users` icon block in the non-engineer branch).
+- `src/lib/i18n.tsx` — remove the now-unused `home.behalfTitle` / `home.behalfBody` keys (es + en); they aren't rendered anywhere.
+- Keep the Help FAQ "¿Puedo evaluar por otra persona?" (`help.faq.behalfQ/A`). It answers a direct user question and preserves the possibility rather than promoting it — this is the "without contradicting the possibility otherwise" part.
 
----
+## 3. Uniform "Más" menu — no item descriptions
+`src/components/BottomNav.tsx` — the `/datos` entry is the only one carrying a `desc`. Remove `desc: t("nav.dataDesc")` from that `primaryLinks` entry so every row is a plain label + icon. (The `MenuRow` `desc` support can stay in place, just unused.)
 
-## 1. Homepage — declutter the mobile flow (`src/routes/index.tsx`)
+## 4. Extract Metodología from Enciclopedia; nest Enciclopedia under Metodología
+Metodología becomes a first-class page linked from nav + footer; Enciclopedia is reachable only from the bottom of the Metodología page.
 
-Two blocks are non-evaluation "official/warning" references. Hide them on mobile only (keep on `sm:`+ desktop, where space is not at a premium):
+- `src/components/TopNav.tsx` (desktop "Más" dropdown): replace the Enciclopedia item (`nav.learn` → `/guia`) with a Metodología item (`nav.methodology` → `/metodologia`, `BookOpen` or `Radar` icon).
+- `src/components/BottomNav.tsx` (Recursos accordion): same swap — Enciclopedia → Metodología.
+- `src/components/Footer.tsx` (Resources column): same swap — Enciclopedia → Metodología.
+- `src/routes/guia.index.tsx`: remove the `/metodologia` item from the "Cómo funciona EvalúaYa" group (es + en); that group keeps Contactos oficiales + Ayuda.
+- `src/routes/metodologia.tsx`:
+  - Drop the `EncyclopediaBreadcrumb` (it no longer lives under Enciclopedia). Replace with a simple `Inicio › Metodología` trail (build a local crumb array) and matching BreadcrumbList JSON-LD, or remove the breadcrumb entirely.
+  - Add a link at the bottom (near the existing CTA section) pointing to `/guia` — e.g. an "Explora la Enciclopedia / Explore the Encyclopedia" card — so the encyclopedia is discoverable only from here.
 
-- **Official authority contacts card** (the `Phone` card, ~lines 191–209): add `hidden sm:flex` so it disappears on mobile. It is already in the Más menu (added in step 2) and footer.
-- **Legal notice card** (the `Info`/"legalNotice" card, ~lines 419–427): add `hidden sm:flex`. Legal stays reachable via Más menu + footer.
-
-Everything that drives evaluations stays untouched on mobile: hero + primary CTA, live trust counters, quake/map quick actions, pending-resume card, "explore your state", how-it-works, volunteer thread, share, recent assessments.
-
-Result on mobile: Hero CTA → counters → quick actions → explore → how it works → … (no official/legal interruptions).
-
-## 2. Add "Contactos oficiales" to the mobile Más menu (`src/components/BottomNav.tsx`)
-
-The mobile Más sheet currently omits "Contactos oficiales" (it only exists in the desktop TopNav). Add it so tucking it off the homepage doesn't lose the entry point.
-
-## 3. Reorganize the Más menu into grouped accordions (`src/components/BottomNav.tsx`)
-
-Today the sheet is a flat list of 9 tiles. Restructure into a short always-visible set of high-use items plus two collapsible accordions for the less-visited categories, using the existing `Accordion` primitive (`src/components/ui/accordion.tsx`, `type="multiple"`).
-
-Proposed structure:
-
-```text
-[ Always-visible tiles ]
-  Mapa
-  Datos
-  Voluntarios
-  Mis reportes            (only if hasReports)
-
-[ Accordion: Recursos ]           ← footer.resources
-  Guía
-  Ayuda
-  Enviar comentarios (Feedback)
-
-[ Accordion: Oficial y legal ]    ← new key nav.officialLegal
-  Contactos oficiales
-  Aviso legal
-  Privacidad
-
-[ Language toggle + online status ]  (unchanged, stays at bottom)
-```
-
-- Accordion headers reuse existing i18n `footer.resources` ("Recursos"/"Resources") and a new key `nav.officialLegal`.
-- Tiles keep the current card styling; inside accordions use the same row styling for visual consistency.
-- Accordions start collapsed so the sheet opens compact and scannable.
-
-## 4. i18n (`src/lib/i18n.tsx`)
-
-Add one key in both `es` and `en`:
-- `nav.officialLegal`: "Oficial y legal" / "Official & legal"
-
-(All other labels — `nav.map`, `nav.data`, `nav.volunteers`, `nav.reports`, `nav.learn`, `nav.help`, `nav.feedback`, `nav.officialContacts`, `nav.legal`, `nav.privacy`, `footer.resources` — already exist.)
-
-## 5. Footer safety check (`src/components/Footer.tsx`)
-
-Confirm official/legal links are present so the tucked-away items remain footer-accessible. Legal + Privacy already live under "Legal". Add **Contactos oficiales** to the footer's "Recursos" (or "Legal") column so the official-contacts reference is linked in the footer as the directive requests.
-
----
+The `nav.methodology` i18n key already exists (es "Metodología" / en "Methodology"), so no new nav string is needed. A short i18n key pair will be added for the "Explore the Encyclopedia" link at the bottom of the methodology page.
 
 ## Technical notes
+- `home.legalNotice`, `nav.methodology`, and the `/metodologia` route all already exist — this is mostly link rewiring plus one visibility toggle and one deletion.
+- After edits: run `tsgo` typecheck and verify on the 390px preview that (a) the disclaimer shows at the bottom of home, (b) the Más menu rows are description-free, and (c) nav/footer point to Metodología while Enciclopedia is only linked from the methodology page bottom.
 
-- Changes are frontend/presentation only — no scoring, data, or business-logic changes.
-- Mobile-hiding uses Tailwind responsive utilities (`hidden sm:flex`), matching the app's mobile-first breakpoints; desktop keeps the cards.
-- Reuse the existing `Accordion` shadcn component; no new dependencies.
-- Desktop TopNav "Más" dropdown is left as-is (it's already compact and desktop is secondary); this change targets the mobile experience the user described.
-
-## Verification
-
-- Typecheck/build.
-- Preview at 390px: homepage shows no official-contacts or legal cards; flow reads as evaluation-first.
-- Open Más sheet on mobile: high-use tiles visible, "Recursos" and "Oficial y legal" collapse/expand, "Contactos oficiales" reachable.
-- Confirm footer links to Contactos oficiales, Legal, Privacidad.
+## Out of scope
+No scoring/methodology logic changes, no changes to the assessment flow beyond removing the one hint card, and no changes to the Help FAQ content.

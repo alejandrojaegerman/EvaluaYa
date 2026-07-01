@@ -8,7 +8,7 @@ import {
   Landmark,
   Mountain,
   Phone,
-  Radar,
+  
   Ruler,
   ShieldCheck,
   Waves,
@@ -97,12 +97,6 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
       heading: "Cómo funciona EvalúaYa",
       items: [
         {
-          to: "/metodologia",
-          icon: Radar,
-          title: "Cómo funciona la metodología",
-          desc: "Qué revisa la autoevaluación y cómo se calcula el nivel de riesgo.",
-        },
-        {
           to: "/contactos-oficiales",
           icon: Phone,
           title: "Contactos oficiales",
@@ -161,12 +155,6 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
     {
       heading: "How EvalúaYa works",
       items: [
-        {
-          to: "/metodologia",
-          icon: Radar,
-          title: "How the methodology works",
-          desc: "What the self-assessment reviews and how the risk level is calculated.",
-        },
         {
           to: "/contactos-oficiales",
           icon: Phone,
