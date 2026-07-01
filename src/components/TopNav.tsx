@@ -38,7 +38,7 @@ export function TopNav() {
 
   return (
     <header className="sticky top-0 z-30 hidden border-b border-border/70 bg-background/85 backdrop-blur-md md:block print:hidden">
-      <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-3">
+      <div className="relative mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-3">
         <Link to="/" className="flex items-center gap-2">
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
             <ShieldCheck className="size-5" aria-hidden />
@@ -48,7 +48,7 @@ export function TopNav() {
           </span>
         </Link>
 
-        <nav className="ml-2 flex items-center gap-0.5">
+        <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-0.5">
           {/* Primary action #1 — start an assessment */}
           <Link
             to="/assess/property"
