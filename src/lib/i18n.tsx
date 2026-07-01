@@ -1366,6 +1366,9 @@ const es: Dict = {
   "panel.reviewSubmit": "Guardar observaciones",
   "panel.reviewSaved": "Observaciones registradas. Gracias por tu apoyo.",
   "panel.reviewedByYou": "Revisado por ti",
+  "panel.remitBody":
+    "Recuérdale al residente que puede mostrar este reporte y tus observaciones a las autoridades para solicitar la evaluación oficial.",
+  "panel.remitLink": "Contactos oficiales",
   "panel.cancel": "Cancelar",
   "panel.noReportToValidate": "Esta solicitud no tiene una evaluación vinculada.",
 
