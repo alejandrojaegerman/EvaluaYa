@@ -173,7 +173,6 @@ function ChecklistStep() {
       }
       setAnswers(initial);
       setComments(d.property.comments ?? "");
-      setSelectedTags(d.property.contextTags ?? []);
       setLoading(false);
     });
     return () => {
