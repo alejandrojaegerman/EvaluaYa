@@ -28,7 +28,7 @@ import { setLegalConsent } from "@/lib/legal-ack";
 import { compressImageToDataUrl } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
-import { PHOTO_GUIDE_EXAMPLES } from "@/lib/photo-guide-examples";
+
 import { trackStep } from "@/lib/track";
 import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
