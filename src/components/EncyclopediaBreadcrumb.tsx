@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Link } from "@tanstack/react-router";
 
 import {
@@ -11,7 +12,7 @@ import {
 
 export type Crumb = {
   label: string;
-  /** If omitted, the item is rendered as the active (current) page. */
+  /** If omitted (or when it's the last item), rendered as the active page. */
   to?: string;
 };
 
@@ -27,18 +28,18 @@ export function EncyclopediaBreadcrumb({ items }: { items: Crumb[] }) {
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
           return (
-            <BreadcrumbItem key={`${item.label}-${i}`}>
-              {item.to && !isLast ? (
-                <>
+            <Fragment key={`${item.label}-${i}`}>
+              <BreadcrumbItem>
+                {item.to && !isLast ? (
                   <BreadcrumbLink asChild>
                     <Link to={item.to}>{item.label}</Link>
                   </BreadcrumbLink>
-                  <BreadcrumbSeparator />
-                </>
-              ) : (
-                <BreadcrumbPage>{item.label}</BreadcrumbPage>
-              )}
-            </BreadcrumbItem>
+                ) : (
+                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                )}
+              </BreadcrumbItem>
+              {!isLast && <BreadcrumbSeparator />}
+            </Fragment>
           );
         })}
       </BreadcrumbList>
