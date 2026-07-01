@@ -24,7 +24,9 @@ import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -34,7 +36,13 @@ import { formatDate } from "@/lib/datetime";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
-import { ESTADOS, estadoSlug } from "@/lib/venezuela";
+import {
+  getImpactRanking,
+  EMPTY_IMPACT_RANKING,
+  type ImpactRanking,
+} from "@/lib/stats.functions";
+import { splitFeatured } from "@/lib/impact";
+import { ESTADOS, ESTADO_NAMES, estadoSlug } from "@/lib/venezuela";
 import { trackStep } from "@/lib/track";
 import { SITE_URL } from "@/lib/site";
 import heroEngineer from "@/assets/hero-engineer.webp";
