@@ -43,7 +43,9 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       .slice(0, 600);
   };
 
+  const [residentName, setResidentName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [address, setAddress] = useState("");
   const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
@@ -63,6 +65,8 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
           municipality: record.property.municipality ?? undefined,
           riskLevel: record.riskLevel,
           whatsapp,
+          residentName,
+          address,
           note,
         },
       });
