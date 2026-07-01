@@ -2724,11 +2724,11 @@ const en: Dict = {
   "methodology.source.urm":
     "Earthquake-engineering consensus on the vulnerability of unreinforced masonry and soft stories.",
   "methodology.source.ai":
-    "AI vision model via the Lovable AI Gateway, used for preliminary triage (not a certifier).",
+    "AI vision model via the Lovable AI Gateway, used as support for preliminary triage. It is not a certifier and does not issue a verdict.",
 
   "methodology.limitsTitle": "Limits & shared responsibility",
   "methodology.limit.notCert":
-    "This is NOT a certification and does not replace a licensed engineer or Civil Protection. It is preliminary guidance.",
+    "This is NOT a certification or a verdict, and does not replace a licensed engineer or Civil Protection. These are preliminary visual findings to guide you.",
   "methodology.limit.surface":
     "It only assesses the visible things you report. It does not inspect hidden elements, buried foundations, or the inside of walls.",
   "methodology.limit.depends":
