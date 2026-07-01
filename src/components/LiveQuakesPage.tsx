@@ -4,12 +4,12 @@ import {
   Activity,
   AlertTriangle,
   ArrowRight,
+  BookOpen,
   CheckCircle2,
   ClipboardCheck,
   Clock,
   Info,
   MapPin,
-  
   Waves,
 } from "lucide-react";
 
