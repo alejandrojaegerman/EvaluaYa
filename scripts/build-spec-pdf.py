@@ -54,9 +54,10 @@ FONT_ITALIC = "Body-Italic"
 INK = colors.HexColor("#1f2937")
 MUTED = colors.HexColor("#6b7280")
 LINE = colors.HexColor("#e5e7eb")
-RED = colors.HexColor("#dc2626")
-YELLOW = colors.HexColor("#d97706")
-GREEN = colors.HexColor("#16a34a")
+RED = colors.HexColor("#be2823")
+ORANGE = colors.HexColor("#d86916")
+YELLOW = colors.HexColor("#ca8a04")
+GREEN = colors.HexColor("#168050")
 TEAL = colors.HexColor("#0f766e")
 SOFT = colors.HexColor("#f8fafc")
 
@@ -144,33 +145,41 @@ def three_col_table(s, header, rows):
 
 def content_es(s):
     f = []
-    R, Y, G = tag("ROJO", RED), tag("AMARILLO", YELLOW), tag("VERDE", GREEN)
+    R, O, Y, G = (
+        tag("ROJO", RED),
+        tag("NARANJA", ORANGE),
+        tag("AMARILLO", YELLOW),
+        tag("VERDE", GREEN),
+    )
     f.append(Paragraph("EvalúaYa — Especificación técnica del algoritmo", s["h1"]))
     f.append(Paragraph(
-        "Cómo la app decide Verde, Amarillo o Rojo. Cada afirmación está tomada del "
-        "código en funcionamiento (el archivo fuente se indica en gris).", s["sub"]))
+        "Cómo la app decide Verde, Amarillo, Naranja o Rojo. Cada afirmación está tomada "
+        "del código en funcionamiento (el archivo fuente se indica en gris).", s["sub"]))
     f.append(HRFlowable(width="100%", color=LINE, spaceAfter=8))
 
     f.append(Paragraph("Cómo se decide el color final", s["h2"]))
     f.append(Paragraph(
         "El resultado se forma en dos capas independientes y se conserva la más severa. "
-        "Las reglas de seguridad (Capa 1) solo pueden subir el nivel hacia Rojo: nunca "
+        "Las reglas de seguridad (Capa 1) solo pueden subir el nivel: nunca "
         "hacen un resultado menos severo de lo que sugirió la IA.", s["body"]))
     f.append(Paragraph(
         "Orden: se leen los datos del sismo en la ubicación (ShakeMap) -> las fotos y "
-        "respuestas van a la IA para una decisión Verde/Amarillo/Rojo -> se aplican las "
-        "reglas deterministas -> se combinan tomando la peor.", s["body"]))
+        "respuestas van a la IA para una decisión Verde/Amarillo/Naranja/Rojo -> se aplican "
+        "las reglas deterministas -> se combinan tomando la peor.", s["body"]))
+    f.append(Paragraph(
+        "Los cuatro niveles: <b>Verde</b> sin daño estructural significativo (parece "
+        "seguro ocupar); <b>Amarillo</b> daño leve o cosmético (habitable, mantener "
+        "observación); <b>Naranja</b> daño moderado a serio que necesita a un ingeniero "
+        "pronto (limitar el uso a entradas breves); <b>Rojo</b> daño grave o señales de "
+        "colapso (no entrar, evacuar).", s["body"]))
     f.append(Paragraph("fuente: assessment.functions.ts — finalRisk = maxRisk(ai, rules)", s["src"]))
 
     f.append(Paragraph("Capa 1 — Reglas de seguridad deterministas", s["h2"]))
     f.append(Paragraph(
-        "Mismas entradas, mismo resultado, sin IA. Si cualquier condición del primer "
-        "grupo es verdadera, el resultado se fuerza a Rojo. Si alguna del segundo grupo "
-        "es verdadera (y no se activó ninguna regla Roja), se fuerza a al menos Amarillo.",
+        "Mismas entradas, mismo resultado, sin IA. Cada grupo fija un piso de severidad; "
+        "se conserva el más alto que se active (y la IA nunca puede bajarlo).",
         s["body"]))
     f.append(two_col_table(s, ["Condición -> " + R, "Por qué"], [
-        ("Sistema estructural = mampostería no reforzada (URM).",
-         "No tiene refuerzo de acero; falla súbita tras sismo fuerte."),
         ("SÍ a señales de licuefacción del suelo.",
          "El suelo pierde capacidad de soporte; asentamiento o inclinación."),
         ("SÍ a golpeteo contra un edificio vecino (pounding).",
@@ -179,16 +188,26 @@ def content_es(s):
          "Posible fuga de gas: peligro inmediato para la vida."),
         ("Sacudida fuerte <b>Y</b> cualquier daño estructural reportado.",
          "MMI ≥ 8 o PGA ≥ 0.50g junto con daño visible = combinación crítica."),
+        ("Mampostería no reforzada (URM) <b>con</b> daño estructural o sacudida "
+         "moderada (MMI ≥ 6 o PGA ≥ 0.25g).",
+         "Sin refuerzo de acero, ante daño o sacudida ya no es seguro entrar."),
+    ]))
+    f.append(Spacer(1, 8))
+    f.append(two_col_table(s, ["Condición -> ≥ " + O, "Por qué"], [
+        ("Mampostería no reforzada (URM) sola, sin daño visible ni sacudida fuerte.",
+         "Por su fragilidad necesita revisión profesional pronto."),
+        ("Sacudida severa: MMI ≥ 8 <b>o</b> PGA ≥ 0.50g (aun sin daño visible).",
+         "Esta altura/ubicación fue sacudida con fuerza; revisar pronto."),
+        ("Demanda espectral ≥ 0.40g en el período del edificio.",
+         "Edificios de esa altura sintieron la sacudida con especial fuerza."),
+        ("Suelo muy blando (vs30 muy bajo).",
+         "Amplifica fuertemente la sacudida y eleva el riesgo de licuefacción."),
     ]))
     f.append(Spacer(1, 8))
     f.append(two_col_table(s, ["Condición -> ≥ " + Y, "Por qué"], [
         ("Sacudida moderada: MMI ≥ 6 <b>o</b> PGA ≥ 0.25g.",
          "Sacudida apreciable; revisar con más cuidado aunque no se vea daño."),
-        ("Sacudida severa: MMI ≥ 8 <b>o</b> PGA ≥ 0.50g.",
-         "Nivel de precaución más alto por la intensidad registrada."),
-        ("Demanda espectral ≥ 0.40g en el período del edificio.",
-         "Edificios de esa altura sintieron la sacudida con especial fuerza."),
-        ("Suelo blando o muy blando (vs30 bajo).",
+        ("Suelo blando (vs30 bajo).",
          "Amplifica la sacudida y favorece licuefacción y asentamiento."),
         ("Más de 7 pisos.",
          "Mayor consecuencia; los pisos superiores requieren revisión profesional."),
@@ -234,25 +253,29 @@ def content_es(s):
         "elige exactamente un nivel:", s["body"]))
     f.append(two_col_table(s, ["Nivel", "Significado"], [
         (G, "Sin daño estructural significativo; parece seguro ocupar."),
-        (Y, "Daño posible o moderado; uso restringido, solo tareas esenciales breves."),
+        (Y, "Daño leve o cosmético; habitable, mantener observación y atender lo señalado."),
+        (O, "Daño moderado a serio; necesita a un ingeniero pronto, limitar el uso a entradas breves."),
         (R, "Daño grave o señales de colapso; inseguro, evacuar de inmediato."),
     ], c0=40 * mm))
     f.append(Paragraph(
         "El contexto de ground-motion (MMI, PGA, PGV, demanda espectral según altura y "
         "clase de suelo) se incluye en el prompt: una sacudida fuerte hace pesar más "
         "cualquier daño reportado, pero la sacudida sola, sin daño observado, no fuerza "
-        "Rojo por sí misma. La IA es conservadora: ante duda de seguridad, no elige Verde.",
+        "Rojo por sí misma. La IA es conservadora: ante duda de seguridad, no elige Verde. "
+        "Reserva Amarillo para lo genuinamente leve; si hay elementos estructurales "
+        "afectados sin colapso inminente, elige Naranja.",
         s["body"]))
     f.append(Paragraph("fuente: assessment.functions.ts — SYSTEM_PROMPT + buildPrompt()", s["src"]))
 
     f.append(Paragraph("Cómo se combina — ejemplos", s["h2"]))
     f.append(three_col_table(s, ["La IA dice", "¿Regla activa?", "Resultado final"], [
-        ("Verde", "URM -> fuerza Rojo", R),
         ("Amarillo", "Licuefacción = SÍ", R),
         ("Verde", "PGA 0.55g + grieta = SÍ", R),
+        ("Verde", "URM + grieta = SÍ", R),
+        ("Verde", "URM sola (sin daño)", O),
+        ("Amarillo", "Demanda espectral 0.45g", O),
         ("Verde", "9 pisos", Y),
         ("Verde", "PGA 0.30g (sin daño)", Y),
-        ("Amarillo", "Ninguna regla", Y),
         ("Verde", "Ninguna regla", G),
     ]))
     f.append(Paragraph("fuente: safety-rules.ts — maxRisk(a, b) devuelve el más severo", s["src"]))
@@ -272,32 +295,40 @@ def content_es(s):
 
 def content_en(s):
     f = []
-    R, Y, G = tag("RED", RED), tag("YELLOW", YELLOW), tag("GREEN", GREEN)
+    R, O, Y, G = (
+        tag("RED", RED),
+        tag("ORANGE", ORANGE),
+        tag("YELLOW", YELLOW),
+        tag("GREEN", GREEN),
+    )
     f.append(Paragraph("EvalúaYa — Algorithm technical specification", s["h1"]))
     f.append(Paragraph(
-        "How the app decides Green, Yellow or Red. Every statement is taken from the "
-        "working code (the source file is noted in grey).", s["sub"]))
+        "How the app decides Green, Yellow, Orange or Red. Every statement is taken from "
+        "the working code (the source file is noted in grey).", s["sub"]))
     f.append(HRFlowable(width="100%", color=LINE, spaceAfter=8))
 
     f.append(Paragraph("How the final color is decided", s["h2"]))
     f.append(Paragraph(
         "The result is formed in two independent layers and the more severe one is kept. "
-        "The safety rules (Layer 1) can only raise the level toward Red — they never make "
+        "The safety rules (Layer 1) can only raise the level — they never make "
         "a result less severe than the AI suggested.", s["body"]))
     f.append(Paragraph(
         "Order: read the earthquake data at the location (ShakeMap) -> photos and answers "
-        "go to the AI for a Green/Yellow/Red call -> apply the deterministic rules -> "
-        "combine by taking the worse of the two.", s["body"]))
+        "go to the AI for a Green/Yellow/Orange/Red call -> apply the deterministic rules "
+        "-> combine by taking the worse of the two.", s["body"]))
+    f.append(Paragraph(
+        "The four levels: <b>Green</b> no significant structural damage (appears safe to "
+        "occupy); <b>Yellow</b> light or cosmetic damage (habitable, keep monitoring); "
+        "<b>Orange</b> moderate-to-serious damage that needs an engineer soon (limit use "
+        "to short entries); <b>Red</b> serious damage or signs of collapse (do not enter, "
+        "evacuate).", s["body"]))
     f.append(Paragraph("source: assessment.functions.ts — finalRisk = maxRisk(ai, rules)", s["src"]))
 
     f.append(Paragraph("Layer 1 — Deterministic safety rules", s["h2"]))
     f.append(Paragraph(
-        "Same inputs, same result, no AI. If any condition in the first group is true, "
-        "the result is forced to Red. If any condition in the second group is true (and "
-        "no Red rule fired), the result is forced to at least Yellow.", s["body"]))
+        "Same inputs, same result, no AI. Each group sets a severity floor; the highest "
+        "one that fires is kept (and the AI can never lower it).", s["body"]))
     f.append(two_col_table(s, ["Condition -> " + R, "Why"], [
-        ("Structural system = unreinforced masonry (URM).",
-         "No steel reinforcement; sudden failure after strong shaking."),
         ("YES to ground-liquefaction signs.",
          "Soil loses bearing capacity; settlement or tilting possible."),
         ("YES to pounding against a neighboring building.",
@@ -306,16 +337,26 @@ def content_en(s):
          "Possible gas leak: an immediate life-safety hazard."),
         ("Strong shaking <b>AND</b> any reported structural damage.",
          "MMI ≥ 8 or PGA ≥ 0.50g together with visible damage = critical combo."),
+        ("Unreinforced masonry (URM) <b>with</b> structural damage or moderate "
+         "shaking (MMI ≥ 6 or PGA ≥ 0.25g).",
+         "With no steel reinforcement, damage or shaking makes it unsafe to enter."),
+    ]))
+    f.append(Spacer(1, 8))
+    f.append(two_col_table(s, ["Condition -> ≥ " + O, "Why"], [
+        ("Unreinforced masonry (URM) alone, no visible damage or strong shaking.",
+         "Because it is so brittle it needs a professional look soon."),
+        ("Severe shaking: MMI ≥ 8 <b>or</b> PGA ≥ 0.50g (even with no visible damage).",
+         "This height/location was shaken hard; review soon."),
+        ("Spectral demand ≥ 0.40g at the building's period.",
+         "Buildings of that height felt the shaking especially hard."),
+        ("Very soft soil (very low vs30).",
+         "Strongly amplifies shaking and raises liquefaction risk."),
     ]))
     f.append(Spacer(1, 8))
     f.append(two_col_table(s, ["Condition -> ≥ " + Y, "Why"], [
         ("Moderate shaking: MMI ≥ 6 <b>or</b> PGA ≥ 0.25g.",
          "Appreciable shaking; inspect more carefully even with no visible damage."),
-        ("Severe shaking: MMI ≥ 8 <b>or</b> PGA ≥ 0.50g.",
-         "Higher caution floor based on the recorded intensity."),
-        ("Spectral demand ≥ 0.40g at the building's period.",
-         "Buildings of that height felt the shaking especially hard."),
-        ("Soft or very soft soil (low vs30).",
+        ("Soft soil (low vs30).",
          "Amplifies shaking and raises liquefaction / settlement risk."),
         ("More than 7 floors.",
          "Greater consequence; upper floors need professional review."),
@@ -359,25 +400,29 @@ def content_en(s):
         "picks exactly one level:", s["body"]))
     f.append(two_col_table(s, ["Level", "Meaning"], [
         (G, "No significant structural damage; appears safe to occupy."),
-        (Y, "Possible/moderate damage; restricted use, short essential tasks only."),
+        (Y, "Light or cosmetic damage; habitable, keep monitoring and address the items noted."),
+        (O, "Moderate-to-serious damage; needs an engineer soon, limit use to short entries."),
         (R, "Serious damage or signs of collapse; unsafe, evacuate immediately."),
     ], c0=40 * mm))
     f.append(Paragraph(
         "The ground-motion context (MMI, PGA, PGV, period-matched spectral demand and "
         "soil class) is included in the prompt: strong shaking makes any reported damage "
         "weigh more, but shaking alone, with no observed damage, does not by itself force "
-        "Red. The AI is conservative: when safety is uncertain, it does not choose green.",
+        "Red. The AI is conservative: when safety is uncertain, it does not choose green. "
+        "It reserves Yellow for genuinely minor issues; if structural elements are "
+        "affected but collapse is not imminent, it chooses Orange.",
         s["body"]))
     f.append(Paragraph("source: assessment.functions.ts — SYSTEM_PROMPT + buildPrompt()", s["src"]))
 
     f.append(Paragraph("How it combines — examples", s["h2"]))
     f.append(three_col_table(s, ["AI says", "Rule fired?", "Final result"], [
-        ("Green", "URM -> forces Red", R),
         ("Yellow", "Liquefaction = YES", R),
         ("Green", "PGA 0.55g + crack = YES", R),
+        ("Green", "URM + crack = YES", R),
+        ("Green", "URM alone (no damage)", O),
+        ("Yellow", "Spectral demand 0.45g", O),
         ("Green", "9 floors", Y),
         ("Green", "PGA 0.30g (no damage)", Y),
-        ("Yellow", "No rule fired", Y),
         ("Green", "No rule fired", G),
     ]))
     f.append(Paragraph("source: safety-rules.ts — maxRisk(a, b) returns the more severe", s["src"]))
