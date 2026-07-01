@@ -27,6 +27,7 @@ import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index
 import { Route as GuiaIndexRouteImport } from './routes/guia.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ZonaEstadoRouteImport } from './routes/zona.$estado'
+import { Route as SeguimientoTokenRouteImport } from './routes/seguimiento.$token'
 import { Route as GuiaQueHacerDespuesDeUnTemblorRouteImport } from './routes/guia.que-hacer-despues-de-un-temblor'
 import { Route as GuiaProcesoOficialFunvisisRouteImport } from './routes/guia.proceso-oficial-funvisis'
 import { Route as GuiaGrietasPeligrosasDespuesDeUnSismoRouteImport } from './routes/guia.grietas-peligrosas-despues-de-un-sismo'
@@ -146,6 +147,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const ZonaEstadoRoute = ZonaEstadoRouteImport.update({
   id: '/zona/$estado',
   path: '/zona/$estado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeguimientoTokenRoute = SeguimientoTokenRouteImport.update({
+  id: '/seguimiento/$token',
+  path: '/seguimiento/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuiaQueHacerDespuesDeUnTemblorRoute =
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   '/guia/proceso-oficial-funvisis': typeof GuiaProcesoOficialFunvisisRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
+  '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/guia/': typeof GuiaIndexRoute
@@ -384,6 +391,7 @@ export interface FileRoutesByTo {
   '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   '/guia/proceso-oficial-funvisis': typeof GuiaProcesoOficialFunvisisRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
+  '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/guia': typeof GuiaIndexRoute
@@ -434,6 +442,7 @@ export interface FileRoutesById {
   '/guia/grietas-peligrosas-despues-de-un-sismo': typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   '/guia/proceso-oficial-funvisis': typeof GuiaProcesoOficialFunvisisRoute
   '/guia/que-hacer-despues-de-un-temblor': typeof GuiaQueHacerDespuesDeUnTemblorRoute
+  '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/zona/$estado': typeof ZonaEstadoRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/guia/': typeof GuiaIndexRoute
@@ -485,6 +494,7 @@ export interface FileRouteTypes {
     | '/guia/grietas-peligrosas-despues-de-un-sismo'
     | '/guia/proceso-oficial-funvisis'
     | '/guia/que-hacer-despues-de-un-temblor'
+    | '/seguimiento/$token'
     | '/zona/$estado'
     | '/admin/'
     | '/guia/'
@@ -534,6 +544,7 @@ export interface FileRouteTypes {
     | '/guia/grietas-peligrosas-despues-de-un-sismo'
     | '/guia/proceso-oficial-funvisis'
     | '/guia/que-hacer-despues-de-un-temblor'
+    | '/seguimiento/$token'
     | '/zona/$estado'
     | '/admin'
     | '/guia'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/guia/grietas-peligrosas-despues-de-un-sismo'
     | '/guia/proceso-oficial-funvisis'
     | '/guia/que-hacer-despues-de-un-temblor'
+    | '/seguimiento/$token'
     | '/zona/$estado'
     | '/admin/'
     | '/guia/'
@@ -633,6 +645,7 @@ export interface RootRouteChildren {
   GuiaGrietasPeligrosasDespuesDeUnSismoRoute: typeof GuiaGrietasPeligrosasDespuesDeUnSismoRoute
   GuiaProcesoOficialFunvisisRoute: typeof GuiaProcesoOficialFunvisisRoute
   GuiaQueHacerDespuesDeUnTemblorRoute: typeof GuiaQueHacerDespuesDeUnTemblorRoute
+  SeguimientoTokenRoute: typeof SeguimientoTokenRoute
   ZonaEstadoRoute: typeof ZonaEstadoRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
   GuiaIndexRoute: typeof GuiaIndexRoute
@@ -782,6 +795,13 @@ declare module '@tanstack/react-router' {
       path: '/zona/$estado'
       fullPath: '/zona/$estado'
       preLoaderRoute: typeof ZonaEstadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seguimiento/$token': {
+      id: '/seguimiento/$token'
+      path: '/seguimiento/$token'
+      fullPath: '/seguimiento/$token'
+      preLoaderRoute: typeof SeguimientoTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guia/que-hacer-despues-de-un-temblor': {
@@ -1029,6 +1049,7 @@ const rootRouteChildren: RootRouteChildren = {
     GuiaGrietasPeligrosasDespuesDeUnSismoRoute,
   GuiaProcesoOficialFunvisisRoute: GuiaProcesoOficialFunvisisRoute,
   GuiaQueHacerDespuesDeUnTemblorRoute: GuiaQueHacerDespuesDeUnTemblorRoute,
+  SeguimientoTokenRoute: SeguimientoTokenRoute,
   ZonaEstadoRoute: ZonaEstadoRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
   GuiaIndexRoute: GuiaIndexRoute,
