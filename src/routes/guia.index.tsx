@@ -267,17 +267,14 @@ function GuideHub() {
       <EncyclopediaBreadcrumb items={encyclopediaCrumbs(lang)} />
 
       <header>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
-          <BookOpen className="size-3.5" aria-hidden />
-          {c.kicker}
-        </span>
-        <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight">
+        <h1 className="font-display text-2xl font-extrabold tracking-tight">
           {c.h1}
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {c.intro}
         </p>
       </header>
+
 
       {/* Featured: official FUNVISIS process */}
       <Link
