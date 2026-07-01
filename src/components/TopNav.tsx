@@ -9,6 +9,7 @@ import {
   HandHeart,
   LifeBuoy,
   Map,
+  Phone,
   MessageSquareHeart,
   Scale,
   ShieldCheck,
@@ -92,6 +93,12 @@ export function TopNav() {
                 <Link to="/datos" className="flex items-center gap-2">
                   <BarChart3 className="size-4" aria-hidden />
                   {t("nav.data")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/contactos-oficiales" className="flex items-center gap-2">
+                  <Phone className="size-4" aria-hidden />
+                  {t("nav.officialContacts")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

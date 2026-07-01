@@ -20,6 +20,7 @@ import { Route as LegalRouteImport } from './routes/legal'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as EarthquakeInVenezuelaTodayRouteImport } from './routes/earthquake-in-venezuela-today'
 import { Route as DatosRouteImport } from './routes/datos'
+import { Route as ContactosOficialesRouteImport } from './routes/contactos-oficiales'
 import { Route as AyudaRouteImport } from './routes/ayuda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoluntariosIndexRouteImport } from './routes/voluntarios.index'
@@ -110,6 +111,11 @@ const EarthquakeInVenezuelaTodayRoute =
 const DatosRoute = DatosRouteImport.update({
   id: '/datos',
   path: '/datos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactosOficialesRoute = ContactosOficialesRouteImport.update({
+  id: '/contactos-oficiales',
+  path: '/contactos-oficiales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AyudaRoute = AyudaRouteImport.update({
@@ -306,6 +312,7 @@ const ApiPublicV1AggregatesDotjsonRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
+  '/contactos-oficiales': typeof ContactosOficialesRoute
   '/datos': typeof DatosRoute
   '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
@@ -354,6 +361,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
+  '/contactos-oficiales': typeof ContactosOficialesRoute
   '/datos': typeof DatosRoute
   '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
@@ -403,6 +411,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ayuda': typeof AyudaRoute
+  '/contactos-oficiales': typeof ContactosOficialesRoute
   '/datos': typeof DatosRoute
   '/earthquake-in-venezuela-today': typeof EarthquakeInVenezuelaTodayRoute
   '/feedback': typeof FeedbackRoute
@@ -453,6 +462,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ayuda'
+    | '/contactos-oficiales'
     | '/datos'
     | '/earthquake-in-venezuela-today'
     | '/feedback'
@@ -501,6 +511,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ayuda'
+    | '/contactos-oficiales'
     | '/datos'
     | '/earthquake-in-venezuela-today'
     | '/feedback'
@@ -549,6 +560,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/ayuda'
+    | '/contactos-oficiales'
     | '/datos'
     | '/earthquake-in-venezuela-today'
     | '/feedback'
@@ -598,6 +610,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AyudaRoute: typeof AyudaRoute
+  ContactosOficialesRoute: typeof ContactosOficialesRoute
   DatosRoute: typeof DatosRoute
   EarthquakeInVenezuelaTodayRoute: typeof EarthquakeInVenezuelaTodayRoute
   FeedbackRoute: typeof FeedbackRoute
@@ -720,6 +733,13 @@ declare module '@tanstack/react-router' {
       path: '/datos'
       fullPath: '/datos'
       preLoaderRoute: typeof DatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contactos-oficiales': {
+      id: '/contactos-oficiales'
+      path: '/contactos-oficiales'
+      fullPath: '/contactos-oficiales'
+      preLoaderRoute: typeof ContactosOficialesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ayuda': {
@@ -985,6 +1005,7 @@ const ZonaEstadoRouteWithChildren = ZonaEstadoRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AyudaRoute: AyudaRoute,
+  ContactosOficialesRoute: ContactosOficialesRoute,
   DatosRoute: DatosRoute,
   EarthquakeInVenezuelaTodayRoute: EarthquakeInVenezuelaTodayRoute,
   FeedbackRoute: FeedbackRoute,
@@ -1033,13 +1054,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

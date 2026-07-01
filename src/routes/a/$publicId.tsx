@@ -27,6 +27,7 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { SaveReportsCard } from "@/components/SaveReportsCard";
 import { SameBuildingCard } from "@/components/SameBuildingCard";
+import { TransparencyBanner } from "@/components/TransparencyBanner";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
 import type { AssessmentRecord } from "@/lib/assessment-types";
@@ -306,6 +307,12 @@ function ResultPage() {
       {(record.riskLevel === "red" ||
         record.riskLevel === "orange" ||
         record.riskLevel === "yellow") && <ConnectEngineers record={record} />}
+
+      {/* Transparency + official channels — mandatory post-assessment block:
+          EvalúaYa is only Phase 0; the official label is placed by the
+          authority. Shows an SOS module with priority on Red/Orange. */}
+      <TransparencyBanner riskLevel={record.riskLevel} />
+
 
       {/* Other reports from the same building (anonymized counts) */}
       <SameBuildingCard record={record} />

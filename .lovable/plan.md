@@ -1,65 +1,91 @@
 ## Objetivo
 
-Hacer la Enciclopedia completamente navegable con **breadcrumbs (migas de pan)** en cada página, y agregar la sección más importante — **el proceso oficial de FUNVISIS** — como una página nueva marcada "Próximamente", reutilizable como referencia desde otras secciones.
+Que todo residente entienda que EvalúaYa es solo la **Fase 0 (verificación visual rápida, no oficial)** y sepa exactamente qué hacer después para conseguir la evaluación oficial. Documentar el proceso oficial dentro de la app, hacer descargables los documentos oficiales, y dejar los contactos verificados a un toque. Además, dejar por escrito qué mejoras del algoritmo son posibles con la metodología oficial — **sin tocar el scoring todavía**.
 
-## Contexto: ya son URLs
+Regla legal transversal: **solo FUNVISIS y Protección Civil emiten certificados**. La app siempre remite al organismo oficial y nunca se presenta como inspección oficial.
 
-Cada guía ya vive en su propia URL bajo `/guia/...` (FUNVISIS, Falla de Boconó, grietas peligrosas, qué hacer después de un temblor), más `/metodologia` y `/ayuda`. No hay que "convertirlas". El problema real es que dentro de cada página **no hay forma de volver** a la Enciclopedia o al inicio sin usar el menú. Eso se resuelve con breadcrumbs.
+---
 
-## Parte 1 — Breadcrumbs en toda la Enciclopedia
+## 1. Documentos oficiales dentro del repo (descarga + resumen visual)
 
-Crear un componente reutilizable `EncyclopediaBreadcrumb` (usando el componente `breadcrumb` de shadcn que ya existe) y colocarlo arriba de cada página de la Enciclopedia, justo antes del encabezado.
+- Subir los dos PDF oficiales al CDN de la app y guardarlos como assets del repo:
+  - `Evaluación_de_Daños_BOLETIN_61_ANIH.pdf` → "Boletín 61 — Evaluación de Daños (ANIH)".
+  - `Planilla_V22b.pdf` → "Planilla oficial V22b (FUNVISIS)".
+- Enlazarlos como descarga desde la página del proceso oficial (botones "toca para descargar"), con etiqueta de fuente.
 
-Estructura de las migas:
+## 2. Página del proceso oficial (reemplaza el "Próximamente")
+
+Convertir `src/routes/guia.proceso-oficial-funvisis.tsx` de placeholder a la **pieza central navegable** de la Enciclopedia, con breadcrumbs ya existentes. Contenido (ES primario, EN secundario):
+
+- **Las 3 fases oficiales** (del boletín), como línea de tiempo visual mostrando dónde entra EvalúaYa:
 
 ```text
-Inicio  ›  Enciclopedia  ›  FUNVISIS: qué es y cómo funciona
+Fase 0  Verificación visual rápida     Comunidad + ing. voluntario   ← EvalúaYa (no oficial)
+Fase 1  Evaluación Rápida (etiqueta)   Inspector certificado         El usuario debe solicitarla
+Fase 2  Inspección Detallada           Ing. especializado            Si resulta Roja/Amarilla
+Fase 3  Evaluación Detallada           Ing. estructural              Para reparar/reforzar
 ```
 
-- **Inicio** → enlace a `/`
-- **Enciclopedia** → enlace a `/guia`
-- **Título de la página actual** → texto sin enlace (página activa)
-- Bilingüe (ES/EN) usando `useLang`, igual que el resto.
-- En la página raíz `/guia` la miga es solo `Inicio › Enciclopedia` (activo).
+- **Qué significan las etiquetas oficiales**: Permitido (Verde) / Restringido (Amarillo) / No Permitido (Rojo), y cómo se relacionan con los niveles 🟢🟡🟠🔴 de EvalúaYa (mapeo aproximado, aclarando que el naranja es un matiz propio de la app).
+- **Base legal**: la Planilla la llena personal con "Certificado de Inspector de Evaluación de Daños"; por eso la app remite siempre al organismo.
+- **Qué tener listo** para agilizar la evaluación oficial (fotos, ubicación, Nº de pisos y sótanos — datos que la app ya recolecta).
+- **Descargas** de Boletín 61 y Planilla V22b + enlace al directorio oficial.
+- Aviso de que EvalúaYa no agenda ni realiza la inspección; el residente/ingeniero contacta a Protección Civil.
 
-Páginas que reciben el breadcrumb:
-- `/guia` (hub)
-- `/guia/que-hacer-despues-de-un-temblor`
-- `/guia/grietas-peligrosas-despues-de-un-sismo`
-- `/guia/funvisis-que-es-y-como-funciona`
-- `/guia/falla-de-bocono`
-- `/metodologia`
-- La nueva página del proceso oficial de FUNVISIS (Parte 2)
+Actualizar la tarjeta "Featured" del hub `src/routes/guia.index.tsx`: quitar el badge "Próximamente" y describirla como guía activa.
 
-Esto le da al usuario un salto de un toque de vuelta a la Enciclopedia o al inicio desde cualquier guía. También se agrega `BreadcrumbList` en JSON-LD (schema.org) en cada página para reforzar el SEO y que Google muestre la ruta en los resultados.
+## 3. Directorio oficial verificado (módulo dedicado + reutilizable)
 
-## Parte 2 — Sección "Proceso oficial de FUNVISIS" (Próximamente)
+Nuevo componente `src/components/OfficialDirectory.tsx` con botones **tel: "toca para llamar"** y etiqueta de fuente visible **"Fuente: MIPPCI, 28-jun-2026"**:
 
-Crear una página nueva `/guia/proceso-oficial-funvisis` con:
+- **Evaluación de infraestructura (destacado):** Protección Civil Gobierno de Caracas — (0212) 575-1823.
+- **Emergencia general / rescate:** VEN 9-1-1 · Protección Civil 0800-PCIVIL1 (0800-7248451).
+- **Bomberos de Caracas:** (0212) 545-4545.
+- **Cruz Roja:** (0422) 799-4880.
+- **FUNVISIS:** 0-800-TEMBLOR (0-800-8362567), 24h; CEDI lun–vie 8–12 / 1–4.
+- **Colegio de Ingenieros (CIV):** sin número (placeholder en su web) → dirigir a sede física (Av. Principal de Quebrada Honda, Los Caobos, Caracas) y su web, no a un número no verificado.
+- Nota de no responsabilidad: la app publica números oficiales para marcado directo; no gestiona ni se responsabiliza por dichas comunicaciones; revalidar periódicamente (contexto de emergencia).
 
-- Encabezado y breadcrumb (`Inicio › Enciclopedia › Proceso oficial de FUNVISIS`).
-- Un bloque visible de **"Próximamente"** (badge + texto corto explicando que aquí documentaremos el procedimiento oficial paso a paso; el contenido lo llenamos mañana).
-- Estructura lista para rellenar: secciones vacías con títulos tentativos (p. ej. "Cuándo contactar a FUNVISIS / Protección Civil", "Qué hacer mientras llega la evaluación oficial", "Documentos y evidencia que conviene tener") para que mañana solo sea pegar el contenido.
-- Metadata (`head`) y JSON-LD como las demás guías.
+Nueva ruta dedicada `src/routes/contactos-oficiales.tsx` que renderiza el directorio como pantalla completa, enlazada desde la Enciclopedia y el menú "Más".
 
-Presentación en el hub `/guia`:
-- Mostrarla **destacada de primera**, arriba de todo (antes del CTA de autoevaluación o justo debajo del intro), con un estilo diferenciado que comunique que es la pieza central de la Enciclopedia, e indicando "Próximamente".
-- Se puede seguir tocando para entrar a la página (que muestra el estado "Próximamente").
+## 4. Banner de transparencia post-evaluación (result card)
 
-Reutilización como referencia:
-- Dejar el enlace listo para insertarlo en otras secciones (FUNVISIS, qué hacer después de un temblor, metodología, resultado de la evaluación). En este paso agrego el enlace de referencia al menos en la guía de FUNVISIS y en "qué hacer después de un temblor"; el resto queda fácil de enganchar cuando el contenido esté.
+En `src/routes/a/$publicId.tsx`, tras los hallazgos, insertar un banner obligatorio (nuevo bloque, sin tocar el scoring):
+
+> "Esto es solo una verificación visual rápida, no la inspección oficial. Para la evaluación oficial de tu edificio, contacta a Protección Civil del Gobierno de Caracas: (0212) 575-1823. En emergencia: VEN 9-1-1 o 0800-PCIVIL1. La etiqueta oficial solo la coloca personal certificado por la autoridad."
+>
+> Colocar tambien los números de cotacto a nivel nacional. 
+
+- Incluir el matiz del propio instrumento oficial: la inspección no garantiza seguridad ante eventos futuros; pueden existir situaciones fuera de su alcance y las condiciones pueden cambiar.
+- Debajo, embeber `OfficialDirectory` (o un resumen con enlace a `/contactos-oficiales`).
+- **Módulo SOS (botón rojo)** para peligro inminente con `tel:` directo a VEN 9-1-1 / 0800-PCIVIL1, mostrado con prioridad cuando el resultado es 🔴 Rojo / 🟠 Naranja.
+- Reflejar el mismo bloque de contactos en el PDF (`src/lib/pdf.ts`) para que el residente lo tenga offline.
+
+## 5. Documento de propuestas de mejora del algoritmo (solo documentar)
+
+Crear `docs/mejoras-algoritmo-oficial.md` en el repo (referencia interna), alineando `safety-rules.ts` con Boletín 61 / Planilla V22b. **Sin cambiar código de scoring.** Propuestas a evaluar:
+
+- **Mapear hallazgos a la escala oficial de daño (I Sin daño → V Completo)** y a las etiquetas A/B/C, para hablar el idioma del inspector oficial en el reporte.
+- **Elementos no-estructurales de la Planilla** (fachada, tanques/balcones, parapetos) como señales adicionales de precaución — hoy no se capturan explícitamente.
+- **Conteo por elemento** (columnas/vigas/nodos/losas/mampostería dañados) como refuerzo de la heurística "≥2 sistemas = rojo".
+- **Nodos viga-columna** como señal crítica que hoy no se pregunta directamente.
+- Reconciliar el mapeo naranja ↔ etiqueta oficial Restringida/No Permitida.
+
+Este documento queda como insumo para una ronda futura y para revalidar con Manuel.
+
+---
 
 ## Detalles técnicos
 
-- Nuevo componente: `src/components/EncyclopediaBreadcrumb.tsx` — recibe `items: { label: string; to?: string }[]` y arma la ruta. Usa `Link` de `@tanstack/react-router` con `params` cuando aplique (aquí todas son rutas estáticas).
-- Nueva ruta: `src/routes/guia.proceso-oficial-funvisis.tsx` con `createFileRoute("/guia/proceso-oficial-funvisis")`.
-- Editar el hub `src/routes/guia.index.tsx` para destacar la nueva tarjeta y agregarla al `ItemList` JSON-LD.
-- Agregar breadcrumb a cada archivo de guía listado arriba (import + render antes del `<header>`).
-- Cadenas ES/EN nuevas para "Inicio", "Próximamente" y títulos, agregadas donde corresponda (i18n o inline por página siguiendo el patrón existente de `COPY`).
-- Sin cambios de backend ni de lógica de negocio; todo es frontend/presentación y contenido.
+- **Assets:** subir los PDF con `lovable-assets create` y referenciar el `.asset.json` (patrón ya usado en el repo). Los `evaluaya-spec-*.pdf` existentes en `public/` se mantienen.
+- **i18n:** todas las cadenas nuevas en `src/lib/i18n.tsx` (ES + EN): banner, directorio, fases, etiquetas oficiales, SOS.
+- **Navegación:** añadir "Contactos oficiales" al hub `/guia` (grupo "Cómo funciona / Después de la evaluación") y al menú "Más" de `TopNav.tsx`.
+- **SEO:** `head()` propio en `/contactos-oficiales` y en la página de proceso oficial; conservar breadcrumbs + JSON-LD ya existentes.
+- **tel: links:** normalizar a formato marcable (ej. `tel:+582125751823`, `tel:9-1-1` según convención local) mostrando el número legible en pantalla.
+- **Sin cambios de backend ni de lógica de riesgo** en esta ronda: solo presentación, contenido, documentación y assets.
 
 ## Verificación
 
-- Playwright: abrir `/guia`, entrar a una guía, confirmar que el breadcrumb aparece y que tocar "Enciclopedia" regresa a `/guia` e "Inicio" a `/`. Screenshot móvil (897px) y desktop.
-- Confirmar que la tarjeta del proceso oficial de FUNVISIS aparece destacada y que su página muestra "Próximamente".
-- Revisar build/typecheck.
+- Playwright: capturas de `/guia/proceso-oficial-funvisis`, `/contactos-oficiales` y de un result card 🔴 para confirmar banner + SOS + directorio en móvil.
+- Confirmar que los `tel:` abren el marcador y que las descargas de PDF resuelven.
+- Revisar que los tests de seguridad/idioma existentes sigan verdes.

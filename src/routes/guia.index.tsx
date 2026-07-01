@@ -4,15 +4,16 @@ import {
   BookOpen,
   ChevronRight,
   ClipboardCheck,
-  Clock,
   HelpCircle,
   Landmark,
   Mountain,
+  Phone,
   Radar,
   Ruler,
   ShieldCheck,
   Waves,
 } from "lucide-react";
+
 
 import { AppShell } from "@/components/AppShell";
 import {
@@ -102,6 +103,12 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
           desc: "Qué revisa la autoevaluación y cómo se calcula el nivel de riesgo.",
         },
         {
+          to: "/contactos-oficiales",
+          icon: Phone,
+          title: "Contactos oficiales",
+          desc: "Protección Civil, VEN 9-1-1, FUNVISIS y más. Toca para llamar.",
+        },
+        {
           to: "/ayuda",
           icon: HelpCircle,
           title: "Ayuda y preguntas frecuentes",
@@ -161,6 +168,12 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
           desc: "What the self-assessment reviews and how the risk level is calculated.",
         },
         {
+          to: "/contactos-oficiales",
+          icon: Phone,
+          title: "Official contacts",
+          desc: "Civil Protection, VEN 9-1-1, FUNVISIS and more. Tap to call.",
+        },
+        {
           to: "/ayuda",
           icon: HelpCircle,
           title: "Help and frequently asked questions",
@@ -174,14 +187,14 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
 const FEATURED = {
   to: "/guia/proceso-oficial-funvisis",
   es: {
-    badge: "Próximamente",
+    badge: "La pieza central",
     title: "Proceso oficial de FUNVISIS",
-    desc: "El procedimiento oficial paso a paso tras un sismo. La pieza central de la Enciclopedia.",
+    desc: "Las fases oficiales tras un sismo, dónde entra EvalúaYa y los documentos oficiales descargables.",
   },
   en: {
-    badge: "Coming soon",
+    badge: "The core piece",
     title: "FUNVISIS official process",
-    desc: "The official step-by-step procedure after an earthquake. The core of the Encyclopedia.",
+    desc: "The official phases after an earthquake, where EvalúaYa fits and downloadable official documents.",
   },
 };
 
@@ -286,7 +299,7 @@ function GuideHub() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
-            <Clock className="size-3" aria-hidden />
+            <ShieldCheck className="size-3" aria-hidden />
             {featured.badge}
           </span>
           <span className="mt-1 block font-display font-bold leading-tight">
