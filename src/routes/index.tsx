@@ -82,6 +82,10 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  // Public, anonymized impact ranking so the hardest-hit areas surface first
+  // in the state picker. Best-effort: failures fall back to alphabetical.
+  loader: async (): Promise<ImpactRanking> =>
+    getImpactRanking().catch(() => EMPTY_IMPACT_RANKING),
   component: Index,
 });
 
