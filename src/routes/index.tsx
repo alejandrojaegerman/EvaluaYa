@@ -153,6 +153,41 @@ function Index() {
         </Button>
       </section>
 
+      {/* Live trust counters — surfaced first so residents see real activity
+          before the official-contacts shortcut. */}
+      {hasTotals && (
+        <section className="mt-4 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
+            <p className="font-display text-2xl font-extrabold text-primary">
+              {totals!.total.toLocaleString()}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("home.statBuildings")}
+            </p>
+          </div>
+          <div className="flex flex-col justify-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full bg-risk-orange" />
+              <span className="font-display text-lg font-extrabold text-risk-orange">
+                {totals!.orange.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {t("result.orange.tag")}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full bg-risk-red" />
+              <span className="font-display text-lg font-extrabold text-risk-red">
+                {totals!.red.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {t("result.red.tag")}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Official authority contacts — right under the primary CTA so residents
           always have the official channels one tap away. */}
       <Link
