@@ -850,7 +850,7 @@ const es: Dict = {
   "home.exploreDesc":
     "Consulta los reportes y evalúa tu vivienda según tu estado.",
   "home.stateSelect": "Elige tu estado",
-  "home.quakeBtn": "Acaba de temblar",
+  "home.quakeBtn": "¿Tembló? Qué hacer",
   "home.mapBtn": "Mapa comunitario de daños",
   "home.legalNotice": "Esto no reemplaza la evaluación de un ingeniero. Lee el aviso legal.",
   "zona.breadcrumbHome": "Inicio",
@@ -2441,7 +2441,7 @@ const en: Dict = {
   "home.exploreDesc":
     "Check reports and assess your home based on your state.",
   "home.stateSelect": "Choose your state",
-  "home.quakeBtn": "Just felt a quake",
+  "home.quakeBtn": "Felt a quake? What to do",
   "home.mapBtn": "Community damage map",
   "home.legalNotice": "This does not replace an engineer's assessment. Read the legal notice.",
   "zona.breadcrumbHome": "Home",
