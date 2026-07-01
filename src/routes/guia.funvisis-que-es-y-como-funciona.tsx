@@ -178,6 +178,7 @@ const COPY = {
     ctaButton: "Start self-assessment",
     tremorLink: "What to do after a tremor",
     boconoLink: "Boconó Fault: the main active fault",
+    processLink: "FUNVISIS official process (coming soon)",
     liveLink: "Earthquake in Venezuela today? Recent quakes",
     faqTitle: "Frequently asked questions",
     sourceNote:
