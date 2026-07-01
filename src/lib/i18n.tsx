@@ -178,7 +178,7 @@ const es: Dict = {
   "checklist.remaining": "Te falta {n} para poder analizar",
   "checklist.remainingOne": "pregunta esencial",
   "checklist.remainingMany": "preguntas esenciales",
-  "checklist.photosOptional": "Las fotos son opcionales, pero mejoran el análisis.",
+  "checklist.photosOptional": "Las fotos no son obligatorias, pero mejoran mucho el análisis.",
   "checklist.photoPromptYes": "Marcaste un daño aquí. Una foto ayuda a que un ingeniero lo entienda mejor.",
   "factors.title": "Por qué estos resultados",
   "factors.flagged": "Problemas reportados",
