@@ -262,7 +262,7 @@ function TrackingPage() {
                 params={{ publicId: status.assessmentPublicId }}
                 className="mt-4 block text-center text-xs font-semibold text-primary underline-offset-2 hover:underline"
               >
-                {t("result.viewReport")}
+                {t("track.viewReport")}
               </Link>
             )}
           </>
