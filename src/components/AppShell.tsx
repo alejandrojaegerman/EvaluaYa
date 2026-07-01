@@ -64,7 +64,7 @@ export function AppShell({
                 {online ? t("common.online") : t("common.offline")}
               </span>
             </span>
-            <LanguageToggle />
+
           </div>
         </div>
       </header>
