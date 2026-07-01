@@ -190,10 +190,10 @@ const FEATURED = {
 
 const COPY = {
   es: {
-    kicker: "Enciclopedia",
     h1: "Enciclopedia",
     intro:
-      "Todo en un solo lugar: qué hacer después de un temblor, cómo revisar tu vivienda, entender los sismos en Venezuela y cómo funciona EvalúaYa. Guías claras y gratuitas.",
+      "Todo en un solo lugar: qué hacer después de un temblor, cómo revisar tu vivienda y entender los sismos en Venezuela. Guías claras y gratuitas.",
+    methodologyLink: "¿Cómo funciona EvalúaYa? Ver la metodología",
     ctaTitle: "¿Sentiste un temblor?",
     ctaBody:
       "Haz una autoevaluación guiada y gratuita en pocos minutos. Recibe una orientación y pasos a seguir.",
