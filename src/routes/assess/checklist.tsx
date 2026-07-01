@@ -253,7 +253,7 @@ function ChecklistStep() {
       property: {
         ...draft.property,
         comments: comments.trim() || undefined,
-        contextTags: selectedTags.length ? selectedTags : undefined,
+        contextTags: undefined,
       },
       answers: draftAnswers,
       language: lang,
