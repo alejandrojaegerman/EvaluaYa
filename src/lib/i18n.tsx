@@ -91,6 +91,8 @@ const es: Dict = {
   "gate.consent": "Autorizo el tratamiento de mis datos personales exclusivamente para la gestión de reportes de esta plataforma.",
   "gate.cta": "Aceptar y continuar",
   "gate.readFull": "Leer el aviso legal completo",
+  "gate.finePrint":
+    "EvalúaYa es una iniciativa independiente y comunitaria (no oficial) que solo genera hallazgos visuales preliminares, no dictámenes técnicos. Al tocar Analizar aceptas el aviso legal y autorizas el tratamiento de tus datos para gestionar tu reporte.",
   "gate.mustAccept": "Debes aceptar ambas casillas para continuar.",
   "property.sectionContact": "Datos de contacto",
   "property.contactHint": "Solo para que un evaluador voluntario pueda comunicarse contigo sobre este reporte. No se publican.",
@@ -1351,6 +1353,8 @@ const en: Dict = {
   "gate.consent": "I authorize the processing of my personal data solely to manage reports on this platform.",
   "gate.cta": "Accept and continue",
   "gate.readFull": "Read the full legal notice",
+  "gate.finePrint":
+    "EvalúaYa is an independent, community-built (non-official) initiative that only produces preliminary visual findings, not technical rulings. By tapping Analyze you accept the legal notice and authorize the processing of your data to manage your report.",
   "gate.mustAccept": "You must accept both boxes to continue.",
   "property.sectionContact": "Contact details",
   "property.contactHint": "Only so a volunteer evaluator can reach you about this report. Never published.",

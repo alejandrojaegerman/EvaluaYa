@@ -76,12 +76,7 @@ function ChecklistStep() {
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [loading, setLoading] = useState(true);
   const [showOptional, setShowOptional] = useState(false);
-  // Legal + data consent, captured here (as late as possible) right before the
-  // analysis. Both required. Pre-checked if the current draft already consented.
-  const [acceptLegal, setAcceptLegal] = useState(false);
-  const [acceptData, setAcceptData] = useState(false);
-  const [consentError, setConsentError] = useState(false);
-  const consentGiven = acceptLegal && acceptData;
+
 
   useEffect(() => {
     trackStep("checklist_started");
@@ -93,10 +88,7 @@ function ChecklistStep() {
         return;
       }
       setDraft(d);
-      if (d.consent) {
-        setAcceptLegal(true);
-        setAcceptData(true);
-      }
+
       const initial: AnswerMap = {};
       for (const a of d.answers) {
         initial[a.id] = {
@@ -143,7 +135,7 @@ function ChecklistStep() {
   const hasUtilityAnswers = UTILITY_ITEMS.some((i) => answers[i.id]?.value);
   const optionalVisible = showOptional || hasUtilityAnswers;
 
-  async function persist(map: AnswerMap, ready: boolean, consentGranted: boolean) {
+  async function persist(map: AnswerMap, ready: boolean) {
     if (!draft) return;
     const draftAnswers: DraftAnswer[] = CHECKLIST_ITEMS.filter(
       (i) => map[i.id]?.value,
@@ -152,9 +144,10 @@ function ChecklistStep() {
       value: map[i.id].value,
       photoDataUrls: map[i.id].photoDataUrls,
     }));
-    // Stamp a fresh, versioned consent record onto this evaluation when granted
-    // (proof is persisted per assessment via assessment.functions).
-    const consent = consentGranted ? (draft.consent ?? setLegalConsent()) : draft.consent;
+    // Consent is implied by tapping "Analyze": stamp a fresh, versioned consent
+    // record onto this evaluation when it is ready to send (proof is persisted
+    // per assessment via assessment.functions).
+    const consent = ready ? (draft.consent ?? setLegalConsent()) : draft.consent;
     await saveDraft({
       ...draft,
       answers: draftAnswers,
@@ -169,14 +162,10 @@ function ChecklistStep() {
       toast.warning(t("checklist.answerAll"));
       return;
     }
-    if (!consentGiven) {
-      setConsentError(true);
-      toast.warning(t("gate.mustAccept"));
-      return;
-    }
-    await persist(answers, true, true);
+    await persist(answers, true);
     navigate({ to: "/assess/analyze" });
   }
+
 
   if (loading) {
     return (
@@ -281,28 +270,17 @@ function ChecklistStep() {
         </p>
       )}
 
-      {/* Legal + data consent — captured as late as possible, right before analysis */}
-      <LegalConsentInline
-        acceptLegal={acceptLegal}
-        acceptData={acceptData}
-        onChangeLegal={(v) => {
-          setAcceptLegal(v);
-          setConsentError(false);
-        }}
-        onChangeData={(v) => {
-          setAcceptData(v);
-          setConsentError(false);
-        }}
-        showError={consentError}
-      />
+      {/* Fine-print disclaimer — consent implied by tapping "Analyze" */}
+      <LegalConsentInline />
 
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
-        nextDisabled={!allRequired || !consentGiven}
+        nextDisabled={!allRequired}
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
+
     </AppShell>
   );
 }

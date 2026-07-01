@@ -1,20 +1,33 @@
-## Objetivo
-Quitar el acordeón "¿Qué fotos le sirven al ingeniero?" del flujo de evaluación (paso 2) y mostrarlo en el reporte, dentro del bloque donde el residente decide contactar a un ingeniero voluntario.
+## Goal
 
-## Cambios
+Replace the large legal/consent block at the end of the evaluation checklist (Step 2) with a standard, minimal-footprint disclaimer: a single line of fine print that summarizes the notice and links to the full legal notice. Consent becomes **implied** by tapping **Analyze** — no checkboxes — so the button is reachable immediately.
 
-### 1. Extraer el componente a un archivo compartido
-Crear `src/components/UsefulPhotosTip.tsx` con el mismo contenido de la función `UsefulPhotosTip` que hoy vive en `src/routes/assess/checklist.tsx` (líneas 315–367). Mantiene el acordeón con `PHOTO_GUIDE_EXAMPLES`, `Lightbulb`, `ChevronDown`, `cn` y las claves i18n `checklist.usefulToggle` / `usefulIntro` / `usefulEx.*` (sin cambios de copy).
+## Current state
 
-### 2. Quitarlo del flujo de evaluación (`src/routes/assess/checklist.tsx`)
-- Eliminar `<UsefulPhotosTip />` (línea 225) y el comentario asociado.
-- Eliminar la definición local de la función `UsefulPhotosTip` (líneas ~312–367).
-- Limpiar imports que quedan sin uso: `Lightbulb` y `PHOTO_GUIDE_EXAMPLES`. (Se conservan `ChevronDown` y `cn`, que siguen usándose en el resto del archivo.)
+At the bottom of `src/routes/assess/checklist.tsx`, `LegalConsentInline` renders a boxed section with a title, subtitle, three icon+text clauses, a "read full notice" link, and **two required checkboxes**. The Analyze button is disabled until both are checked (`nextDisabled={!allRequired || !consentGiven}`). Consent is stamped into the draft only when both boxes are checked.
 
-### 3. Mostrarlo en el reporte (`src/components/ConnectEngineers.tsx`)
-- Importar el nuevo `UsefulPhotosTip`.
-- Renderizarlo dentro del formulario de solicitud, justo debajo de `connect.requestBody` (después de la línea 157), para que cuando el residente elija contactar a un ingeniero vea qué fotos le sirven. Se muestra colapsado por defecto, igual que hoy.
+## Changes
 
-## Notas técnicas
-- No cambia lógica de scoring ni metodología; solo mueve un componente de guía visual.
-- Verificar el build/typecheck tras mover el componente para confirmar que no queden imports huérfanos.
+### 1. `src/components/LegalConsentInline.tsx` — shrink to fine print
+- Remove the boxed card, icons, three clauses, and both checkboxes.
+- Render a single compact fine-print paragraph (small, muted text) that summarizes: independent/non-official initiative, preliminary visual findings only (no technical ruling), and that tapping Analyze accepts the legal notice and authorizes data processing for report management.
+- Inline link "Leer el aviso legal completo / Read the full legal notice" → `/legal` (opens in new tab), reusing the existing `gate.readFull` key.
+- Drop the checkbox props (`acceptLegal`, `acceptData`, `onChangeLegal`, `onChangeData`, `showError`). The component becomes presentational fine print with no state.
+
+### 2. `src/routes/assess/checklist.tsx` — implied consent
+- Remove `acceptLegal` / `acceptData` / `consentError` state and the `consentGiven` derived value.
+- Update the footer to gate only on answers: `nextDisabled={!allRequired}`.
+- On continue (tapping Analyze), always stamp a fresh versioned consent record into the draft (call `setLegalConsent()` unconditionally in `persist`), since tapping the button now constitutes acceptance.
+- Render the compact `LegalConsentInline` fine print directly above the `StepFooter` (so the resident sees the summary right before the button).
+- Remove now-unused imports/handlers tied to checkbox state.
+
+### 3. `src/lib/i18n.tsx` — new summary string
+- Add one key (ES + EN), e.g. `gate.finePrint`:
+  - ES: "EvalúaYa es una iniciativa independiente y comunitaria (no oficial) que solo genera hallazgos visuales preliminares, no dictámenes técnicos. Al tocar Analizar aceptas el aviso legal y autorizas el tratamiento de tus datos para gestionar tu reporte."
+  - EN: equivalent.
+- Keep the existing `gate.readFull` key for the link. Existing `gate.*` clause/checkbox keys stay in place (still used on the `/legal` page and unaffected elsewhere).
+
+## Notes / preserved behavior
+- The versioned consent record (`LEGAL_VERSION` / `CONSENT_VERSION` via `setLegalConsent()`) is still persisted per assessment, so the legal audit trail is unchanged — only the UX shifts from explicit checkboxes to implied acceptance on the Analyze tap.
+- No scoring/methodology logic changes.
+- The `/legal` route already exists and remains the full-text destination.
