@@ -1645,11 +1645,11 @@ const en: Dict = {
   "home.viewResult": "View result",
 
   // Volunteer-engineer support thread (reused across surfaces).
-  "engineers.sectionTitle": "Volunteer engineer support",
+  "engineers.sectionTitle": "Are you an engineer? Join the network",
   "engineers.tagline":
-    "After your assessment, you can request help from a verified volunteer engineer, at no cost.",
+    "After your assessment, you can request help from a volunteer engineer, at no cost.",
   "engineers.homeBody":
-    "You run your self-assessment first. If you need it, we connect you with a verified volunteer engineer.",
+    "When a family asks after their self-assessment, we connect them with a volunteer civil engineer. Join us to reach more communities.",
   "engineers.recruit": "We recruit",
   "engineers.recruitDesc":
     "We bring in volunteer engineers and organizations across the country.",
