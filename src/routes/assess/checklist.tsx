@@ -221,6 +221,8 @@ function ChecklistStep() {
         </div>
       </div>
 
+      {/* How to take a useful photo (illustrative guidance) */}
+      <UsefulPhotosTip />
 
       {/* Structural checks (required) */}
       <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
@@ -281,10 +283,25 @@ function ChecklistStep() {
         </p>
       )}
 
+      {/* Legal + data consent — captured as late as possible, right before analysis */}
+      <LegalConsentInline
+        acceptLegal={acceptLegal}
+        acceptData={acceptData}
+        onChangeLegal={(v) => {
+          setAcceptLegal(v);
+          setConsentError(false);
+        }}
+        onChangeData={(v) => {
+          setAcceptData(v);
+          setConsentError(false);
+        }}
+        showError={consentError}
+      />
+
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
-        nextDisabled={!allRequired}
+        nextDisabled={!allRequired || !consentGiven}
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
