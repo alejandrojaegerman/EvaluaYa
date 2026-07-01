@@ -157,6 +157,11 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               {t("connect.requestBody")}
             </p>
 
+            {/* Guidance on which photos help the engineer — shown here, where
+                the resident is deciding to reach out. */}
+            <UsefulPhotosTip />
+
+
             <div className="mt-3">
               <Label htmlFor="hr-name">
                 {t("connect.yourName")}{" "}
