@@ -1186,7 +1186,7 @@ const es: Dict = {
   // Volunteer landing + signup
   "vol.title": "Ingenieros voluntarios",
   "vol.subtitle":
-    "Iniciativa comunitaria. Cuando una familia lo solicita tras su autoevaluación, la orientas — primero por videollamada y, si hace falta, con una visita presencial.",
+    "Iniciativa comunitaria. Cada familia que pide ayuda tras su autoevaluación siempre recibe la evaluación de un ingeniero voluntario: la orientas primero por videollamada y, si hace falta, con una visita presencial.",
   "vol.how1": "Te registras con tu WhatsApp y los estados que puedes cubrir.",
   "vol.how2": "Revisamos tu solicitud y te enviamos un enlace privado.",
   "vol.how3":
@@ -2774,7 +2774,7 @@ const en: Dict = {
 
   "vol.title": "Volunteer engineers",
   "vol.subtitle":
-    "A community initiative. When a family asks after their self-assessment, you guide them — first over a video call, and with an in-person visit if needed.",
+    "A community initiative. Every family that asks for help after their self-assessment always gets a volunteer engineer's assessment: you guide them first over a video call, and with an in-person visit if needed.",
   "vol.how1": "Sign up with your WhatsApp and the states you can cover.",
   "vol.how2": "We review your request and send you a private link.",
   "vol.how3":

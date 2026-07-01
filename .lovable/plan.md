@@ -1,31 +1,18 @@
 ## Objetivo
 
-Mejorar el subtítulo del hero de la home, quitando "Sin registro. Funciona con poca señal." por copy que comunique mejor el valor.
+Ajustar el copy del bloque "Ingenieros voluntarios" (`/voluntarios`) para reflejar lo acordado: **cada familia que pide ayuda siempre recibe la evaluación/orientación de un ingeniero voluntario** (no es opcional ni condicionado). Se mantiene la nota legal como está.
 
 ## Cambio (solo copy)
 
-En `src/lib/i18n.tsx`, actualizar `home.heroSubtitle` en ES (línea 33) y EN (línea 1631). El título (`home.heroTitle`) se mantiene igual.
+En `src/lib/i18n.tsx`, actualizar `vol.subtitle` en ES (línea 1189) y EN (línea 2777). No se toca la nota legal (`vol.legalNote`, línea 102) ni `vol.how3`.
 
-### Opción recomendada (A) — enfoque en rapidez + ingeniero
+### Propuesta ES
+> "Iniciativa comunitaria. Cada familia que pide ayuda tras su autoevaluación siempre recibe la evaluación de un ingeniero voluntario: la orientas primero por videollamada y, si hace falta, con una visita presencial."
 
-- **ES:** "Revisa los daños de tu casa en minutos con una guía paso a paso y conéctate con un ingeniero civil voluntario."
-- **EN:** "Review your home's damage in minutes with a step-by-step guide and connect with a volunteer civil engineer."
-
-### Opción B — enfoque en tranquilidad/seguridad
-
-- **ES:** "En pocos minutos, revisa los daños de tu vivienda paso a paso y sabe qué hacer después del sismo."
-- **EN:** "In a few minutes, review your home's damage step by step and know what to do after the quake."
-
-### Opción C — más directo/urgente
-
-- **ES:** "Guía paso a paso para revisar daños estructurales y recibir orientación después de un temblor."
-- **EN:** "Step-by-step guide to review structural damage and get guidance after a tremor."
-
-Recomiendo la **Opción A** porque resalta lo rápido y el respaldo del ingeniero voluntario (diferenciador clave). Dime cuál prefieres o ajusto el texto. 
-
-Vamos con opción A por favor
+### Propuesta EN
+> "A community initiative. Every family that asks for help after their self-assessment always gets a volunteer engineer's assessment: you guide them first over a video call, and with an in-person visit if needed."
 
 ## Notas
-
-- No cambia estructura, botón ni la ilustración.
-- Verificaré que el texto quepa bien en el hero móvil.
+- No cambia estructura, ícono ni el enlace al aviso legal.
+- Mantiene el término "ingeniero voluntario" (sin "verificado", coherente con cambios previos).
+- Verificaré que el texto se vea bien en el bloque en móvil y escritorio.
