@@ -24,12 +24,6 @@ import type {
   StructuralType,
 } from "@/lib/assessment-types";
 import { loadDraft, saveDraft } from "@/lib/draft-store";
-import { LegalConsentGate } from "@/components/LegalConsentGate";
-import {
-  getLegalConsent,
-  hasLegalConsent,
-  type LegalConsent,
-} from "@/lib/legal-ack";
 import { splitFeatured } from "@/lib/impact";
 import { trackStep } from "@/lib/track";
 import { useLang } from "@/lib/i18n";
@@ -104,9 +98,8 @@ function PropertyStep() {
   const [state, setState] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [parroquia, setParroquia] = useState("");
-  // Blocking legal + data-consent gate (Doc #1). Shown until accepted.
-  const [showGate, setShowGate] = useState(false);
-  const [consent, setConsent] = useState<LegalConsent | null>(null);
+  // Legal + data consent is captured later, at the end of the checklist step
+  // (step 2), to keep step 1 friction-free and lift completion. See checklist.
   // Resident explicitly chose "I'm not sure" — satisfies the required field
   // while keeping the stored municipality empty (rolls up to state level).
   const [municipalityUnsure, setMunicipalityUnsure] = useState(false);
@@ -130,12 +123,8 @@ function PropertyStep() {
     trackStep("property_started");
   }, []);
 
-  // Blocking gate: show until the user accepts the current legal + consent
-  // versions. Reads existing acceptance so returning users aren't re-prompted.
-  useEffect(() => {
-    setConsent(getLegalConsent());
-    setShowGate(!hasLegalConsent());
-  }, []);
+
+
 
   useEffect(() => {
     let active = true;
@@ -309,7 +298,7 @@ function PropertyStep() {
       },
       answers: existing?.answers ?? [],
       ...(engParam ? { engineerToken: engParam } : {}),
-      ...(consent ? { consent } : {}),
+      ...(existing?.consent ? { consent: existing.consent } : {}),
       updatedAt: Date.now(),
     });
     trackStep("property_completed");
@@ -318,14 +307,6 @@ function PropertyStep() {
 
   return (
     <AppShell hideBottomNav hideFooter>
-      {showGate && (
-        <LegalConsentGate
-          onAccept={(record) => {
-            setConsent(record);
-            setShowGate(false);
-          }}
-        />
-      )}
       <StepHeader step={1} title={t("property.title")} subtitle={t("property.subtitle")} />
 
 
