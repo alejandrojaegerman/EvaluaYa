@@ -54,17 +54,8 @@ import { cn } from "@/lib/utils";
 const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
 const SEVERE_ITEMS = SEVERE_SIGN_IDS;
 
-// Self-explanatory context signals shown as a small checklist ("Marca lo que
-// aplique"). Each is a clear, full sentence the resident checks off when true;
-// selections are stored (by key) separately from the free-text comment and sent
-// to the engineer / AI as extra context.
-const CONTEXT_SIGNALS = [
-  "aftershock",
-  "noises",
-  "common",
-  "people",
-  "evacuated",
-] as const;
+
+
 
 // Reserved photo-carrier ids for the consolidated photo section.
 const FACADE_ID: ChecklistItemId = "facade";
@@ -139,7 +130,6 @@ function ChecklistStep() {
   const [facadePhotos, setFacadePhotos] = useState<string[]>([]);
   const [damagePhotos, setDamagePhotos] = useState<DamagePhoto[]>([]);
   const [comments, setComments] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<{
     photos: LightboxPhoto[];
@@ -174,7 +164,6 @@ function ChecklistStep() {
       }
       setAnswers(initial);
       setComments(d.property.comments ?? "");
-      setSelectedTags(d.property.contextTags ?? []);
       setLoading(false);
     });
     return () => {
@@ -255,7 +244,7 @@ function ChecklistStep() {
       property: {
         ...draft.property,
         comments: comments.trim() || undefined,
-        contextTags: selectedTags.length ? selectedTags : undefined,
+        contextTags: undefined,
       },
       answers: draftAnswers,
       language: lang,
@@ -359,53 +348,8 @@ function ChecklistStep() {
         onView={openDamageLightbox}
       />
 
-      {/* Extra context signals — self-explanatory checklist, stored apart */}
-      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <h2 className="font-display text-base font-bold">
-          {t("checklist.signalsTitle")}
-        </h2>
-        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-          {t("checklist.signalsHint")}
-        </p>
-        <div className="mt-3 space-y-2">
-          {CONTEXT_SIGNALS.map((key) => {
-            const checked = selectedTags.includes(key);
-            return (
-              <button
-                key={key}
-                type="button"
-                role="checkbox"
-                aria-checked={checked}
-                onClick={() =>
-                  setSelectedTags((prev) =>
-                    prev.includes(key)
-                      ? prev.filter((k) => k !== key)
-                      : [...prev, key],
-                  )
-                }
-                className={cn(
-                  "flex w-full items-start gap-3 rounded-xl border bg-background p-3 text-left transition-colors",
-                  checked ? "border-primary bg-primary/5" : "border-border",
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors",
-                    checked
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-muted-foreground/40",
-                  )}
-                >
-                  {checked && <Check className="size-3.5" strokeWidth={3} />}
-                </span>
-                <span className="min-w-0 text-sm font-medium leading-snug">
-                  {t(`checklist.suggest.${key}`)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+
+
 
       {/* Optional free-text comments */}
       <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
