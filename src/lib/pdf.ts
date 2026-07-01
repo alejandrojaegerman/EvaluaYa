@@ -1,7 +1,6 @@
 import { jsPDF } from "jspdf";
 
 import type { AssessmentRecord } from "./assessment-types";
-import { damageCategoryKey } from "./assessment-types";
 import { translate, type Lang } from "./i18n";
 import { formatDateTime } from "./datetime";
 import { RISK_HEX } from "./risk";
@@ -103,10 +102,8 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   const propLine = [
     t(`property.type.${record.property.buildingType}`),
     `${record.property.floors} ${lang === "es" ? "piso(s)" : "floor(s)"}`,
-    record.property.age ? ageMap[record.property.age] : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+    ageMap[record.property.age],
+  ].join(" · ");
   paragraph(record.property.address ? `${record.property.address}\n${propLine}` : propLine);
 
   // Seismic context (USGS ShakeMap) — only when location data is present
@@ -140,18 +137,6 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   }
 
 
-  // Extra context signals the resident checked off (already localized sentences)
-  if (record.property.contextTags?.length) {
-    heading(t("pdf.signals"));
-    bullets(record.property.contextTags);
-  }
-
-  // Free-text resident comments
-  if (record.property.comments?.trim()) {
-    heading(t("pdf.comments"));
-    paragraph(record.property.comments.trim());
-  }
-
   // Summary
   if (record.aiResult.summary) {
     heading(t("pdf.summary"));
@@ -173,8 +158,6 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   // Inspection answers
   heading(t("pdf.inspection"));
   for (const a of record.answers) {
-    // Photo-carrier ids hold no yes/no answer — they appear in the photos grid.
-    if (a.id === "facade" || a.id === "damage_photos") continue;
     const area = t(`item.${a.id}.area`);
     const ans = t(`checklist.answer.${a.value}`);
     const lines = doc.splitTextToSize(`•  ${area}: ${ans}`, contentW - 6);
@@ -188,11 +171,8 @@ export async function downloadAssessmentPdf(record: AssessmentRecord) {
   for (const a of record.answers) {
     const urls = record.photoUrls[a.id];
     if (urls && urls.length) {
-      for (let i = 0; i < urls.length; i++) {
-        const label = record.photoCaptions?.[a.id]?.[i];
-        const key = damageCategoryKey(label);
-        const area = key ? t(key) : (label ?? t(`item.${a.id}.area`));
-        photoItems.push({ area, url: urls[i] });
+      for (const url of urls) {
+        photoItems.push({ area: t(`item.${a.id}.area`), url });
       }
     }
   }

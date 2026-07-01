@@ -27,11 +27,9 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { SaveReportsCard } from "@/components/SaveReportsCard";
 import { SameBuildingCard } from "@/components/SameBuildingCard";
-import { TransparencyBanner } from "@/components/TransparencyBanner";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
 import type { AssessmentRecord } from "@/lib/assessment-types";
-import { damageCategoryKey } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { downloadAssessmentPdf } from "@/lib/pdf";
 import { RISK_THEME } from "@/lib/risk";
@@ -115,15 +113,11 @@ function ResultPage() {
   const photoItems = record.answers
     .filter((a) => record.photoUrls[a.id]?.length)
     .flatMap((a) =>
-      record.photoUrls[a.id].map((url, i) => {
-        const label = record.photoCaptions?.[a.id]?.[i];
-        const key = damageCategoryKey(label);
-        return {
-          id: a.id,
-          url,
-          caption: key ? t(key) : (label ?? t(`item.${a.id}.area`)),
-        };
-      }),
+      record.photoUrls[a.id].map((url) => ({
+        id: a.id,
+        url,
+        caption: t(`item.${a.id}.area`),
+      })),
     );
 
   // Funnel: resident reached the final result — the completed conversion.
@@ -308,12 +302,6 @@ function ResultPage() {
         record.riskLevel === "orange" ||
         record.riskLevel === "yellow") && <ConnectEngineers record={record} />}
 
-      {/* Transparency + official channels — mandatory post-assessment block:
-          EvalúaYa is only Phase 0; the official label is placed by the
-          authority. Shows an SOS module with priority on Red/Orange. */}
-      <TransparencyBanner riskLevel={record.riskLevel} />
-
-
       {/* Other reports from the same building (anonymized counts) */}
       <SameBuildingCard record={record} />
 
@@ -426,9 +414,7 @@ function ResultPage() {
       {/* Inspection summary */}
       <Section title={t("pdf.inspection")}>
         <ul className="divide-y divide-border">
-          {record.answers
-            .filter((a) => a.id !== "facade" && a.id !== "damage_photos")
-            .map((a) => (
+          {record.answers.map((a) => (
             <li
               key={a.id}
               className="flex items-center justify-between py-2 text-sm"
