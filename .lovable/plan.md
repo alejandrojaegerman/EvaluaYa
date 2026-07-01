@@ -1,51 +1,49 @@
-# Separar la evaluación de la solicitud de ingeniero
+## Problem
 
-Hoy los "Datos de contacto" son obligatorios en el **Paso 1** (antes de evaluar). Los movemos: la evaluación se hace sin pedir contacto, y **solo si el residente decide contactar a un ingeniero** exigimos los datos que ese ingeniero necesita para revisar/verificar o visitar la vivienda.
+The published methodology uses a **4-level severity scale**, each with its own label and recommended action (`src/lib/i18n.tsx:404-411`):
 
-## Comportamiento final
+- 🟢 **green** — "Hallazgos leves" → mantén observación
+- 🟡 **yellow** — "Hallazgos moderados" → solicita inspección técnica
+- 🟠 **orange** — "Hallazgos serios" → solicita pronto una inspección técnica
+- 🔴 **red** — "Hallazgos severos · alerta" → evita ingresar y reporta a cuerpos oficiales
 
-```text
-PROCESO 1 — Evaluar (sin contacto)
-  Paso 1: Ubicación (Estado + Municipio obligatorios) + Edificación
-        → Paso 2: Fotos → Resultado
+But some result-screen components collapse this into a binary (red = orange), so an **orange** report gets shown with **red** copy and red styling. That is exactly what the user saw: an orange assessment whose "contact a volunteer engineer" block said its findings were severe (red).
 
-PROCESO 2 — (opcional) Contactar un ingeniero  [desde el resultado]
-  Formulario obligatorio:
-    • Nombre y apellido *
-    • WhatsApp / teléfono *
-    • Dirección exacta para visita *
-    • Nota (opcional, ya existe)
-```
+### Root causes found
 
-## Cambios
+1. **`src/components/ConnectEngineers.tsx:28`** — `const urgent = record.riskLevel === "red" || record.riskLevel === "orange"`. When `urgent`, it renders red border/background (line 91), a red icon (line 100), and the copy `connect.subtitleRed` = *"Tus hallazgos son severos…"* (line 109). So orange is visually and textually presented as red/severe. This is the direct source of the reported mismatch.
 
-### 1. Formulario de evaluación (Paso 1) — `src/routes/assess/property.tsx`
-- **Eliminar** por completo la sección "Datos de contacto" (nombre, tipo de contacto, número). Se quitan los estados asociados y el guardado de `resident` en el borrador.
-- **Estado y Municipio siguen obligatorios** (sin cambios en esa validación). Solo se quita el contacto.
-- El campo de dirección detallada sigue existiendo como opcional (no se pide a la fuerza aquí).
+2. **`src/components/TransparencyBanner.tsx:15`** — same `urgent = red || orange`, which shows the emergency `SosCard` (911 / "avoid entering") on orange too. Per the methodology, the "avoid entering, report to official agencies / call emergency" response belongs to **red** only; orange is "get an engineer soon", not evacuate. So orange is again escalated to red-level messaging.
 
-### 2. Bloque "Solicitar un ingeniero" — `src/components/ConnectEngineers.tsx`
-- Añadir dos campos **obligatorios**: **Nombre y apellido** y **Dirección exacta para visita** (calle, número, piso/apto). El WhatsApp/teléfono ya existe y sigue obligatorio.
-- Copy explicando que estos datos son necesarios para que el ingeniero pueda **revisar, verificar o visitar** la vivienda, y que no se publican.
-- Validación en cliente: los tres campos no vacíos + el acuse legal ya existente antes de habilitar el botón.
+Components that already handle all 4 levels correctly (no change needed): `RiskBadge`, `RiskGauge`, `RiskTag`/`AdminRequestCards`, `EngineerRequestCard`, `TrendChart`, `DamageMap`, `SeguimientoPanel` (uses graded 400/300/100 scoring), and `RISK_THEME`/`RISK_HEX` in `src/lib/risk.ts`.
 
-### 3. Guardado de la solicitud — `src/lib/volunteers.functions.ts`
-- Ampliar `helpSchema` con `residentName` (2–160, requerido) y `address` (requerido, máx. 300), validados con Zod.
-- Insertar `resident_name` y `resident_address` en `help_requests`.
+Operational notifications that key off `red` only (Slack `@channel`, `volunteers.functions.ts:652`, `assessment.functions.ts:516`) are intentional alert-routing, not resident-facing labels — left unchanged so the methodology labels stay separate from paging urgency.
 
-### 4. Panel del ingeniero — `src/components/EngineerRequestCard.tsx` + consulta
-- Mostrar **Nombre** y **Dirección exacta** del residente, revelados **solo tras reclamar** la solicitud (igual que hoy con el WhatsApp), para que el ingeniero pueda coordinar la visita.
+## Changes
 
-### 5. Textos — `src/lib/i18n.tsx`
-- Nuevas claves ES/EN para los campos y ayudas del bloque de contacto del ingeniero.
+### 1. `src/components/ConnectEngineers.tsx` — respect the 4-level scale
+Replace the binary `urgent` flag with a per-level treatment driven by `record.riskLevel`:
+- Styling (border/background/icon color) uses `RISK_THEME[record.riskLevel]` (`soft`, `text`, `ring`) so red→red, orange→orange, yellow→yellow. No more red styling on orange results.
+- Subtitle copy selected by exact level:
+  - red → `connect.subtitleRed` (severe)
+  - orange → new `connect.subtitleOrange` (serious — get a volunteer's help soon, no "severos")
+  - yellow → `connect.subtitleYellow` (moderate)
+- The pre-filled note already uses `t(result.${riskLevel}.tag)`, so it will now correctly say "Hallazgos serios" for orange — no change needed there.
 
-## Detalles técnicos
+### 2. `src/lib/i18n.tsx` — add the missing orange copy
+Add `connect.subtitleOrange` in both the Spanish and English blocks (next to `connect.subtitleRed`/`connect.subtitleYellow` at ~862 and ~2119), wording it as "serious" (aligned with `result.orange.tag` = "Hallazgos serios"), not "severe".
 
-- **Base de datos**: migración `ALTER TABLE public.help_requests ADD COLUMN resident_name text, ADD COLUMN resident_address text;`. Son PII: se insertan con service-role (ya es el caso) y se exponen al ingeniero solo cuando `claimed_by = ese ingeniero` (misma compuerta que `resident_whatsapp`, ~línea 935 de `volunteers.functions.ts`).
-- El `EngineerRequest` DTO gana `residentName` y `residentAddress` (`null` hasta reclamar).
-- `assessments.resident_name/contact` deja de poblarse desde el Paso 1 (queda `null`); no se borra la columna para no romper reportes antiguos. `analyze.tsx` ya envía `resident` solo si existe, así que no requiere cambios.
-- Sin cambios en el motor de reglas ni en el flujo de análisis/IA; es reordenamiento de recolección de datos + un par de columnas.
+### 3. `src/components/TransparencyBanner.tsx` — reserve the emergency SOS for red
+Change `const urgent = riskLevel === "red" || riskLevel === "orange"` so the `SosCard` (911 / avoid-entering) shows for **red only**, matching `result.red.action`. The rest of the transparency/official-directory block continues to show for all levels. Orange results keep the standard official-channels guidance without the emergency-evacuation framing.
 
-## Verificación
-- Typecheck limpio.
-- Playwright: (a) completar una evaluación (con Estado/Municipio) sin datos de contacto llega al resultado; (b) el bloque de ingeniero exige nombre + WhatsApp + dirección antes de enviar; (c) el panel del ingeniero muestra nombre y dirección tras reclamar.
+## Verification
+
+- Render the result page (`/a/$publicId`) for an orange record via Playwright and screenshot the "Pide ayuda de un evaluador voluntario" block — confirm orange styling + "serios" copy, and that no red SOS/911 card appears.
+- Repeat for a red record — confirm red styling, "severos" copy, and the SOS card present.
+- Repeat for yellow — unchanged.
+- Run the existing unit test suite (safety/severity tests) to confirm no regressions.
+
+## Technical notes
+
+- No database, server-function, scoring, or safety-rule changes. `src/lib/safety-rules.ts` and `src/lib/assessment.functions.ts` already emit the correct 4-level `riskLevel`; this work only fixes presentation layers that were flattening it.
+- All colors continue to come from the existing semantic `risk-*` tokens via `RISK_THEME`; no hardcoded colors introduced.

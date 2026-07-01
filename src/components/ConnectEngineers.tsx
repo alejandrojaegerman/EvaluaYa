@@ -12,8 +12,17 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AssessmentRecord } from "@/lib/assessment-types";
 import { useLang } from "@/lib/i18n";
 import { hasLegalAck, setLegalAck } from "@/lib/legal-ack";
+import { RISK_THEME } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 import { submitHelpRequest } from "@/lib/volunteers.functions";
+
+/** Static border classes per level (Tailwind can't extract interpolated names). */
+const BORDER_BY_LEVEL = {
+  green: "border-risk-green/30",
+  yellow: "border-risk-yellow/40",
+  orange: "border-risk-orange/40",
+  red: "border-risk-red/30",
+} as const;
 
 /**
  * Shown on Red/Orange/Yellow results: a single "request a verified engineer"
@@ -25,7 +34,16 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const { t } = useLang();
   const submit = useServerFn(submitHelpRequest);
 
-  const urgent = record.riskLevel === "red" || record.riskLevel === "orange";
+  // Follow the 4-level methodology: each level keeps its own tone and copy so
+  // an orange ("serios") result is never presented as red ("severos").
+  const level = record.riskLevel;
+  const theme = RISK_THEME[level];
+  const subtitleKey =
+    level === "red"
+      ? "connect.subtitleRed"
+      : level === "orange"
+        ? "connect.subtitleOrange"
+        : "connect.subtitleYellow";
 
   // Pre-fill the message from the analysis that already ran (no new AI call):
   // risk level + the top findings, in the resident's voice. Stays editable.
@@ -88,25 +106,18 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
     <section
       className={cn(
         "mt-6 rounded-2xl border p-5 shadow-sm",
-        urgent
-          ? "border-risk-red/30 bg-risk-red-soft/50"
-          : "border-risk-yellow/40 bg-risk-yellow-soft/40",
+        theme.soft,
+        BORDER_BY_LEVEL[level],
       )}
     >
       <div className="flex items-center gap-2">
-        <HardHat
-          className={cn(
-            "size-5",
-            urgent ? "text-risk-red" : "text-risk-yellow",
-          )}
-          aria-hidden
-        />
+        <HardHat className={cn("size-5", theme.text)} aria-hidden />
         <h2 className="font-display text-base font-bold">
           {t("connect.title")}
         </h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-        {urgent ? t("connect.subtitleRed") : t("connect.subtitleYellow")}
+        {t(subtitleKey)}
       </p>
       <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card/80 px-2.5 py-1 text-xs font-semibold text-foreground/70">
         <BadgeCheck className="size-3.5 text-primary" aria-hidden />
