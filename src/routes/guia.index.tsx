@@ -97,12 +97,6 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
       heading: "Cómo funciona EvalúaYa",
       items: [
         {
-          to: "/metodologia",
-          icon: Radar,
-          title: "Cómo funciona la metodología",
-          desc: "Qué revisa la autoevaluación y cómo se calcula el nivel de riesgo.",
-        },
-        {
           to: "/contactos-oficiales",
           icon: Phone,
           title: "Contactos oficiales",
