@@ -168,6 +168,12 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
           desc: "What the self-assessment reviews and how the risk level is calculated.",
         },
         {
+          to: "/contactos-oficiales",
+          icon: Phone,
+          title: "Official contacts",
+          desc: "Civil Protection, VEN 9-1-1, FUNVISIS and more. Tap to call.",
+        },
+        {
           to: "/ayuda",
           icon: HelpCircle,
           title: "Help and frequently asked questions",
