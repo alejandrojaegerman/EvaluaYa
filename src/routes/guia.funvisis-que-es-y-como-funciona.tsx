@@ -303,6 +303,9 @@ function FunvisisPage() {
           <Link to="/guia/que-hacer-despues-de-un-temblor">{c.tremorLink}</Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
+          <Link to="/guia/proceso-oficial-funvisis">{c.processLink}</Link>
+        </Button>
+        <Button asChild variant="link" className="mt-1 w-full">
           <Link to="/guia/falla-de-bocono">{c.boconoLink}</Link>
         </Button>
         <Button asChild variant="link" className="mt-1 w-full">
