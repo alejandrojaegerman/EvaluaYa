@@ -2307,6 +2307,7 @@ const en: Dict = {
   "nav.feedback": "Send feedback",
   "nav.data": "Data",
   "nav.dataDesc": "Map and open data for authorities and media",
+  "nav.officialContacts": "Official contacts",
   "nav.today": "Quake today?",
   "nav.todayDesc": "Recent earthquakes near Venezuela",
   "home.todayTitle": "Did it just shake?",
