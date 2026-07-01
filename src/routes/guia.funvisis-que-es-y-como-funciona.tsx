@@ -160,6 +160,7 @@ const COPY = {
     ctaButton: "Iniciar autoevaluación",
     tremorLink: "Qué hacer después de un temblor",
     boconoLink: "Falla de Boconó: la principal falla activa",
+    processLink: "Proceso oficial de FUNVISIS (próximamente)",
     liveLink: "¿Tembló en Venezuela hoy? Sismos recientes",
     faqTitle: "Preguntas frecuentes",
     sourceNote:
