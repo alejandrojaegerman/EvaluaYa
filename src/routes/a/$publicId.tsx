@@ -302,6 +302,10 @@ function ResultPage() {
         record.riskLevel === "orange" ||
         record.riskLevel === "yellow") && <ConnectEngineers record={record} />}
 
+      {/* Transparency + official channels — post-assessment block: EvalúaYa is
+          only Phase 0; the official label is placed by the authority. */}
+      <TransparencyBanner riskLevel={record.riskLevel} />
+
       {/* Other reports from the same building (anonymized counts) */}
       <SameBuildingCard record={record} />
 
