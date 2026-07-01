@@ -188,11 +188,12 @@ function Index() {
         </section>
       )}
 
-      {/* Official authority contacts — right under the primary CTA so residents
-          always have the official channels one tap away. */}
+      {/* Official authority contacts — hidden on mobile to keep the flow focused
+          on starting an evaluation; reachable via the "Más" menu and footer.
+          Shown on larger screens where there is room. */}
       <Link
         to="/contactos-oficiales"
-        className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+        className="mt-4 hidden items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40 sm:flex"
       >
         <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
           <Phone className="size-5" aria-hidden />
@@ -416,10 +417,11 @@ function Index() {
         </section>
       )}
 
-      {/* Legal notice — compact info icon + link */}
+      {/* Legal notice — hidden on mobile (reachable via "Más" menu + footer) so
+          the mobile flow stays focused on driving evaluations. */}
       <Link
         to="/legal"
-        className="mt-8 flex items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-accent/40"
+        className="mt-8 hidden items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-accent/40 sm:flex"
       >
         <Info className="size-4 shrink-0 text-risk-yellow" aria-hidden />
         <span className="flex-1 leading-relaxed">{t("home.legalNotice")}</span>
