@@ -1608,7 +1608,62 @@ const es: Dict = {
   "data.api.ep.timeseries": "Tendencia diaria (últimos ~90 días)",
   "data.api.ep.riskFactors": "Factores de riesgo (el porqué de los resultados)",
   "data.api.ep.methodology": "Metodología, reglas de seguridad y glosario",
+
+  // --- Proceso oficial + contactos verificados (Documento de Trabajo #4) ---
+  "nav.official": "Contactos oficiales",
+
+  "official.source": "Fuente: MIPPCI, 28-jun-2026",
+  "official.dir.title": "Contactos oficiales",
+  "official.dir.subtitle":
+    "Números oficiales para solicitar la evaluación oficial de tu edificio y para emergencias. Toca para llamar.",
+  "official.dir.infraTitle": "Solicitar la evaluación de tu edificio",
+  "official.dir.emergencyTitle": "Emergencia y rescate",
+  "official.dir.technicalTitle": "Organismos técnicos",
+  "official.dir.call": "Llamar",
+  "official.dir.open": "Ver sede y sitio web",
+  "official.dir.note":
+    "EvalúaYa publica estos números oficiales para marcado directo. No gestiona ni se responsabiliza por estas comunicaciones. Al ser información de contingencia, puede cambiar: confírmala antes de acudir.",
+
+  "official.pc_caracas.name": "Protección Civil — Gobierno de Caracas",
+  "official.pc_caracas.desc":
+    "Contacto clave para coordinar la evaluación de infraestructuras residenciales y públicas.",
+  "official.ven911.name": "VEN 9-1-1",
+  "official.ven911.desc": "Servicio unificado de emergencias, opera las 24 horas.",
+  "official.pcivil.name": "Protección Civil — línea gratuita",
+  "official.pcivil.desc":
+    "0800-PCIVIL1 · contingencias generales y rescates a gran escala.",
+  "official.bomberos.name": "Bomberos de Caracas",
+  "official.bomberos.desc":
+    "Incendios, primeros auxilios y confinamientos en estructuras caídas.",
+  "official.cruzroja.name": "Cruz Roja",
+  "official.cruzroja.desc":
+    "Asistencia prehospitalaria, apoyo humanitario y localización de personas.",
+  "official.funvisis.name": "FUNVISIS",
+  "official.funvisis.desc":
+    "0-800-TEMBLOR · servicio gratuito 24 h. CEDI lun–vie 8:00–12:00 y 1:00–4:00.",
+  "official.civ.name": "Colegio de Ingenieros de Venezuela (CIV)",
+  "official.civ.desc":
+    "Orienta sobre especialistas certificados. Sede: Av. Principal de Quebrada Honda, Los Caobos, Caracas.",
+
+  "sos.title": "¿Peligro inminente?",
+  "sos.body":
+    "Si hay riesgo para la vida —colapso, personas atrapadas, olor a gas— llama de inmediato.",
+  "sos.call911": "Llamar VEN 9-1-1",
+  "sos.callPcivil": "Protección Civil 0800",
+
+  "transparency.title": "Esto no es la inspección oficial",
+  "transparency.body":
+    "EvalúaYa es solo una verificación visual rápida (Fase 0). Para la evaluación oficial de tu edificio, contacta a Protección Civil del Gobierno de Caracas: (0212) 575-1823. En emergencia: VEN 9-1-1 o 0800-PCIVIL1. La etiqueta oficial solo la coloca personal certificado por la autoridad.",
+  "transparency.limits":
+    "Incluso la inspección oficial no garantiza la seguridad ante eventos futuros: pueden existir situaciones fuera de su alcance y las condiciones de estabilidad pueden cambiar.",
+  "transparency.cta": "Ver contactos oficiales",
+  "transparency.processCta": "Conoce el proceso oficial",
+
+  "pdf.officialTitle": "Contactos oficiales",
+  "pdf.officialIntro":
+    "Esto es solo una verificación visual rápida, no la inspección oficial. Solicita la evaluación oficial de tu edificio:",
 };
+
 
 
 const en: Dict = {
