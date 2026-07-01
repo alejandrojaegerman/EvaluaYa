@@ -681,7 +681,7 @@ const es: Dict = {
   "property.detected": "Ubicación detectada. Puedes cambiarla si no es correcta.",
   "property.detectFailed": "No pudimos detectar tu ubicación. Selecciona tu estado.",
   "property.stateRequired": "Selecciona tu estado para continuar.",
-  "property.effortHint": "Solo toma unos minutos. Las fotos son opcionales.",
+  "property.effortHint": "Solo toma unos minutos. Las fotos no son obligatorias, pero ayudan muchísimo al análisis.",
   "property.missingPrefix": "Para continuar, falta:",
   "property.miss.state": "estado",
   "property.miss.municipality": "municipio",
