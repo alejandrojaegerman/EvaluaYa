@@ -252,7 +252,11 @@ function ChecklistStep() {
     }
     await saveDraft({
       ...draft,
-      property: { ...draft.property, comments: comments.trim() || undefined },
+      property: {
+        ...draft.property,
+        comments: comments.trim() || undefined,
+        contextTags: selectedTags.length ? selectedTags : undefined,
+      },
       answers: draftAnswers,
       language: lang,
       status: ready ? "ready_to_send" : "in_progress",
