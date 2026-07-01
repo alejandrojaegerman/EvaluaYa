@@ -2813,6 +2813,9 @@ const en: Dict = {
   "connect.subtitleYellow":
     "Send your case and a community volunteer evaluator can help you interpret these findings. Free and no obligation.",
   "connect.reassure": "Community volunteer evaluators — no cost.",
+  "connect.officialNotice":
+    "A volunteer's review is a preliminary visual orientation, not the official assessment. The official label is placed only by authority-certified personnel.",
+  "connect.officialNoticeLink": "See official contacts",
   "connect.requestTitle": "Request a volunteer evaluator",
   "connect.requestBody":
     "Leave your WhatsApp and we'll share your report with registered community volunteer evaluators. One of them will take your case and reach out.",
