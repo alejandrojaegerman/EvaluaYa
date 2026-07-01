@@ -850,7 +850,7 @@ const es: Dict = {
   "home.exploreDesc":
     "Consulta los reportes y evalúa tu vivienda según tu estado.",
   "home.stateSelect": "Elige tu estado",
-  "home.quakeBtn": "¿Tembló? Qué hacer",
+  "home.quakeBtn": "Historial de sismos",
   "home.mapBtn": "Mapa comunitario de daños",
   "home.legalNotice": "Orientación preliminar. No reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil. Lee el aviso legal.",
   "zona.breadcrumbHome": "Inicio",
@@ -2441,7 +2441,7 @@ const en: Dict = {
   "home.exploreDesc":
     "Check reports and assess your home based on your state.",
   "home.stateSelect": "Choose your state",
-  "home.quakeBtn": "Felt a quake? What to do",
+  "home.quakeBtn": "Earthquake history",
   "home.mapBtn": "Community damage map",
   "home.legalNotice": "Preliminary guidance. It does not replace a licensed civil engineer or an official assessment by FUNVISIS or Civil Protection. Read the legal notice.",
   "zona.breadcrumbHome": "Home",
