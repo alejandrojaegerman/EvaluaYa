@@ -34,6 +34,10 @@ export type EngineerRequest = {
   riskLevel: RiskLevel | null;
   /** null until the request is claimed by the viewing engineer */
   residentWhatsapp: string | null;
+  /** Resident's name — null until the request is claimed by the viewing engineer */
+  residentName: string | null;
+  /** Exact visit address — null until the request is claimed by the viewing engineer */
+  residentAddress: string | null;
   note: string | null;
   status: "open" | "claimed" | "closed";
   claimedByMe: boolean;
@@ -558,6 +562,8 @@ const helpSchema = z.object({
     .refine((v) => v.length >= 7 && v.length <= 15, {
       message: "invalid_phone",
     }),
+  residentName: z.string().trim().min(2, "required").max(160),
+  address: z.string().trim().min(6, "required").max(400),
   note: z.string().trim().max(600).optional().default(""),
 });
 
@@ -577,6 +583,8 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
           municipality: data.municipality || null,
           risk_level: data.riskLevel ?? null,
           resident_whatsapp: data.whatsapp,
+          resident_name: data.residentName,
+          resident_address: data.address,
           note: data.note || null,
           status: "open",
         })
