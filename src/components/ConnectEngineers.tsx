@@ -99,7 +99,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       className={cn(
         "mt-6 rounded-2xl border p-5 shadow-sm",
         theme.soft,
-        `border-${level === "yellow" ? "risk-yellow/40" : `risk-${level}/30`}`,
+        BORDER_BY_LEVEL[level],
       )}
     >
       <div className="flex items-center gap-2">
