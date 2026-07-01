@@ -5,7 +5,6 @@
 // overlapping runs.
 
 import { analyzeAssessment } from "./assessment.functions";
-import { translate } from "./i18n";
 import { getDeviceId } from "./device-id";
 import { addHistory } from "./history";
 import {
@@ -31,22 +30,7 @@ function buildPayload(item: OutboxItem) {
       buildingType: p.buildingType ?? "house",
       structuralType: p.structuralType ?? "unknown",
       floors: p.floors ?? 1,
-      ...(typeof p.basements === "number" ? { basements: p.basements } : {}),
-      ...(typeof p.livesInBuilding === "boolean"
-        ? { livesInBuilding: p.livesInBuilding }
-        : {}),
-      ...(typeof p.condoBoardMember === "boolean"
-        ? { condoBoardMember: p.condoBoardMember }
-        : {}),
       age: p.age ?? "post2000",
-      ...(p.comments?.trim() ? { comments: p.comments.trim() } : {}),
-      ...(p.contextTags?.length
-        ? {
-            contextTags: p.contextTags.map((k) =>
-              translate(draft.language, `checklist.suggest.${k}`),
-            ),
-          }
-        : {}),
       ...(typeof p.seismicIntensity === "number"
         ? {
             seismicIntensity: p.seismicIntensity,
