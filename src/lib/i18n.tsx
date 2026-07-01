@@ -2502,6 +2502,8 @@ const en: Dict = {
   "home.quakeBtn": "Earthquake history",
   "home.mapBtn": "Community damage map",
   "home.legalNotice": "Preliminary guidance. It does not replace a licensed civil engineer or an official assessment by FUNVISIS or Civil Protection. Read the legal notice.",
+  "home.officialContactsTitle": "Official authority contacts",
+  "home.officialContactsBody": "Civil Protection, VEN 9-1-1, FUNVISIS and more. Tap to call.",
   "zona.breadcrumbHome": "Home",
   "zona.eyebrow": "Regional report",
   "zona.h1Prefix": "Structural damage in",
