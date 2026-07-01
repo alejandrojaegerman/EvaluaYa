@@ -135,7 +135,7 @@ function ChecklistStep() {
   const hasUtilityAnswers = UTILITY_ITEMS.some((i) => answers[i.id]?.value);
   const optionalVisible = showOptional || hasUtilityAnswers;
 
-  async function persist(map: AnswerMap, ready: boolean, consentGranted: boolean) {
+  async function persist(map: AnswerMap, ready: boolean) {
     if (!draft) return;
     const draftAnswers: DraftAnswer[] = CHECKLIST_ITEMS.filter(
       (i) => map[i.id]?.value,
@@ -144,9 +144,10 @@ function ChecklistStep() {
       value: map[i.id].value,
       photoDataUrls: map[i.id].photoDataUrls,
     }));
-    // Stamp a fresh, versioned consent record onto this evaluation when granted
-    // (proof is persisted per assessment via assessment.functions).
-    const consent = consentGranted ? (draft.consent ?? setLegalConsent()) : draft.consent;
+    // Consent is implied by tapping "Analyze": stamp a fresh, versioned consent
+    // record onto this evaluation when it is ready to send (proof is persisted
+    // per assessment via assessment.functions).
+    const consent = ready ? (draft.consent ?? setLegalConsent()) : draft.consent;
     await saveDraft({
       ...draft,
       answers: draftAnswers,
@@ -161,14 +162,10 @@ function ChecklistStep() {
       toast.warning(t("checklist.answerAll"));
       return;
     }
-    if (!consentGiven) {
-      setConsentError(true);
-      toast.warning(t("gate.mustAccept"));
-      return;
-    }
-    await persist(answers, true, true);
+    await persist(answers, true);
     navigate({ to: "/assess/analyze" });
   }
+
 
   if (loading) {
     return (
