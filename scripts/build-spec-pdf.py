@@ -54,9 +54,10 @@ FONT_ITALIC = "Body-Italic"
 INK = colors.HexColor("#1f2937")
 MUTED = colors.HexColor("#6b7280")
 LINE = colors.HexColor("#e5e7eb")
-RED = colors.HexColor("#dc2626")
-YELLOW = colors.HexColor("#d97706")
-GREEN = colors.HexColor("#16a34a")
+RED = colors.HexColor("#be2823")
+ORANGE = colors.HexColor("#d86916")
+YELLOW = colors.HexColor("#ca8a04")
+GREEN = colors.HexColor("#168050")
 TEAL = colors.HexColor("#0f766e")
 SOFT = colors.HexColor("#f8fafc")
 
