@@ -137,9 +137,7 @@ export function TopNav() {
           </DropdownMenu>
         </nav>
 
-        <div className="ml-auto flex items-center gap-3">
-          <LanguageToggle />
-        </div>
+
       </div>
     </header>
   );
