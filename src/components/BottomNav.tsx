@@ -87,7 +87,7 @@ export function BottomNav() {
     ...(hasReports
       ? [{ to: "/mis-reportes", label: t("nav.reports"), icon: FolderOpen }]
       : []),
-    { to: "/datos", label: t("nav.data"), icon: BarChart3, desc: t("nav.dataDesc") },
+    { to: "/datos", label: t("nav.data"), icon: BarChart3 },
     { to: "/voluntarios", label: t("nav.volunteers"), icon: HandHeart },
   ];
 
