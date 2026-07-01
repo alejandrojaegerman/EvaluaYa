@@ -854,6 +854,8 @@ const es: Dict = {
   "home.quakeBtn": "Historial de sismos",
   "home.mapBtn": "Mapa comunitario de daños",
   "home.legalNotice": "Orientación preliminar. No reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil. Lee el aviso legal.",
+  "home.officialContactsTitle": "Contactos oficiales de las autoridades",
+  "home.officialContactsBody": "Protección Civil, VEN 9-1-1, FUNVISIS y más. Toca para llamar.",
   "zona.breadcrumbHome": "Inicio",
   "zona.eyebrow": "Reporte regional",
   "zona.h1Prefix": "Daños estructurales en",
