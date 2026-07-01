@@ -277,6 +277,16 @@ export const Route = createFileRoute(
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(articleSchema) },
         { type: "application/ld+json", children: JSON.stringify(faqSchema) },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "Grietas peligrosas: cómo identificarlas",
+              }),
+            ),
+          ),
+        },
       ],
     };
   },
