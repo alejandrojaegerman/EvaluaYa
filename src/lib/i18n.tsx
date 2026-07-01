@@ -919,6 +919,7 @@ const es: Dict = {
   "track.confirmedReopened": "Reactivamos tu caso y avisamos de nuevo a los voluntarios.",
   "track.confirmError": "No se pudo actualizar. Intenta de nuevo.",
   "track.disclaimer": "EvalúaYa es una iniciativa comunitaria independiente, no una autoridad oficial. No podemos garantizar una visita ni un tiempo de respuesta.",
+  "track.viewReport": "Ver mi reporte",
   "vol.title": "Ingenieros voluntarios",
   "vol.subtitle": "Iniciativa comunitaria. Cada familia que pide ayuda tras su autoevaluación siempre recibe la evaluación de un ingeniero voluntario: la orientas primero por videollamada y, si hace falta, con una visita presencial.",
   "vol.how1": "Te registras con tu WhatsApp y los estados que puedes cubrir.",
