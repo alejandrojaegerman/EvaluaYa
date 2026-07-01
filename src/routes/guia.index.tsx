@@ -103,6 +103,12 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
           desc: "Qué revisa la autoevaluación y cómo se calcula el nivel de riesgo.",
         },
         {
+          to: "/contactos-oficiales",
+          icon: Phone,
+          title: "Contactos oficiales",
+          desc: "Protección Civil, VEN 9-1-1, FUNVISIS y más. Toca para llamar.",
+        },
+        {
           to: "/ayuda",
           icon: HelpCircle,
           title: "Ayuda y preguntas frecuentes",
