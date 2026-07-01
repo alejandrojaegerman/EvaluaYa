@@ -67,12 +67,6 @@ export function Footer() {
                 {t("app.name")}
               </span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              {t("footer.tagline")}
-            </p>
-            <p className="mt-2 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              {t("engineers.footerDesc")}
-            </p>
           </div>
 
           {/* Link columns */}
