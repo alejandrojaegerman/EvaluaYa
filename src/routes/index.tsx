@@ -92,6 +92,8 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
+  const ranking = Route.useLoaderData();
+  const stateGroups = splitFeatured(ESTADO_NAMES, ranking.featuredStates);
   const online = useOnline();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [totals, setTotals] = useState<DamageTotals | null>(null);
