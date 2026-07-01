@@ -284,11 +284,26 @@ function Index() {
             <SelectValue placeholder={t("home.stateSelect")} />
           </SelectTrigger>
           <SelectContent>
-            {ESTADOS.map((e) => (
-              <SelectItem key={e.name} value={estadoSlug(e.name)}>
-                {e.name}
-              </SelectItem>
-            ))}
+            {stateGroups.featured.length > 0 && (
+              <SelectGroup>
+                <SelectLabel>{t("picker.mostAffected")}</SelectLabel>
+                {stateGroups.featured.map((name) => (
+                  <SelectItem key={name} value={estadoSlug(name)}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            <SelectGroup>
+              {stateGroups.featured.length > 0 && (
+                <SelectLabel>{t("picker.allAreas")}</SelectLabel>
+              )}
+              {stateGroups.rest.map((name) => (
+                <SelectItem key={name} value={estadoSlug(name)}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </section>
