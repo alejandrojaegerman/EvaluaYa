@@ -76,12 +76,7 @@ function ChecklistStep() {
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [loading, setLoading] = useState(true);
   const [showOptional, setShowOptional] = useState(false);
-  // Legal + data consent, captured here (as late as possible) right before the
-  // analysis. Both required. Pre-checked if the current draft already consented.
-  const [acceptLegal, setAcceptLegal] = useState(false);
-  const [acceptData, setAcceptData] = useState(false);
-  const [consentError, setConsentError] = useState(false);
-  const consentGiven = acceptLegal && acceptData;
+
 
   useEffect(() => {
     trackStep("checklist_started");
