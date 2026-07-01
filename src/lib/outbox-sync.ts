@@ -5,6 +5,7 @@
 // overlapping runs.
 
 import { analyzeAssessment } from "./assessment.functions";
+import { translate } from "./i18n";
 import { getDeviceId } from "./device-id";
 import { addHistory } from "./history";
 import {
