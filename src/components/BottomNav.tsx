@@ -88,20 +88,16 @@ export function BottomNav() {
             <div className="mt-4 grid gap-1">
               <SheetClose asChild>
                 <Link
-                  to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
-                  className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-secondary/60"
+                  to="/mapa"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Waves className="size-4.5" aria-hidden />
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <Map className="size-4.5" aria-hidden />
                   </span>
-                  <span className="flex-1">
-                    {t("nav.today")}
-                    <span className="block text-xs font-normal text-muted-foreground">
-                      {t("nav.todayDesc")}
-                    </span>
-                  </span>
+                  {t("nav.map")}
                 </Link>
               </SheetClose>
+
 
               {hasReports && (
                 <SheetClose asChild>
