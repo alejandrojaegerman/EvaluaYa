@@ -209,6 +209,16 @@ export const Route = createFileRoute("/guia/falla-de-bocono")({
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(article) },
         { type: "application/ld+json", children: JSON.stringify(faqSchema) },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            breadcrumbJsonLd(
+              encyclopediaCrumbs("es", {
+                label: "Falla de Boconó: la principal falla activa de Venezuela",
+              }),
+            ),
+          ),
+        },
       ],
     };
   },
