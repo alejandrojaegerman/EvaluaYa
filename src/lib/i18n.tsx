@@ -860,6 +860,7 @@ const es: Dict = {
   "nav.volunteersShort": "Voluntarios",
   "connect.title": "Pide ayuda de un evaluador voluntario",
   "connect.subtitleRed": "Tus hallazgos son severos. Envía tu caso y un evaluador voluntario de la comunidad lo revisará y te contactará para orientarte. Es gratuito y sin compromiso.",
+  "connect.subtitleOrange": "Tus hallazgos son serios. Envía tu caso y un evaluador voluntario de la comunidad lo revisará pronto y te contactará para orientarte. Es gratuito y sin compromiso.",
   "connect.subtitleYellow": "Envía tu caso y un evaluador voluntario de la comunidad puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
   "connect.reassure": "Evaluadores voluntarios de la comunidad — sin costo.",
   "connect.officialNotice": "La revisión de un voluntario es una orientación visual preliminar, no la evaluación oficial. La etiqueta oficial solo la coloca personal certificado por la autoridad.",
