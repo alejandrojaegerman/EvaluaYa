@@ -156,12 +156,6 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
       heading: "How EvalúaYa works",
       items: [
         {
-          to: "/metodologia",
-          icon: Radar,
-          title: "How the methodology works",
-          desc: "What the self-assessment reviews and how the risk level is calculated.",
-        },
-        {
           to: "/contactos-oficiales",
           icon: Phone,
           title: "Official contacts",
