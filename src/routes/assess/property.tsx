@@ -153,10 +153,8 @@ function PropertyStep() {
       if (p.municipality && municipiosFor(p.state).includes(p.municipality)) {
         setMunicipality(p.municipality);
       }
-      if (draft.resident?.name) setResidentName(draft.resident.name);
-      if (draft.resident?.contact) setResidentContact(draft.resident.contact);
-      if (draft.resident?.contactType)
-        setResidentContactType(draft.resident.contactType);
+
+
 
       if (p.buildingType) setBuildingType(p.buildingType);
       if (p.structuralType) {
