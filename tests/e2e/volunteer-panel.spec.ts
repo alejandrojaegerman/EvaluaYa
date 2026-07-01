@@ -74,26 +74,31 @@ test.describe("engineer panel", () => {
       expect(r?.progress_stage).toBe("visited");
     }).toPass({ timeout: 15_000 });
 
-    // ── Verdict: adjust to red ─────────────────────────────────────────
+    // ── Record professional observations (agree verdict) ───────────────
+    // The current flow records advisory observations and promotes the linked
+    // assessment to a professional report without changing the risk level.
     await page
-      .getByRole("button", { name: "Validar la evaluación de la app" })
+      .getByRole("button", { name: "Registrar observaciones" })
       .click();
-    await page.getByRole("button", { name: "Ajustar nivel" }).click();
-    await page.getByRole("button", { name: "Riesgo alto", exact: true }).click();
-    await page.getByRole("button", { name: "Guardar verdicto" }).click();
+    await page
+      .getByPlaceholder(/Orienté al residente/)
+      .fill("E2E: orienté al residente y recomendé inspección formal.");
+    // Accept the advisory disclaimer, then save.
+    await page.getByRole("checkbox").last().check();
+    await page.getByRole("button", { name: "Guardar observaciones" }).click();
 
-    await expect(page.getByText(/Verdicto guardado/)).toBeVisible({
+    await expect(page.getByText(/Observaciones registradas/)).toBeVisible({
       timeout: 15_000,
     });
 
-    // The linked assessment is now a verified professional report at red,
-    // preserving the original AI level as prior_risk_level.
+    // The linked assessment is now a verified professional report. The risk
+    // level is preserved (advisory observations do not override it).
     await expect(async () => {
       const a = await readAssessment(seed.assessmentPublicId);
       expect(a?.report_type).toBe("professional");
-      expect(a?.engineer_verdict).toBe("adjust");
-      expect(a?.risk_level).toBe("red");
-      expect(a?.prior_risk_level).toBe("yellow");
+      expect(a?.engineer_verdict).toBe("agree");
+      expect(a?.risk_level).toBe("yellow");
     }).toPass({ timeout: 15_000 });
   });
 });
+

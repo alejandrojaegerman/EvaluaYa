@@ -14,8 +14,18 @@ test("resident completes a full assessment and reaches a result", async ({
   // ── Step 1: Property info ────────────────────────────────────────────
   await page.goto("/assess/property");
 
+  // Dismiss the blocking legal + data-consent gate (both checkboxes required).
+  const gate = page.getByRole("dialog");
+  await expect(gate).toBeVisible({ timeout: 15_000 });
+  const consents = gate.getByRole("checkbox");
+  await consents.nth(0).check();
+  await consents.nth(1).check();
+  await gate.getByRole("button", { name: "Aceptar y continuar" }).click();
+  await expect(gate).toBeHidden({ timeout: 10_000 });
+
   // Select estado. Retry until it "sticks" — the controlled <select> only keeps
   // the value once React has hydrated, which can lag the initial SSR paint.
+
   await expect(async () => {
     await page.locator("#estado").selectOption("Miranda");
     await expect(page.locator("#municipio")).toBeEnabled({ timeout: 1000 });
@@ -55,10 +65,11 @@ test("resident completes a full assessment and reaches a result", async ({
   // Allow plenty of time for the real AI call on a slow connection.
   await page.waitForURL(/\/a\/[A-Za-z0-9_-]+/, { timeout: 120_000 });
 
-  // A risk badge with one of the four levels should be present.
+  // A findings badge with one of the four levels should be present. Copy is
+  // findings-based (no verdicts): "Hallazgos leves/moderados/serios/severos".
   await expect(
     page.getByText(
-      /Riesgo bajo|Precaución|Riesgo moderado|Riesgo alto|Low risk|Caution|Moderate risk|High risk/i,
+      /Hallazgos (leves|moderados|serios|severos)|(Minor|Moderate|Serious|Severe) findings/i,
     ).first(),
   ).toBeVisible({ timeout: 20_000 });
 });
