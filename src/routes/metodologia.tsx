@@ -112,6 +112,9 @@ function MethodologyPage() {
 
   return (
     <AppShell>
+      <EncyclopediaBreadcrumb
+        items={encyclopediaCrumbs(lang, { label: t("methodology.title") })}
+      />
       {/* Header */}
       <header>
         <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground">
