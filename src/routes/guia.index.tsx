@@ -215,20 +215,22 @@ const COPY = {
 export const Route = createFileRoute("/guia/")({
   head: () => {
     const { title, description } = META.es;
+    const links = [
+      { title: FEATURED.es.title, to: FEATURED.to },
+      ...GROUPS.es.flatMap((g) => g.items),
+    ];
     const itemList = {
       "@context": "https://schema.org",
       "@type": "ItemList",
       name: "Aprende sobre sismos en Venezuela",
       description,
       url: absoluteUrl(PATH),
-      itemListElement: GROUPS.es
-        .flatMap((g) => g.items)
-        .map((item, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          name: item.title,
-          url: absoluteUrl(item.to),
-        })),
+      itemListElement: links.map((item, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: item.title,
+        url: absoluteUrl(item.to),
+      })),
     };
     return {
       meta: [
