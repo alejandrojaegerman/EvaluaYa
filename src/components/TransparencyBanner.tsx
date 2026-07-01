@@ -8,7 +8,7 @@ import type { RiskLevel } from "@/lib/assessment-types";
 /**
  * Mandatory post-assessment transparency block: makes clear EvalúaYa is only a
  * quick visual check (Phase 0) and channels the resident to the official
- * organisms. Shows an SOS module with priority on Red/Orange results.
+ * organisms. Shows the emergency SOS module only on Red (severe) results.
  */
 export function TransparencyBanner({ riskLevel }: { riskLevel: RiskLevel }) {
   const { t } = useLang();
