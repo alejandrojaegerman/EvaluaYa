@@ -81,9 +81,7 @@ const COPY = {
     ctaBody:
       "Haz una autoevaluación guiada y gratuita en pocos minutos. Sin registro y funciona con poca señal. Recibe un nivel de riesgo y pasos a seguir.",
     ctaButton: "Iniciar autoevaluación",
-    funvisisLink: "Cómo leer un reporte de FUNVISIS",
-    tremorLink: "Qué hacer después de un temblor",
-    mapLink: "Ver el mapa de daños reportados",
+    learnLink: "Aprende qué hacer y cómo revisar tu vivienda",
     unavailableTitle: "No pudimos cargar los sismos en este momento",
     unavailableBody:
       "Vuelve a intentar en unos minutos. Para confirmar un sismo, consulta el reporte oficial de FUNVISIS.",
@@ -119,9 +117,7 @@ const COPY = {
     ctaBody:
       "Run a free, guided self-assessment in a few minutes. No sign-up, works on low bandwidth. Get a risk level and clear next steps.",
     ctaButton: "Start self-assessment",
-    funvisisLink: "How to read a FUNVISIS report",
-    tremorLink: "What to do after a tremor",
-    mapLink: "See the reported-damage map",
+    learnLink: "Learn what to do and how to check your home",
     unavailableTitle: "We couldn't load earthquakes right now",
     unavailableBody:
       "Try again in a few minutes. To confirm a quake, check the official FUNVISIS report.",
