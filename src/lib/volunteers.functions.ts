@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { ESTADO_NAMES } from "./venezuela";
-import { engineerPanelUrl } from "./volunteer-links";
+import { engineerPanelUrl, residentTrackingUrl } from "./volunteer-links";
 import { toWhatsappNumber } from "./phone";
 import type { RiskLevel } from "./assessment-types";
 import type { TablesUpdate } from "@/integrations/supabase/types";
@@ -101,6 +101,8 @@ export type ResidentRequestStatus = {
   engineerNote: string | null;
   assessmentPublicId: string | null;
   residentConfirmedAt: string | null;
+  /** "resolved" once the resident confirms, "unresolved" if they reopened it. */
+  residentConfirmedOutcome: "resolved" | "unresolved" | null;
   aiRiskLevel: RiskLevel | null;
   priorRiskLevel: RiskLevel | null;
   reportType: string | null;
@@ -175,6 +177,40 @@ export type AdminMatchingProgress = {
  */
 function normalizePhone(raw: string): string {
   return toWhatsappNumber(raw);
+}
+
+/**
+ * Best-effort resident status email. Never throws — a failed send must not block
+ * the engineer/resident action that triggered it. Skips silently when the
+ * resident didn't leave an email or there's no tracking token.
+ */
+async function sendResidentStatusEmail(params: {
+  email: string | null | undefined;
+  token: string | null | undefined;
+  stage: "received" | "claimed" | "contacted" | "visited" | "resolved";
+  location: string;
+  engineerName?: string | null;
+  note?: string | null;
+}): Promise<void> {
+  const { email, token, stage } = params;
+  if (!email || !email.trim() || !token) return;
+  try {
+    const { sendSystemEmail } = await import("./notify-email.server");
+    await sendSystemEmail({
+      templateName: "resident-status-update",
+      recipientEmail: email.trim(),
+      idempotencyKey: `resident-${token}-${stage}`,
+      templateData: {
+        stage,
+        location: params.location || "—",
+        engineerName: params.engineerName ?? "",
+        note: params.note ?? "",
+        trackingUrl: residentTrackingUrl(token),
+      },
+    });
+  } catch (err) {
+    console.error("[volunteers] resident status email failed", err);
+  }
 }
 
 const RISK_ORDER: Record<string, number> = { red: 0, orange: 1, yellow: 2, green: 3 };
@@ -564,6 +600,11 @@ const helpSchema = z.object({
     }),
   residentName: z.string().trim().min(2, "required").max(160),
   address: z.string().trim().min(6, "required").max(400),
+  email: z
+    .string()
+    .trim()
+    .max(255)
+    .email("invalid_email"),
   note: z.string().trim().max(600).optional().default(""),
 });
 
@@ -585,6 +626,7 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
           resident_whatsapp: data.whatsapp,
           resident_name: data.residentName,
           resident_address: data.address,
+          resident_email: data.email,
           note: data.note || null,
           status: "open",
         })
@@ -596,6 +638,17 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
       }
       const residentToken =
         (inserted?.resident_token as string | null) ?? undefined;
+
+      // Confirm to the resident that we received the case + tracking link
+      // (best-effort — never blocks the request).
+      await sendResidentStatusEmail({
+        email: data.email,
+        token: residentToken,
+        stage: "received",
+        location:
+          [data.municipality, data.state].filter(Boolean).join(", ") || "—",
+      });
+
 
       // Notify approved engineers covering this estado (best-effort).
       try {
@@ -700,6 +753,11 @@ export const getResidentRequestStatus = createServerFn({ method: "POST" })
         engineerNote: r.engineer_note ?? null,
         assessmentPublicId: r.assessment_public_id ?? null,
         residentConfirmedAt: r.resident_confirmed_at ?? null,
+        residentConfirmedOutcome:
+          (r.resident_confirmed_outcome as
+            | "resolved"
+            | "unresolved"
+            | null) ?? null,
         aiRiskLevel: (r.ai_risk_level as RiskLevel | null) ?? null,
         priorRiskLevel: (r.prior_risk_level as RiskLevel | null) ?? null,
         reportType: r.report_type ?? null,
@@ -732,6 +790,71 @@ export const residentConfirmRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] residentConfirmRequest", error);
         return { ok: false };
       }
+
+      // Resident says it's still not resolved: the RPC reopened the case.
+      // Re-notify covering engineers + alert admin so the loop restarts.
+      if (!data.resolved) {
+        try {
+          const { data: rows } = await supabaseAdmin
+            .from("help_requests")
+            .select(
+              "state, municipality, risk_level, note, assessment_public_id",
+            )
+            .eq("resident_token", data.token)
+            .maybeSingle();
+          const location =
+            [rows?.municipality, rows?.state].filter(Boolean).join(", ") || "—";
+
+          // Re-notify approved engineers covering this estado (best-effort).
+          try {
+            const { data: engineers } = await supabaseAdmin.rpc(
+              "get_engineers_to_notify",
+              { _state: rows?.state || "" },
+            );
+            if (engineers && engineers.length > 0) {
+              const { sendSystemEmail } = await import("./notify-email.server");
+              await Promise.all(
+                engineers.map((eng) =>
+                  sendSystemEmail({
+                    templateName: "help-request-notification",
+                    recipientEmail: eng.email ?? undefined,
+                    templateData: {
+                      engineerName: eng.name ?? "",
+                      riskLevel: rows?.risk_level ?? "",
+                      location,
+                      note: rows?.note || "",
+                      panelUrl: eng.access_token
+                        ? engineerPanelUrl(eng.access_token, "help_reminder")
+                        : "https://evaluaya.app/voluntarios",
+                    },
+                  }).catch(() => undefined),
+                ),
+              );
+            }
+          } catch (notifyErr) {
+            console.error("[volunteers] reopen re-notify failed", notifyErr);
+          }
+
+          const { sendSlackNotification, riskTag } = await import(
+            "./slack-notify.server"
+          );
+          await sendSlackNotification({
+            emoji: "↩️",
+            title: "Caso reabierto por el residente",
+            context: "El residente indicó que su caso NO quedó resuelto",
+            fields: [
+              { label: "Riesgo", value: riskTag(rows?.risk_level) },
+              { label: "Ubicación", value: location },
+            ],
+            url: "/admin/voluntarios",
+            buttonLabel: "Ir a triaje",
+            urgent: rows?.risk_level === "red" || rows?.risk_level === "orange",
+          });
+        } catch (notifyErr) {
+          console.error("[volunteers] reopen notify failed", notifyErr);
+        }
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] residentConfirmRequest failed", e);
@@ -1052,6 +1175,26 @@ export const claimHelpRequest = createServerFn({ method: "POST" })
         console.error("[volunteers] claimHelpRequest", error);
         return { ok: false };
       }
+
+      // Let the resident know a volunteer took their case (best-effort).
+      try {
+        const { data: row } = await supabaseAdmin
+          .from("help_requests")
+          .select("state, municipality, resident_email, resident_token")
+          .eq("id", data.requestId)
+          .maybeSingle();
+        await sendResidentStatusEmail({
+          email: row?.resident_email,
+          token: row?.resident_token,
+          stage: "claimed",
+          location:
+            [row?.municipality, row?.state].filter(Boolean).join(", ") || "—",
+          engineerName: engineer.name,
+        });
+      } catch (notifyErr) {
+        console.error("[volunteers] claim resident notify failed", notifyErr);
+      }
+
       return { ok: true };
     } catch (e) {
       console.error("[volunteers] claimHelpRequest failed", e);
@@ -1123,19 +1266,33 @@ export const updateRequestProgress = createServerFn({ method: "POST" })
         return { ok: false };
       }
 
+      // Load resident + location once for the resident email and Slack alert.
+      const { data: row } = await supabaseAdmin
+        .from("help_requests")
+        .select(
+          "state, municipality, risk_level, resident_email, resident_token",
+        )
+        .eq("id", data.requestId)
+        .maybeSingle();
+      const location =
+        [row?.municipality, row?.state].filter(Boolean).join(", ") || "—";
+
+      // Keep the resident in the loop at every stage (best-effort).
+      await sendResidentStatusEmail({
+        email: row?.resident_email,
+        token: row?.resident_token,
+        stage: data.stage,
+        location,
+        engineerName: engineer.name,
+        note: data.note || null,
+      });
+
       // Notify the site team in Slack when a request is resolved (best-effort).
       if (data.stage === "resolved") {
         try {
-          const { data: row } = await supabaseAdmin
-            .from("help_requests")
-            .select("state, municipality, risk_level")
-            .eq("id", data.requestId)
-            .maybeSingle();
           const { sendSlackNotification, riskTag } = await import(
             "./slack-notify.server"
           );
-          const location =
-            [row?.municipality, row?.state].filter(Boolean).join(", ") || "—";
           await sendSlackNotification({
             emoji: "✅",
             title: "Solicitud de ayuda resuelta",

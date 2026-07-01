@@ -64,10 +64,12 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
 
   const [residentName, setResidentName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState(buildPrefill);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [trackingToken, setTrackingToken] = useState<string | null>(null);
   // One-time legal acknowledgement: ask once, then never interrupt again.
   const [alreadyAcked] = useState(hasLegalAck);
   const [acked, setAcked] = useState(false);
@@ -85,12 +87,14 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
           riskLevel: record.riskLevel,
           whatsapp,
           residentName,
+          email,
           address,
           note,
         },
       });
       if (res.ok) {
         setLegalAck();
+        setTrackingToken(res.residentToken ?? null);
         setSent(true);
         toast.success(t("connect.requestDone"));
       } else {
@@ -143,10 +147,21 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
       {/* Request a verified engineer */}
       <div className="mt-5">
         {sent ? (
-          <p className="flex items-center gap-2 rounded-xl border border-risk-green/30 bg-risk-green-soft/50 p-3 text-sm font-medium text-risk-green">
-            <CheckCircle2 className="size-5 shrink-0" aria-hidden />
-            {t("connect.requestDone")}
-          </p>
+          <div className="rounded-xl border border-risk-green/30 bg-risk-green-soft/50 p-3">
+            <p className="flex items-center gap-2 text-sm font-medium text-risk-green">
+              <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+              {t("connect.requestDone")}
+            </p>
+            {trackingToken && (
+              <Link
+                to="/seguimiento/$token"
+                params={{ token: trackingToken }}
+                className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-risk-green/40 bg-card px-3 py-2 text-sm font-semibold text-risk-green underline-offset-2 hover:underline"
+              >
+                {t("connect.trackCta")}
+              </Link>
+            )}
+          </div>
         ) : (
           <form
             onSubmit={onSubmit}
@@ -196,6 +211,27 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
               />
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("connect.whatsappHint")}
+              </p>
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="hr-email">
+                {t("connect.yourEmail")}{" "}
+                <span className="font-normal text-destructive">*</span>
+              </Label>
+              <Input
+                id="hr-email"
+                type="email"
+                inputMode="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t("connect.emailPlaceholder")}
+                required
+                maxLength={255}
+                autoComplete="email"
+                className="mt-1.5"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("connect.emailHint")}
               </p>
             </div>
             <div className="mt-3">
@@ -258,6 +294,7 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
                 (!alreadyAcked && !acked) ||
                 residentName.trim().length < 2 ||
                 whatsapp.trim().length < 7 ||
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
                 address.trim().length < 6
               }
               className="mt-3 w-full"

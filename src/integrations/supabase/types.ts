@@ -338,6 +338,8 @@ export type Database = {
           reminder_count: number
           resident_address: string | null
           resident_confirmed_at: string | null
+          resident_confirmed_outcome: string | null
+          resident_email: string | null
           resident_name: string | null
           resident_token: string
           resident_whatsapp: string
@@ -364,6 +366,8 @@ export type Database = {
           reminder_count?: number
           resident_address?: string | null
           resident_confirmed_at?: string | null
+          resident_confirmed_outcome?: string | null
+          resident_email?: string | null
           resident_name?: string | null
           resident_token?: string
           resident_whatsapp: string
@@ -390,6 +394,8 @@ export type Database = {
           reminder_count?: number
           resident_address?: string | null
           resident_confirmed_at?: string | null
+          resident_confirmed_outcome?: string | null
+          resident_email?: string | null
           resident_name?: string | null
           resident_token?: string
           resident_whatsapp?: string
@@ -968,6 +974,7 @@ export type Database = {
           progress_updated_at: string
           report_type: string
           resident_confirmed_at: string
+          resident_confirmed_outcome: string
           risk_level: string
           state: string
           status: string
