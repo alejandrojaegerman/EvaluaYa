@@ -30,7 +30,7 @@ const es: Dict = {
 
   "home.heroTitle": "Evalúa la seguridad de tu vivienda",
   "home.heroSubtitle":
-    "Una guía paso a paso para revisar daños estructurales después de un terremoto. Sin registro. Funciona con poca señal.",
+    "Revisa los daños de tu casa en minutos con una guía paso a paso y conéctate con un ingeniero civil voluntario.",
   "home.startCta": "Iniciar evaluación",
   "home.howTitle": "Cómo funciona",
   "home.how1Title": "Datos de la propiedad",
@@ -1628,7 +1628,7 @@ const en: Dict = {
 
   "home.heroTitle": "Check whether your home is safe",
   "home.heroSubtitle":
-    "A step-by-step guide to review structural damage after an earthquake. No sign-up. Works on low bandwidth.",
+    "Review your home's damage in minutes with a step-by-step guide and connect with a volunteer civil engineer.",
   "home.startCta": "Start assessment",
   "home.howTitle": "How it works",
   "home.how1Title": "Property details",
