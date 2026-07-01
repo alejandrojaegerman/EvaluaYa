@@ -359,53 +359,8 @@ function ChecklistStep() {
         onView={openDamageLightbox}
       />
 
-      {/* Extra context signals — self-explanatory checklist, stored apart */}
-      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <h2 className="font-display text-base font-bold">
-          {t("checklist.signalsTitle")}
-        </h2>
-        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-          {t("checklist.signalsHint")}
-        </p>
-        <div className="mt-3 space-y-2">
-          {CONTEXT_SIGNALS.map((key) => {
-            const checked = selectedTags.includes(key);
-            return (
-              <button
-                key={key}
-                type="button"
-                role="checkbox"
-                aria-checked={checked}
-                onClick={() =>
-                  setSelectedTags((prev) =>
-                    prev.includes(key)
-                      ? prev.filter((k) => k !== key)
-                      : [...prev, key],
-                  )
-                }
-                className={cn(
-                  "flex w-full items-start gap-3 rounded-xl border bg-background p-3 text-left transition-colors",
-                  checked ? "border-primary bg-primary/5" : "border-border",
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors",
-                    checked
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-muted-foreground/40",
-                  )}
-                >
-                  {checked && <Check className="size-3.5" strokeWidth={3} />}
-                </span>
-                <span className="min-w-0 text-sm font-medium leading-snug">
-                  {t(`checklist.suggest.${key}`)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+
+
 
       {/* Optional free-text comments */}
       <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
