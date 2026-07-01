@@ -299,7 +299,7 @@ function GuideHub() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
-            <Clock className="size-3" aria-hidden />
+            <ShieldCheck className="size-3" aria-hidden />
             {featured.badge}
           </span>
           <span className="mt-1 block font-display font-bold leading-tight">
