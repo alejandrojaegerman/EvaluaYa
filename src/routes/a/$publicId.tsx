@@ -27,6 +27,7 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { SaveReportsCard } from "@/components/SaveReportsCard";
 import { SameBuildingCard } from "@/components/SameBuildingCard";
+import { TransparencyBanner } from "@/components/TransparencyBanner";
 import { Button } from "@/components/ui/button";
 import { getAssessment } from "@/lib/assessment.functions";
 import type { AssessmentRecord } from "@/lib/assessment-types";
