@@ -340,6 +340,7 @@ const es: Dict = {
   "checklist.missingDamage": "Agrega al menos {n} fotos de los daños para continuar.",
   // Clasificación de cada foto de daño (dropdown)
   "checklist.photoCategoryLabel": "¿Qué muestra esta foto?",
+  "checklist.photoCategoryHeader": "Etiqueta para el ingeniero",
   "checklist.cat.walls": "Paredes",
   "checklist.cat.columns_beams": "Columnas y vigas",
   "checklist.cat.doors_windows": "Puertas y ventanas",
@@ -348,28 +349,50 @@ const es: Dict = {
   "checklist.cat.foundation": "Cimientos",
   "checklist.cat.plumbing": "Plomería / gas",
   "checklist.cat.other": "Otro / general",
-  // Guía "qué fotos le sirven al ingeniero"
+  // Guía "qué fotos le sirven al ingeniero" (ejemplos visuales)
   "checklist.usefulToggle": "¿Qué fotos le sirven al ingeniero?",
-  "checklist.usefulIntro": "Tómalas pensando en lo que el ingeniero necesita ver:",
-  "checklist.useful.1":
-    "Grietas: ponlas a foco, con algo de referencia de tamaño al lado (una mano, una moneda, una regla) para ver el ancho.",
-  "checklist.useful.2":
-    "Columnas y vigas: muestra el concreto desprendido y el acero (cabilla) a la vista, de lejos y de cerca.",
-  "checklist.useful.3":
-    "Uniones y esquinas: donde se juntan paredes, columnas y techos suele verse el daño real.",
-  "checklist.useful.4":
-    "Cada daño desde 2 ángulos: una toma general para ubicarlo y una cercana del detalle.",
-  "checklist.useful.5":
-    "Buena luz y sin movimiento: si sale borrosa o muy oscura, repítela.",
+  "checklist.usefulIntro":
+    "Así se ve una foto útil. Tómalas pensando en lo que el ingeniero necesita ver:",
+  "checklist.usefulEx.scale.title": "Con referencia de tamaño",
+  "checklist.usefulEx.scale.desc":
+    "Pon una mano, moneda o regla al lado de la grieta para ver el ancho.",
+  "checklist.usefulEx.rebar.title": "Concreto y cabilla a la vista",
+  "checklist.usefulEx.rebar.desc":
+    "En columnas y vigas, muestra el concreto desprendido y el acero expuesto.",
+  "checklist.usefulEx.joint.title": "Uniones y esquinas",
+  "checklist.usefulEx.joint.desc":
+    "Donde se juntan pared, columna y techo suele verse el daño real.",
+  "checklist.usefulEx.wideClose.title": "De lejos y de cerca",
+  "checklist.usefulEx.wideClose.desc":
+    "Una toma general para ubicar el daño y otra cercana del detalle.",
   // Lightbox / ver foto completa
   "checklist.viewPhoto": "Ver foto completa",
   // Validación de imagen
   "checklist.invalidFile": "Solo se permiten imágenes (JPG, PNG).",
   "checklist.unreadableImage": "No pudimos leer esa imagen. Intenta con otra.",
   "checklist.commentsTitle": "Comentarios adicionales (opcional)",
+  "checklist.commentsHint":
+    "Cuéntale al ingeniero lo que la foto no muestra. Toca una sugerencia para empezar:",
   "checklist.commentsPlaceholder":
-    "Ej.: ¿Cuándo aparecieron las grietas? ¿Crecieron tras una réplica? ¿En qué piso vives? ¿La estructura es de concreto o de bloque? ¿Hay daños en áreas comunes (escaleras, estacionamiento)? ¿Sentiste que la edificación se movió raro?",
+    "Ej.: Las grietas crecieron después de una réplica. Se escuchan crujidos nuevos. La escalera del edificio está afectada. Hay personas mayores en el apartamento.",
+  // Chips de sugerencias (insertan una pregunta-guía en el comentario)
+  "checklist.suggest.aftershock": "Réplicas",
+  "checklist.suggest.aftershock.text":
+    "¿Las grietas crecieron o aparecieron nuevas tras una réplica?",
+  "checklist.suggest.noises": "Ruidos nuevos",
+  "checklist.suggest.noises.text":
+    "¿Escuchas crujidos o ruidos que antes no estaban?",
+  "checklist.suggest.common": "Áreas comunes",
+  "checklist.suggest.common.text":
+    "¿Hay daños en áreas comunes (escaleras, estacionamiento, ascensor, tanque)?",
+  "checklist.suggest.people": "Personas vulnerables",
+  "checklist.suggest.people.text":
+    "¿Hay personas mayores, niños o con movilidad reducida en la edificación?",
+  "checklist.suggest.evacuated": "Ya evacuada",
+  "checklist.suggest.evacuated.text":
+    "¿La edificación ya fue evacuada o señalizada por las autoridades?",
   // Photo-carrier labels (used by the AI prompt)
+
   "item.facade.area": "Fachada",
   "item.facade.q": "Foto del edificio completo desde afuera.",
   "item.damage_photos.area": "Fotos de daños",
@@ -1908,6 +1931,7 @@ const en: Dict = {
   "checklist.missingDamage": "Add at least {n} damage photos to continue.",
   // Per-photo classification (dropdown)
   "checklist.photoCategoryLabel": "What does this photo show?",
+  "checklist.photoCategoryHeader": "Label for the engineer",
   "checklist.cat.walls": "Walls",
   "checklist.cat.columns_beams": "Columns & beams",
   "checklist.cat.doors_windows": "Doors & windows",
@@ -1916,28 +1940,50 @@ const en: Dict = {
   "checklist.cat.foundation": "Foundation",
   "checklist.cat.plumbing": "Plumbing / gas",
   "checklist.cat.other": "Other / general",
-  // "Which photos help the engineer" guide
+  // "Which photos help the engineer" guide (visual examples)
   "checklist.usefulToggle": "Which photos help the engineer?",
-  "checklist.usefulIntro": "Take them thinking about what the engineer needs to see:",
-  "checklist.useful.1":
-    "Cracks: in focus, with something for scale next to them (a hand, a coin, a ruler) so the width is clear.",
-  "checklist.useful.2":
-    "Columns and beams: show spalled concrete and exposed rebar, from far and up close.",
-  "checklist.useful.3":
-    "Joints and corners: where walls, columns and roofs meet is where real damage usually shows.",
-  "checklist.useful.4":
-    "Each damage from 2 angles: a wide shot to locate it and a close-up of the detail.",
-  "checklist.useful.5":
-    "Good light and no motion blur: if it comes out blurry or too dark, retake it.",
+  "checklist.usefulIntro":
+    "This is what a useful photo looks like. Take them thinking about what the engineer needs to see:",
+  "checklist.usefulEx.scale.title": "With size reference",
+  "checklist.usefulEx.scale.desc":
+    "Put a hand, coin or ruler next to the crack so the width is clear.",
+  "checklist.usefulEx.rebar.title": "Concrete and rebar exposed",
+  "checklist.usefulEx.rebar.desc":
+    "On columns and beams, show spalled concrete and exposed steel.",
+  "checklist.usefulEx.joint.title": "Joints and corners",
+  "checklist.usefulEx.joint.desc":
+    "Where wall, column and roof meet is where real damage shows.",
+  "checklist.usefulEx.wideClose.title": "Wide and close-up",
+  "checklist.usefulEx.wideClose.desc":
+    "One wide shot to locate the damage and one close-up of the detail.",
   // Lightbox / view full photo
   "checklist.viewPhoto": "View full photo",
   // Image validation
   "checklist.invalidFile": "Only images are allowed (JPG, PNG).",
   "checklist.unreadableImage": "We couldn't read that image. Try another one.",
   "checklist.commentsTitle": "Additional comments (optional)",
+  "checklist.commentsHint":
+    "Tell the engineer what the photo can't show. Tap a suggestion to start:",
   "checklist.commentsPlaceholder":
-    "E.g.: When did the cracks appear? Did they grow after an aftershock? What floor do you live on? Is the structure concrete or block? Any damage in common areas (stairs, parking)? Did the building move oddly?",
+    "E.g.: The cracks grew after an aftershock. There are new creaking sounds. The building stairwell is affected. There are elderly people in the apartment.",
+  // Suggestion chips (insert a guiding question into the comment)
+  "checklist.suggest.aftershock": "Aftershocks",
+  "checklist.suggest.aftershock.text":
+    "Did the cracks grow or appear after an aftershock?",
+  "checklist.suggest.noises": "New noises",
+  "checklist.suggest.noises.text":
+    "Do you hear creaking or noises that weren't there before?",
+  "checklist.suggest.common": "Common areas",
+  "checklist.suggest.common.text":
+    "Any damage in common areas (stairs, parking, elevator, water tank)?",
+  "checklist.suggest.people": "Vulnerable people",
+  "checklist.suggest.people.text":
+    "Are there elderly people, children or people with reduced mobility in the building?",
+  "checklist.suggest.evacuated": "Already evacuated",
+  "checklist.suggest.evacuated.text":
+    "Has the building already been evacuated or tagged by the authorities?",
   // Photo-carrier labels (used by the AI prompt)
+
   "item.facade.area": "Facade",
   "item.facade.q": "Photo of the whole building from outside.",
   "item.damage_photos.area": "Damage photos",

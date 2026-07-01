@@ -11,6 +11,7 @@ import {
   Images,
   Maximize2,
   Lightbulb,
+  Tag,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ import {
 } from "@/lib/image-utils";
 import { useLang } from "@/lib/i18n";
 import { CHECKLIST_ILLUSTRATIONS } from "@/lib/checklist-illustrations";
+import { PHOTO_GUIDE_EXAMPLES } from "@/lib/photo-guide-examples";
 import { trackStep } from "@/lib/track";
 import { CHECKLIST_GLOSSARY } from "@/lib/glossary";
 import { GlossaryTerm } from "@/components/GlossaryTerm";
@@ -51,6 +53,17 @@ import { cn } from "@/lib/utils";
 // deterministic rules + AI prompt + analytics keep working unchanged.
 const PRIMARY_ITEMS = PRIMARY_QUESTION_IDS;
 const SEVERE_ITEMS = SEVERE_SIGN_IDS;
+
+// Tappable suggestion chips for the "additional comments" field. Each inserts a
+// guiding question the resident may not have thought to mention — extra context
+// the engineer values that isn't captured anywhere else in the flow.
+const COMMENT_SUGGESTIONS = [
+  "aftershock",
+  "noises",
+  "common",
+  "people",
+  "evacuated",
+] as const;
 
 // Reserved photo-carrier ids for the consolidated photo section.
 const FACADE_ID: ChecklistItemId = "facade";
@@ -344,6 +357,30 @@ function ChecklistStep() {
         <label htmlFor="comments" className="block text-sm font-semibold">
           {t("checklist.commentsTitle")}
         </label>
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+          {t("checklist.commentsHint")}
+        </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {COMMENT_SUGGESTIONS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => {
+                const line = t(`checklist.suggest.${key}.text`);
+                setComments((prev) => {
+                  if (prev.includes(line)) return prev;
+                  const next = prev.trim()
+                    ? `${prev.trim()}\n${line} `
+                    : `${line} `;
+                  return next.slice(0, 1000);
+                });
+              }}
+              className="rounded-full border border-primary/30 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+            >
+              + {t(`checklist.suggest.${key}`)}
+            </button>
+          ))}
+        </div>
         <textarea
           id="comments"
           value={comments}
@@ -353,6 +390,7 @@ function ChecklistStep() {
           className="mt-2 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
         />
       </div>
+
 
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
@@ -576,7 +614,6 @@ function ExampleBlock({ id }: { id: ChecklistItemId }) {
 function UsefulPhotosTip() {
   const { t } = useLang();
   const [open, setOpen] = useState(false);
-  const tips = ["1", "2", "3", "4", "5"];
 
   return (
     <div className="mt-3 rounded-2xl border border-primary/20 bg-primary/5 p-3">
@@ -593,21 +630,41 @@ function UsefulPhotosTip() {
         />
       </button>
       {open && (
-        <div className="mt-2.5 space-y-2 text-xs leading-relaxed text-foreground/90">
-          <p className="text-muted-foreground">{t("checklist.usefulIntro")}</p>
-          <ul className="space-y-1.5">
-            {tips.map((n) => (
-              <li key={n} className="flex gap-2">
-                <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                <span>{t(`checklist.useful.${n}`)}</span>
-              </li>
+        <div className="mt-2.5 space-y-3">
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {t("checklist.usefulIntro")}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {PHOTO_GUIDE_EXAMPLES.map((ex) => (
+              <figure
+                key={ex.titleKey}
+                className="overflow-hidden rounded-xl border border-border bg-card"
+              >
+                <img
+                  src={ex.img}
+                  alt={t(ex.titleKey)}
+                  loading="lazy"
+                  width={816}
+                  height={816}
+                  className="aspect-square w-full object-cover"
+                />
+                <figcaption className="p-2">
+                  <p className="text-xs font-semibold leading-tight">
+                    {t(ex.titleKey)}
+                  </p>
+                  <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                    {t(ex.descKey)}
+                  </p>
+                </figcaption>
+              </figure>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>
   );
 }
+
 
 /* ------------------------------------------------------------------ */
 /* Required facade gallery (min 1, max MAX_FACADE_PHOTOS)               */
@@ -820,37 +877,54 @@ function DamageGallery({
 
       {photos.length > 0 && (
         <div className="mt-3 grid grid-cols-2 gap-3">
-          {photos.map((p, i) => (
-            <div key={i} className="space-y-1.5">
-              <PhotoThumb
-                src={p.url}
-                index={i}
-                label={`${t("checklist.damageTitle")} ${i + 1}`}
-                onView={() => onView(i)}
-                onRemove={() => removeAt(i)}
-              />
-              <label className="sr-only" htmlFor={`cat-${i}`}>
-                {t("checklist.photoCategoryLabel")}
-              </label>
-              <select
-                id={`cat-${i}`}
-                value={p.category}
-                onChange={(e) =>
-                  setCategory(i, e.target.value as DamageCategory)
-                }
-                aria-label={t("checklist.photoCategoryLabel")}
-                className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs font-medium outline-none focus:border-primary"
+          {photos.map((p, i) => {
+            const tagged = p.category !== DEFAULT_DAMAGE_CATEGORY;
+            return (
+              <div
+                key={i}
+                className="space-y-1.5 rounded-xl border border-border bg-background p-1.5"
               >
-                {DAMAGE_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {t(`checklist.cat.${cat}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
+                <PhotoThumb
+                  src={p.url}
+                  index={i}
+                  label={`${t("checklist.damageTitle")} ${i + 1}`}
+                  badge={tagged ? t(`checklist.cat.${p.category}`) : null}
+                  onView={() => onView(i)}
+                  onRemove={() => removeAt(i)}
+                />
+                <label
+                  htmlFor={`cat-${i}`}
+                  className="flex items-center gap-1 px-0.5 text-[11px] font-semibold text-muted-foreground"
+                >
+                  <Tag className="size-3" />
+                  {t("checklist.photoCategoryHeader")}
+                </label>
+                <select
+                  id={`cat-${i}`}
+                  value={p.category}
+                  onChange={(e) =>
+                    setCategory(i, e.target.value as DamageCategory)
+                  }
+                  aria-label={t("checklist.photoCategoryLabel")}
+                  className={cn(
+                    "w-full rounded-lg border px-2 py-1.5 text-xs font-semibold outline-none focus:border-primary",
+                    tagged
+                      ? "border-primary/40 bg-primary/5 text-primary"
+                      : "border-border bg-background text-muted-foreground",
+                  )}
+                >
+                  {DAMAGE_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {t(`checklist.cat.${cat}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            );
+          })}
         </div>
       )}
+
 
       {canAddMore && (
         <PhotoButtons
@@ -879,12 +953,14 @@ function PhotoThumb({
   src,
   index,
   label,
+  badge,
   onView,
   onRemove,
 }: {
   src: string;
   index: number;
   label: string;
+  badge?: string | null;
   onView: () => void;
   onRemove: () => void;
 }) {
@@ -917,6 +993,11 @@ function PhotoThumb({
             <Maximize2 className="size-3" />
             {index + 1}
           </span>
+          {badge && (
+            <span className="absolute left-1 top-1 max-w-[85%] truncate rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground shadow-sm">
+              {badge}
+            </span>
+          )}
         </button>
       )}
       <button
