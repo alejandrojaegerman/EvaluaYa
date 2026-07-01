@@ -94,6 +94,10 @@ function ChecklistStep() {
         return;
       }
       setDraft(d);
+      if (d.consent) {
+        setAcceptLegal(true);
+        setAcceptData(true);
+      }
       const initial: AnswerMap = {};
       for (const a of d.answers) {
         initial[a.id] = {
