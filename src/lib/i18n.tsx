@@ -1166,6 +1166,9 @@ const es: Dict = {
   "connect.subtitleYellow":
     "Envía tu caso y un evaluador voluntario de la comunidad puede ayudarte a interpretar estos hallazgos. Es gratuito y sin compromiso.",
   "connect.reassure": "Evaluadores voluntarios de la comunidad — sin costo.",
+  "connect.officialNotice":
+    "La revisión de un voluntario es una orientación visual preliminar, no la evaluación oficial. La etiqueta oficial solo la coloca personal certificado por la autoridad.",
+  "connect.officialNoticeLink": "Ver contactos oficiales",
   "connect.requestTitle": "Solicitar a un evaluador voluntario",
   "connect.requestBody":
     "Deja tu WhatsApp y compartiremos tu reporte con evaluadores voluntarios de la comunidad registrados. Uno de ellos tomará tu caso y te contactará.",
