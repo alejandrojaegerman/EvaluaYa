@@ -228,47 +228,30 @@ function Index() {
         </section>
       )}
 
-      {/* Community map CTA */}
-      <section className="mt-4">
-        <Link
-          to="/mapa"
-          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
-        >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
-            <MapIcon className="size-5" aria-hidden />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-tight">{t("home.mapTitle")}</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {t("home.mapDesc")}
-            </p>
-          </div>
-          <ChevronRight
-            className="size-4 shrink-0 text-muted-foreground"
-            aria-hidden
-          />
-        </Link>
-      </section>
-
       {/* Explore your state — regional landing pages for discovery + SEO */}
       <section className="mt-6">
         <h2 className="font-display text-lg font-bold">{t("home.exploreTitle")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("home.exploreDesc")}
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {ESTADOS.map((e) => (
-            <Link
-              key={e.name}
-              to="/zona/$estado"
-              params={{ estado: estadoSlug(e.name) }}
-              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-foreground"
-            >
-              {e.name}
-            </Link>
-          ))}
-        </div>
+        <Select
+          onValueChange={(slug) =>
+            navigate({ to: "/zona/$estado", params: { estado: slug } })
+          }
+        >
+          <SelectTrigger className="mt-3 w-full">
+            <SelectValue placeholder={t("home.stateSelect")} />
+          </SelectTrigger>
+          <SelectContent>
+            {ESTADOS.map((e) => (
+              <SelectItem key={e.name} value={estadoSlug(e.name)}>
+                {e.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </section>
+
 
 
 
