@@ -9,7 +9,7 @@ import {
   Clock,
   Info,
   MapPin,
-  Radar,
+  
   Waves,
 } from "lucide-react";
 
@@ -202,11 +202,7 @@ export function LiveQuakesPage({ feed }: { feed: QuakeFeed }) {
   return (
     <AppShell>
       <header>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
-          <Radar className="size-3.5" aria-hidden />
-          {c.kicker}
-        </span>
-        <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight">
+        <h1 className="font-display text-2xl font-extrabold tracking-tight">
           {c.h1}
         </h1>
       </header>
