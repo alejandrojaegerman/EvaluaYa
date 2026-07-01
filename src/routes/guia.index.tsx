@@ -202,10 +202,10 @@ const COPY = {
       "EvalúaYa es una herramienta comunitaria gratuita. Orienta pero no reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil.",
   },
   en: {
-    kicker: "Encyclopedia",
     h1: "Encyclopedia",
     intro:
-      "Everything in one place: what to do after a tremor, how to check your home, understanding earthquakes in Venezuela, and how EvalúaYa works. Clear, free guides.",
+      "Everything in one place: what to do after a tremor, how to check your home, and understanding earthquakes in Venezuela. Clear, free guides.",
+    methodologyLink: "How does EvalúaYa work? See the methodology",
     ctaTitle: "Felt a tremor?",
     ctaBody:
       "Run a free, guided self-assessment in a few minutes. Get guidance and clear next steps.",
