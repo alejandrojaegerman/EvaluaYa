@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { BottomNav } from "./BottomNav";
 import { Footer } from "./Footer";
-import { LanguageToggle } from "./LanguageToggle";
+
 import { OfflineBanner } from "./OfflineBanner";
 import { TopNav } from "./TopNav";
 import { useOnline } from "@/hooks/use-online";
@@ -64,7 +64,7 @@ export function AppShell({
                 {online ? t("common.online") : t("common.offline")}
               </span>
             </span>
-            <LanguageToggle />
+
           </div>
         </div>
       </header>
