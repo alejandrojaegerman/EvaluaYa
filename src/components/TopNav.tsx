@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ClipboardCheck,
   FolderOpen,
+  GraduationCap,
   HandHeart,
   LifeBuoy,
   Map,
