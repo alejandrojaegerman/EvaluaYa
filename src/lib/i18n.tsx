@@ -1132,11 +1132,11 @@ const es: Dict = {
   "methodology.source.urm":
     "Consenso de ingeniería sísmica sobre la vulnerabilidad de la mampostería no reforzada y los pisos blandos.",
   "methodology.source.ai":
-    "Modelo de visión por IA a través de Lovable AI Gateway, usado para el triaje preliminar (no es un certificador).",
+    "Modelo de visión por IA a través de Lovable AI Gateway, usado como apoyo para el triaje preliminar. No es un certificador ni emite un dictamen.",
 
   "methodology.limitsTitle": "Límites y responsabilidad compartida",
   "methodology.limit.notCert":
-    "Esto NO es una certificación ni reemplaza a un ingeniero colegiado o a Protección Civil. Es una orientación preliminar.",
+    "Esto NO es una certificación ni un dictamen, y no reemplaza a un ingeniero colegiado ni a Protección Civil. Son hallazgos visuales preliminares para orientarte.",
   "methodology.limit.surface":
     "Solo evalúa lo visible que reportas. No inspecciona elementos ocultos, fundaciones enterradas ni el interior de los muros.",
   "methodology.limit.depends":
