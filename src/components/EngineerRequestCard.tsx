@@ -8,6 +8,8 @@ import {
   ClipboardCheck,
   Circle,
   Landmark,
+  User,
+  Home,
 } from "lucide-react";
 import { useState } from "react";
 
