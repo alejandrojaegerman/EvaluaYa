@@ -417,11 +417,10 @@ function Index() {
         </section>
       )}
 
-      {/* Legal notice — hidden on mobile (reachable via "Más" menu + footer) so
-          the mobile flow stays focused on driving evaluations. */}
+      {/* Legal notice — compact info icon + link, shown on all viewports. */}
       <Link
         to="/legal"
-        className="mt-8 hidden items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-accent/40 sm:flex"
+        className="mt-8 flex items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-accent/40"
       >
         <Info className="size-4 shrink-0 text-risk-yellow" aria-hidden />
         <span className="flex-1 leading-relaxed">{t("home.legalNotice")}</span>
