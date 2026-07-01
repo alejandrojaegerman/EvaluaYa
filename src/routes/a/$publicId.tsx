@@ -87,6 +87,13 @@ function ResultPage() {
   };
   const { t } = useLang();
   const navigate = useNavigate();
+  const [cardBusy, setCardBusy] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Funnel: resident reached the final result — the completed conversion.
+  useEffect(() => {
+    trackStep("result_reached");
+  }, []);
 
   if (!record) {
     return (
@@ -106,8 +113,6 @@ function ResultPage() {
   }
 
   const theme = RISK_THEME[record.riskLevel];
-  const [cardBusy, setCardBusy] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   // Flatten all photos into a single ordered list for the gallery + lightbox,
   // so the engineer can open any photo and swipe through the whole case.
@@ -120,11 +125,6 @@ function ResultPage() {
         caption: t(`item.${a.id}.area`),
       })),
     );
-
-  // Funnel: resident reached the final result — the completed conversion.
-  useEffect(() => {
-    trackStep("result_reached");
-  }, []);
 
   async function handleShare() {
     const url = withUtm(`/a/${record!.publicId}`, {
