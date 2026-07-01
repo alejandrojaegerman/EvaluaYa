@@ -829,7 +829,7 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
       const { data: rows, error } = await supabaseAdmin
         .from("help_requests")
         .select(
-          "id, public_id, assessment_public_id, state, municipality, risk_level, resident_whatsapp, note, status, claimed_by, created_at, progress_stage, engineer_note, progress_updated_at",
+          "id, public_id, assessment_public_id, state, municipality, risk_level, resident_whatsapp, resident_name, resident_address, note, status, claimed_by, created_at, progress_stage, engineer_note, progress_updated_at",
         )
         .in("status", ["open", "claimed"])
         .order("created_at", { ascending: false })
@@ -941,6 +941,8 @@ export const getEngineerPanel = createServerFn({ method: "POST" })
           riskLevel: (r.risk_level as RiskLevel | null) ?? null,
           // Resident contact is only revealed after this engineer claims it.
           residentWhatsapp: mine ? r.resident_whatsapp : null,
+          residentName: mine ? r.resident_name : null,
+          residentAddress: mine ? r.resident_address : null,
           note: r.note,
           status: r.status as "open" | "claimed" | "closed",
           claimedByMe: mine,
