@@ -11,6 +11,8 @@ import {
   Map,
   MessageSquareHeart,
   MoreHorizontal,
+  Scale,
+  ShieldQuestion,
   Waves,
   Wifi,
   WifiOff,
@@ -54,33 +56,23 @@ export function BottomNav() {
         </Link>
 
         <Link
-          to="/mapa"
+          to="/assess/property"
           className={tabClass}
           activeProps={{ "data-status": "active" }}
         >
-          <Map className="size-5" aria-hidden />
-          <span>{t("nav.map")}</span>
+          <ClipboardCheck className="size-5" aria-hidden />
+          <span>{t("nav.evaluate")}</span>
         </Link>
 
-        {hasReports ? (
-          <Link
-            to="/mis-reportes"
-            className={tabClass}
-            activeProps={{ "data-status": "active" }}
-          >
-            <FolderOpen className="size-5" aria-hidden />
-            <span>{t("nav.reports")}</span>
-          </Link>
-        ) : (
-          <Link
-            to="/assess/property"
-            className={tabClass}
-            activeProps={{ "data-status": "active" }}
-          >
-            <ClipboardCheck className="size-5" aria-hidden />
-            <span>{t("nav.evaluate")}</span>
-          </Link>
-        )}
+        <Link
+          to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
+          className={tabClass}
+          activeProps={{ "data-status": "active" }}
+        >
+          <Waves className="size-5" aria-hidden />
+          <span>{t("nav.today")}</span>
+        </Link>
+
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger className={cn(tabClass, "cursor-pointer")}>
@@ -98,20 +90,16 @@ export function BottomNav() {
             <div className="mt-4 grid gap-1">
               <SheetClose asChild>
                 <Link
-                  to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
-                  className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-secondary/60"
+                  to="/mapa"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Waves className="size-4.5" aria-hidden />
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <Map className="size-4.5" aria-hidden />
                   </span>
-                  <span className="flex-1">
-                    {t("nav.today")}
-                    <span className="block text-xs font-normal text-muted-foreground">
-                      {t("nav.todayDesc")}
-                    </span>
-                  </span>
+                  {t("nav.map")}
                 </Link>
               </SheetClose>
+
 
               {hasReports && (
                 <SheetClose asChild>
@@ -192,6 +180,31 @@ export function BottomNav() {
                   {t("nav.feedback")}
                 </Link>
               </SheetClose>
+
+              <SheetClose asChild>
+                <Link
+                  to="/legal"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <Scale className="size-4.5" aria-hidden />
+                  </span>
+                  {t("nav.legal")}
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <Link
+                  to="/privacidad"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 text-sm font-semibold shadow-sm transition-colors hover:bg-accent/40"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                    <ShieldQuestion className="size-4.5" aria-hidden />
+                  </span>
+                  {t("nav.privacy")}
+                </Link>
+              </SheetClose>
+
             </div>
 
             <div className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card p-3">

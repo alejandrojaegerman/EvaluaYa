@@ -10,10 +10,6 @@ import {
   Map as MapIcon,
   CloudUpload,
   WifiOff,
-  BadgeCheck,
-  UserX,
-  EyeOff,
-  
   HardHat,
   Waves,
 } from "lucide-react";
@@ -23,6 +19,13 @@ import { AppShell } from "@/components/AppShell";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ShareApp } from "@/components/ShareApp";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useOnline } from "@/hooks/use-online";
 import { useLang } from "@/lib/i18n";
 import { formatDate } from "@/lib/datetime";
@@ -132,52 +135,34 @@ function Index() {
           {t("home.startCta")}
           <ArrowRight className="size-5" />
         </Button>
-        <p className="relative mt-3 text-center text-xs font-medium text-primary-foreground/90">
-          {t("home.timePromise")}
-        </p>
       </section>
 
-      {/* Trust strip — addresses the top hesitations (cost, sign-up,
-          connectivity, privacy) that drive the Home → Property drop-off. */}
-      <section className="mt-4 flex flex-wrap gap-2">
-        {[
-          { icon: BadgeCheck, label: t("home.trustFree") },
-          { icon: UserX, label: t("home.trustNoSignup") },
-          { icon: WifiOff, label: t("home.trustOffline") },
-          { icon: EyeOff, label: t("home.trustAnon") },
-        ].map(({ icon: PillIcon, label }) => (
-          <span
-            key={label}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm"
-          >
-            <PillIcon className="size-3.5 text-primary" aria-hidden />
-            {label}
-          </span>
-        ))}
-      </section>
-
-      {/* "Did it just shake?" — captures real-time quake intent and routes it
-          into an assessment. Links to the language-matched live page. */}
-      <section className="mt-4">
+      {/* Quick actions — quake + community map, side by side */}
+      <section className="mt-4 grid grid-cols-2 gap-3">
         <Link
           to={lang === "es" ? "/temblo-en-venezuela-hoy" : "/earthquake-in-venezuela-today"}
-          className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-secondary/40 p-4 shadow-sm transition-colors hover:bg-secondary/60"
+          className="flex flex-col items-start gap-2 rounded-2xl border border-primary/20 bg-secondary/40 p-4 shadow-sm transition-colors hover:bg-secondary/60"
         >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Waves className="size-5" aria-hidden />
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-tight">{t("home.todayTitle")}</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {t("home.todayDesc")}
-            </p>
-          </div>
-          <ChevronRight
-            className="size-4 shrink-0 text-muted-foreground"
-            aria-hidden
-          />
+          <span className="text-sm font-semibold leading-tight">
+            {t("home.quakeBtn")}
+          </span>
+        </Link>
+        <Link
+          to="/mapa"
+          className="flex flex-col items-start gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+        >
+          <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+            <MapIcon className="size-5" aria-hidden />
+          </span>
+          <span className="text-sm font-semibold leading-tight">
+            {t("home.mapBtn")}
+          </span>
         </Link>
       </section>
+
 
       {/* Pending submission — offline-first resume card */}
       {pending && (
@@ -246,47 +231,30 @@ function Index() {
         </section>
       )}
 
-      {/* Community map CTA */}
-      <section className="mt-4">
-        <Link
-          to="/mapa"
-          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
-        >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
-            <MapIcon className="size-5" aria-hidden />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-tight">{t("home.mapTitle")}</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {t("home.mapDesc")}
-            </p>
-          </div>
-          <ChevronRight
-            className="size-4 shrink-0 text-muted-foreground"
-            aria-hidden
-          />
-        </Link>
-      </section>
-
       {/* Explore your state — regional landing pages for discovery + SEO */}
       <section className="mt-6">
         <h2 className="font-display text-lg font-bold">{t("home.exploreTitle")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("home.exploreDesc")}
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {ESTADOS.map((e) => (
-            <Link
-              key={e.name}
-              to="/zona/$estado"
-              params={{ estado: estadoSlug(e.name) }}
-              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-foreground"
-            >
-              {e.name}
-            </Link>
-          ))}
-        </div>
+        <Select
+          onValueChange={(slug) =>
+            navigate({ to: "/zona/$estado", params: { estado: slug } })
+          }
+        >
+          <SelectTrigger className="mt-3 w-full">
+            <SelectValue placeholder={t("home.stateSelect")} />
+          </SelectTrigger>
+          <SelectContent>
+            {ESTADOS.map((e) => (
+              <SelectItem key={e.name} value={estadoSlug(e.name)}>
+                {e.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </section>
+
 
 
 
@@ -393,23 +361,16 @@ function Index() {
         </section>
       )}
 
-      {/* Disclaimer */}
-      <section className="mt-8 flex items-start gap-3 rounded-2xl border border-amber-300/50 bg-risk-yellow-soft/60 p-4">
-        <Info className="mt-0.5 size-5 shrink-0 text-risk-yellow" aria-hidden />
-        <div>
-          <p className="text-sm font-semibold">{t("disclaimer.title")}</p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {t("disclaimer.body")}
-          </p>
-          <Link
-            to="/metodologia"
-            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-          >
-            {t("home.methodologyLink")}
-            <ChevronRight className="size-3.5" aria-hidden />
-          </Link>
-        </div>
-      </section>
+      {/* Legal notice — compact info icon + link */}
+      <Link
+        to="/legal"
+        className="mt-8 flex items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-accent/40"
+      >
+        <Info className="size-4 shrink-0 text-risk-yellow" aria-hidden />
+        <span className="flex-1 leading-relaxed">{t("home.legalNotice")}</span>
+        <ChevronRight className="size-4 shrink-0" aria-hidden />
+      </Link>
+
     </AppShell>
   );
 }

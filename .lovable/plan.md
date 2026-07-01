@@ -1,56 +1,77 @@
-## Objetivo
+# Rework de Nav bar + Home
 
-Hoy los chips de "Comentarios adicionales" son poco claros: "+ Réplicas", "+ Áreas comunes" no dicen qué agregan ni por qué importan, y al tocarlos insertan una pregunta dentro del textarea (raro). Los reemplazamos por un **mini-checklist autoexplicativo** ("Marca lo que aplique") con frases claras. Lo marcado se guarda como **señales aparte del texto libre**, y el textarea queda solo para lo que el residente escriba.
+Meta: que en el inicio lo único protagonista sea **hacer la evaluación**. Todo lo demás pasa a segundo plano u opcional. No se elimina ninguna ruta: solo se reorganizan botones y se reduce texto.
 
-## Comportamiento nuevo
+## 1. Nav bar superior (`TopNav.tsx`)
 
-- En vez de pills/chips ambiguos, una lista corta de casillas seleccionables (mismo estilo visual que "Otras señales a revisar", con círculo/check), bajo el encabezado **"Marca lo que aplique (opcional)"**.
-- Cada ítem es una frase completa y clara; marcarla = "esto sí aplica en mi caso":
-  - "Hubo réplicas fuertes después del sismo"
-  - "Se escuchan crujidos o ruidos nuevos en la estructura"
-  - "Hay daños en áreas comunes (escaleras, ascensor, tanque, estacionamiento)"
-  - "Hay personas mayores, niños o con movilidad reducida en la edificación"
-  - "La edificación ya fue evacuada o señalizada por las autoridades"
-- Lo marcado NO se escribe en el textarea; se guarda como lista aparte.
-- El textarea queda limpio para texto libre, con placeholder de ejemplos (materiales, detalles que la foto no muestra, etc.). El `commentsHint` deja de decir "toca una sugerencia".
+Reordenar por prioridad. Las acciones principales quedan visibles; lo demás se agrupa en el dropdown **"Más"**.
 
+**Visible (izquierda → derecha):**
 ```text
-Comentarios adicionales (opcional)
-
-Marca lo que aplique:
-  ◯ Hubo réplicas fuertes después del sismo
-  ◉ Se escuchan crujidos o ruidos nuevos en la estructura
-  ◯ Hay daños en áreas comunes (escaleras, ascensor, tanque…)
-  ◉ Hay personas mayores, niños o con movilidad reducida
-  ◯ La edificación ya fue evacuada o señalizada
-
-Cuéntale al ingeniero lo que la foto no muestra:
-┌──────────────────────────────────────────────┐
-│  (texto libre)                                 │
-└──────────────────────────────────────────────┘
+[Logo EvalúaYa]   Evaluar   Ingenieros voluntarios   ¿Tembló hoy?      [Más ▾]   [🌐 idioma]
 ```
 
-## Dónde viajan las señales marcadas
+- **Evaluar** → `/assess/property` (acción #1, destacada). Ícono `ClipboardCheck`.
+- **Ingenieros voluntarios** → `/voluntarios`. Ícono `HandHeart`.
+- **¿Tembló hoy?** → ruta según idioma (`/temblo-en-venezuela-hoy` / `/earthquake-in-venezuela-today`). Ícono `Waves`.
+- Se mantiene el logo (link a Inicio) y el toggle de idioma.
 
-- Se guardan en el borrador y en la evaluación, aparte del texto libre.
-- Entran en el prompt de la IA como "Señales adicionales reportadas por el residente".
-- Aparecen en el PDF / resumen para el ingeniero como una lista corta, separada del bloque de comentarios.
+**Dropdown "Más" (todo lo secundario, sin perder rutas):**
+- Mapa (`/mapa`)
+- Datos (`/datos`)
+- Metodología (`/metodologia`)
+- Ayuda (`/ayuda`)
+- Enviar comentarios (`/feedback`)
+- Separador
+- Aviso legal (`/legal`)
+- Privacidad (`/privacidad`)
+- Mis reportes (`/mis-reportes`) — solo si `hasReports`
+
+Se retira el indicador de "online/offline" del top bar (ruido); se mantiene el estado offline vía el `OfflineBanner` existente.
+
+## 2. Nav inferior móvil (`BottomNav.tsx`) — alineación de consistencia
+
+Para que móvil y escritorio prioricen lo mismo (es un PWA mobile-first), ajustar las 4 pestañas fijas a:
+```text
+[Inicio]   [Evaluar]   [¿Tembló hoy?]   [Más]
+```
+Dentro de "Más" se agrupan: Mapa, Datos, Voluntarios, Metodología, Mis reportes, Ayuda, Comentarios, **Aviso legal, Privacidad** e idioma. (Hoy faltan legal/privacidad en el sheet; se agregan.)
+
+## 3. Home (`index.tsx`) — menos texto, elegibilidad clara
+
+**a) Eliminar los tags de confianza**
+Se quita por completo la fila de píldoras "Gratis · Sin registro · Funciona sin conexión · Anónimo" y la microcopia "Gratis · 2 minutos · sin registro" bajo el hero. Reduce texto y ruido visual (lo señalado en la imagen).
+
+**b) Fila de 2 botones (mismo row)**
+Reemplazar las dos tarjetas separadas ("¿Tembló hoy?" y "Mapa comunitario") por **una sola fila con 2 botones lado a lado**:
+```text
+[ 〰 Acaba de temblar ]   [ 🗺 Mapa comunitario de daños ]
+```
+- Botón 1 → ¿Tembló hoy? (ruta por idioma)
+- Botón 2 → `/mapa`
+- En pantallas muy angostas se apilan (grid 2 col → 1 col).
+
+**c) "Explora tu estado" como dropdown**
+Cambiar la nube de ~24 chips de estados por un **selector (dropdown)** compacto:
+- Un `Select` "Elige tu estado" que al elegir navega a `/zona/$estado` (usando `estadoSlug`).
+- Mantiene los estados ordenados por impacto (como hoy) y ocupa mucho menos espacio.
+
+**d) "¿Cómo funciona?" actualizado al proceso actual (2 pasos + resultado)**
+Hoy describe 3 pasos con textos algo viejos. Actualizar a los pasos reales:
+1. **Datos de la propiedad** — dónde estás y tipo de edificación.
+2. **Observa y reporta** — responde y sube fotos de cada área.
+3. **Recibe tu resultado** — nivel de riesgo y pasos recomendados.
+
+(Se ajustan las claves `home.how*` en `i18n.tsx` para ES/EN.)
+
+**e) Aviso importante → ícono de información con link legal**
+Reemplazar el recuadro grande de "Aviso importante" por un elemento discreto: **ícono `Info` + texto corto** que redirige a **`/legal`** (aviso legal), en lugar del bloque de párrafo actual.
+
+**Se mantiene sin cambios:** hero + CTA principal "Empezar evaluación", tarjeta de envío pendiente (offline), contadores en vivo, sección de ingenieros voluntarios, ShareApp, y evaluaciones recientes.
 
 ## Detalles técnicos
-
-1. **`src/lib/assessment-types.ts`**: agregar `contextTags?: string[]` a `PropertyInfo` (guarda las claves: `aftershock`, `noises`, `common`, `people`, `evacuated`).
-2. **`src/lib/i18n.tsx`** (ES/EN): reemplazar los textos `checklist.suggest.<key>.text` (hoy preguntas) por las frases afirmativas de arriba; renombrar la etiqueta corta si hace falta. Añadir clave para el encabezado "Marca lo que aplique". Ajustar `commentsHint` y `commentsPlaceholder` para texto libre.
-3. **`src/routes/assess/checklist.tsx`**:
-   - Estado `selectedTags: string[]`, inicializado desde `draft.property.contextTags`.
-   - Sustituir los chips por filas de casilla toggle (reutilizando el patrón visual de "Otras señales a revisar").
-   - Eliminar la lógica que concatenaba texto en el textarea.
-   - Al continuar: `contextTags: selectedTags.length ? selectedTags : undefined`.
-4. **`src/routes/assess/analyze.tsx`**: reenviar `contextTags` (resueltos a las frases localizadas) al server function, junto a `comments`.
-5. **`src/lib/assessment.functions.ts`**: `contextTags: z.array(z.string()).max(20).optional()` en el schema, e incluir las frases en el prompt como señales adicionales.
-6. **`src/lib/outbox-sync.ts`**: propagar `contextTags` al guardar (igual que `comments`).
-7. **`src/lib/pdf.ts`**: renderizar las señales marcadas como lista corta, separada de los comentarios libres.
-
-## Verificación
-
-- Typecheck (`tsgo`) y test `safety-rules`.
-- Playwright: marcar/desmarcar ítems, confirmar que el textarea queda intacto y que el estado seleccionado se resalta bien.
+- `src/components/TopNav.tsx`: reordenar links, añadir items al `DropdownMenuContent` (incluye legal/privacidad), quitar indicador online.
+- `src/components/BottomNav.tsx`: cambiar pestañas fijas y añadir legal/privacidad al sheet.
+- `src/routes/index.tsx`: eliminar bloque de trust pills y `timePromise`; fusionar las 2 tarjetas en una fila `grid grid-cols-2` de botones; sustituir chips de estado por `Select` (de `@/components/ui/select`) con `useNavigate`; actualizar sección "cómo funciona"; sustituir el bloque disclaimer por ícono `Info` + `Link` a `/legal`.
+- `src/lib/i18n.tsx`: actualizar `home.how3Title`/`home.how3Desc` (y equivalentes) al nuevo paso "Recibe tu resultado"; añadir claves nuevas si hacen falta (ej. label del select, texto corto del aviso legal). Las claves `home.trust*` y `home.timePromise` quedan sin uso (se pueden dejar o limpiar).
+- No se elimina ninguna ruta; solo se reubican enlaces.
