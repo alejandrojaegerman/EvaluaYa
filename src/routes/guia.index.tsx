@@ -299,24 +299,6 @@ function GuideHub() {
         <ChevronRight className="size-4 shrink-0 text-primary" aria-hidden />
       </Link>
 
-
-      {/* Compact CTA */}
-      <section className="mt-6 rounded-2xl border border-primary/20 bg-secondary/40 p-4">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="size-5 text-primary" aria-hidden />
-          <h2 className="font-display text-base font-bold">{c.ctaTitle}</h2>
-        </div>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-          {c.ctaBody}
-        </p>
-        <Button asChild size="lg" className="mt-3 w-full">
-          <Link to="/assess/property">
-            {c.ctaButton}
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </section>
-
       {/* Guide groups */}
       {groups.map((group) => (
         <section key={group.heading} className="mt-8">
@@ -350,10 +332,37 @@ function GuideHub() {
         </section>
       ))}
 
+      {/* How EvalúaYa works lives on the Methodology page — link back to it */}
+      <Link
+        to="/metodologia"
+        className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"
+      >
+        {c.methodologyLink}
+        <ArrowRight className="size-4" aria-hidden />
+      </Link>
+
+      {/* Self-assessment CTA */}
+      <section className="mt-8 rounded-2xl border border-primary/20 bg-secondary/40 p-4">
+        <div className="flex items-center gap-2">
+          <ClipboardCheck className="size-5 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold">{c.ctaTitle}</h2>
+        </div>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          {c.ctaBody}
+        </p>
+        <Button asChild size="lg" className="mt-3 w-full">
+          <Link to="/assess/property">
+            {c.ctaButton}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </section>
+
       <p className="mt-8 flex items-start gap-1.5 text-xs text-muted-foreground">
         <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-risk-green" aria-hidden />
         {c.disclaimer}
       </p>
     </AppShell>
+
   );
 }
