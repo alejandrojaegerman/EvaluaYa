@@ -9,12 +9,43 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { absoluteUrl } from "@/lib/site";
 
 export type Crumb = {
   label: string;
   /** If omitted (or when it's the last item), rendered as the active page. */
   to?: string;
 };
+
+/**
+ * Build the standard Encyclopedia trail: `Inicio › Enciclopedia › <current>`.
+ * Pass `current: undefined` for the hub itself (then Encyclopedia is active).
+ */
+export function encyclopediaCrumbs(
+  lang: "es" | "en",
+  current?: { label: string },
+): Crumb[] {
+  const home: Crumb = { label: lang === "es" ? "Inicio" : "Home", to: "/" };
+  const hub: Crumb = {
+    label: lang === "es" ? "Enciclopedia" : "Encyclopedia",
+    to: "/guia",
+  };
+  return current ? [home, hub, { label: current.label }] : [home, hub];
+}
+
+/** BreadcrumbList JSON-LD for SEO. `to` values are resolved to absolute URLs. */
+export function breadcrumbJsonLd(items: Crumb[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.label,
+      ...(item.to ? { item: absoluteUrl(item.to) } : {}),
+    })),
+  };
+}
 
 /**
  * Breadcrumb navigation for the Encyclopedia (`/guia`) and its guides.
