@@ -94,8 +94,9 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
       ],
     },
     {
-      heading: "Cómo funciona EvalúaYa",
+      heading: "Más recursos",
       items: [
+
         {
           to: "/contactos-oficiales",
           icon: Phone,
@@ -153,8 +154,9 @@ const GROUPS: Record<"es" | "en", GuideGroup[]> = {
       ],
     },
     {
-      heading: "How EvalúaYa works",
+      heading: "More resources",
       items: [
+
         {
           to: "/contactos-oficiales",
           icon: Phone,
@@ -188,10 +190,10 @@ const FEATURED = {
 
 const COPY = {
   es: {
-    kicker: "Enciclopedia",
     h1: "Enciclopedia",
     intro:
-      "Todo en un solo lugar: qué hacer después de un temblor, cómo revisar tu vivienda, entender los sismos en Venezuela y cómo funciona EvalúaYa. Guías claras y gratuitas.",
+      "Todo en un solo lugar: qué hacer después de un temblor, cómo revisar tu vivienda y entender los sismos en Venezuela. Guías claras y gratuitas.",
+    methodologyLink: "¿Cómo funciona EvalúaYa? Ver la metodología",
     ctaTitle: "¿Sentiste un temblor?",
     ctaBody:
       "Haz una autoevaluación guiada y gratuita en pocos minutos. Recibe una orientación y pasos a seguir.",
@@ -200,10 +202,10 @@ const COPY = {
       "EvalúaYa es una herramienta comunitaria gratuita. Orienta pero no reemplaza a un ingeniero civil colegiado ni la evaluación oficial de FUNVISIS o Protección Civil.",
   },
   en: {
-    kicker: "Encyclopedia",
     h1: "Encyclopedia",
     intro:
-      "Everything in one place: what to do after a tremor, how to check your home, understanding earthquakes in Venezuela, and how EvalúaYa works. Clear, free guides.",
+      "Everything in one place: what to do after a tremor, how to check your home, and understanding earthquakes in Venezuela. Clear, free guides.",
+    methodologyLink: "How does EvalúaYa work? See the methodology",
     ctaTitle: "Felt a tremor?",
     ctaBody:
       "Run a free, guided self-assessment in a few minutes. Get guidance and clear next steps.",
@@ -265,17 +267,14 @@ function GuideHub() {
       <EncyclopediaBreadcrumb items={encyclopediaCrumbs(lang)} />
 
       <header>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
-          <BookOpen className="size-3.5" aria-hidden />
-          {c.kicker}
-        </span>
-        <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight">
+        <h1 className="font-display text-2xl font-extrabold tracking-tight">
           {c.h1}
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {c.intro}
         </p>
       </header>
+
 
       {/* Featured: official FUNVISIS process */}
       <Link
@@ -299,24 +298,6 @@ function GuideHub() {
         </span>
         <ChevronRight className="size-4 shrink-0 text-primary" aria-hidden />
       </Link>
-
-
-      {/* Compact CTA */}
-      <section className="mt-6 rounded-2xl border border-primary/20 bg-secondary/40 p-4">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="size-5 text-primary" aria-hidden />
-          <h2 className="font-display text-base font-bold">{c.ctaTitle}</h2>
-        </div>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-          {c.ctaBody}
-        </p>
-        <Button asChild size="lg" className="mt-3 w-full">
-          <Link to="/assess/property">
-            {c.ctaButton}
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </section>
 
       {/* Guide groups */}
       {groups.map((group) => (
@@ -351,10 +332,37 @@ function GuideHub() {
         </section>
       ))}
 
+      {/* How EvalúaYa works lives on the Methodology page — link back to it */}
+      <Link
+        to="/metodologia"
+        className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-2"
+      >
+        {c.methodologyLink}
+        <ArrowRight className="size-4" aria-hidden />
+      </Link>
+
+      {/* Self-assessment CTA */}
+      <section className="mt-8 rounded-2xl border border-primary/20 bg-secondary/40 p-4">
+        <div className="flex items-center gap-2">
+          <ClipboardCheck className="size-5 text-primary" aria-hidden />
+          <h2 className="font-display text-base font-bold">{c.ctaTitle}</h2>
+        </div>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          {c.ctaBody}
+        </p>
+        <Button asChild size="lg" className="mt-3 w-full">
+          <Link to="/assess/property">
+            {c.ctaButton}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </section>
+
       <p className="mt-8 flex items-start gap-1.5 text-xs text-muted-foreground">
         <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-risk-green" aria-hidden />
         {c.disclaimer}
       </p>
     </AppShell>
+
   );
 }
