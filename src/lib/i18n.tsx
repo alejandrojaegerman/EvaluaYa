@@ -372,25 +372,23 @@ const es: Dict = {
   "checklist.unreadableImage": "No pudimos leer esa imagen. Intenta con otra.",
   "checklist.commentsTitle": "Comentarios adicionales (opcional)",
   "checklist.commentsHint":
-    "Cuéntale al ingeniero lo que la foto no muestra. Toca una sugerencia para empezar:",
+    "Cuéntale al ingeniero lo que las fotos no muestran: materiales, cuándo apareció el daño, algo fuera de lo normal.",
   "checklist.commentsPlaceholder":
-    "Ej.: Las grietas crecieron después de una réplica. Se escuchan crujidos nuevos. La escalera del edificio está afectada. Hay personas mayores en el apartamento.",
-  // Chips de sugerencias (insertan una pregunta-guía en el comentario)
-  "checklist.suggest.aftershock": "Réplicas",
-  "checklist.suggest.aftershock.text":
-    "¿Las grietas crecieron o aparecieron nuevas tras una réplica?",
-  "checklist.suggest.noises": "Ruidos nuevos",
-  "checklist.suggest.noises.text":
-    "¿Escuchas crujidos o ruidos que antes no estaban?",
-  "checklist.suggest.common": "Áreas comunes",
-  "checklist.suggest.common.text":
-    "¿Hay daños en áreas comunes (escaleras, estacionamiento, ascensor, tanque)?",
-  "checklist.suggest.people": "Personas vulnerables",
-  "checklist.suggest.people.text":
-    "¿Hay personas mayores, niños o con movilidad reducida en la edificación?",
-  "checklist.suggest.evacuated": "Ya evacuada",
-  "checklist.suggest.evacuated.text":
-    "¿La edificación ya fue evacuada o señalizada por las autoridades?",
+    "Ej.: El edificio es de bloque. Una grieta en la sala apareció justo después del sismo y sigue creciendo. Cae agua del techo.",
+  // Checklist autoexplicativo de señales de contexto ("Marca lo que aplique")
+  "checklist.signalsTitle": "Marca lo que aplique (opcional)",
+  "checklist.signalsHint":
+    "Esto ayuda al ingeniero a priorizar tu caso. Marca solo lo que sea cierto.",
+  "checklist.suggest.aftershock":
+    "Hubo réplicas fuertes después del sismo",
+  "checklist.suggest.noises":
+    "Se escuchan crujidos o ruidos nuevos en la estructura",
+  "checklist.suggest.common":
+    "Hay daños en áreas comunes (escaleras, ascensor, tanque, estacionamiento)",
+  "checklist.suggest.people":
+    "Hay personas mayores, niños o con movilidad reducida en la edificación",
+  "checklist.suggest.evacuated":
+    "La edificación ya fue evacuada o señalizada por las autoridades",
   // Photo-carrier labels (used by the AI prompt)
 
   "item.facade.area": "Fachada",
@@ -645,6 +643,8 @@ const es: Dict = {
   "pdf.findings": "Hallazgos clave",
   "pdf.nextSteps": "Sugerencias",
   "pdf.inspection": "Respuestas de inspección",
+  "pdf.signals": "Señales reportadas por el residente",
+  "pdf.comments": "Comentarios del residente",
   "pdf.photos": "Fotos",
   "pdf.generated": "Generado por EvalúaYa",
 
@@ -1963,25 +1963,23 @@ const en: Dict = {
   "checklist.unreadableImage": "We couldn't read that image. Try another one.",
   "checklist.commentsTitle": "Additional comments (optional)",
   "checklist.commentsHint":
-    "Tell the engineer what the photo can't show. Tap a suggestion to start:",
+    "Tell the engineer what the photos can't show — materials, when the damage appeared, anything unusual.",
   "checklist.commentsPlaceholder":
-    "E.g.: The cracks grew after an aftershock. There are new creaking sounds. The building stairwell is affected. There are elderly people in the apartment.",
-  // Suggestion chips (insert a guiding question into the comment)
-  "checklist.suggest.aftershock": "Aftershocks",
-  "checklist.suggest.aftershock.text":
-    "Did the cracks grow or appear after an aftershock?",
-  "checklist.suggest.noises": "New noises",
-  "checklist.suggest.noises.text":
-    "Do you hear creaking or noises that weren't there before?",
-  "checklist.suggest.common": "Common areas",
-  "checklist.suggest.common.text":
-    "Any damage in common areas (stairs, parking, elevator, water tank)?",
-  "checklist.suggest.people": "Vulnerable people",
-  "checklist.suggest.people.text":
-    "Are there elderly people, children or people with reduced mobility in the building?",
-  "checklist.suggest.evacuated": "Already evacuated",
-  "checklist.suggest.evacuated.text":
-    "Has the building already been evacuated or tagged by the authorities?",
+    "E.g.: The building is concrete block. A crack in the living room appeared right after the quake and keeps growing. Water is leaking from the ceiling.",
+  // Self-explanatory checklist of extra context signals ("Mark what applies")
+  "checklist.signalsTitle": "Mark what applies (optional)",
+  "checklist.signalsHint":
+    "This helps the engineer prioritize your case. Mark only what's true.",
+  "checklist.suggest.aftershock":
+    "There were strong aftershocks after the quake",
+  "checklist.suggest.noises":
+    "I hear new creaking or noises in the structure",
+  "checklist.suggest.common":
+    "There is damage in common areas (stairs, elevator, water tank, parking)",
+  "checklist.suggest.people":
+    "There are elderly people, children or people with reduced mobility in the building",
+  "checklist.suggest.evacuated":
+    "The building has already been evacuated or tagged by the authorities",
   // Photo-carrier labels (used by the AI prompt)
 
   "item.facade.area": "Facade",
@@ -2232,6 +2230,8 @@ const en: Dict = {
   "pdf.findings": "Key findings",
   "pdf.nextSteps": "Suggestions",
   "pdf.inspection": "Inspection answers",
+  "pdf.signals": "Signals reported by the resident",
+  "pdf.comments": "Resident's comments",
   "pdf.photos": "Photos",
   "pdf.generated": "Generated by EvalúaYa",
 
