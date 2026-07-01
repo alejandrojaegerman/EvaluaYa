@@ -106,7 +106,7 @@ const PHASES: Record<"es" | "en", Phase[]> = {
   ],
 };
 
-type Label = { key: string; label: string; meaning: string; tone: string };
+type Label = { key: string; label: string; meaning: string; dot: string };
 
 const LABELS: Record<"es" | "en", Label[]> = {
   es: [
@@ -114,19 +114,19 @@ const LABELS: Record<"es" | "en", Label[]> = {
       key: "green",
       label: "Permitido (Verde)",
       meaning: "Uso permitido. Se relaciona con el 🟢 de EvalúaYa.",
-      tone: "risk-green",
+      dot: "bg-risk-green",
     },
     {
       key: "yellow",
       label: "Restringido (Amarillo)",
       meaning: "Uso restringido / limitado. Se relaciona con 🟡 y 🟠.",
-      tone: "risk-yellow",
+      dot: "bg-risk-yellow",
     },
     {
       key: "red",
       label: "No Permitido (Rojo)",
       meaning: "No se permite el uso. Se relaciona con el 🔴 de EvalúaYa.",
-      tone: "risk-red",
+      dot: "bg-risk-red",
     },
   ],
   en: [
@@ -134,19 +134,19 @@ const LABELS: Record<"es" | "en", Label[]> = {
       key: "green",
       label: "Allowed (Green)",
       meaning: "Use allowed. Maps to EvalúaYa's 🟢.",
-      tone: "risk-green",
+      dot: "bg-risk-green",
     },
     {
       key: "yellow",
       label: "Restricted (Yellow)",
       meaning: "Restricted / limited use. Maps to 🟡 and 🟠.",
-      tone: "risk-yellow",
+      dot: "bg-risk-yellow",
     },
     {
       key: "red",
       label: "Not allowed (Red)",
       meaning: "Use not permitted. Maps to EvalúaYa's 🔴.",
-      tone: "risk-red",
+      dot: "bg-risk-red",
     },
   ],
 };
@@ -349,7 +349,7 @@ function FunvisisProcessPage() {
               className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
             >
               <span
-                className={cn("mt-1 size-3 shrink-0 rounded-full", `bg-${l.tone}`)}
+                className={cn("mt-1 size-3 shrink-0 rounded-full", l.dot)}
                 aria-hidden
               />
               <div>
