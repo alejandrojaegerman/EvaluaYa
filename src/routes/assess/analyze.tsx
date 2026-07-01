@@ -108,6 +108,13 @@ function AnalyzeStep() {
             ...(draft.property.comments?.trim()
               ? { comments: draft.property.comments.trim() }
               : {}),
+            ...(draft.property.contextTags?.length
+              ? {
+                  contextTags: draft.property.contextTags.map((k) =>
+                    t(`checklist.suggest.${k}`),
+                  ),
+                }
+              : {}),
             ...(typeof draft.property.seismicIntensity === "number"
               ? {
                   seismicIntensity: draft.property.seismicIntensity,
