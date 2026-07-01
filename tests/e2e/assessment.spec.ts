@@ -65,10 +65,11 @@ test("resident completes a full assessment and reaches a result", async ({
   // Allow plenty of time for the real AI call on a slow connection.
   await page.waitForURL(/\/a\/[A-Za-z0-9_-]+/, { timeout: 120_000 });
 
-  // A risk badge with one of the four levels should be present.
+  // A findings badge with one of the four levels should be present. Copy is
+  // findings-based (no verdicts): "Hallazgos leves/moderados/serios/severos".
   await expect(
     page.getByText(
-      /Riesgo bajo|Precaución|Riesgo moderado|Riesgo alto|Low risk|Caution|Moderate risk|High risk/i,
+      /Hallazgos (leves|moderados|serios|severos)|(Minor|Moderate|Serious|Severe) findings/i,
     ).first(),
   ).toBeVisible({ timeout: 20_000 });
 });
