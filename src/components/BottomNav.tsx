@@ -11,6 +11,8 @@ import {
   Map,
   MessageSquareHeart,
   MoreHorizontal,
+  Scale,
+  ShieldQuestion,
   Waves,
   Wifi,
   WifiOff,
