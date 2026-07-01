@@ -270,28 +270,17 @@ function ChecklistStep() {
         </p>
       )}
 
-      {/* Legal + data consent — captured as late as possible, right before analysis */}
-      <LegalConsentInline
-        acceptLegal={acceptLegal}
-        acceptData={acceptData}
-        onChangeLegal={(v) => {
-          setAcceptLegal(v);
-          setConsentError(false);
-        }}
-        onChangeData={(v) => {
-          setAcceptData(v);
-          setConsentError(false);
-        }}
-        showError={consentError}
-      />
+      {/* Fine-print disclaimer — consent implied by tapping "Analyze" */}
+      <LegalConsentInline />
 
       <StepFooter
         onBack={() => navigate({ to: "/assess/property" })}
         onNext={handleContinue}
-        nextDisabled={!allRequired || !consentGiven}
+        nextDisabled={!allRequired}
         nextLabel={t("checklist.analyze")}
         backLabel={t("common.back")}
       />
+
     </AppShell>
   );
 }
