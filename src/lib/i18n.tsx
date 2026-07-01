@@ -47,11 +47,11 @@ const es: Dict = {
   "home.viewResult": "Ver resultado",
 
   // Volunteer-engineer support thread (reused across surfaces).
-  "engineers.sectionTitle": "Apoyo de ingenieros voluntarios",
+  "engineers.sectionTitle": "¿Eres ingeniero? Únete a la red",
   "engineers.tagline":
-    "Después de tu evaluación, puedes pedir ayuda de un ingeniero voluntario verificado, sin costo.",
+    "Después de tu evaluación, puedes pedir ayuda de un ingeniero voluntario, sin costo.",
   "engineers.homeBody":
-    "Primero haces tu autoevaluación. Si lo necesitas, te conectamos con un ingeniero voluntario verificado.",
+    "Cuando una familia lo pide tras su autoevaluación, la conectamos con un ingeniero civil voluntario. Súmate para acompañar a más comunidades.",
   "engineers.recruit": "Reclutamos",
   "engineers.recruitDesc":
     "Convocamos a ingenieros voluntarios y organizaciones en todo el país.",
