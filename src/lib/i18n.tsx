@@ -643,6 +643,8 @@ const es: Dict = {
   "pdf.findings": "Hallazgos clave",
   "pdf.nextSteps": "Sugerencias",
   "pdf.inspection": "Respuestas de inspección",
+  "pdf.signals": "Señales reportadas por el residente",
+  "pdf.comments": "Comentarios del residente",
   "pdf.photos": "Fotos",
   "pdf.generated": "Generado por EvalúaYa",
 
