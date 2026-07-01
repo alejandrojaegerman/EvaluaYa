@@ -42,7 +42,7 @@ import {
   type ImpactRanking,
 } from "@/lib/stats.functions";
 import { splitFeatured } from "@/lib/impact";
-import { ESTADOS, ESTADO_NAMES, estadoSlug } from "@/lib/venezuela";
+import { ESTADO_NAMES, estadoSlug } from "@/lib/venezuela";
 import { trackStep } from "@/lib/track";
 import { SITE_URL } from "@/lib/site";
 import heroEngineer from "@/assets/hero-engineer.webp";
