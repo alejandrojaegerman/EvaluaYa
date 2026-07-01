@@ -2118,6 +2118,7 @@ const en: Dict = {
   "nav.volunteersShort": "Volunteers",
   "connect.title": "Request a volunteer evaluator",
   "connect.subtitleRed": "Your findings are severe. Send your case and a community volunteer evaluator will review it and contact you for guidance. Free and no obligation.",
+  "connect.subtitleOrange": "Your findings are serious. Send your case and a community volunteer evaluator will review it soon and contact you for guidance. Free and no obligation.",
   "connect.subtitleYellow": "Send your case and a community volunteer evaluator can help you interpret these findings. Free and no obligation.",
   "connect.reassure": "Community volunteer evaluators — no cost.",
   "connect.officialNotice": "A volunteer's review is a preliminary visual orientation, not the official assessment. The official label is placed only by authority-certified personnel.",
