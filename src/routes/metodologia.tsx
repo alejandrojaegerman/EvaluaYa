@@ -68,9 +68,7 @@ export const Route = createFileRoute("/metodologia")({
           type: "application/ld+json",
           children: JSON.stringify(
             breadcrumbJsonLd(
-              encyclopediaCrumbs("es", {
-                label: "Cómo funciona la metodología",
-              }),
+              methodologyCrumbs("es", "Cómo funciona la metodología"),
             ),
           ),
         },
