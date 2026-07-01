@@ -3009,6 +3009,9 @@ const en: Dict = {
   "panel.reviewSubmit": "Save observations",
   "panel.reviewSaved": "Observations recorded. Thank you for your support.",
   "panel.reviewedByYou": "Reviewed by you",
+  "panel.remitBody":
+    "Remind the resident they can show this report and your observations to the authorities to request the official assessment.",
+  "panel.remitLink": "Official contacts",
   "panel.cancel": "Cancel",
   "panel.noReportToValidate": "This request has no linked assessment.",
 
