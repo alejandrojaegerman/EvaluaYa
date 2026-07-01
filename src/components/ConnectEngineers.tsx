@@ -26,7 +26,16 @@ export function ConnectEngineers({ record }: { record: AssessmentRecord }) {
   const { t } = useLang();
   const submit = useServerFn(submitHelpRequest);
 
-  const urgent = record.riskLevel === "red" || record.riskLevel === "orange";
+  // Follow the 4-level methodology: each level keeps its own tone and copy so
+  // an orange ("serios") result is never presented as red ("severos").
+  const level = record.riskLevel;
+  const theme = RISK_THEME[level];
+  const subtitleKey =
+    level === "red"
+      ? "connect.subtitleRed"
+      : level === "orange"
+        ? "connect.subtitleOrange"
+        : "connect.subtitleYellow";
 
   // Pre-fill the message from the analysis that already ran (no new AI call):
   // risk level + the top findings, in the resident's voice. Stays editable.
