@@ -1471,7 +1471,7 @@ const en: Dict = {
   "checklist.remaining": "{n} left before you can analyze",
   "checklist.remainingOne": "essential question",
   "checklist.remainingMany": "essential questions",
-  "checklist.photosOptional": "Photos are optional, but they improve the analysis.",
+  "checklist.photosOptional": "Photos aren't required, but they greatly improve the analysis.",
   "checklist.photoPromptYes": "You marked damage here. A photo helps an engineer understand it better.",
   "factors.title": "Why these results",
   "factors.flagged": "Flagged issues",
