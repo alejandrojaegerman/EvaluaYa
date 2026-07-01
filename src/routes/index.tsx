@@ -24,7 +24,9 @@ import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -34,7 +36,13 @@ import { formatDate } from "@/lib/datetime";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import { loadDraft, isReadyToSend } from "@/lib/draft-store";
 import { getDamageTotals, type DamageTotals } from "@/lib/stats.functions";
-import { ESTADOS, estadoSlug } from "@/lib/venezuela";
+import {
+  getImpactRanking,
+  EMPTY_IMPACT_RANKING,
+  type ImpactRanking,
+} from "@/lib/stats.functions";
+import { splitFeatured } from "@/lib/impact";
+import { ESTADO_NAMES, estadoSlug } from "@/lib/venezuela";
 import { trackStep } from "@/lib/track";
 import { SITE_URL } from "@/lib/site";
 import heroEngineer from "@/assets/hero-engineer.webp";
@@ -74,12 +82,18 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  // Public, anonymized impact ranking so the hardest-hit areas surface first
+  // in the state picker. Best-effort: failures fall back to alphabetical.
+  loader: async (): Promise<ImpactRanking> =>
+    getImpactRanking().catch(() => EMPTY_IMPACT_RANKING),
   component: Index,
 });
 
 function Index() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
+  const ranking = Route.useLoaderData();
+  const stateGroups = splitFeatured(ESTADO_NAMES, ranking.featuredStates);
   const online = useOnline();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [totals, setTotals] = useState<DamageTotals | null>(null);
@@ -138,6 +152,41 @@ function Index() {
           <ArrowRight className="size-5" />
         </Button>
       </section>
+
+      {/* Live trust counters — surfaced first so residents see real activity
+          before the official-contacts shortcut. */}
+      {hasTotals && (
+        <section className="mt-4 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
+            <p className="font-display text-2xl font-extrabold text-primary">
+              {totals!.total.toLocaleString()}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("home.statBuildings")}
+            </p>
+          </div>
+          <div className="flex flex-col justify-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full bg-risk-orange" />
+              <span className="font-display text-lg font-extrabold text-risk-orange">
+                {totals!.orange.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {t("result.orange.tag")}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full bg-risk-red" />
+              <span className="font-display text-lg font-extrabold text-risk-red">
+                {totals!.red.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {t("result.red.tag")}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Official authority contacts — right under the primary CTA so residents
           always have the official channels one tap away. */}
@@ -221,39 +270,6 @@ function Index() {
       )}
 
 
-      {/* Live trust counters */}
-      {hasTotals && (
-        <section className="mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
-            <p className="font-display text-2xl font-extrabold text-primary">
-              {totals!.total.toLocaleString()}
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {t("home.statBuildings")}
-            </p>
-          </div>
-          <div className="flex flex-col justify-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <div className="flex items-center gap-2">
-              <span className="size-2.5 shrink-0 rounded-full bg-risk-orange" />
-              <span className="font-display text-lg font-extrabold text-risk-orange">
-                {totals!.orange.toLocaleString()}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {t("result.orange.tag")}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="size-2.5 shrink-0 rounded-full bg-risk-red" />
-              <span className="font-display text-lg font-extrabold text-risk-red">
-                {totals!.red.toLocaleString()}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {t("result.red.tag")}
-              </span>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Explore your state — regional landing pages for discovery + SEO */}
       <section className="mt-6">
@@ -270,11 +286,26 @@ function Index() {
             <SelectValue placeholder={t("home.stateSelect")} />
           </SelectTrigger>
           <SelectContent>
-            {ESTADOS.map((e) => (
-              <SelectItem key={e.name} value={estadoSlug(e.name)}>
-                {e.name}
-              </SelectItem>
-            ))}
+            {stateGroups.featured.length > 0 && (
+              <SelectGroup>
+                <SelectLabel>{t("picker.mostAffected")}</SelectLabel>
+                {stateGroups.featured.map((name) => (
+                  <SelectItem key={name} value={estadoSlug(name)}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            <SelectGroup>
+              {stateGroups.featured.length > 0 && (
+                <SelectLabel>{t("picker.allAreas")}</SelectLabel>
+              )}
+              {stateGroups.rest.map((name) => (
+                <SelectItem key={name} value={estadoSlug(name)}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </section>
