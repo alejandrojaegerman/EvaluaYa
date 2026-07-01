@@ -822,18 +822,13 @@ function DataRoomPage() {
             </div>
 
             {/* Headline counters */}
-            <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="mt-5 grid grid-cols-3 gap-3">
               <Stat value={totals!.total} label={t("map.totalAssessments")} />
               <Stat value={totals!.areas} label={t("map.areasLabel")} />
               <Stat
                 value={totals!.red + totals!.orange}
                 label={t("map.seriousOrHigh")}
                 color={rgb("red")}
-              />
-              <Stat
-                value={totals!.verified}
-                label={t("map.verified")}
-                color={rgb("green")}
               />
             </div>
           </section>
