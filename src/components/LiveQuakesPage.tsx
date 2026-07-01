@@ -9,7 +9,7 @@ import {
   Clock,
   Info,
   MapPin,
-  Radar,
+  
   Waves,
 } from "lucide-react";
 
